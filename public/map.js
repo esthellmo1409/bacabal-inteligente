@@ -52,12 +52,12 @@ const MapBI = (() => {
     return p.fotoAntes || p.foto || p.fotoDepois || null;
   }
 
-  /** Camadas base — satélite realista (mesmo tipo do Google Earth, via Esri).
-   *  Google Maps / Waze oficiais exigem chave paga da Google.
-   *  Em zoom muito alto o satélite some em cidades do interior → cai para ruas.
+  /** Camadas base — satélite/híbrido (tipo Google Earth) + ruas.
+   *  NÃO troca sozinho para "Ruas" no zoom: isso quebrava a experiência.
+   *  maxNativeZoom amplia o último satélite bom em vez de pedir tile cinza.
    */
   function basemaps(map, defaultKey = 'hybrid') {
-    const SAT_NATIVE = 16; // acima disso Bacabal costuma ficar cinza no Esri
+    const SAT_NATIVE = 17;
 
     const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -65,7 +65,6 @@ const MapBI = (() => {
       subdomains: 'abcd',
     });
 
-    // Imagem de satélite/aérea (visual próximo ao Google Earth)
     const sat = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
@@ -90,42 +89,20 @@ const MapBI = (() => {
       }
     );
 
-    // Híbrido = satélite + nomes (estilo Google Earth / Maps satélite)
     const hybrid = L.layerGroup([sat, roads, labelsCarto]);
 
     const layers = {
-      'Ruas': streets,
-      'Satélite (Google Earth)': sat,
       'Híbrido satélite + nomes': hybrid,
+      'Satélite': sat,
+      'Ruas': streets,
     };
 
-    let mode = defaultKey === 'streets' ? 'streets' : defaultKey === 'sat' ? 'sat' : 'hybrid';
-    const initial = mode === 'streets' ? streets : mode === 'sat' ? sat : hybrid;
+    const initial = defaultKey === 'streets' ? streets : defaultKey === 'sat' ? sat : hybrid;
     initial.addTo(map);
-    try { map.setMaxZoom(19); } catch (_) {}
+    try { map.setMaxZoom(18); } catch (_) {}
 
-    map.on('baselayerchange', (e) => {
-      if (e.name === 'Ruas') mode = 'streets';
-      else if (e.name.indexOf('Satélite') === 0) mode = 'sat';
-      else mode = 'hybrid';
-    });
-
-    map.on('zoomend', () => {
-      const z = map.getZoom();
-      if (z > SAT_NATIVE && (mode === 'hybrid' || mode === 'sat')) {
-        if (map.hasLayer(hybrid)) map.removeLayer(hybrid);
-        if (map.hasLayer(sat) && mode === 'sat') map.removeLayer(sat);
-        if (!map.hasLayer(streets)) streets.addTo(map);
-      } else if (z <= SAT_NATIVE && mode === 'hybrid') {
-        if (map.hasLayer(streets) && !map.hasLayer(hybrid)) map.removeLayer(streets);
-        if (!map.hasLayer(hybrid) && !map.hasLayer(sat)) hybrid.addTo(map);
-      } else if (z <= SAT_NATIVE && mode === 'sat') {
-        if (map.hasLayer(streets)) map.removeLayer(streets);
-        if (!map.hasLayer(sat)) sat.addTo(map);
-      }
-    });
-
-    L.control.layers(layers, {}, { position: 'topright', collapsed: false }).addTo(map);
+    // Controle fechado — usuário escolhe; o mapa NÃO troca sozinho
+    L.control.layers(layers, {}, { position: 'topright', collapsed: true }).addTo(map);
 
     return { streets, sat, hybrid, layers };
   }
