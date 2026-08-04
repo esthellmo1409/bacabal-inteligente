@@ -6,15 +6,59 @@ const { URL } = require('url');
 const crypto = require('crypto');
 
 const PORT = process.env.PORT || 4000;
-const DATA_DIR = fs.existsSync('/app/data') ? '/app/data' : path.join(__dirname, 'data');
+
+/**
+ * Dados persistentes:
+ * - Local: ./data
+ * - Railway: monte o Volume em /data (NÃO em /app — apaga o código)
+ *   A variável RAILWAY_VOLUME_MOUNT_PATH vem automática.
+ * Seed do código fica em ./data (imagem) e só é copiado se o volume estiver vazio.
+ */
+const SEED_DIR = path.join(__dirname, 'data');
+
+function resolveDataDir() {
+  if (process.env.DATA_DIR) return process.env.DATA_DIR;
+  // Railway injeta automaticamente quando há Volume no serviço
+  if (process.env.RAILWAY_VOLUME_MOUNT_PATH) return process.env.RAILWAY_VOLUME_MOUNT_PATH;
+  return SEED_DIR;
+}
+
+const DATA_DIR = resolveDataDir();
+process.env.DATA_DIR = DATA_DIR; // seed.js e filhos leem daqui
 const TENANTS_DIR = path.join(DATA_DIR, 'tenants');
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const SESSIONS = new Map(); // legado em memória
 const SESSION_SECRET = process.env.SESSION_SECRET || 'bacabal-inteligente-demo-secret-v1';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const USING_VOLUME = !!process.env.RAILWAY_VOLUME_MOUNT_PATH || !!process.env.RAILWAY_VOLUME_NAME;
 
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-if (!fs.existsSync(TENANTS_DIR)) fs.mkdirSync(TENANTS_DIR, { recursive: true });
+function copyDirSync(src, dest) {
+  if (!fs.existsSync(src)) return;
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const from = path.join(src, entry.name);
+    const to = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDirSync(from, to);
+    else fs.copyFileSync(from, to);
+  }
+}
+
+function bootstrapDataDir() {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  fs.mkdirSync(TENANTS_DIR, { recursive: true });
+  const marker = path.join(DATA_DIR, 'municipios.json');
+  if (fs.existsSync(marker)) {
+    return { ok: true, bootstrapped: false, reason: 'already-present' };
+  }
+  // Volume (ou pasta) vazia: copia o seed embutido no deploy
+  if (SEED_DIR !== DATA_DIR && fs.existsSync(path.join(SEED_DIR, 'municipios.json'))) {
+    copyDirSync(SEED_DIR, DATA_DIR);
+    return { ok: true, bootstrapped: true, reason: 'copied-seed', from: SEED_DIR };
+  }
+  return { ok: true, bootstrapped: true, reason: 'needs-runSeed' };
+}
+
+const bootInfo = bootstrapDataDir();
 
 const {
   runSeed, slugify, DEFAULT_CATEGORIAS, DEFAULT_SECRETARIAS, criarTenant,
@@ -31,9 +75,15 @@ const {
 } = require('./lib/plataforma.js');
 const { handleModulos, migrateTenant } = require('./lib/rotas-modulos.js');
 
-// Seed se ainda não houver municípios
+// Seed se ainda não houver municípios (após bootstrap)
 if (!fs.existsSync(path.join(DATA_DIR, 'municipios.json'))) {
   runSeed();
+  bootInfo.reason = 'runSeed';
+  bootInfo.bootstrapped = true;
+}
+
+if (bootInfo.bootstrapped) {
+  console.log(`  Bootstrap dados: ${bootInfo.reason}${bootInfo.from ? ' ← ' + bootInfo.from : ''}`);
 }
 
 const MIME = {
@@ -440,6 +490,29 @@ function criarMunicipioCompleto(body) {
 
 async function handleAPI(req, res, pathname, url) {
   if (req.method === 'OPTIONS') return sendJSON(res, 204, {});
+
+  if (pathname === '/api/health' && req.method === 'GET') {
+    const municipios = listMunicipios().length;
+    let chamadosBacabal = 0;
+    try { chamadosBacabal = readTenant('bacabal', 'chamados.json', []).length; } catch (_) {}
+    const volumeMount = process.env.RAILWAY_VOLUME_MOUNT_PATH || null;
+    const warn = volumeMount && path.resolve(volumeMount) === path.resolve(SEED_DIR)
+      ? 'Volume montado em cima do seed (/app/data). Prefira montar em /data.'
+      : null;
+    return sendJSON(res, 200, {
+      ok: true,
+      produto: 'Bacabal Conecta',
+      dataDir: DATA_DIR,
+      seedDir: SEED_DIR,
+      volume: USING_VOLUME,
+      volumeMount,
+      volumeName: process.env.RAILWAY_VOLUME_NAME || null,
+      bootstrap: bootInfo,
+      municipios,
+      chamadosBacabal,
+      warning: warn,
+    });
+  }
 
   // Módulos 1–15 (dashboard, cadastros, IA, relatórios…)
   const handled = await handleModulos({
@@ -1015,7 +1088,9 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   try { ensureDemoChamado('bacabal'); } catch (_) {}
   console.log(`\n  Bacabal Conecta v3 → http://localhost:${PORT}`);
-  console.log(`  Dados: ${DATA_DIR}`);
+  console.log(`  Dados: ${DATA_DIR}${USING_VOLUME ? ' (volume Railway)' : ''}`);
+  if (USING_VOLUME) console.log(`  Volume: ${process.env.RAILWAY_VOLUME_NAME || '?'} → ${process.env.RAILWAY_VOLUME_MOUNT_PATH || DATA_DIR}`);
+  console.log(`  Health: /api/health`);
   console.log(`  Módulos: /modulos.html · Dashboard · Chamados · Mapa · IA`);
   console.log(`  Roteiro: ROTEIRO-VALIDACAO.md\n`);
 });

@@ -5,3 +5,6 @@ builder = "NIXPACKS"
 startCommand = "node server.js"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
+
+# Volume: no painel Railway monte em /data (ver COMO-PUBLICAR.md).
+# Não dá para criar o volume só pelo toml — faça uma vez no dashboard.

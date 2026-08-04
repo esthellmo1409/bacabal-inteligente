@@ -2,7 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+// Respeita DATA_DIR (volume Railway em /data); fallback = ./data do projeto
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
 const TENANTS_DIR = path.join(DATA_DIR, 'tenants');
 
 function ensureDir(p) {
