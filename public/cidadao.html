@@ -20,9 +20,12 @@
         <h3 style="margin-bottom:0.85rem">Novo chamado</h3>
         <label>Tipo de problema</label>
         <div class="cats" id="cats"></div>
+        <div id="tipoEscolhido" class="tipo-escolhido" style="display:none"></div>
 
-        <label>Descrição</label>
-        <textarea id="descricao" placeholder="Ex.: buraco grande na frente do nº 120…"></textarea>
+        <div id="blocoDescricao">
+          <label>Descrição</label>
+          <textarea id="descricao" placeholder="Ex.: buraco grande na frente do nº 120…"></textarea>
+        </div>
 
         <label>Foto</label>
         <input type="file" id="foto" accept="image/*" capture="environment" />
@@ -164,9 +167,21 @@
       `).join('');
       cats.querySelectorAll('.cat').forEach(el => {
         el.onclick = () => {
-          cats.querySelectorAll('.cat').forEach(x => x.classList.remove('selected'));
+          cats.querySelectorAll('.cat').forEach(x => {
+            x.classList.remove('selected');
+            x.setAttribute('aria-pressed', 'false');
+          });
           el.classList.add('selected');
+          el.setAttribute('aria-pressed', 'true');
           categoria = el.dataset.id;
+          const nome = el.querySelector('.name')?.textContent || categoria;
+          const box = document.getElementById('tipoEscolhido');
+          box.style.display = 'block';
+          box.innerHTML = `<strong>Tipo selecionado:</strong> ${nome} — continue com a descrição e a foto abaixo.`;
+          toast('Tipo: ' + nome);
+          const desc = document.getElementById('descricao');
+          document.getElementById('blocoDescricao').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => desc.focus(), 350);
         };
       });
 
