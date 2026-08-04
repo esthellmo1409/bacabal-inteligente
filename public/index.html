@@ -34,9 +34,14 @@
       </a>
       <nav class="landing-nav" aria-label="Principal">
         <a href="/fluxo.html?cidade=bacabal">Como funciona</a>
-        <button type="button" class="nav-cidadao" id="navCidadao" aria-label="Cidadão">
-          Cidadão
-        </button>
+        <div class="nav-drop">
+          <button type="button" class="nav-cidadao" id="navCidadao" aria-expanded="false" aria-haspopup="true">
+            Cidadão
+          </button>
+          <div class="nav-drop-menu" id="navCidadaoMenu" hidden>
+            <a href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
+          </div>
+        </div>
         <a href="/mapa.html?cidade=bacabal">Mapa</a>
         <a class="nav-cta" href="/login.html?cidade=bacabal">Acessar</a>
       </nav>
@@ -196,17 +201,21 @@
 
     (function () {
       const btn = document.getElementById('navCidadao');
-      if (!btn) return;
-      let ready = false;
-      btn.addEventListener('click', () => {
-        if (!ready) {
-          ready = true;
-          btn.textContent = 'Abrir chamado';
-          btn.classList.add('is-ready');
-          btn.setAttribute('aria-label', 'Abrir chamado');
-          return;
-        }
-        location.href = '/cidadao.html?cidade=bacabal';
+      const menu = document.getElementById('navCidadaoMenu');
+      if (!btn || !menu) return;
+      const close = () => {
+        menu.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+      };
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = menu.hidden;
+        menu.hidden = !open;
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      document.addEventListener('click', close);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close();
       });
     })();
 
