@@ -177,6 +177,36 @@ a:hover { text-decoration: underline; }
 .bi-popup-acao b { color: #2f7319; }
 .bi-popup p { font-size: 0.78rem; color: var(--muted); margin: 0.35rem 0 0; line-height: 1.35; }
 
+.alerta-gabinete {
+  position: relative;
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(231,76,60,.45);
+  background: linear-gradient(135deg, rgba(231,76,60,.14), rgba(255,128,0,.1));
+  overflow: hidden;
+}
+.alerta-gabinete.alerta-urgente {
+  border-width: 2px;
+  box-shadow: 0 0 0 3px rgba(231,76,60,.18);
+}
+.alerta-gabinete-pulse { display: none; }
+.alerta-gabinete.alerta-urgente .alerta-gabinete-pulse {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: rgba(231,76,60,.12);
+  animation: alertaPulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes alertaPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.85; }
+}
+.alerta-gabinete-content { position: relative; z-index: 1; }
+.som-toggle.on { border-color: rgba(46,125,50,.4); }
+.som-toggle.off { opacity: 0.85; }
+
 .chamado-card-body {
   display: grid;
   grid-template-columns: 168px 1fr;
