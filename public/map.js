@@ -52,16 +52,16 @@ const MapBI = (() => {
     return p.fotoAntes || p.foto || p.fotoDepois || null;
   }
 
-  /** Camadas base — satélite/híbrido (tipo Google Earth) + ruas.
-   *  NÃO troca sozinho para "Ruas" no zoom: isso quebrava a experiência.
-   *  maxNativeZoom amplia o último satélite bom em vez de pedir tile cinza.
+  /** Camadas base — satélite/híbrido + ruas.
+   *  De perto: mantém satélite e reforça nomes (overlay de ruas), sem pular pra mapa “simples”.
    */
   function basemaps(map, defaultKey = 'hybrid') {
-    const SAT_NATIVE = 17;
+    const SAT_NATIVE = 18; // permite aproximar mais; tile nativo escala depois
 
     const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
-      maxZoom: 20,
+      maxZoom: 22,
+      maxNativeZoom: 20,
       subdomains: 'abcd',
     });
 
@@ -69,27 +69,34 @@ const MapBI = (() => {
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         attribution: 'Satélite &copy; Esri',
-        maxZoom: 20,
-        maxNativeZoom: SAT_NATIVE,
+        maxZoom: 22,
+        maxNativeZoom: 19,
       }
     );
 
-    const roads = L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
-      { attribution: 'Ruas &copy; Esri', maxZoom: 20, maxNativeZoom: SAT_NATIVE, opacity: 0.85 }
-    );
-
-    const labelsCarto = L.tileLayer(
+    const labelsOnly = L.tileLayer(
       'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',
       {
         attribution: '&copy; CARTO',
-        maxZoom: 20,
+        maxZoom: 22,
+        maxNativeZoom: 20,
         subdomains: 'abcd',
         pane: 'overlayPane',
+        opacity: 1,
       }
     );
 
-    const hybrid = L.layerGroup([sat, roads, labelsCarto]);
+    // Overlay claro só de perto (nomes grandes) — satélite continua embaixo
+    const streetsClose = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; CARTO',
+      maxZoom: 22,
+      maxNativeZoom: 20,
+      subdomains: 'abcd',
+      opacity: 0.72,
+      pane: 'overlayPane',
+    });
+
+    const hybrid = L.layerGroup([sat, labelsOnly]);
 
     const layers = {
       'Híbrido satélite + nomes': hybrid,
@@ -97,11 +104,36 @@ const MapBI = (() => {
       'Ruas': streets,
     };
 
-    const initial = defaultKey === 'streets' ? streets : defaultKey === 'sat' ? sat : hybrid;
+    let mode = defaultKey === 'streets' ? 'streets' : defaultKey === 'sat' ? 'sat' : 'hybrid';
+    const initial = mode === 'streets' ? streets : mode === 'sat' ? sat : hybrid;
     initial.addTo(map);
-    try { map.setMaxZoom(18); } catch (_) {}
+    try { map.setMaxZoom(21); } catch (_) {}
 
-    // Controle fechado — usuário escolhe; o mapa NÃO troca sozinho
+    map.on('baselayerchange', (e) => {
+      if (e.name === 'Ruas') mode = 'streets';
+      else if (e.name === 'Satélite') mode = 'sat';
+      else mode = 'hybrid';
+      syncCloseOverlay();
+    });
+
+    function syncCloseOverlay() {
+      const z = map.getZoom();
+      const needClearNames = mode === 'hybrid' && z >= 16;
+      if (needClearNames) {
+        if (!map.hasLayer(streetsClose)) streetsClose.addTo(map);
+        // satélite um pouco mais suave pra texto ler melhor
+        if (typeof sat.setOpacity === 'function') sat.setOpacity(0.85);
+      } else {
+        if (map.hasLayer(streetsClose)) map.removeLayer(streetsClose);
+        if (typeof sat.setOpacity === 'function') sat.setOpacity(1);
+      }
+    }
+
+    map.on('zoomend', syncCloseOverlay);
+    map.on('zoom', syncCloseOverlay);
+    // estado inicial
+    setTimeout(syncCloseOverlay, 0);
+
     L.control.layers(layers, {}, { position: 'topright', collapsed: true }).addTo(map);
 
     return { streets, sat, hybrid, layers };
@@ -113,6 +145,7 @@ const MapBI = (() => {
     const map = L.map(elId, {
       zoomControl: false,
       attributionControl: true,
+      maxZoom: 21,
     }).setView(center, zoom);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);

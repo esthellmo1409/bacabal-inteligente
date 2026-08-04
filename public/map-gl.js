@@ -47,10 +47,11 @@ const MapGL = (() => {
       bearing: opts.bearing ?? -18,
       antialias: true,
       maxPitch: 65,
+      maxZoom: 20,
+      minZoom: 10,
       attributionControl: true,
       dragRotate: true,
       pitchWithRotate: true,
-      // scrollZoom mantém o pitch — não achata o 3D
     });
 
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottomright');
