@@ -234,8 +234,8 @@
         <div class="panel stat"><div class="label">Concluídos</div><div class="value">${data.totalConcluidos || (data.concluidos || []).length}</div></div>
         <div class="panel stat"><div class="label">Km / Min</div><div class="value" style="font-size:1.35rem">${data.totalKm} · ${data.tempoEstimadoMin}</div></div>`;
 
-      // Notificação: chegou OS nova / mudou a fila
-      const chegou = lastOsCount >= 0 && (data.rota.length > lastOsCount || (key && key !== lastOsKey && data.rota.length > 0));
+      // Notificação: chegou OS nova / mudou a fila — SOM só quando aumenta a fila
+      const chegou = lastOsCount >= 0 && data.rota.length > lastOsCount;
       if (chegou) {
         const novo = recentes[0];
         const msg = novo
@@ -261,6 +261,12 @@
         document.getElementById('alertaCampoTexto').textContent =
           recentes.length + ' ordem(ns) na fila — as mais novas estão no topo com foto.';
         document.getElementById('alertaCampoAcoes').innerHTML = '';
+      } else if (!data.rota.length) {
+        const box = document.getElementById('alertaCampo');
+        if (box) {
+          box.style.display = 'none';
+          box.classList.remove('alerta-urgente');
+        }
       }
       lastOsCount = data.rota.length;
       lastOsKey = key;

@@ -120,15 +120,14 @@ function ensureDemoChamado(slug = 'bacabal') {
     }));
   } else {
     const prev = chamados[idx];
-    // Mantém status se a equipe já avançou; só restaura foto/secretaria
-    chamados[idx] = normalizeChamado({
-      ...prev,
-      ...base,
-      status: prev.status && prev.status !== 'cancelado' ? prev.status : 'novo',
-      fotoDepois: prev.fotoDepois || null,
-      historico: prev.historico || [{ em: now, status: 'novo', nota: 'Chamado demo fixo com foto' }],
-      criadoEm: prev.criadoEm || now,
-    });
+    // Não sobrescreve progresso (aprovação, foto depois, status)
+    if (!prev.foto && !prev.fotoAntes) {
+      prev.foto = fotoUrl;
+      prev.fotoAntes = fotoUrl;
+    }
+    if (!prev.secretaria) prev.secretaria = 'obras';
+    if (!prev.demoFixo) prev.demoFixo = 'buraco-foto';
+    chamados[idx] = normalizeChamado(prev);
   }
   writeTenant(slug, 'chamados.json', chamados);
 }
