@@ -16,11 +16,10 @@
       <div>
         <p class="page-kicker">Território · tempo real</p>
         <h1 class="display page-title">Mapa da cidade</h1>
-        <p class="muted page-sub">Satélite com nomes de rua · filtros · calor · rota do dia · equipes ao vivo</p>
+        <p class="muted page-sub">Ocorrências da cidade no mapa · filtre e acompanhe a situação</p>
       </div>
-      <div class="page-hero-actions">
-        <a class="btn btn-sm" href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
-        <a class="btn btn-sm btn-primary" href="/prefeito.html?cidade=bacabal">Gabinete</a>
+      <div class="page-hero-actions" id="mapHeroActions">
+        <a class="btn btn-sm btn-primary" href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
       </div>
     </header>
 
@@ -119,6 +118,21 @@
       cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Mapa', cfg);
       document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
+
+      // Botões internos só para quem está logado como gestão
+      const u = (typeof getSessionUser === 'function') ? getSessionUser() : null;
+      const actions = document.getElementById('mapHeroActions');
+      if (actions && u && ['prefeito', 'admin', 'secretaria'].includes(u.papel)) {
+        if (u.papel === 'prefeito' || u.papel === 'admin') {
+          actions.insertAdjacentHTML('beforeend',
+            `<a class="btn btn-sm" href="${cityLink('/prefeito.html')}">Gabinete</a>`);
+        }
+        if (u.papel === 'secretaria' || u.papel === 'admin') {
+          actions.insertAdjacentHTML('beforeend',
+            `<a class="btn btn-sm" href="${cityLink('/secretaria.html')}">Minha secretaria</a>`);
+        }
+      }
+
       fStatus.innerHTML = '<option value="">Status</option>' + statusOptions();
       fSec.innerHTML = '<option value="">Secretaria</option>' +
         (cfg.secretarias || []).map(s => `<option value="${s.id}">${s.nome}</option>`).join('');

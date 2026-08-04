@@ -21,7 +21,6 @@
           <span>3 · Protocolo</span>
         </div>
       </div>
-      <a class="btn btn-sm" href="/mapa.html?cidade=bacabal">Ver mapa da cidade</a>
     </div>
 
     <div id="sucesso" class="success-box" style="display:none"></div>
@@ -79,8 +78,8 @@
     </div>
 
     <div class="footer">
-      <span>Chamado roteado automaticamente para a secretaria.</span>
-      <a id="linkSec" href="/secretaria.html">Painel das secretarias</a>
+      <span>Chamado roteado automaticamente para a secretaria responsável.</span>
+      <a href="/">Voltar ao início</a>
     </div>
   </div>
 
@@ -212,7 +211,6 @@
     async function init() {
       const cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Cidadão', cfg);
-      document.getElementById('linkSec').href = cityLink('/secretaria.html');
       document.title = (cfg.produto || cfg.cidade) + ' · Cidadão';
 
       lat = cfg.lat; lng = cfg.lng;
