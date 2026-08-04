@@ -505,7 +505,20 @@ async function handleAPI(req, res, pathname, url) {
     if (!slug) return;
     const body = await readBody(req);
     const categorias = readTenant(slug, 'categorias.json', []);
-    const cat = categorias.find(c => c.id === body.categoria);
+    let cat = categorias.find(c => c.id === body.categoria);
+
+    // Se veio "outros" (ou vazio) mas o texto/foto indica buraco etc., corrige a secretaria
+    const { analisarFoto, inferCategoriaFromText } = require('./lib/avancado.js');
+    const inferred = inferCategoriaFromText(body.descricao || '') ||
+      (body.foto ? analisarFoto({ foto: body.foto, texto: body.descricao || '', categorias }) : null);
+    const inferredId = inferred?.cat || inferred?.categoria;
+    if (inferredId && (!cat || cat.id === 'outros' || cat.id !== inferredId)) {
+      if (!body.categoria || body.categoria === 'outros' || inferred?.confianca >= 55 || inferred?.score >= 0.35) {
+        const better = categorias.find(c => c.id === inferredId);
+        if (better) cat = better;
+      }
+    }
+
     if (!cat) return sendJSON(res, 400, { error: 'Categoria inválida' });
     if (!body.descricao && !body.foto) {
       return sendJSON(res, 400, { error: 'Informe descrição ou foto' });

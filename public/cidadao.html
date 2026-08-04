@@ -252,6 +252,21 @@
       const btn = document.getElementById('enviar');
       await withBusy(btn, 'Enviando chamado…', async () => {
         try {
+          // Reclassifica pelo texto/foto antes de enviar (evita cair em "Outros"/Ouvidoria)
+          try {
+            const ia = await api('/api/ia/foto', {
+              method: 'POST',
+              body: JSON.stringify({ foto: fotoData, texto: descricao }),
+            });
+            if (ia?.categoria && (!categoria || categoria === 'outros' || (ia.confianca || 0) >= 55)) {
+              categoria = ia.categoria;
+              urgencia = ia.urgencia || urgencia;
+              document.querySelectorAll('.cat').forEach(el => {
+                el.classList.toggle('selected', el.dataset.id === categoria);
+              });
+            }
+          } catch (_) {}
+
           const chamado = await api('/api/chamados', {
             method: 'POST',
             body: JSON.stringify({
