@@ -5,13 +5,14 @@
     "categoria": "buraco",
     "secretaria": "obras",
     "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Buraco na Rua 11, Centro — chamado limpo para teste. Secretaria encaminha; campo executa.",
+    "descricao": "Buraco na Rua 11, Centro — secretaria Encaminhar agora. Campo começa vazio.",
     "bairro": "Centro",
     "endereco": "Rua 11 — ponto de teste",
     "lat": -4.2886999999999995,
     "lng": -44.7937,
     "prioridade": "alta",
     "status": "novo",
+    "equipeId": null,
     "cidadao": {
       "nome": "João Barbosa",
       "telefone": "99987878787",
@@ -24,85 +25,37 @@
       {
         "tipo": "foto",
         "url": "/assets/buraco-demo-antes.jpg",
-        "em": "2026-08-04T22:07:25.881Z"
+        "em": "2026-08-04T22:11:04.316Z"
       }
     ],
     "historico": [
       {
-        "em": "2026-08-04T22:07:25.881Z",
+        "em": "2026-08-04T22:11:04.316Z",
         "status": "novo",
-        "nota": "Fila limpa — pronto para Encaminhar agora"
+        "nota": "Pronto para Encaminhar — campo zerado"
       }
     ],
-    "criadoEm": "2026-08-04T22:07:25.881Z",
-    "atualizadoEm": "2026-08-04T22:07:25.881Z",
+    "criadoEm": "2026-08-04T22:11:04.316Z",
+    "atualizadoEm": "2026-08-04T22:11:04.316Z",
     "demoFixo": "buraco-foto",
     "comentarios": [],
     "materiais": [],
     "cobrancas": []
   },
   {
-    "id": "BAC-TESTE-CAMPO-01",
-    "protocolo": "20261070",
-    "categoria": "buraco",
-    "secretaria": "obras",
-    "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Buraco na Av. Getúlio Vargas — OS já encaminhada. Equipe de campo: aceitar e executar.",
-    "bairro": "Centro",
-    "endereco": "Av. Getúlio Vargas, próximo ao nº 210",
-    "lat": -4.2877,
-    "lng": -44.7947,
-    "prioridade": "alta",
-    "status": "encaminhado",
-    "equipeId": "EQ-OBR-01",
-    "cidadao": {
-      "nome": "Maria Souza",
-      "telefone": "99981112233",
-      "email": ""
-    },
-    "foto": "/assets/buraco-demo-antes.jpg",
-    "fotoAntes": "/assets/buraco-demo-antes.jpg",
-    "fotoDepois": null,
-    "anexos": [
-      {
-        "tipo": "foto",
-        "url": "/assets/buraco-demo-antes.jpg",
-        "em": "2026-08-04T22:07:25.881Z"
-      }
-    ],
-    "historico": [
-      {
-        "em": "2026-08-04T22:07:25.881Z",
-        "status": "novo",
-        "nota": "Aberto pelo cidadão"
-      },
-      {
-        "em": "2026-08-04T22:07:25.881Z",
-        "status": "encaminhado",
-        "nota": "Encaminhado à equipe de campo (fila limpa para teste)",
-        "por": "Equipe Obras"
-      }
-    ],
-    "criadoEm": "2026-08-04T22:07:25.881Z",
-    "atualizadoEm": "2026-08-04T22:07:25.881Z",
-    "comentarios": [],
-    "materiais": [],
-    "cobrancas": []
-  },
-  {
-    "id": "BAC-TESTE-CAMPO-02",
+    "id": "BAC-TESTE-02",
     "protocolo": "20261071",
     "categoria": "buraco",
     "secretaria": "obras",
     "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Buraco na Rua das Flores, São José — segunda OS de teste para a equipe de campo.",
+    "descricao": "Buraco na Rua das Flores, São José — segundo chamado para Encaminhar.",
     "bairro": "São José",
     "endereco": "Rua das Flores, s/n",
     "lat": -4.2966999999999995,
     "lng": -44.7877,
     "prioridade": "media",
-    "status": "encaminhado",
-    "equipeId": "EQ-OBR-01",
+    "status": "novo",
+    "equipeId": null,
     "cidadao": {
       "nome": "Carlos Lima",
       "telefone": "99984445566",
@@ -115,157 +68,20 @@
       {
         "tipo": "foto",
         "url": "/assets/buraco-demo-antes.jpg",
-        "em": "2026-08-04T22:07:25.881Z"
+        "em": "2026-08-04T22:11:04.316Z"
       }
     ],
     "historico": [
       {
-        "em": "2026-08-04T22:07:25.881Z",
+        "em": "2026-08-04T22:11:04.316Z",
         "status": "novo",
-        "nota": "Aberto pelo cidadão"
-      },
-      {
-        "em": "2026-08-04T22:07:25.881Z",
-        "status": "encaminhado",
-        "nota": "Encaminhado à equipe de campo (fila limpa para teste)",
-        "por": "Equipe Obras"
+        "nota": "Pronto para Encaminhar — campo zerado"
       }
     ],
-    "criadoEm": "2026-08-04T22:07:25.881Z",
-    "atualizadoEm": "2026-08-04T22:07:25.881Z",
+    "criadoEm": "2026-08-04T22:11:04.316Z",
+    "atualizadoEm": "2026-08-04T22:11:04.316Z",
     "comentarios": [],
     "materiais": [],
     "cobrancas": []
-  },
-  {
-    "id": "BAC-1058",
-    "protocolo": "20261058",
-    "status": "novo",
-    "prioridade": "urgente",
-    "foto": null,
-    "anexos": [],
-    "comentarios": [],
-    "historico": [
-      {
-        "em": "2026-08-04T13:52:29.353Z",
-        "status": "novo",
-        "nota": "Reclamação de atendimento"
-      }
-    ],
-    "criadoEm": "2026-08-04T13:52:29.353Z",
-    "atualizadoEm": "2026-08-04T13:52:29.353Z",
-    "cidadao": {
-      "nome": "Cidadão",
-      "telefone": "(99) 98000-0000"
-    },
-    "lat": -4.2917,
-    "lng": -44.7917,
-    "categoria": "demora_atendimento",
-    "secretaria": "saude",
-    "titulo": "Demora no atendimento",
-    "descricao": "Fila longa na recepção do Hospital Municipal — espera acima de 2h.",
-    "bairro": "Centro",
-    "eixo": "saude",
-    "unidadeId": "US-HOSP",
-    "nota": "Reclamação de atendimento"
-  },
-  {
-    "id": "BAC-1059",
-    "protocolo": "20261059",
-    "status": "novo",
-    "prioridade": "alta",
-    "foto": null,
-    "anexos": [],
-    "comentarios": [],
-    "historico": [
-      {
-        "em": "2026-08-04T13:52:29.353Z",
-        "status": "novo",
-        "nota": "Registro"
-      }
-    ],
-    "criadoEm": "2026-08-04T13:52:29.353Z",
-    "atualizadoEm": "2026-08-04T13:52:29.353Z",
-    "cidadao": {
-      "nome": "Cidadão",
-      "telefone": "(99) 98000-0000"
-    },
-    "lat": -4.2917,
-    "lng": -44.7917,
-    "categoria": "avaliacao_atendimento",
-    "secretaria": "saude",
-    "titulo": "Avaliação do atendimento",
-    "descricao": "Cidadão avaliou atendimento da UBS Centro com nota 2.",
-    "bairro": "Centro",
-    "eixo": "saude",
-    "unidadeId": "US-UBS1",
-    "avaliacao": {
-      "nota": 2,
-      "comentario": "Demorou muito",
-      "em": "2026-08-04T13:52:29.353Z"
-    }
-  },
-  {
-    "id": "BAC-1060",
-    "protocolo": "20261060",
-    "status": "novo",
-    "prioridade": "alta",
-    "foto": null,
-    "anexos": [],
-    "comentarios": [],
-    "historico": [
-      {
-        "em": "2026-08-04T13:52:29.353Z",
-        "status": "novo",
-        "nota": "Pendência de evento"
-      }
-    ],
-    "criadoEm": "2026-08-04T13:52:29.353Z",
-    "atualizadoEm": "2026-08-04T13:52:29.353Z",
-    "cidadao": {
-      "nome": "Cidadão",
-      "telefone": "(99) 98000-0000"
-    },
-    "lat": -4.2917,
-    "lng": -44.7917,
-    "categoria": "estrutura_evento",
-    "secretaria": "eventos",
-    "titulo": "Estrutura do evento",
-    "descricao": "Palco e tendas incompletos para a Feira Livre — risco de atraso.",
-    "bairro": "Centro",
-    "eixo": "eventos",
-    "eventoId": "EVT-01",
-    "nota": "Pendência de evento"
-  },
-  {
-    "id": "BAC-1061",
-    "protocolo": "20261061",
-    "status": "novo",
-    "prioridade": "urgente",
-    "foto": null,
-    "anexos": [],
-    "comentarios": [],
-    "historico": [
-      {
-        "em": "2026-08-04T13:52:29.353Z",
-        "status": "novo",
-        "nota": "Registro"
-      }
-    ],
-    "criadoEm": "2026-08-04T13:52:29.353Z",
-    "atualizadoEm": "2026-08-04T13:52:29.353Z",
-    "cidadao": {
-      "nome": "Cidadão",
-      "telefone": "(99) 98000-0000"
-    },
-    "lat": -4.2917,
-    "lng": -44.7917,
-    "categoria": "seguranca_evento",
-    "secretaria": "eventos",
-    "titulo": "Segurança no evento",
-    "descricao": "Solicitar reforço de segurança no Show da Praça.",
-    "bairro": "Centro",
-    "eixo": "eventos",
-    "eventoId": "EVT-02"
   }
 ]
