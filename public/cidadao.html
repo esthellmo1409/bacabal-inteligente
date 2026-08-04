@@ -250,56 +250,55 @@
       if (!descricao && !fotoData) return toast('Informe descrição ou foto');
 
       const btn = document.getElementById('enviar');
-      btn.disabled = true;
-      try {
-        const chamado = await api('/api/chamados', {
-          method: 'POST',
-          body: JSON.stringify({
-            categoria,
-            descricao,
-            bairro: document.getElementById('bairro').value,
-            nome: document.getElementById('nome').value.trim() || 'Cidadão',
-            telefone: document.getElementById('telefone').value.trim(),
-            lat, lng,
-            foto: fotoData,
-            urgencia,
-            prioridade: urgencia === 'alta' ? 'alta' : urgencia === 'baixa' ? 'baixa' : 'media',
-          }),
-        });
+      await withBusy(btn, 'Enviando chamado…', async () => {
+        try {
+          const chamado = await api('/api/chamados', {
+            method: 'POST',
+            body: JSON.stringify({
+              categoria,
+              descricao,
+              bairro: document.getElementById('bairro').value,
+              nome: document.getElementById('nome').value.trim() || 'Cidadão',
+              telefone: document.getElementById('telefone').value.trim(),
+              lat, lng,
+              foto: fotoData,
+              urgencia,
+              prioridade: urgencia === 'alta' ? 'alta' : urgencia === 'baixa' ? 'baixa' : 'media',
+            }),
+          });
 
-        saveMeuProtocolo(chamado.protocolo);
-        renderMeus();
+          saveMeuProtocolo(chamado.protocolo);
+          renderMeus();
 
-        const ok = document.getElementById('sucesso');
-        ok.style.display = 'block';
-        ok.innerHTML = `
-          <strong>Chamado aberto</strong>
-          <div class="protocolo-big">${chamado.protocolo}</div>
-          <p class="muted" style="margin:0.35rem 0 0.75rem">Guarde este número. A secretaria já recebeu na fila.</p>
-          <div class="actions">
-            <button class="btn btn-sm btn-primary" type="button" onclick="copyText('${chamado.protocolo}')">Copiar protocolo</button>
-            <a class="btn btn-sm" href="${cityLink('/cidadao.html')}&protocolo=${chamado.protocolo}">Link de acompanhamento</a>
-          </div>
-        `;
-        ok.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          const ok = document.getElementById('sucesso');
+          ok.style.display = 'block';
+          ok.innerHTML = `
+            <strong>Chamado aberto</strong>
+            <div class="protocolo-big">${chamado.protocolo}</div>
+            <p class="muted" style="margin:0.35rem 0 0.75rem">Guarde este número. A secretaria já recebeu na fila.</p>
+            <div class="actions">
+              <button class="btn btn-sm btn-primary" type="button" onclick="copyText('${chamado.protocolo}')">Copiar protocolo</button>
+              <a class="btn btn-sm" href="${cityLink('/cidadao.html')}&protocolo=${chamado.protocolo}">Link de acompanhamento</a>
+            </div>
+          `;
+          ok.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-        document.getElementById('protocolo').value = chamado.protocolo;
-        document.getElementById('descricao').value = '';
-        document.getElementById('foto').value = '';
-        fotoData = null;
-        urgencia = null;
-        document.getElementById('preview').classList.remove('show');
-        document.getElementById('iaBox').textContent = '';
-        document.querySelectorAll('.cat').forEach(x => x.classList.remove('selected'));
-        categoria = null;
+          document.getElementById('protocolo').value = chamado.protocolo;
+          document.getElementById('descricao').value = '';
+          document.getElementById('foto').value = '';
+          fotoData = null;
+          urgencia = null;
+          document.getElementById('preview').classList.remove('show');
+          document.getElementById('iaBox').textContent = '';
+          document.querySelectorAll('.cat').forEach(x => x.classList.remove('selected'));
+          categoria = null;
 
-        renderChamado(chamado);
-        toast('Protocolo ' + chamado.protocolo);
-      } catch (e) {
-        toast(e.message);
-      } finally {
-        btn.disabled = false;
-      }
+          renderChamado(chamado);
+          toast('Protocolo ' + chamado.protocolo);
+        } catch (e) {
+          toast(e.message);
+        }
+      });
     };
 
     document.getElementById('buscar').onclick = async () => {

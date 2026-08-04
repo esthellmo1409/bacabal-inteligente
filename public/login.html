@@ -71,29 +71,32 @@
     };
 
     document.getElementById('entrar').onclick = async () => {
-      try {
-        const r = await api('/api/login', {
-          method: 'POST',
-          body: JSON.stringify({
-            usuario: document.getElementById('usuario').value.trim(),
-            senha: document.getElementById('senha').value,
-            cidade: 'bacabal',
-          }),
-        });
-        localStorage.setItem('bi_token', r.token);
-        if (typeof setSession === 'function') setSession(r.token, r.user);
-        else localStorage.setItem('bi_user', JSON.stringify(r.user));
-        toast('Bem-vindo, ' + r.user.nome);
-        if (r.user.papel === 'prefeito' || r.user.papel === 'admin') {
-          location.href = '/prefeito.html?cidade=bacabal';
-        } else if (r.user.papel === 'campo') {
-          location.href = '/equipes.html?cidade=bacabal';
-        } else {
-          location.href = '/secretaria.html?cidade=bacabal';
+      const btn = document.getElementById('entrar');
+      await withBusy(btn, 'Entrando…', async () => {
+        try {
+          const r = await api('/api/login', {
+            method: 'POST',
+            body: JSON.stringify({
+              usuario: document.getElementById('usuario').value.trim(),
+              senha: document.getElementById('senha').value,
+              cidade: 'bacabal',
+            }),
+          });
+          localStorage.setItem('bi_token', r.token);
+          if (typeof setSession === 'function') setSession(r.token, r.user);
+          else localStorage.setItem('bi_user', JSON.stringify(r.user));
+          toast('Bem-vindo, ' + r.user.nome);
+          if (r.user.papel === 'prefeito' || r.user.papel === 'admin') {
+            location.href = '/prefeito.html?cidade=bacabal';
+          } else if (r.user.papel === 'campo') {
+            location.href = '/equipes.html?cidade=bacabal';
+          } else {
+            location.href = '/secretaria.html?cidade=bacabal';
+          }
+        } catch (e) {
+          toast(e.message);
         }
-      } catch (e) {
-        toast(e.message);
-      }
+      });
     };
   </script>
 </body>

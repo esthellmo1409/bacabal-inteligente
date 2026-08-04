@@ -47,6 +47,27 @@ function toast(msg) {
   setTimeout(() => el.remove(), 3500);
 }
 
+/** Evita botão sumir: mostra "Enviando…" e mantém cor até terminar. */
+async function withBusy(btn, busyLabel, fn) {
+  if (!btn) return fn();
+  if (btn.dataset.busy === '1') return;
+  const original = btn.textContent;
+  btn.dataset.busy = '1';
+  btn.disabled = true;
+  btn.classList.add('btn-busy');
+  btn.setAttribute('aria-busy', 'true');
+  btn.textContent = busyLabel || 'Aguarde…';
+  try {
+    return await fn();
+  } finally {
+    btn.dataset.busy = '0';
+    btn.disabled = false;
+    btn.classList.remove('btn-busy');
+    btn.removeAttribute('aria-busy');
+    btn.textContent = original;
+  }
+}
+
 /** Reduz foto do celular para gravar no servidor (base64 leve). */
 function compressImageDataUrl(dataUrl, maxW = 1280, quality = 0.72) {
   return new Promise((resolve) => {

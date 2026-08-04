@@ -49,16 +49,19 @@
     }
 
     document.getElementById('loginBtn').onclick = async () => {
-      try {
-        const r = await api('/api/login', {
-          method: 'POST',
-          body: JSON.stringify({ usuario: usuario.value.trim(), senha: senha.value, cidade: getCidade() }),
-        });
-        localStorage.setItem('bi_token', r.token);
-        if (typeof setSession === 'function') setSession(r.token, r.user);
-        user = r.user;
-        showApp();
-      } catch (e) { toast(e.message); }
+      const btn = document.getElementById('loginBtn');
+      await withBusy(btn, 'Entrando…', async () => {
+        try {
+          const r = await api('/api/login', {
+            method: 'POST',
+            body: JSON.stringify({ usuario: usuario.value.trim(), senha: senha.value, cidade: getCidade() }),
+          });
+          localStorage.setItem('bi_token', r.token);
+          if (typeof setSession === 'function') setSession(r.token, r.user);
+          user = r.user;
+          showApp();
+        } catch (e) { toast(e.message); }
+      });
     };
 
     async function showApp() {

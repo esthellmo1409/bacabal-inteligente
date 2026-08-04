@@ -554,16 +554,42 @@ h3 {
   box-shadow: 0 1px 2px rgba(33, 99, 232,.06);
 }
 .btn:hover { background: var(--royal-soft); transform: translateY(-1px); text-decoration: none; }
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+  filter: brightness(0.96);
+}
 .btn-primary {
   background: linear-gradient(180deg, var(--royal-mid), var(--royal));
   color: #fff;
   border-color: transparent;
 }
 .btn-primary:hover { filter: brightness(1.06); color: #fff; }
+.btn-primary:active { filter: brightness(0.92); color: #fff; }
 .btn-warn { background: #FFF7E8; border-color: #F0D9A8; color: #8A5A00; }
 .btn-danger { background: #FDECEC; border-color: #F0C2C2; color: #8B1E1E; }
 .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
-.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.btn:disabled {
+  opacity: 1;
+  cursor: wait;
+  transform: none;
+  filter: none;
+}
+.btn.btn-busy,
+.btn:disabled.btn-busy {
+  opacity: 1;
+  cursor: wait;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
+  animation: btnPulse 1.1s ease-in-out infinite;
+}
+.btn-primary.btn-busy,
+.btn-primary:disabled.btn-busy {
+  background: linear-gradient(180deg, var(--royal-mid), var(--royal));
+  color: #fff;
+}
+@keyframes btnPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.08); }
+}
 
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
