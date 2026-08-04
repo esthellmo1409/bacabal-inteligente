@@ -9,7 +9,9 @@ const PORT = process.env.PORT || 4000;
 const DATA_DIR = fs.existsSync('/app/data') ? '/app/data' : path.join(__dirname, 'data');
 const TENANTS_DIR = path.join(DATA_DIR, 'tenants');
 const PUBLIC_DIR = path.join(__dirname, 'public');
-const SESSIONS = new Map();
+const SESSIONS = new Map(); // legado em memória
+const SESSION_SECRET = process.env.SESSION_SECRET || 'bacabal-inteligente-demo-secret-v1';
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 if (!fs.existsSync(TENANTS_DIR)) fs.mkdirSync(TENANTS_DIR, { recursive: true });
@@ -187,10 +189,63 @@ function getToken(req) {
   return h.startsWith('Bearer ') ? h.slice(7) : null;
 }
 
+function signSession(session) {
+  const payload = {
+    id: session.id,
+    nome: session.nome,
+    papel: session.papel,
+    secretaria: session.secretaria || null,
+    equipeId: session.equipeId || null,
+    perfil: session.perfil || session.papel,
+    cidade: session.cidade || null,
+    exp: Date.now() + SESSION_TTL_MS,
+  };
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig = crypto.createHmac('sha256', SESSION_SECRET).update(body).digest('base64url');
+  return `v1.${body}.${sig}`;
+}
+
+function verifySessionToken(token) {
+  if (!token || typeof token !== 'string') return null;
+  // Token assinado (sobrevive a redeploy)
+  if (token.startsWith('v1.')) {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [, body, sig] = parts;
+    const expected = crypto.createHmac('sha256', SESSION_SECRET).update(body).digest('base64url');
+    const a = Buffer.from(sig);
+    const b = Buffer.from(expected);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+    try {
+      const data = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
+      if (!data || !data.exp || data.exp < Date.now()) return null;
+      return {
+        id: data.id,
+        nome: data.nome,
+        papel: data.papel,
+        secretaria: data.secretaria || null,
+        equipeId: data.equipeId || null,
+        perfil: data.perfil || data.papel,
+        cidade: data.cidade || null,
+      };
+    } catch {
+      return null;
+    }
+  }
+  // Legado em memória
+  if (SESSIONS.has(token)) return SESSIONS.get(token);
+  return null;
+}
+
+function createSession(session) {
+  const token = signSession(session);
+  SESSIONS.set(token, session); // opcional p/ debug
+  return token;
+}
+
 function currentUser(req) {
   const token = getToken(req);
-  if (!token || !SESSIONS.has(token)) return null;
-  return SESSIONS.get(token);
+  return verifySessionToken(token);
 }
 
 function resolveSlug(req, url) {
@@ -427,9 +482,8 @@ async function handleAPI(req, res, pathname, url) {
       const p = platform();
       const u = (p.usuarios || []).find(x => x.id === body.usuario && x.senha === body.senha);
       if (u) {
-        const token = crypto.randomBytes(24).toString('hex');
         const session = { id: u.id, nome: u.nome, papel: 'platform', cidade: null };
-        SESSIONS.set(token, session);
+        const token = createSession(session);
         return sendJSON(res, 200, { token, user: session });
       }
       if (body.plataforma) return sendJSON(res, 401, { error: 'Credenciais inválidas' });
@@ -443,7 +497,6 @@ async function handleAPI(req, res, pathname, url) {
     if (!u) return sendJSON(res, 401, { error: 'Credenciais inválidas' });
     if (u.ativo === false) return sendJSON(res, 403, { error: 'Acesso desativado. Fale com o administrador.' });
 
-    const token = crypto.randomBytes(24).toString('hex');
     const session = {
       id: u.id,
       nome: u.nome,
@@ -453,7 +506,7 @@ async function handleAPI(req, res, pathname, url) {
       perfil: u.perfil || u.papel,
       cidade,
     };
-    SESSIONS.set(token, session);
+    const token = createSession(session);
     return sendJSON(res, 200, { token, user: session });
   }
 
