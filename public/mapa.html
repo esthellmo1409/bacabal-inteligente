@@ -5,8 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mapa da cidade · Bacabal Conecta</title>
   <link rel="stylesheet" href="/styles.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <style>
+    .map-mode-bar {
+      display: flex; gap: 0.35rem; flex-wrap: wrap;
+      position: absolute; top: 12px; left: 12px; z-index: 5;
+    }
+    .map-mode-bar button {
+      border: 0; border-radius: 999px; padding: 0.45rem 0.85rem;
+      font: 700 0.75rem Manrope, system-ui, sans-serif;
+      background: rgba(255,255,255,.92); color: #1a1a1a;
+      box-shadow: 0 6px 20px rgba(0,0,0,.18); cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+    .map-mode-bar button.on {
+      background: linear-gradient(135deg, #ff8000, #2f8a28); color: #fff;
+    }
+    .map-shell-gl { position: relative; }
+    .map-shell-gl #map {
+      width: 100%;
+      height: calc(100vh - 220px);
+      min-height: 560px;
+      border: 0;
+      border-radius: 0;
+    }
+    .gl-marker {
+      width: 18px; height: 18px; border: 0; padding: 0;
+      background: transparent; cursor: pointer;
+    }
+    .gl-marker span {
+      display: block; width: 14px; height: 14px; margin: 2px;
+      border-radius: 50%; background: var(--c, #f07800);
+      border: 2.5px solid #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+    .gl-marker-urgent span {
+      width: 16px; height: 16px; margin: 1px;
+      animation: biPulse 1.5s ease-out infinite;
+    }
+    .maplibregl-popup-content {
+      border-radius: 14px; padding: 0; overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0,0,0,.22);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+    .maplibregl-popup-content .bi-popup { padding: 0.75rem; }
+    .maplibregl-ctrl-group { border-radius: 12px !important; overflow: hidden; }
+  </style>
 </head>
 <body class="ops-body">
   <div class="wrap-wide">
@@ -14,9 +59,9 @@
 
     <header class="page-hero">
       <div>
-        <p class="page-kicker">Território · tempo real</p>
+        <p class="page-kicker">Território · mapa premium</p>
         <h1 class="display page-title">Mapa da cidade</h1>
-        <p class="muted page-sub">Satélite estilo Google Earth · ruas · híbrido com nomes</p>
+        <p class="muted page-sub">Mapa vetorial 3D (tipo Google Maps) · satélite · zoom suave sem tela cinza</p>
       </div>
       <div class="page-hero-actions" id="mapHeroActions">
         <a class="btn btn-sm btn-primary" href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
@@ -47,11 +92,6 @@
             <option value="alta">Alta</option>
             <option value="urgente">Urgente</option>
           </select>
-          <div class="map-ops-toggles">
-            <label class="chip-toggle"><input type="checkbox" id="heat" /> Calor</label>
-            <label class="chip-toggle"><input type="checkbox" id="rota" /> Rota</label>
-            <label class="chip-toggle"><input type="checkbox" id="live" checked /> Equipes</label>
-          </div>
           <div class="cta-row" style="margin-top:0.35rem">
             <button class="btn btn-sm btn-primary" id="aplicar" type="button">Aplicar</button>
             <button class="btn btn-sm" id="limpar" type="button">Limpar</button>
@@ -62,21 +102,26 @@
       </aside>
 
       <div class="map-ops-main">
-        <div class="map-shell map-shell-tall">
-          <div id="map" class="map"></div>
+        <div class="map-shell map-shell-gl">
+          <div class="map-mode-bar" id="modeBar">
+            <button type="button" class="on" data-mode="3d">Ruas 3D</button>
+            <button type="button" data-mode="hybrid">Híbrido</button>
+            <button type="button" data-mode="sat">Satélite</button>
+          </div>
+          <div id="map"></div>
           <div id="mapLegend"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <script src="/app.js"></script>
   <script src="/map.js"></script>
+  <script src="/map-gl.js"></script>
   <script>
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
-    let map, markers, heatLayer, routeLine, liveLayer, cfg, allList = [], selectedId = null;
+    let state, cfg, allList = [], selectedId = null, filtered = [];
 
     function tempoRel(iso) {
       if (!iso) return '';
@@ -88,7 +133,7 @@
     }
 
     function cardHtml(c) {
-      const foto = MapBI.fotoUrl(c);
+      const foto = MapGL.fotoUrl(c);
       const active = selectedId === c.id ? ' is-active' : '';
       return `
         <button type="button" class="map-card${active}" data-id="${c.id}" data-lat="${c.lat}" data-lng="${c.lng}">
@@ -114,12 +159,21 @@
       kUrg.textContent = urg;
     }
 
+    function bindList() {
+      lista.querySelectorAll('.map-card').forEach(btn => {
+        btn.onclick = () => {
+          selectedId = btn.dataset.id;
+          lista.querySelectorAll('.map-card').forEach(el => el.classList.toggle('is-active', el === btn));
+          MapGL.focusPoint(state, selectedId);
+        };
+      });
+    }
+
     async function boot() {
       cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Mapa', cfg);
       document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
 
-      // Botões internos só para quem está logado como gestão
       const u = (typeof getSessionUser === 'function') ? getSessionUser() : null;
       const actions = document.getElementById('mapHeroActions');
       if (actions && u && ['prefeito', 'admin', 'secretaria'].includes(u.papel)) {
@@ -139,15 +193,33 @@
       fBai.innerHTML = '<option value="">Bairro</option>' +
         (cfg.bairros || []).map(b => `<option>${b}</option>`).join('');
 
-      map = L.map('map', { zoomControl: false }).setView([cfg.lat, cfg.lng], 14);
-      L.control.zoom({ position: 'bottomright' }).addTo(map);
-      MapBI.basemaps(map, 'hybrid');
-      markers = L.layerGroup().addTo(map);
-      liveLayer = L.layerGroup().addTo(map);
+      state = MapGL.create('map', {
+        center: [cfg.lng, cfg.lat],
+        zoom: 13.6,
+        pitch: 48,
+        bearing: -18,
+        onSelect: (p) => {
+          selectedId = p.id;
+          lista.querySelectorAll('.map-card').forEach(el => {
+            el.classList.toggle('is-active', el.dataset.id === p.id);
+            if (el.dataset.id === p.id) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          });
+        },
+      });
 
-      await apply();
-      setInterval(() => { if (live.checked) loadLive().catch(() => {}); }, 15000);
-      setTimeout(() => map.invalidateSize(), 200);
+      state.map.on('load', () => {
+        MapGL.setMode(state, '3d');
+        apply().catch(e => toast(e.message));
+      });
+
+      document.querySelectorAll('#modeBar button').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('#modeBar button').forEach(b => b.classList.toggle('on', b === btn));
+          MapGL.setMode(state, btn.dataset.mode);
+        };
+      });
+
+      setTimeout(() => state.map.resize(), 250);
     }
 
     async function apply() {
@@ -159,7 +231,7 @@
       allList = await api('/api/chamados?' + q.toString());
       const pts = allList.filter(c => c.lat && c.lng);
       const query = (fBusca.value || '').trim().toLowerCase();
-      const filtered = query
+      filtered = query
         ? pts.filter(c => [
             c.protocolo, c.titulo, c.categoria, c.bairro, c.descricao, c.secretaria, c.status,
           ].join(' ').toLowerCase().includes(query))
@@ -172,94 +244,21 @@
       lista.innerHTML = filtered.length
         ? filtered.slice(0, 40).map(cardHtml).join('')
         : '<p class="muted" style="padding:0.75rem">Nenhuma ocorrência com esses filtros.</p>';
+      bindList();
 
-      lista.querySelectorAll('.map-card').forEach(btn => {
-        btn.onclick = () => {
-          selectedId = btn.dataset.id;
-          lista.querySelectorAll('.map-card').forEach(el => el.classList.toggle('is-active', el === btn));
-          const lat = Number(btn.dataset.lat);
-          const lng = Number(btn.dataset.lng);
-          map.setView([lat, lng], 17, { animate: true });
-          markers.eachLayer(layer => {
-            if (layer.getPopup && layer.__cid === selectedId) layer.openPopup();
-          });
-        };
-      });
-
-      markers.clearLayers();
-      if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
-      if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
-
-      if (heat.checked && window.L && L.heatLayer) {
-        heatLayer = L.heatLayer(
-          filtered.map(c => [c.lat, c.lng, c.prioridade === 'urgente' ? 1 : c.prioridade === 'alta' ? 0.7 : 0.45]),
-          { radius: 32, blur: 22, maxZoom: 17 }
-        ).addTo(map);
-      } else {
-        filtered.forEach(c => {
-          const color = MapBI.STATUS_COLOR[c.status] || '#f07800';
-          const urgent = c.prioridade === 'urgente' || c.prioridade === 'alta';
-          const m = L.circleMarker([c.lat, c.lng], {
-            radius: urgent ? 10 : 7,
-            color: '#fff',
-            weight: 2,
-            fillColor: color,
-            fillOpacity: 0.92,
-          }).bindPopup(MapBI.popupHtml(c), { maxWidth: 300, className: 'bi-popup-wrap' });
-          m.__cid = c.id;
-          m.on('click', () => {
-            selectedId = c.id;
-            lista.querySelectorAll('.map-card').forEach(el => {
-              el.classList.toggle('is-active', el.dataset.id === c.id);
-              if (el.dataset.id === c.id) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-            });
-          });
-          m.addTo(markers);
-        });
-      }
-
-      if (filtered.length) {
-        try {
-          map.fitBounds(filtered.map(c => [c.lat, c.lng]), { padding: [40, 40], maxZoom: 15 });
-        } catch (_) {}
-      }
-
-      if (rota.checked) {
-        const r = await api('/api/rota?lat=' + cfg.lat + '&lng=' + cfg.lng + (fSec.value ? '&secretaria=' + fSec.value : ''));
-        const latlngs = [[cfg.lat, cfg.lng], ...(r.rota || []).map(p => [p.lat, p.lng])];
-        if (latlngs.length > 1) {
-          routeLine = L.polyline(latlngs, { color: '#2f8a28', weight: 4, opacity: 0.85 }).addTo(map);
-        }
-      }
-      await loadLive();
-    }
-
-    async function loadLive() {
-      if (!live.checked) {
-        liveLayer.clearLayers();
-        return;
-      }
-      liveLayer.clearLayers();
-      const track = await api('/api/rastreamento');
-      (track || []).forEach(t => {
-        L.circleMarker([t.lat, t.lng], {
-          radius: 9, color: '#fff', weight: 2, fillColor: '#111', fillOpacity: 0.95,
-        }).bindPopup(`<strong>Equipe ${t.equipeId}</strong><br>${fmtDate(t.atualizadoEm)}`).addTo(liveLayer);
-      });
+      const ready = () => MapGL.setPoints(state, filtered, { fit: true });
+      if (state.map.isStyleLoaded()) ready();
+      else state.map.once('load', ready);
     }
 
     document.getElementById('aplicar').onclick = () => apply().catch(e => toast(e.message));
     document.getElementById('limpar').onclick = () => {
       fBusca.value = ''; fStatus.value = ''; fSec.value = ''; fBai.value = ''; fPri.value = '';
-      heat.checked = false; rota.checked = false;
       apply().catch(e => toast(e.message));
     };
     document.getElementById('fBuscaBtn').onclick = () => apply().catch(e => toast(e.message));
     document.getElementById('fBusca').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') { e.preventDefault(); apply().catch(err => toast(err.message)); }
-    });
-    ['heat', 'rota', 'live'].forEach(id => {
-      document.getElementById(id).addEventListener('change', () => apply().catch(e => toast(e.message)));
     });
 
     boot().catch(e => toast(e.message));
