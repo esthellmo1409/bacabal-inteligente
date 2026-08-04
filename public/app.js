@@ -66,6 +66,29 @@ function badge(status) {
   return `<span class="badge badge-${s}">${statusLabel(status)}</span>`;
 }
 
+/** Antes (cidadão) x Depois (campo) — visível para cidadão, secretaria e gabinete */
+function antesDepoisHtml(c) {
+  const antes = c.fotoAntes || c.foto;
+  const depois = c.fotoDepois;
+  if (!antes && !depois) return '';
+  return `
+    <div class="antes-depois">
+      <div class="antes-depois-item">
+        <div class="antes-depois-label">Antes</div>
+        ${antes
+          ? `<img class="preview show" src="${antes}" alt="Foto antes" />`
+          : `<div class="antes-depois-empty">Sem foto</div>`}
+      </div>
+      <div class="antes-depois-item">
+        <div class="antes-depois-label">Depois</div>
+        ${depois
+          ? `<img class="preview show" src="${depois}" alt="Foto depois" />`
+          : `<div class="antes-depois-empty">${c.status === 'concluido' ? 'Aguardando registro' : 'Equipe ainda não enviou'}</div>`}
+      </div>
+    </div>
+  `;
+}
+
 function prioridadeLabel(p) {
   return ({ baixa: 'Baixa', media: 'Média', alta: 'Alta' })[p] || p || 'Média';
 }

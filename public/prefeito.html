@@ -318,6 +318,7 @@
           </div>
           <div class="meta">${c.secretariaNome} · ${c.bairro} · ${prioridadeLabel(c.prioridade)} · ${c.horasAberto}h
             ${c.eventoId ? ' · evento ' + c.eventoId : ''} ${c.unidadeId ? ' · ' + c.unidadeId : ''}</div>
+          ${antesDepoisHtml(c)}
           <div class="actions">
             <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
             <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>

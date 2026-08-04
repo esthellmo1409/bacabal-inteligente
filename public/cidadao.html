@@ -118,7 +118,7 @@
             · ${fmtDate(c.criadoEm)}
           </div>
           <p class="muted">${c.descricao}</p>
-          ${c.foto ? `<img class="preview show" src="${c.foto}" alt="Foto do chamado" style="max-height:140px;margin-top:0.5rem" />` : ''}
+          ${antesDepoisHtml(c)}
           <div class="actions">
             <button class="btn btn-sm" type="button" onclick="copyText('${c.protocolo}')">Copiar protocolo</button>
           </div>

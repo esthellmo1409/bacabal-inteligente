@@ -542,6 +542,8 @@ async function handleAPI(req, res, pathname, url) {
       prioridade,
       cidadao: { nome: body.nome || 'Cidadão', telefone: body.telefone || '', email: body.email || '' },
       foto: body.foto || null,
+      fotoAntes: body.foto || null,
+      fotoDepois: null,
       anexos: body.foto ? [{ tipo: 'foto', url: body.foto, em: now }] : [],
       posteId: body.posteId || null,
       historico: [{
