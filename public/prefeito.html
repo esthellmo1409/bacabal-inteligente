@@ -19,6 +19,41 @@
       background: linear-gradient(135deg,#FF8000,#398A21); color:#fff; border-color:transparent;
     }
     .eixo-tab small { display:block; font-weight:600; opacity:.85; font-size:0.68rem; margin-top:0.1rem; }
+    .saude-alert-banner {
+      display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;
+      padding:0.75rem 1rem; border-radius:12px; margin-bottom:0.85rem;
+      background:#fff5f5; border:1px solid #fecaca; color:#7f1d1d; font-size:0.88rem; font-weight:600;
+    }
+    .visita-backdrop {
+      position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:9998;
+      display:flex; align-items:center; justify-content:center; padding:1rem;
+    }
+    .visita-modal {
+      background:#fff; border-radius:16px; width:min(520px,100%); max-height:90vh; overflow:auto;
+      box-shadow:0 20px 50px rgba(0,0,0,.2); padding:1.25rem 1.35rem 1.35rem;
+    }
+    .visita-modal h3 { margin:0 0 0.35rem; font-size:1.15rem; }
+    .visita-checks { display:grid; gap:0.55rem; margin:1rem 0; }
+    .visita-check {
+      display:flex; justify-content:space-between; align-items:center; gap:0.75rem;
+      padding:0.65rem 0.8rem; border:1px solid var(--line); border-radius:10px; background:#fafafa;
+    }
+    .visita-check strong { font-size:0.88rem; }
+    .visita-check span { font-size:0.72rem; color:var(--muted); display:block; margin-top:0.1rem; }
+    .visita-toggle { display:flex; gap:0.35rem; }
+    .visita-toggle button {
+      border:1px solid var(--line); background:#fff; border-radius:8px;
+      padding:0.35rem 0.7rem; font-weight:700; font-size:0.78rem; cursor:pointer;
+    }
+    .visita-toggle button.on-ok { background:#e6faf3; border-color:#86efac; color:#047857; }
+    .visita-toggle button.on-no { background:#fee2e2; border-color:#fca5a5; color:#b91c1c; }
+    .unidade-rank {
+      display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem;
+    }
+    .unidade-rank .bar {
+      flex:1; height:8px; border-radius:999px; background:#eee; overflow:hidden;
+    }
+    .unidade-rank .bar > i { display:block; height:100%; background:linear-gradient(90deg,#FF8000,#398A21); }
   </style>
 </head>
 <body class="ops-body">
@@ -72,7 +107,7 @@
 
     <div class="grid-2" style="margin-top:1rem">
       <div>
-        <h3 class="section-title" style="margin-top:0">Mapa</h3>
+        <h3 class="section-title" style="margin-top:0" id="mapTitle">Mapa</h3>
         <div class="map-shell">
           <div class="map-toolbar">
             <select id="filtroStatus"><option value="">Todos os status</option></select>
@@ -89,8 +124,8 @@
           <div id="histDec" class="list"></div>
         </div>
         <div class="panel">
-          <h3 style="margin-bottom:0.85rem">Obras da cidade</h3>
-          <div id="obras" class="list"></div>
+          <h3 style="margin-bottom:0.85rem" id="sideTitle">Obras da cidade</h3>
+          <div id="sidePanel" class="list"></div>
         </div>
       </div>
     </div>
@@ -100,6 +135,8 @@
       <a id="linkSec" href="/secretaria.html">Secretarias</a>
     </div>
   </div>
+
+  <div id="visitaRoot"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/app.js"></script>
@@ -161,24 +198,89 @@
 
     async function visitaSurpresa() {
       if (!lastFila?.unidades?.length) return toast('Sem unidades cadastradas');
-      const opts = lastFila.unidades.map(u => u.id + ' — ' + u.nome).join('\n');
-      const escolha = prompt('ID da unidade:\n' + lastFila.unidades.map(u => u.id + ' = ' + u.nome).join('\n'), lastFila.unidades[0].id);
-      if (!escolha) return;
-      const atendimentoOk = confirm('Atendimento OK na unidade?\nOK = sim · Cancelar = NÃO (gera cobrança)');
-      const filaOk = confirm('Fila está aceitável?\nOK = sim · Cancelar = NÃO');
-      const limpezaOk = confirm('Limpeza/higiene OK?\nOK = sim · Cancelar = NÃO');
-      const observacao = prompt('Observação do prefeito:', '') || '';
-      try {
-        const r = await api('/api/gabinete/visita-surpresa', {
-          method: 'POST',
-          body: JSON.stringify({
-            unidadeId: escolha.trim(),
-            atendimentoOk, filaOk, limpezaOk, observacao,
-          }),
+      const root = document.getElementById('visitaRoot');
+      const checks = [
+        { key: 'atendimentoOk', label: 'Atendimento ao cidadão', hint: 'Recepção, informação, respeito' },
+        { key: 'filaOk', label: 'Fila / tempo de espera', hint: 'Fila aceitável para o horário' },
+        { key: 'limpezaOk', label: 'Limpeza e higiene', hint: 'Salas, banheiros, corredores' },
+        { key: 'medicoPresente', label: 'Médico / equipe no plantão', hint: 'Profissional presente e identificado' },
+        { key: 'salaEsperaOk', label: 'Sala de espera', hint: 'Organização e capacidade' },
+        { key: 'medicamentoOk', label: 'Medicamento / insumos', hint: 'Farmácia e materiais básicos' },
+      ];
+      const state = Object.fromEntries(checks.map(c => [c.key, true]));
+      let unidadeId = lastFila.unidades.find(u => u.id === 'US-HOSP')?.id || lastFila.unidades[0].id;
+      let observacaoKeep = '';
+
+      function paint() {
+        root.innerHTML = `
+          <div class="visita-backdrop" id="visitaBackdrop">
+            <div class="visita-modal" role="dialog" aria-modal="true">
+              <h3>Visita surpresa</h3>
+              <p class="muted" style="margin:0 0 0.85rem">Checklist do Gabinete — marca “Não” gera cobrança automática à Saúde</p>
+              <label>Unidade</label>
+              <select id="visitaUnidade" style="width:100%;margin-bottom:0.5rem">
+                ${lastFila.unidades.map(u => `<option value="${u.id}" ${u.id === unidadeId ? 'selected' : ''}>${u.nome} (${u.tipo})</option>`).join('')}
+              </select>
+              <div class="visita-checks">
+                ${checks.map(c => `
+                  <div class="visita-check">
+                    <div>
+                      <strong>${c.label}</strong>
+                      <span>${c.hint}</span>
+                    </div>
+                    <div class="visita-toggle" data-key="${c.key}">
+                      <button type="button" data-v="1" class="${state[c.key] ? 'on-ok' : ''}">Sim</button>
+                      <button type="button" data-v="0" class="${!state[c.key] ? 'on-no' : ''}">Não</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+              <label>Observação do prefeito</label>
+              <textarea id="visitaObs" rows="3" placeholder="O que viu na unidade…" style="width:100%"></textarea>
+              <div class="actions" style="margin-top:1rem;justify-content:flex-end">
+                <button class="btn btn-sm" type="button" id="visitaCancel">Cancelar</button>
+                <button class="btn btn-sm btn-primary" type="button" id="visitaSave">Registrar visita</button>
+              </div>
+            </div>
+          </div>`;
+
+        document.getElementById('visitaUnidade').onchange = (e) => { unidadeId = e.target.value; };
+        document.getElementById('visitaObs').value = observacaoKeep;
+        document.getElementById('visitaObs').oninput = (e) => { observacaoKeep = e.target.value; };
+        root.querySelectorAll('.visita-toggle').forEach(row => {
+          row.querySelectorAll('button').forEach(btn => {
+            btn.onclick = () => {
+              observacaoKeep = document.getElementById('visitaObs').value;
+              state[row.dataset.key] = btn.dataset.v === '1';
+              paint();
+            };
+          });
         });
-        toast(r.problemas?.length ? 'Visita com pendências — Saúde cobrada' : 'Visita OK registrada');
-        await load();
-      } catch (e) { toast(e.message); }
+        document.getElementById('visitaCancel').onclick = () => { root.innerHTML = ''; };
+        document.getElementById('visitaBackdrop').onclick = (e) => {
+          if (e.target.id === 'visitaBackdrop') root.innerHTML = '';
+        };
+        document.getElementById('visitaSave').onclick = async () => {
+          const observacao = document.getElementById('visitaObs').value.trim();
+          try {
+            const r = await api('/api/gabinete/visita-surpresa', {
+              method: 'POST',
+              body: JSON.stringify({
+                unidadeId,
+                checklist: { ...state, observacao },
+                ...state,
+                observacao,
+              }),
+            });
+            root.innerHTML = '';
+            toast(r.problemas?.length
+              ? `Visita com ${r.problemas.length} pendência(s) — Saúde cobrada`
+              : 'Visita OK registrada');
+            await load();
+          } catch (err) { toast(err.message); }
+        };
+      }
+      paint();
     }
 
     function renderAcoesEixo(g) {
@@ -190,7 +292,7 @@
           <button class="btn btn-sm btn-primary" id="btnVisita" type="button">Visita surpresa</button>`;
         document.getElementById('btnVisita').onclick = visitaSurpresa;
         tituloDec.textContent = 'Saúde — olho do Gabinete';
-        subtituloDec.textContent = 'Atendimentos do dia · plantão · visita surpresa · cobrança';
+        subtituloDec.textContent = 'Fila · plantão · reclamação · visita surpresa · cobrança';
       } else if (eixo === 'eventos') {
         box.innerHTML = '';
         tituloDec.textContent = 'Eventos — agenda e estrutura';
@@ -205,21 +307,24 @@
     function renderExtra(g, saudeHoje) {
       const box = document.getElementById('blocoExtra');
       if (eixo === 'saude' && saudeHoje) {
+        const criticos = (saudeHoje.unidades || []).filter(u => u.critico);
         box.innerHTML = `
+          ${criticos.length ? `
+            <div class="saude-alert-banner" style="grid-column:1/-1">
+              ${criticos.length} unidade(s) em alerta agora:
+              ${criticos.map(u => u.nome.split(' ')[0] === 'Hospital' ? 'Hospital' : u.nome).join(' · ')}
+              — cobre a secretaria ou faça visita surpresa
+            </div>` : ''}
           <div class="panel" style="grid-column:1/-1">
             <h3 style="margin-bottom:0.35rem">Hoje na Saúde</h3>
             <p class="muted" style="margin-bottom:0.85rem">
               Atendimentos, fila e cobertura de plantão · atualizado ${fmtDate(saudeHoje.atualizadoEm)}
             </p>
-            <div class="grid-4" style="margin-bottom:1rem">
-              <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${saudeHoje.totais.atendidosHoje}</div></div>
-              <div class="panel stat"><div class="label">Na fila agora</div><div class="value">${saudeHoje.totais.naFila}</div></div>
-              <div class="panel stat"><div class="label">Espera média</div><div class="value">${saudeHoje.totais.tempoMedioMin}<span style="font-size:1rem"> min</span></div></div>
-              <div class="panel stat"><div class="label">Plantões ok</div><div class="value">${saudeHoje.totais.plantoesOk}/${saudeHoje.totais.plantoesTotal}</div>
-                <div class="hint">${saudeHoje.totais.unidadesCriticas} unidade(s) em alerta</div></div>
-            </div>
             <div class="list">
-              ${saudeHoje.unidades.map(u => `
+              ${saudeHoje.unidades.map(u => {
+                const meta = u.metaAtendimentos || 1;
+                const pct = Math.min(100, Math.round(((u.atendidosHoje || 0) / meta) * 100));
+                return `
                 <div class="item">
                   <div class="item-head">
                     <strong>${u.nome}</strong>
@@ -227,8 +332,12 @@
                       ? '<span class="badge badge-cancelado">Alerta</span>'
                       : '<span class="badge badge-concluido">Ok</span>'}
                   </div>
+                  <div class="unidade-rank">
+                    <span class="muted" style="font-size:0.72rem;min-width:4.5rem">Meta ${pct}%</span>
+                    <div class="bar"><i style="width:${pct}%"></i></div>
+                  </div>
                   <div class="meta">
-                    Fila ${u.naFila} · Atendidos ${u.atendidosHoje}/${u.metaAtendimentos || '—'} · Espera ~${u.tempoMedioMin} min
+                    Fila <strong>${u.naFila}</strong> · Atendidos ${u.atendidosHoje}/${u.metaAtendimentos || '—'} · Espera ~${u.tempoMedioMin} min
                   </div>
                   <div class="meta">
                     Plantão:
@@ -238,13 +347,14 @@
                         ? `<strong style="color:#c0392b">Check-in atrasado</strong> (${u.plantao.profissional || '—'})`
                         : '<strong style="color:#c0392b">Sem confirmação de plantão</strong>'}
                   </div>
-                  ${(u.alertas || []).length ? `<div class="meta">${u.alertas.join(' · ')}</div>` : ''}
+                  ${(u.alertas || []).length ? `<div class="meta" style="color:#b91c1c">${u.alertas.join(' · ')}</div>` : ''}
                   ${u.critico ? `
                     <div class="actions">
                       <button class="btn btn-sm btn-warn" onclick="cobrarUnidade('${u.id}','${u.nome.replace(/'/g, '')}')">Cobrar secretaria</button>
+                      <button class="btn btn-sm btn-primary" onclick="visitaSurpresa()">Visita surpresa</button>
                     </div>` : ''}
-                </div>
-              `).join('')}
+                </div>`;
+              }).join('')}
             </div>
           </div>`;
       } else if (eixo === 'eventos') {
@@ -277,6 +387,7 @@
       });
     }
     window.cobrarUnidade = cobrarUnidade;
+    window.visitaSurpresa = visitaSurpresa;
 
     async function load() {
       const m = await api('/api/metricas');
@@ -289,10 +400,13 @@
       }
 
       document.getElementById('kpis').innerHTML = eixo === 'saude' && saudeHoje ? `
-        <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${saudeHoje.totais.atendidosHoje}</div></div>
-        <div class="panel stat"><div class="label">Na fila</div><div class="value">${saudeHoje.totais.naFila}</div></div>
-        <div class="panel stat"><div class="label">Espera média</div><div class="value">${saudeHoje.totais.tempoMedioMin}<span style="font-size:1rem"> min</span></div></div>
-        <div class="panel stat"><div class="label">Alertas</div><div class="value">${saudeHoje.totais.unidadesCriticas}</div>
+        <div class="panel stat"><div class="label">Na fila agora</div><div class="value">${saudeHoje.totais.naFila}</div>
+          <div class="hint">Espera média ${saudeHoje.totais.tempoMedioMin} min</div></div>
+        <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${saudeHoje.totais.atendidosHoje}</div>
+          <div class="hint">Meta ok em ${saudeHoje.totais.metaOk || 0}/${saudeHoje.totais.plantoesTotal} unidades</div></div>
+        <div class="panel stat"><div class="label">Reclamações abertas</div><div class="value">${saudeHoje.totais.reclamacoesAbertas}</div>
+          <div class="hint">${saudeHoje.totais.avaliacoesBaixas} avaliação(ões) ≤ 2★</div></div>
+        <div class="panel stat"><div class="label">Unidades em alerta</div><div class="value">${saudeHoje.totais.unidadesCriticas}</div>
           <div class="hint">Plantão ${saudeHoje.totais.plantoesOk}/${saudeHoje.totais.plantoesTotal}</div></div>
       ` : eixo === 'eventos' ? `
         <div class="panel stat"><div class="label">Pendências eventos</div><div class="value">${g.resumo.totalPendentes}</div></div>
@@ -335,11 +449,7 @@
         `).join('')
         : '<p class="muted">Sem decisões neste eixo ainda.</p>';
 
-      // charts from filtered heatmap
-      const cats = cfg.categorias || [];
       const heat = (m.heatmap || []).filter(p => {
-        const fake = { categoria: p.categoria, secretaria: p.secretaria, eixo: p.eixo };
-        // approximate: match secretaria sets
         if (eixo === 'saude') return p.secretaria === 'saude' || ['demora_atendimento','falta_medico','superlotacao','limpeza_ubs','avaliacao_atendimento','visita_surpresa'].includes(p.categoria);
         if (eixo === 'eventos') return p.secretaria === 'eventos' || String(p.categoria||'').includes('evento');
         return p.secretaria !== 'saude' && p.secretaria !== 'eventos';
@@ -347,7 +457,6 @@
 
       const porStatus = {};
       heat.forEach(p => { porStatus[p.status] = (porStatus[p.status] || 0) + 1; });
-      // fallback use fila statuses if heat empty for eixo
       if (!Object.keys(porStatus).length) {
         g.fila.forEach(c => { porStatus[c.status] = (porStatus[c.status] || 0) + 1; });
       }
@@ -369,10 +478,15 @@
       }
 
       const porSec = {};
-      g.fila.forEach(c => { porSec[c.secretariaNome] = (porSec[c.secretariaNome] || 0) + 1; });
+      if (eixo === 'saude' && saudeHoje) {
+        saudeHoje.unidades.forEach(u => { porSec[u.nome.replace('Hospital Municipal de Bacabal', 'Hospital')] = u.naFila || 0; });
+        document.getElementById('chartSecTitle').textContent = 'Fila por unidade';
+      } else {
+        g.fila.forEach(c => { porSec[c.secretariaNome] = (porSec[c.secretariaNome] || 0) + 1; });
+        document.getElementById('chartSecTitle').textContent = eixo === 'eventos' ? 'Pendências por tipo' : 'Fila por área';
+      }
       const secLabels = Object.keys(porSec);
       const secData = Object.values(porSec);
-      document.getElementById('chartSecTitle').textContent = eixo === 'eventos' ? 'Pendências por tipo' : 'Fila por área';
       if (!chartSec) {
         chartSec = new Chart(document.getElementById('chartSec'), {
           type: 'bar',
@@ -385,14 +499,47 @@
         chartSec.update();
       }
 
-      document.getElementById('obras').innerHTML = obras.map(o => `
-        <div class="item">
-          <div class="item-head"><strong><span class="obra-dot obra-${o.status}"></span>${o.nome}</strong><span class="muted">${o.percentual}%</span></div>
-          <div class="meta">${money(o.valor)} · ${o.empresa}</div>
-        </div>
-      `).join('');
+      document.getElementById('mapTitle').textContent = eixo === 'saude' ? 'Mapa da Saúde' : 'Mapa';
+      document.getElementById('sideTitle').textContent = eixo === 'saude'
+        ? 'Reclamações e avaliações'
+        : eixo === 'eventos' ? 'Agenda / pendências' : 'Obras da cidade';
 
-      const points = heat.length ? heat : (m.heatmap || []);
+      if (eixo === 'saude' && saudeHoje) {
+        const recs = saudeHoje.reclamacoes || [];
+        document.getElementById('sidePanel').innerHTML = recs.length ? recs.map(c => `
+          <div class="item">
+            <div class="item-head">
+              <strong>${c.protocolo} · ${c.titulo}</strong>
+              ${badge(c.status)}
+            </div>
+            <div class="meta">${c.bairro}${c.unidadeId ? ' · ' + c.unidadeId : ''}
+              ${c.avaliacao ? ' · ★ ' + c.avaliacao.nota : ''}</div>
+            <div class="actions">
+              <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+              <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
+            </div>
+          </div>
+        `).join('') : '<p class="muted">Sem reclamações abertas na Saúde.</p>';
+      } else if (eixo === 'eventos') {
+        document.getElementById('sidePanel').innerHTML = (g.agenda || []).length
+          ? g.agenda.map(e => `
+            <div class="item">
+              <div class="item-head"><strong>${e.nome}</strong>
+                <span class="badge badge-${e.status==='confirmado'?'concluido':'em_analise'}">${e.status}</span>
+              </div>
+              <div class="meta">${e.data} · ${e.local || '—'}</div>
+            </div>`).join('')
+          : '<p class="muted">Sem eventos na agenda.</p>';
+      } else {
+        document.getElementById('sidePanel').innerHTML = obras.map(o => `
+          <div class="item">
+            <div class="item-head"><strong><span class="obra-dot obra-${o.status}"></span>${o.nome}</strong><span class="muted">${o.percentual}%</span></div>
+            <div class="meta">${money(o.valor)} · ${o.empresa}</div>
+          </div>
+        `).join('') || '<p class="muted">Sem obras cadastradas.</p>';
+      }
+
+      const points = heat.length ? heat : (eixo === 'saude' ? [] : (m.heatmap || []));
       MapBI.setPoints(mapState, points.map(p => ({ ...p, titulo: p.categoria })));
 
       const stSel = document.getElementById('filtroStatus');

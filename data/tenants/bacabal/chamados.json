@@ -8,7 +8,7 @@
     "descricao": "Buraco na Rua 11, Centro — secretaria Encaminhar agora. Campo começa vazio.",
     "bairro": "Centro",
     "endereco": "Rua 11 — ponto de teste",
-    "lat": -4.2886999999999995,
+    "lat": -4.2887,
     "lng": -44.7937,
     "prioridade": "alta",
     "status": "novo",
@@ -40,7 +40,12 @@
     "demoFixo": "buraco-foto",
     "comentarios": [],
     "materiais": [],
-    "cobrancas": []
+    "cobrancas": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "ordemServico": null,
+    "custo": 0,
+    "horasTrabalhadas": 0
   },
   {
     "id": "BAC-TESTE-02",
@@ -51,7 +56,7 @@
     "descricao": "Buraco na Rua das Flores, São José — segundo chamado para Encaminhar.",
     "bairro": "São José",
     "endereco": "Rua das Flores, s/n",
-    "lat": -4.2966999999999995,
+    "lat": -4.2967,
     "lng": -44.7877,
     "prioridade": "media",
     "status": "novo",
@@ -80,6 +85,170 @@
     ],
     "criadoEm": "2026-08-04T22:11:04.316Z",
     "atualizadoEm": "2026-08-04T22:11:04.316Z",
+    "comentarios": [],
+    "materiais": [],
+    "cobrancas": []
+  },
+  {
+    "id": "BAC-SAUDE-FILA",
+    "protocolo": "20261080",
+    "categoria": "demora_atendimento",
+    "secretaria": "saude",
+    "eixo": "saude",
+    "titulo": "Demora no atendimento — Hospital",
+    "descricao": "Paciente aguarda há mais de 2h no Hospital Municipal. Fila longa na emergência.",
+    "bairro": "Centro",
+    "endereco": "Hospital Municipal de Bacabal",
+    "lat": -4.2817,
+    "lng": -44.8017,
+    "prioridade": "urgente",
+    "status": "em_analise",
+    "unidadeId": "US-HOSP",
+    "destaqueGabinete": true,
+    "cidadao": {
+      "nome": "Maria das Dores",
+      "telefone": "99981112233",
+      "email": ""
+    },
+    "avaliacao": {
+      "nota": 1,
+      "comentario": "Espera absurda, ninguém informa nada"
+    },
+    "historico": [
+      {
+        "em": "2026-08-04T18:20:00.000Z",
+        "status": "novo",
+        "nota": "Cidadão registrou reclamação de fila"
+      },
+      {
+        "em": "2026-08-04T19:05:00.000Z",
+        "status": "em_analise",
+        "nota": "Secretaria de Saúde analisando plantão e fluxo",
+        "por": "Secretaria de Saúde"
+      }
+    ],
+    "criadoEm": "2026-08-04T18:20:00.000Z",
+    "atualizadoEm": "2026-08-04T19:05:00.000Z",
+    "comentarios": [],
+    "materiais": [],
+    "cobrancas": []
+  },
+  {
+    "id": "BAC-SAUDE-MEDICO",
+    "protocolo": "20261081",
+    "categoria": "falta_medico",
+    "secretaria": "saude",
+    "eixo": "saude",
+    "titulo": "Falta de médico — UBS São José",
+    "descricao": "UBS São José sem médico de plantão confirmado. Moradores sem atendimento clínico.",
+    "bairro": "São José",
+    "endereco": "UBS São José",
+    "lat": -4.3067,
+    "lng": -44.7817,
+    "prioridade": "urgente",
+    "status": "encaminhado",
+    "unidadeId": "US-UBS2",
+    "destaqueGabinete": true,
+    "cidadao": {
+      "nome": "Pedro Alves",
+      "telefone": "99982223344",
+      "email": ""
+    },
+    "avaliacao": {
+      "nota": 2,
+      "comentario": "Cheguei e a unidade estava sem médico"
+    },
+    "historico": [
+      {
+        "em": "2026-08-04T15:40:00.000Z",
+        "status": "novo",
+        "nota": "Reclamação de falta de médico"
+      },
+      {
+        "em": "2026-08-04T16:10:00.000Z",
+        "status": "encaminhado",
+        "nota": "Encaminhado para cobertura de plantão",
+        "por": "Secretaria de Saúde"
+      }
+    ],
+    "criadoEm": "2026-08-04T15:40:00.000Z",
+    "atualizadoEm": "2026-08-04T16:10:00.000Z",
+    "comentarios": [],
+    "materiais": [],
+    "cobrancas": []
+  },
+  {
+    "id": "BAC-SAUDE-LOTACAO",
+    "protocolo": "20261082",
+    "categoria": "superlotacao",
+    "secretaria": "saude",
+    "eixo": "saude",
+    "titulo": "Superlotação na emergência",
+    "descricao": "Corredores lotados no Hospital. Tempo médio de espera acima de 90 minutos.",
+    "bairro": "Centro",
+    "endereco": "Hospital Municipal de Bacabal",
+    "lat": -4.2817,
+    "lng": -44.8017,
+    "prioridade": "alta",
+    "status": "novo",
+    "unidadeId": "US-HOSP",
+    "cidadao": {
+      "nome": "Ana Beatriz",
+      "telefone": "99983334455",
+      "email": ""
+    },
+    "historico": [
+      {
+        "em": "2026-08-04T20:15:00.000Z",
+        "status": "novo",
+        "nota": "Alerta de superlotação registrado"
+      }
+    ],
+    "criadoEm": "2026-08-04T20:15:00.000Z",
+    "atualizadoEm": "2026-08-04T20:15:00.000Z",
+    "comentarios": [],
+    "materiais": [],
+    "cobrancas": []
+  },
+  {
+    "id": "BAC-SAUDE-AVAL",
+    "protocolo": "20261083",
+    "categoria": "avaliacao_atendimento",
+    "secretaria": "saude",
+    "eixo": "saude",
+    "titulo": "Atendimento ruim — UBS Centro",
+    "descricao": "Cidadã avaliou mal o atendimento na UBS Centro (nota 2).",
+    "bairro": "Centro",
+    "endereco": "UBS Centro",
+    "lat": -4.2917,
+    "lng": -44.7917,
+    "prioridade": "media",
+    "status": "em_analise",
+    "unidadeId": "US-UBS1",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "99985556677",
+      "email": ""
+    },
+    "avaliacao": {
+      "nota": 2,
+      "comentario": "Demora e pouca informação"
+    },
+    "historico": [
+      {
+        "em": "2026-08-04T17:00:00.000Z",
+        "status": "novo",
+        "nota": "Avaliação baixa do cidadão"
+      },
+      {
+        "em": "2026-08-04T17:30:00.000Z",
+        "status": "em_analise",
+        "nota": "Em análise pela coordenação da UBS",
+        "por": "Secretaria de Saúde"
+      }
+    ],
+    "criadoEm": "2026-08-04T17:00:00.000Z",
+    "atualizadoEm": "2026-08-04T17:30:00.000Z",
     "comentarios": [],
     "materiais": [],
     "cobrancas": []
