@@ -3,231 +3,357 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Como funciona · Bacabal Inteligente</title>
-  <link rel="stylesheet" href="/styles.css" />
-  <link rel="stylesheet" href="/home.css" />
+  <title>Demonstração · Bacabal Inteligente</title>
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <style>
-    .flow-page { max-width: 920px; margin: 0 auto; padding: 1.25rem 1rem 3.5rem; }
-    .flow-hero {
-      background: linear-gradient(145deg, #ff8000 0%, #e67300 42%, #398a21 100%);
-      color: #fff; border-radius: 24px; padding: 2rem 1.6rem; margin-bottom: 1.75rem;
-      box-shadow: 0 20px 50px rgba(255,128,0,.22);
+    :root {
+      --orange: #ff8000;
+      --green: #398a21;
+      --ink: #1a1a1a;
+      --muted: #5c6570;
+      --bg: #0f1410;
     }
-    .flow-hero h1 {
-      color:#fff; margin: 0.3rem 0 0.45rem;
-      font-size: clamp(1.75rem, 5vw, 2.35rem); letter-spacing: -0.04em;
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; height: 100%;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg); color: #fff;
+      overflow: hidden;
+      user-select: none;
     }
-    .flow-hero p { margin:0; max-width: 34rem; line-height:1.5; color: rgba(255,255,255,.93); }
-    .flow-kicker {
-      font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.9;
+    .deck {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
-    .flow-tree {
-      display:flex; flex-wrap:wrap; gap:.55rem; justify-content:center;
-      margin: 1.35rem 0 0; padding-top: 1.1rem;
-      border-top: 1px solid rgba(255,255,255,.28);
+    .brand {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: 0.75rem 1.25rem;
+      background: rgba(0,0,0,.35);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      flex-shrink: 0;
     }
-    .flow-tree span {
-      background: rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.28);
-      color:#fff; font-size:.78rem; font-weight:700; padding:.4rem .7rem; border-radius:999px;
+    .brand-left { display:flex; align-items:center; gap:.65rem; }
+    .brand img {
+      width: 36px; height: 36px; border-radius: 50%;
+      object-fit: contain; background: #111; border: 2px solid rgba(255,255,255,.25);
     }
-    .flow-tree .arrow { background:transparent; border:0; opacity:.75; padding: .4rem .1rem; }
+    .brand strong { display:block; font-size:.9rem; letter-spacing:-.02em; }
+    .brand span { display:block; font-size:.68rem; opacity:.7; }
+    .progress {
+      font-size:.78rem; font-weight:700; letter-spacing:.04em;
+      opacity:.85; white-space:nowrap;
+    }
 
-    .flow-step {
-      display:grid; gap:1rem; margin-bottom: 2rem; align-items:center;
+    .stage {
+      flex: 1; min-height: 0;
+      position: relative;
     }
-    @media (min-width:780px) {
-      .flow-step { grid-template-columns: 1.05fr 1fr; gap: 1.5rem; }
-      .flow-step.reverse { direction: rtl; }
-      .flow-step.reverse > * { direction: ltr; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none;
+      grid-template-rows: 1fr auto;
+      opacity: 0;
+      transition: opacity .35s ease;
     }
-    .flow-media {
-      border-radius: 20px; overflow:hidden;
-      box-shadow: 0 18px 40px rgba(0,0,0,.12);
-      border: 1px solid rgba(0,0,0,.06);
-      background:#fff;
-      min-height: 220px;
+    .slide.active { display: grid; opacity: 1; }
+
+    .slide-visual {
+      position: relative; min-height: 0;
+      background: #1a1a1a;
     }
-    .flow-media img {
-      width:100%; height:100%; min-height:240px; max-height:300px;
-      object-fit:cover; display:block;
+    .slide-visual img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
     }
-    .flow-copy { padding: .25rem 0; }
-    .flow-num {
-      display:inline-flex; align-items:center; justify-content:center;
-      width:2rem; height:2rem; border-radius:50%;
-      background:#ff8000; color:#fff; font-weight:800; font-size:.9rem;
-      margin-bottom:.55rem;
+    .slide-visual::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(15,20,16,.92) 0%, rgba(15,20,16,.15) 45%, transparent 70%);
+      pointer-events: none;
     }
-    .flow-copy h2 {
-      margin:0 0 .4rem; font-size:1.35rem; letter-spacing:-0.03em; color:#1a1a1a;
+    .slide.intro .slide-visual::after,
+    .slide.outro .slide-visual::after {
+      background: linear-gradient(145deg, rgba(255,128,0,.55), rgba(57,138,33,.65));
     }
-    .flow-copy p { margin:0; color:#5c6570; line-height:1.5; font-size:.98rem; }
-    .flow-copy ul {
-      margin:.7rem 0 0; padding-left:1.1rem; color:#5c6570; font-size:.92rem; line-height:1.5;
+    .slide.intro .slide-visual,
+    .slide.outro .slide-visual {
+      background: linear-gradient(145deg, #ff8000, #398a21);
     }
-    .flow-role {
-      display:inline-block; margin-top:.75rem;
-      font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
-      color:#2f7319; background:#eef7ea; padding:.3rem .55rem; border-radius:8px;
+    .slide.intro img, .slide.outro img { display: none; }
+
+    .slide-copy {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      z-index: 2;
+      padding: 1.5rem 1.5rem 1.25rem;
+      max-width: 820px;
     }
-    .flow-connector {
-      width:2px; height:28px; background: linear-gradient(#ff8000, #398a21);
-      margin: -0.6rem auto 0.9rem; border-radius:2px;
+    .slide-num {
+      display: inline-block;
+      font-size: .72rem; font-weight: 800; letter-spacing: .1em;
+      text-transform: uppercase; color: #ffd19a; margin-bottom: .45rem;
     }
-    .flow-close {
-      background:#fff; border:1px solid #e6e9ee; border-radius:18px;
-      padding:1.25rem 1.3rem; box-shadow: 0 8px 24px rgba(0,0,0,.05);
+    .slide-copy h1 {
+      margin: 0 0 .45rem;
+      font-size: clamp(1.55rem, 4.5vw, 2.4rem);
+      letter-spacing: -.035em; line-height: 1.15;
+      text-shadow: 0 2px 18px rgba(0,0,0,.35);
     }
-    .flow-close h3 { margin:0 0 .4rem; color:#2f7319; }
-    .flow-close p { margin:0; color:#5c6570; line-height:1.5; }
-    .flow-cta { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:1rem; }
+    .slide-copy p {
+      margin: 0; max-width: 36rem;
+      font-size: clamp(.95rem, 2.2vw, 1.12rem);
+      line-height: 1.45; color: rgba(255,255,255,.92);
+    }
+    .slide-copy ul {
+      margin: .7rem 0 0; padding-left: 1.15rem;
+      color: rgba(255,255,255,.88); font-size: .95rem; line-height: 1.45;
+    }
+    .role {
+      display: inline-block; margin-top: .85rem;
+      font-size: .7rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+      background: rgba(57,138,33,.35); border: 1px solid rgba(255,255,255,.2);
+      padding: .35rem .6rem; border-radius: 8px;
+    }
+    .tree {
+      display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem;
+    }
+    .tree i {
+      font-style: normal;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.22);
+      padding: .35rem .6rem; border-radius: 999px;
+      font-size: .75rem; font-weight: 700;
+    }
+
+    .controls {
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: .85rem 1.25rem 1rem;
+      background: #0a0e0b;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .dots { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: center; flex: 1; }
+    .dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: rgba(255,255,255,.25); border: 0; padding: 0; cursor: pointer;
+    }
+    .dot.on { background: var(--orange); transform: scale(1.2); }
+    .nav-btn {
+      appearance: none; border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.08); color: #fff;
+      font-weight: 700; font-size: .9rem;
+      padding: .65rem 1.1rem; border-radius: 999px; cursor: pointer;
+      min-width: 7.5rem;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,.16); }
+    .nav-btn:disabled { opacity: .35; cursor: default; }
+    .nav-btn.primary {
+      background: var(--orange); border-color: transparent; color: #1a1a1a;
+    }
+    .hint {
+      text-align: center; font-size: .72rem; opacity: .55;
+      padding: 0 1rem .55rem; background: #0a0e0b;
+    }
+
+    @media (min-width: 900px) {
+      .slide:not(.intro):not(.outro) {
+        grid-template-columns: 1.15fr 1fr;
+        grid-template-rows: 1fr;
+      }
+      .slide:not(.intro):not(.outro) .slide-visual { min-height: 100%; }
+      .slide:not(.intro):not(.outro) .slide-visual::after {
+        background: linear-gradient(to right, transparent 40%, rgba(15,20,16,.88) 100%);
+      }
+      .slide:not(.intro):not(.outro) .slide-copy {
+        position: relative; align-self: center;
+        padding: 2rem 2.25rem;
+      }
+    }
   </style>
 </head>
-<body class="landing" style="background:#f7f8f9">
-  <div class="flow-page">
-    <div id="top"></div>
-
-    <div class="flow-hero">
-      <div class="flow-kicker">Árvore do processo · do início ao fim</div>
-      <h1>Como a cidade trabalha no sistema</h1>
-      <p>
-        Uma história em 5 etapas: o cidadão abre, a secretaria organiza,
-        o campo executa, a saúde mostra o dia, e o Gabinete decide e cobra.
-      </p>
-      <div class="flow-tree" aria-hidden="true">
-        <span>1 Cidadão</span><span class="arrow">→</span>
-        <span>2 Secretaria</span><span class="arrow">→</span>
-        <span>3 Campo</span><span class="arrow">→</span>
-        <span>4 Saúde</span><span class="arrow">→</span>
-        <span>5 Gabinete</span>
+<body>
+  <div class="deck">
+    <header class="brand">
+      <div class="brand-left">
+        <img src="/assets/logo-prefeitura.png" alt="" />
+        <div>
+          <strong>Bacabal Inteligente</strong>
+          <span>Demonstração · só avançar os slides</span>
+        </div>
       </div>
+      <div class="progress" id="progress">1 / 7</div>
+    </header>
+
+    <div class="stage" id="stage">
+      <article class="slide intro active" data-i="0">
+        <div class="slide-visual"></div>
+        <div class="slide-copy">
+          <div class="slide-num">Abertura</div>
+          <h1>Como a cidade trabalha no sistema</h1>
+          <p>
+            Em poucos slides: cidadão abre, secretaria organiza, campo executa,
+            saúde informa e o Gabinete decide.
+          </p>
+          <div class="tree">
+            <i>Cidadão</i><i>→</i><i>Secretaria</i><i>→</i><i>Campo</i><i>→</i><i>Saúde</i><i>→</i><i>Gabinete</i>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide" data-i="1">
+        <div class="slide-visual">
+          <img src="/assets/fluxo-01-cidadao.jpg" alt="" />
+        </div>
+        <div class="slide-copy">
+          <div class="slide-num">Etapa 1 · Cidadão</div>
+          <h1>Registra o problema na rua</h1>
+          <p>Foto, mapa e protocolo na hora. Sem ligar de novo para saber se alguém viu.</p>
+          <ul>
+            <li>Foto + GPS + descrição</li>
+            <li>Protocolo imediato</li>
+            <li>Acompanha o andamento</li>
+          </ul>
+          <div class="role">Acesso: cidadão</div>
+        </div>
+      </article>
+
+      <article class="slide" data-i="2">
+        <div class="slide-visual">
+          <img src="/assets/fluxo-02-secretaria.jpg" alt="" />
+        </div>
+        <div class="slide-copy">
+          <div class="slide-num">Etapa 2 · Secretaria</div>
+          <h1>Recebe a fila dela</h1>
+          <p>Obras, Limpeza, Saúde ou Eventos veem só o que é delas — e o alerta se o Gabinete cobrar.</p>
+          <ul>
+            <li>Fila por secretaria</li>
+            <li>Status e encaminhamento</li>
+            <li>Histórico no protocolo</li>
+          </ul>
+          <div class="role">Acesso: secretário / equipe</div>
+        </div>
+      </article>
+
+      <article class="slide" data-i="3">
+        <div class="slide-visual">
+          <img src="/assets/fluxo-03-campo.jpg" alt="" />
+        </div>
+        <div class="slide-copy">
+          <div class="slide-num">Etapa 3 · Campo</div>
+          <h1>Executa na rua</h1>
+          <p>A equipe sai com endereço, foto e prioridade. Ao concluir, o protocolo muda.</p>
+          <ul>
+            <li>Ordem de serviço clara</li>
+            <li>Menos ida e volta</li>
+            <li>Resultado registrado</li>
+          </ul>
+          <div class="role">Acesso: equipe de campo</div>
+        </div>
+      </article>
+
+      <article class="slide" data-i="4">
+        <div class="slide-visual">
+          <img src="/assets/fluxo-05-saude.jpg" alt="" />
+        </div>
+        <div class="slide-copy">
+          <div class="slide-num">Etapa 4 · Saúde</div>
+          <h1>Mostra o dia e o plantão</h1>
+          <p>Check-in de cobertura, fila e espera. Visita surpresa vira cobrança automática.</p>
+          <ul>
+            <li>Plantão confirmado pela unidade</li>
+            <li>Atendidos / fila / espera</li>
+            <li>Visão no Gabinete</li>
+          </ul>
+          <div class="role">Acesso: unidade + secretaria de Saúde</div>
+        </div>
+      </article>
+
+      <article class="slide" data-i="5">
+        <div class="slide-visual">
+          <img src="/assets/fluxo-04-gabinete.jpg" alt="" />
+        </div>
+        <div class="slide-copy">
+          <div class="slide-num">Etapa 5 · Gabinete</div>
+          <h1>Decide e cobra</h1>
+          <p>Uma tela: Cidade, Saúde e Eventos. Prioriza, define prazo e acompanha se foi feito.</p>
+          <ul>
+            <li>Três eixos no mesmo painel</li>
+            <li>Cobrar → alerta na secretaria</li>
+            <li>Visão por bairro e protocolo</li>
+          </ul>
+          <div class="role">Acesso: prefeito / gabinete</div>
+        </div>
+      </article>
+
+      <article class="slide outro" data-i="6">
+        <div class="slide-visual"></div>
+        <div class="slide-copy">
+          <div class="slide-num">Fechamento</div>
+          <h1>Uma tela. Três prioridades. Resultado com protocolo.</h1>
+          <p>
+            Cidadão abre → secretaria organiza → campo faz → Saúde informa → Gabinete governa.
+            Sem depender de WhatsApp solto.
+          </p>
+        </div>
+      </article>
     </div>
 
-    <section class="flow-step">
-      <div class="flow-media">
-        <img src="/assets/fluxo-01-cidadao.jpg" alt="Cidadão fotografa problema na rua com o celular" />
-      </div>
-      <div class="flow-copy">
-        <div class="flow-num">1</div>
-        <h2>Cidadão registra o problema</h2>
-        <p>
-          Na rua, a pessoa tira foto, marca o local no mapa e recebe um protocolo.
-          Não precisa ligar de novo para saber se alguém viu.
-        </p>
-        <ul>
-          <li>Foto + GPS + descrição</li>
-          <li>Protocolo na hora</li>
-          <li>Acompanha o andamento</li>
-        </ul>
-        <div class="flow-role">Quem acessa: cidadão (sem login obrigatório)</div>
-      </div>
-    </section>
-    <div class="flow-connector" aria-hidden="true"></div>
-
-    <section class="flow-step reverse">
-      <div class="flow-media">
-        <img src="/assets/fluxo-02-secretaria.jpg" alt="Secretaria trata a fila de chamados no computador" />
-      </div>
-      <div class="flow-copy">
-        <div class="flow-num">2</div>
-        <h2>Secretaria recebe a fila</h2>
-        <p>
-          Obras, Limpeza, Saúde ou Eventos veem só o que é delas.
-          Atualizam status, priorizam e encaminham para a equipe.
-        </p>
-        <ul>
-          <li>Fila filtrada por secretaria</li>
-          <li>Alerta quando o Gabinete cobra</li>
-          <li>Histórico no protocolo</li>
-        </ul>
-        <div class="flow-role">Quem acessa: secretário / equipe técnica</div>
-      </div>
-    </section>
-    <div class="flow-connector" aria-hidden="true"></div>
-
-    <section class="flow-step">
-      <div class="flow-media">
-        <img src="/assets/fluxo-03-campo.jpg" alt="Equipe de campo executa o serviço na rua" />
-      </div>
-      <div class="flow-copy">
-        <div class="flow-num">3</div>
-        <h2>Campo executa na rua</h2>
-        <p>
-          A equipe sai com a lista do dia no celular: endereço, foto e prioridade.
-          Quando termina, o protocolo muda para concluído.
-        </p>
-        <ul>
-          <li>Ordem de serviço clara</li>
-          <li>Menos ida e volta no bairro</li>
-          <li>Resultado registrado</li>
-        </ul>
-        <div class="flow-role">Quem acessa: equipe de campo</div>
-      </div>
-    </section>
-    <div class="flow-connector" aria-hidden="true"></div>
-
-    <section class="flow-step reverse">
-      <div class="flow-media">
-        <img src="/assets/fluxo-05-saude.jpg" alt="Unidade de saúde com check-in de plantão" />
-      </div>
-      <div class="flow-copy">
-        <div class="flow-num">4</div>
-        <h2>Saúde mostra o dia (plantão)</h2>
-        <p>
-          Além dos chamados, a Saúde confirma cobertura de plantão e movimento do dia.
-          O prefeito vê fila, espera e se a unidade confirmou presença.
-        </p>
-        <ul>
-          <li>Check-in de plantão pela unidade</li>
-          <li>Atendidos / fila / espera</li>
-          <li>Visita surpresa vira cobrança</li>
-        </ul>
-        <div class="flow-role">Quem acessa: unidade de saúde + secretaria</div>
-      </div>
-    </section>
-    <div class="flow-connector" aria-hidden="true"></div>
-
-    <section class="flow-step">
-      <div class="flow-media">
-        <img src="/assets/fluxo-04-gabinete.jpg" alt="Gabinete do prefeito acompanha indicadores e mapa" />
-      </div>
-      <div class="flow-copy">
-        <div class="flow-num">5</div>
-        <h2>Gabinete decide e cobra</h2>
-        <p>
-          Na mesma tela: Cidade, Saúde e Eventos.
-          O prefeito prioriza, define prazo, cobra a secretaria e acompanha se foi feito.
-        </p>
-        <ul>
-          <li>Uma tela · três eixos</li>
-          <li>Cobrar → alerta na secretaria</li>
-          <li>Visão por bairro e protocolo</li>
-        </ul>
-        <div class="flow-role">Quem acessa: prefeito / gabinete</div>
-      </div>
-    </section>
-
-    <div class="flow-close">
-      <h3>Em uma frase</h3>
-      <p>
-        <strong>Cidadão abre → secretaria organiza → campo faz → Saúde informa → Gabinete governa.</strong>
-        Tudo com protocolo. Sem depender de WhatsApp solto.
-      </p>
-      <div class="flow-cta">
-        <a class="btn btn-primary" href="/prefeito.html?cidade=bacabal">Abrir Gabinete</a>
-        <a class="btn" href="/pitch.html?cidade=bacabal">Pitch 1 tela</a>
-        <a class="btn" href="/reuniao.html?cidade=bacabal">Kit da reunião</a>
-        <a class="btn" href="/demo.html?cidade=bacabal">Demo 5 min</a>
-      </div>
+    <div class="hint">Use as setas do teclado ou os botões · não precisa abrir outras telas</div>
+    <div class="controls">
+      <button type="button" class="nav-btn" id="prev" disabled>← Anterior</button>
+      <div class="dots" id="dots"></div>
+      <button type="button" class="nav-btn primary" id="next">Próximo →</button>
     </div>
   </div>
 
-  <script src="/app.js"></script>
   <script>
-    setCidade('bacabal');
-    loadCityBrand().then(cfg => {
-      document.getElementById('top').innerHTML = topbar('Fluxo', cfg);
+    const slides = [...document.querySelectorAll('.slide')];
+    const dotsEl = document.getElementById('dots');
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const progress = document.getElementById('progress');
+    let i = 0;
+
+    slides.forEach((_, idx) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dot' + (idx === 0 ? ' on' : '');
+      b.setAttribute('aria-label', 'Slide ' + (idx + 1));
+      b.onclick = () => go(idx);
+      dotsEl.appendChild(b);
+    });
+
+    function go(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      [...dotsEl.children].forEach((d, idx) => d.classList.toggle('on', idx === i));
+      prev.disabled = i === 0;
+      next.textContent = i === slides.length - 1 ? 'Fim' : 'Próximo →';
+      next.disabled = i === slides.length - 1;
+      next.classList.toggle('primary', i < slides.length - 1);
+      progress.textContent = (i + 1) + ' / ' + slides.length;
+    }
+
+    prev.onclick = () => go(i - 1);
+    next.onclick = () => { if (i < slides.length - 1) go(i + 1); };
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        go(i + 1);
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        go(i - 1);
+      }
+      if (e.key === 'Home') go(0);
+      if (e.key === 'End') go(slides.length - 1);
+    });
+
+    // Clique na imagem também avança (sem links)
+    document.getElementById('stage').addEventListener('click', (e) => {
+      if (e.target.closest('.dot') || e.target.closest('.nav-btn')) return;
+      if (i < slides.length - 1) go(i + 1);
     });
   </script>
 </body>
