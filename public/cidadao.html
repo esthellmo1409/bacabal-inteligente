@@ -214,11 +214,12 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = async () => {
-        fotoData = reader.result;
+        const box = document.getElementById('iaBox');
+        box.textContent = 'Otimizando foto…';
+        fotoData = await compressImageDataUrl(reader.result);
         const img = document.getElementById('preview');
         img.src = fotoData;
         img.classList.add('show');
-        const box = document.getElementById('iaBox');
         box.textContent = 'IA analisando a foto…';
         try {
           const ia = await api('/api/ia/foto', {

@@ -184,8 +184,9 @@
       if (!f) return;
       const r = new FileReader();
       r.onload = async () => {
+        const foto = await compressImageDataUrl(r.result);
         await api('/api/chamados/' + selected.id + '/anexo', {
-          method: 'POST', body: JSON.stringify({ foto: r.result, tipo }),
+          method: 'POST', body: JSON.stringify({ foto, tipo }),
         });
         toast('Foto ' + tipo);
         openOS(selected.id);

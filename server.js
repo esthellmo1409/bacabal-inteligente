@@ -103,7 +103,7 @@ function sendJSON(res, status, data) {
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
-    const max = 8 * 1024 * 1024;
+    const max = 12 * 1024 * 1024;
     req.on('data', chunk => {
       body += chunk;
       if (body.length > max) {
