@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Como funciona · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/home.css" />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <style>
+    .flow-page { max-width: 920px; margin: 0 auto; padding: 1.25rem 1rem 3.5rem; }
+    .flow-hero {
+      background: linear-gradient(145deg, #ff8000 0%, #e67300 42%, #398a21 100%);
+      color: #fff; border-radius: 24px; padding: 2rem 1.6rem; margin-bottom: 1.75rem;
+      box-shadow: 0 20px 50px rgba(255,128,0,.22);
+    }
+    .flow-hero h1 {
+      color:#fff; margin: 0.3rem 0 0.45rem;
+      font-size: clamp(1.75rem, 5vw, 2.35rem); letter-spacing: -0.04em;
+    }
+    .flow-hero p { margin:0; max-width: 34rem; line-height:1.5; color: rgba(255,255,255,.93); }
+    .flow-kicker {
+      font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.9;
+    }
+    .flow-tree {
+      display:flex; flex-wrap:wrap; gap:.55rem; justify-content:center;
+      margin: 1.35rem 0 0; padding-top: 1.1rem;
+      border-top: 1px solid rgba(255,255,255,.28);
+    }
+    .flow-tree span {
+      background: rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.28);
+      color:#fff; font-size:.78rem; font-weight:700; padding:.4rem .7rem; border-radius:999px;
+    }
+    .flow-tree .arrow { background:transparent; border:0; opacity:.75; padding: .4rem .1rem; }
+
+    .flow-step {
+      display:grid; gap:1rem; margin-bottom: 2rem; align-items:center;
+    }
+    @media (min-width:780px) {
+      .flow-step { grid-template-columns: 1.05fr 1fr; gap: 1.5rem; }
+      .flow-step.reverse { direction: rtl; }
+      .flow-step.reverse > * { direction: ltr; }
+    }
+    .flow-media {
+      border-radius: 20px; overflow:hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,.12);
+      border: 1px solid rgba(0,0,0,.06);
+      background:#fff;
+      min-height: 220px;
+    }
+    .flow-media img {
+      width:100%; height:100%; min-height:240px; max-height:300px;
+      object-fit:cover; display:block;
+    }
+    .flow-copy { padding: .25rem 0; }
+    .flow-num {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:2rem; height:2rem; border-radius:50%;
+      background:#ff8000; color:#fff; font-weight:800; font-size:.9rem;
+      margin-bottom:.55rem;
+    }
+    .flow-copy h2 {
+      margin:0 0 .4rem; font-size:1.35rem; letter-spacing:-0.03em; color:#1a1a1a;
+    }
+    .flow-copy p { margin:0; color:#5c6570; line-height:1.5; font-size:.98rem; }
+    .flow-copy ul {
+      margin:.7rem 0 0; padding-left:1.1rem; color:#5c6570; font-size:.92rem; line-height:1.5;
+    }
+    .flow-role {
+      display:inline-block; margin-top:.75rem;
+      font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+      color:#2f7319; background:#eef7ea; padding:.3rem .55rem; border-radius:8px;
+    }
+    .flow-connector {
+      width:2px; height:28px; background: linear-gradient(#ff8000, #398a21);
+      margin: -0.6rem auto 0.9rem; border-radius:2px;
+    }
+    .flow-close {
+      background:#fff; border:1px solid #e6e9ee; border-radius:18px;
+      padding:1.25rem 1.3rem; box-shadow: 0 8px 24px rgba(0,0,0,.05);
+    }
+    .flow-close h3 { margin:0 0 .4rem; color:#2f7319; }
+    .flow-close p { margin:0; color:#5c6570; line-height:1.5; }
+    .flow-cta { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:1rem; }
+  </style>
+</head>
+<body class="landing" style="background:#f7f8f9">
+  <div class="flow-page">
+    <div id="top"></div>
+
+    <div class="flow-hero">
+      <div class="flow-kicker">Árvore do processo · do início ao fim</div>
+      <h1>Como a cidade trabalha no sistema</h1>
+      <p>
+        Uma história em 5 etapas: o cidadão abre, a secretaria organiza,
+        o campo executa, a saúde mostra o dia, e o Gabinete decide e cobra.
+      </p>
+      <div class="flow-tree" aria-hidden="true">
+        <span>1 Cidadão</span><span class="arrow">→</span>
+        <span>2 Secretaria</span><span class="arrow">→</span>
+        <span>3 Campo</span><span class="arrow">→</span>
+        <span>4 Saúde</span><span class="arrow">→</span>
+        <span>5 Gabinete</span>
+      </div>
+    </div>
+
+    <section class="flow-step">
+      <div class="flow-media">
+        <img src="/assets/fluxo-01-cidadao.jpg" alt="Cidadão fotografa problema na rua com o celular" />
+      </div>
+      <div class="flow-copy">
+        <div class="flow-num">1</div>
+        <h2>Cidadão registra o problema</h2>
+        <p>
+          Na rua, a pessoa tira foto, marca o local no mapa e recebe um protocolo.
+          Não precisa ligar de novo para saber se alguém viu.
+        </p>
+        <ul>
+          <li>Foto + GPS + descrição</li>
+          <li>Protocolo na hora</li>
+          <li>Acompanha o andamento</li>
+        </ul>
+        <div class="flow-role">Quem acessa: cidadão (sem login obrigatório)</div>
+      </div>
+    </section>
+    <div class="flow-connector" aria-hidden="true"></div>
+
+    <section class="flow-step reverse">
+      <div class="flow-media">
+        <img src="/assets/fluxo-02-secretaria.jpg" alt="Secretaria trata a fila de chamados no computador" />
+      </div>
+      <div class="flow-copy">
+        <div class="flow-num">2</div>
+        <h2>Secretaria recebe a fila</h2>
+        <p>
+          Obras, Limpeza, Saúde ou Eventos veem só o que é delas.
+          Atualizam status, priorizam e encaminham para a equipe.
+        </p>
+        <ul>
+          <li>Fila filtrada por secretaria</li>
+          <li>Alerta quando o Gabinete cobra</li>
+          <li>Histórico no protocolo</li>
+        </ul>
+        <div class="flow-role">Quem acessa: secretário / equipe técnica</div>
+      </div>
+    </section>
+    <div class="flow-connector" aria-hidden="true"></div>
+
+    <section class="flow-step">
+      <div class="flow-media">
+        <img src="/assets/fluxo-03-campo.jpg" alt="Equipe de campo executa o serviço na rua" />
+      </div>
+      <div class="flow-copy">
+        <div class="flow-num">3</div>
+        <h2>Campo executa na rua</h2>
+        <p>
+          A equipe sai com a lista do dia no celular: endereço, foto e prioridade.
+          Quando termina, o protocolo muda para concluído.
+        </p>
+        <ul>
+          <li>Ordem de serviço clara</li>
+          <li>Menos ida e volta no bairro</li>
+          <li>Resultado registrado</li>
+        </ul>
+        <div class="flow-role">Quem acessa: equipe de campo</div>
+      </div>
+    </section>
+    <div class="flow-connector" aria-hidden="true"></div>
+
+    <section class="flow-step reverse">
+      <div class="flow-media">
+        <img src="/assets/fluxo-05-saude.jpg" alt="Unidade de saúde com check-in de plantão" />
+      </div>
+      <div class="flow-copy">
+        <div class="flow-num">4</div>
+        <h2>Saúde mostra o dia (plantão)</h2>
+        <p>
+          Além dos chamados, a Saúde confirma cobertura de plantão e movimento do dia.
+          O prefeito vê fila, espera e se a unidade confirmou presença.
+        </p>
+        <ul>
+          <li>Check-in de plantão pela unidade</li>
+          <li>Atendidos / fila / espera</li>
+          <li>Visita surpresa vira cobrança</li>
+        </ul>
+        <div class="flow-role">Quem acessa: unidade de saúde + secretaria</div>
+      </div>
+    </section>
+    <div class="flow-connector" aria-hidden="true"></div>
+
+    <section class="flow-step">
+      <div class="flow-media">
+        <img src="/assets/fluxo-04-gabinete.jpg" alt="Gabinete do prefeito acompanha indicadores e mapa" />
+      </div>
+      <div class="flow-copy">
+        <div class="flow-num">5</div>
+        <h2>Gabinete decide e cobra</h2>
+        <p>
+          Na mesma tela: Cidade, Saúde e Eventos.
+          O prefeito prioriza, define prazo, cobra a secretaria e acompanha se foi feito.
+        </p>
+        <ul>
+          <li>Uma tela · três eixos</li>
+          <li>Cobrar → alerta na secretaria</li>
+          <li>Visão por bairro e protocolo</li>
+        </ul>
+        <div class="flow-role">Quem acessa: prefeito / gabinete</div>
+      </div>
+    </section>
+
+    <div class="flow-close">
+      <h3>Em uma frase</h3>
+      <p>
+        <strong>Cidadão abre → secretaria organiza → campo faz → Saúde informa → Gabinete governa.</strong>
+        Tudo com protocolo. Sem depender de WhatsApp solto.
+      </p>
+      <div class="flow-cta">
+        <a class="btn btn-primary" href="/prefeito.html?cidade=bacabal">Abrir Gabinete</a>
+        <a class="btn" href="/pitch.html?cidade=bacabal">Pitch 1 tela</a>
+        <a class="btn" href="/reuniao.html?cidade=bacabal">Kit da reunião</a>
+        <a class="btn" href="/demo.html?cidade=bacabal">Demo 5 min</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    setCidade('bacabal');
+    loadCityBrand().then(cfg => {
+      document.getElementById('top').innerHTML = topbar('Fluxo', cfg);
+    });
+  </script>
+</body>
+</html>
