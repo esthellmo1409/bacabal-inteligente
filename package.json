@@ -1,7 +1,7 @@
 {
   "name": "cidadehub",
   "version": "3.0.0",
-  "description": "Bacabal Inteligente / CidadeHub — plataforma modular para prefeituras",
+  "description": "Bacabal Conecta / CidadeHub — plataforma modular para prefeituras",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

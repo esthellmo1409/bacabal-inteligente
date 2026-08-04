@@ -1,12 +1,12 @@
-# Como colocar o Bacabal Inteligente online
+# Como colocar o Bacabal Conecta online
 
-## Opção recomendada — Render (grátis, link fixo)
+## Opção recomendada — Railway (link fixo)
 
-1. Código no GitHub (este repositório).
-2. Conta em [render.com](https://render.com) → **New** → **Blueprint** → selecione o repo (usa `render.yaml`).
-   - Ou **Web Service**: Runtime Node, Build `echo ready`, Start `node server.js`.
-3. Aguarde o deploy. A URL fica tipo:
-   `https://bacabal-inteligente.onrender.com`
+1. Código no GitHub: `esthellmo1409/bacabal-inteligente`
+2. Em [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo**
+3. Selecione `bacabal-inteligente` (usa `railway.toml` → `node server.js`)
+4. Em **Settings** → **Networking** → **Generate Domain**
+5. URL fica tipo: `https://bacabal-inteligente-xxxx.up.railway.app`
 
 ### Links para a reunião
 - Kit: `/reuniao.html?cidade=bacabal`
@@ -14,9 +14,10 @@
 - Gabinete: `/prefeito.html?cidade=bacabal`
 - Demo 5 min: `/demo.html?cidade=bacabal`
 
-> Plano free do Render “dorme” após ~15 min sem acesso. Abra o site 1–2 min antes da reunião.
+## Render (alternativa)
+Blueprint/`render.yaml` ou Web Service Node: Start `node server.js`.
 
-## Opção rápida — túnel (PC ligado)
+## Túnel rápido (PC ligado)
 ```bash
 node server.js
 .\cloudflared.exe tunnel --url http://localhost:4000

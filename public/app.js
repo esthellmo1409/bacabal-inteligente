@@ -300,8 +300,9 @@ function logout() {
 }
 
 function topbar(active, cfg) {
-  const nome = cfg?.produto || 'Bacabal Inteligente';
-  const sub = `${cfg?.cidade || 'Bacabal'} · ${cfg?.uf || 'MA'}`;
+  const nome = cfg?.produto || 'Bacabal Conecta';
+  const sub = cfg?.tagline
+    || `${cfg?.cidade || 'Bacabal'} · ${cfg?.uf || 'MA'}`;
   const user = getSessionUser();
 
   // Público: só o essencial. Áreas internas só após login.

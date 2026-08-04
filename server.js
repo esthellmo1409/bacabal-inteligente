@@ -373,7 +373,7 @@ function criarMunicipioCompleto(body) {
     slug,
     nome,
     uf,
-    produto: body.produto || `${nome} Inteligente`,
+    produto: body.produto || `${nome} Conecta`,
     lat: Number(body.lat) || -15.78,
     lng: Number(body.lng) || -47.93,
     tema,
@@ -1014,7 +1014,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   try { ensureDemoChamado('bacabal'); } catch (_) {}
-  console.log(`\n  Bacabal Inteligente v3 → http://localhost:${PORT}`);
+  console.log(`\n  Bacabal Conecta v3 → http://localhost:${PORT}`);
   console.log(`  Dados: ${DATA_DIR}`);
   console.log(`  Módulos: /modulos.html · Dashboard · Chamados · Mapa · IA`);
   console.log(`  Roteiro: ROTEIRO-VALIDACAO.md\n`);
