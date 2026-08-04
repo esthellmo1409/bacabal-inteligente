@@ -345,10 +345,19 @@
 
     <div class="progress"><i id="bar"></i></div>
 
+    <div id="gate" style="position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(4,10,7,.72);backdrop-filter:blur(6px);cursor:pointer">
+      <div style="text-align:center;padding:2rem;max-width:28rem">
+        <img src="/assets/logo-prefeitura.png" alt="" style="width:72px;margin-bottom:1rem;filter:drop-shadow(0 8px 20px rgba(0,0,0,.4))" />
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;letter-spacing:-.04em;margin-bottom:.5rem">Bacabal Inteligente</div>
+        <p style="color:rgba(247,244,238,.8);margin-bottom:1.25rem;line-height:1.4">Toque para iniciar o clipe com locução profissional</p>
+        <span style="display:inline-block;padding:.7rem 1.4rem;border-radius:999px;background:#ff7a00;color:#fff;font-weight:700">▶ Iniciar</span>
+      </div>
+    </div>
+
     <div class="hud" id="hud">
       <div class="row">
         <button type="button" id="btnFs">Tela cheia</button>
-        <button type="button" id="btnVoice">Narração: on</button>
+        <button type="button" id="btnVoice">Áudio: on</button>
         <button type="button" id="btnPause">Pausar</button>
         <div class="dots" id="dots"></div>
       </div>
@@ -360,29 +369,27 @@
   </div>
 
   <script>
-    const DUR = 9000;
+    const PAD = 1400; // pausa após cada locução
     const scenes = [...document.querySelectorAll('.scene')];
     const bar = document.getElementById('bar');
     const dots = document.getElementById('dots');
+    const gate = document.getElementById('gate');
 
-    // Narração humanizada — tom de comercial institucional brasileiro
-    const scripts = [
-      'Imagine Bacabal com cada problema da rua virando protocolo. Este é o Bacabal Inteligente — a plataforma da Prefeitura pra cidade, saúde e eventos.',
-      'Olha só: a dona Maria sai de casa, encontra o buraco, aponta a câmera… e registra. Simples assim. Foto, lugar e reclamação oficial, na hora.',
-      'Ela manda pra plataforma e já recebe o número do protocolo. Acabou aquela história de “eu avisei no WhatsApp e ninguém resolveu”. Agora tem rastreio.',
-      'No Gabinete, o prefeito enxerga o que está aberto, o que está atrasado e o que precisa de prioridade. Cobra a secretaria com registro — não no achismo.',
-      'A Secretaria de Obras recebe, organiza a fila e encaminha pra equipe. Quando o Gabinete cobra, o alerta chega forte. Não dá pra fingir que não viu.',
-      'No campo, a equipe aceita a ordem, chega no ponto, faz o serviço e manda a foto do depois. Trabalho com prova, não com conversa.',
-      'Aí vem o que o povo quer ver: antes e depois. A secretaria aprova, o chamado fecha, e todo mundo acompanha o resultado.',
-      'Gabinete decide. Secretaria executa. Campo faz. Bacabal Inteligente — gestão com prova, pra uma prefeitura que quer surpreender de verdade.',
-    ];
+    // Locução neural pt-BR (estúdio) — um MP3 por cena
+    const tracks = scenes.map((_, i) => {
+      const a = new Audio('/assets/tv-narracao-' + i + '.mp3');
+      a.preload = 'auto';
+      return a;
+    });
 
     let idx = 0;
     let t0 = performance.now();
+    let sceneDur = 9000;
     let paused = false;
     let voiceOn = true;
+    let started = false;
     let hideTimer = null;
-    let preferredVoice = null;
+    let currentAudio = null;
 
     scenes.forEach((_, i) => {
       const s = document.createElement('span');
@@ -390,58 +397,44 @@
       dots.appendChild(s);
     });
 
-    function pickVoice() {
-      if (!window.speechSynthesis) return null;
-      const voices = window.speechSynthesis.getVoices();
-      const score = (v) => {
-        let s = 0;
-        const n = (v.name + ' ' + v.lang).toLowerCase();
-        if (/pt-br|pt_br/.test(n)) s += 50;
-        if (/portuguese|brasil|brazil/.test(n)) s += 30;
-        if (/female|feminina|maria|luciana|francisca|vit[oó]ria|heloisa|google/.test(n)) s += 20;
-        if (/neural|natural|premium|enhanced/.test(n)) s += 15;
-        return s;
-      };
-      return [...voices].sort((a, b) => score(b) - score(a))[0] || null;
+    function stopAudio() {
+      tracks.forEach((a) => {
+        try { a.pause(); a.currentTime = 0; } catch (_) {}
+      });
+      currentAudio = null;
     }
 
-    function speak(i) {
-      if (!voiceOn || !window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-      const text = scripts[i] || '';
-      // Quebra em frases pra soar mais humana (pausas naturais)
-      const parts = text.split(/(?<=[.!?…])\s+/).filter(Boolean);
-      let delay = 0;
-      parts.forEach((part, n) => {
-        const u = new SpeechSynthesisUtterance(part);
-        u.lang = 'pt-BR';
-        u.rate = 1.04;
-        u.pitch = 1.05;
-        u.volume = 1;
-        if (!preferredVoice) preferredVoice = pickVoice();
-        if (preferredVoice) u.voice = preferredVoice;
-        setTimeout(() => {
-          if (!voiceOn || paused) return;
-          window.speechSynthesis.speak(u);
-        }, delay);
-        // estimativa de duração da frase
-        delay += Math.max(1600, part.length * 55);
-        if (n < parts.length - 1) delay += 280;
-      });
+    function playVoice(i) {
+      stopAudio();
+      if (!voiceOn || !started) return;
+      const a = tracks[i];
+      currentAudio = a;
+      a.volume = 1;
+      const p = a.play();
+      if (p && p.catch) p.catch(() => {});
+    }
+
+    function measureDur(i) {
+      const a = tracks[i];
+      const audioMs = (a && isFinite(a.duration) && a.duration > 0)
+        ? a.duration * 1000
+        : 7500;
+      return Math.max(6500, audioMs + PAD);
     }
 
     function show(i) {
       scenes.forEach((el, n) => el.classList.toggle('on', n === i));
       dots.querySelectorAll('span').forEach((d, n) => d.classList.toggle('on', n === i));
       idx = i;
+      sceneDur = measureDur(i);
       t0 = performance.now();
       bar.style.width = '0%';
-      speak(i);
+      playVoice(i);
     }
 
     function tick(now) {
-      if (!paused) {
-        const p = Math.min(1, (now - t0) / DUR);
+      if (started && !paused) {
+        const p = Math.min(1, (now - t0) / sceneDur);
         bar.style.width = (p * 100) + '%';
         if (p >= 1) show((idx + 1) % scenes.length);
       }
@@ -454,48 +447,64 @@
       hideTimer = setTimeout(() => document.body.classList.remove('show-ui'), 4500);
     }
 
+    function startFilm() {
+      if (started) return;
+      started = true;
+      gate.style.display = 'none';
+      document.documentElement.requestFullscreen?.().catch(() => {});
+      // Garante metadados de duração
+      Promise.all(tracks.map((a) => new Promise((resolve) => {
+        if (a.readyState >= 1) return resolve();
+        a.addEventListener('loadedmetadata', resolve, { once: true });
+        a.addEventListener('error', resolve, { once: true });
+        setTimeout(resolve, 1500);
+      }))).then(() => show(0));
+    }
+
+    gate.addEventListener('click', startFilm);
+    gate.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') startFilm();
+    });
+
     document.getElementById('btnFs').onclick = () => {
       if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
       else document.exitFullscreen?.();
     };
 
     document.getElementById('btnPause').onclick = (e) => {
+      if (!started) return startFilm();
       paused = !paused;
       e.currentTarget.textContent = paused ? 'Continuar' : 'Pausar';
-      if (paused) window.speechSynthesis?.cancel();
-      else { t0 = performance.now(); speak(idx); }
+      if (paused) {
+        if (currentAudio) currentAudio.pause();
+      } else {
+        t0 = performance.now();
+        // retoma do ponto ou reinicia cena
+        if (currentAudio && voiceOn) {
+          currentAudio.play().catch(() => playVoice(idx));
+        } else playVoice(idx);
+      }
     };
 
     document.getElementById('btnVoice').onclick = (e) => {
       voiceOn = !voiceOn;
-      e.currentTarget.textContent = 'Narração: ' + (voiceOn ? 'on' : 'off');
-      if (voiceOn) speak(idx);
-      else window.speechSynthesis?.cancel();
+      e.currentTarget.textContent = 'Áudio: ' + (voiceOn ? 'on' : 'off');
+      if (!voiceOn) stopAudio();
+      else if (started && !paused) playVoice(idx);
     };
 
     window.addEventListener('mousemove', showUi);
     window.addEventListener('touchstart', showUi, { passive: true });
     window.addEventListener('keydown', (e) => {
       showUi();
+      if (e.key === 'Enter' && !started) startFilm();
       if (e.key === 'f' || e.key === 'F') document.getElementById('btnFs').click();
       if (e.key === ' ') { e.preventDefault(); document.getElementById('btnPause').click(); }
-      if (e.key === 'ArrowRight') show((idx + 1) % scenes.length);
-      if (e.key === 'ArrowLeft') show((idx - 1 + scenes.length) % scenes.length);
+      if (e.key === 'ArrowRight' && started) show((idx + 1) % scenes.length);
+      if (e.key === 'ArrowLeft' && started) show((idx - 1 + scenes.length) % scenes.length);
       if (e.key === 'v' || e.key === 'V') document.getElementById('btnVoice').click();
     });
 
-    document.getElementById('film').addEventListener('click', () => {
-      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
-      // Desbloqueia áudio no primeiro toque (política do navegador)
-      if (voiceOn) speak(idx);
-    }, { once: true });
-
-    if (window.speechSynthesis) {
-      preferredVoice = pickVoice();
-      window.speechSynthesis.onvoiceschanged = () => { preferredVoice = pickVoice(); };
-    }
-
-    // Pré-carrega imagens
     [
       '/assets/tv-cidade-dusk.jpg',
       '/assets/tv-cidadao-foto.jpg',
@@ -506,7 +515,6 @@
       '/assets/tv-antes-depois.jpg',
     ].forEach((src) => { const i = new Image(); i.src = src; });
 
-    show(0);
     requestAnimationFrame(tick);
     showUi();
   </script>
