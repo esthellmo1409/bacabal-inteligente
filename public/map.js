@@ -52,27 +52,32 @@ const MapBI = (() => {
     return p.fotoAntes || p.foto || p.fotoDepois || null;
   }
 
-  /** Camadas base: Ruas, Satélite, Híbrido */
+  /** Camadas base — satélite realista (mesmo tipo do Google Earth, via Esri).
+   *  Google Maps / Waze oficiais exigem chave paga da Google.
+   *  Em zoom muito alto o satélite some em cidades do interior → cai para ruas.
+   */
   function basemaps(map, defaultKey = 'hybrid') {
+    const SAT_NATIVE = 16; // acima disso Bacabal costuma ficar cinza no Esri
+
     const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
       maxZoom: 20,
       subdomains: 'abcd',
     });
 
+    // Imagem de satélite/aérea (visual próximo ao Google Earth)
     const sat = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      { attribution: 'Imagem &copy; Esri', maxZoom: 19 }
+      {
+        attribution: 'Satélite &copy; Esri',
+        maxZoom: 20,
+        maxNativeZoom: SAT_NATIVE,
+      }
     );
 
     const roads = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
-      { attribution: 'Ruas &copy; Esri', maxZoom: 19, opacity: 0.95 }
-    );
-
-    const places = L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-      { attribution: 'Nomes &copy; Esri', maxZoom: 19, opacity: 0.95 }
+      { attribution: 'Ruas &copy; Esri', maxZoom: 20, maxNativeZoom: SAT_NATIVE, opacity: 0.85 }
     );
 
     const labelsCarto = L.tileLayer(
@@ -82,22 +87,45 @@ const MapBI = (() => {
         maxZoom: 20,
         subdomains: 'abcd',
         pane: 'overlayPane',
-        opacity: 1,
       }
     );
 
-    const hybrid = L.layerGroup([sat, roads, places, labelsCarto]);
+    // Híbrido = satélite + nomes (estilo Google Earth / Maps satélite)
+    const hybrid = L.layerGroup([sat, roads, labelsCarto]);
 
     const layers = {
-      'Ruas (nomes)': streets,
-      'Satélite': sat,
-      'Híbrido (realista)': hybrid,
+      'Ruas': streets,
+      'Satélite (Google Earth)': sat,
+      'Híbrido satélite + nomes': hybrid,
     };
 
-    const initial = defaultKey === 'streets' ? streets : defaultKey === 'sat' ? sat : hybrid;
+    let mode = defaultKey === 'streets' ? 'streets' : defaultKey === 'sat' ? 'sat' : 'hybrid';
+    const initial = mode === 'streets' ? streets : mode === 'sat' ? sat : hybrid;
     initial.addTo(map);
+    try { map.setMaxZoom(19); } catch (_) {}
 
-    L.control.layers(layers, {}, { position: 'topright', collapsed: true }).addTo(map);
+    map.on('baselayerchange', (e) => {
+      if (e.name === 'Ruas') mode = 'streets';
+      else if (e.name.indexOf('Satélite') === 0) mode = 'sat';
+      else mode = 'hybrid';
+    });
+
+    map.on('zoomend', () => {
+      const z = map.getZoom();
+      if (z > SAT_NATIVE && (mode === 'hybrid' || mode === 'sat')) {
+        if (map.hasLayer(hybrid)) map.removeLayer(hybrid);
+        if (map.hasLayer(sat) && mode === 'sat') map.removeLayer(sat);
+        if (!map.hasLayer(streets)) streets.addTo(map);
+      } else if (z <= SAT_NATIVE && mode === 'hybrid') {
+        if (map.hasLayer(streets) && !map.hasLayer(hybrid)) map.removeLayer(streets);
+        if (!map.hasLayer(hybrid) && !map.hasLayer(sat)) hybrid.addTo(map);
+      } else if (z <= SAT_NATIVE && mode === 'sat') {
+        if (map.hasLayer(streets)) map.removeLayer(streets);
+        if (!map.hasLayer(sat)) sat.addTo(map);
+      }
+    });
+
+    L.control.layers(layers, {}, { position: 'topright', collapsed: false }).addTo(map);
 
     return { streets, sat, hybrid, layers };
   }
