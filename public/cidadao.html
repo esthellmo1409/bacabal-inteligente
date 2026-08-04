@@ -7,11 +7,22 @@
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
-<body>
+<body class="ops-body">
   <div class="wrap">
     <div id="top"></div>
-    <h1 class="display" style="font-size:1.8rem;margin-bottom:0.35rem">App do cidadão</h1>
-    <p class="muted" style="margin-bottom:1.25rem">Fotografe o problema, envie com GPS e acompanhe o protocolo.</p>
+    <div class="citizen-hero">
+      <div>
+        <p class="page-kicker">Cidadão · Bacabal Conecta</p>
+        <h1 class="display">Registre o problema</h1>
+        <p class="muted" style="margin:0.35rem 0 0;max-width:36rem">Foto, local e protocolo na hora. Acompanhe sem ligar de novo.</p>
+        <div class="citizen-steps">
+          <span>1 · Tipo</span>
+          <span>2 · Foto + GPS</span>
+          <span>3 · Protocolo</span>
+        </div>
+      </div>
+      <a class="btn btn-sm" href="/mapa.html?cidade=bacabal">Ver mapa da cidade</a>
+    </div>
 
     <div id="sucesso" class="success-box" style="display:none"></div>
 

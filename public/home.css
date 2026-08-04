@@ -586,7 +586,7 @@
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.06);
 }
 
-.landing-map-block .map-shell .map { height: 440px; }
+.landing-map-block .map-shell .map { height: 520px; }
 
 .landing-footer {
   border-top: 1px solid var(--pmb-line);

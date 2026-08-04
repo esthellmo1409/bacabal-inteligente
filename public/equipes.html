@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
-<body>
+<body class="ops-body">
   <div class="wrap">
     <div id="top"></div>
-    <h1 class="display" style="font-size:1.7rem;margin-bottom:0.35rem">Aplicativo das Equipes</h1>
-    <p class="muted" style="margin-bottom:1rem">Ordem de serviço · aceitar · GPS · foto antes/depois · material · horas · encerrar</p>
 
     <div id="loginView" class="panel login-box">
-      <h2>Login de campo</h2>
+      <p class="page-kicker">Campo · Bacabal Conecta</p>
+      <h2 style="margin-bottom:0.35rem">Equipe de campo</h2>
+      <p class="muted" style="margin-bottom:1rem">Ordem de serviço · GPS · foto · material · encerrar</p>
       <label>Usuário</label><input id="usuario" value="campo" />
       <label>Senha</label><input id="senha" type="password" value="campo123" />
       <button class="btn btn-primary" id="loginBtn" style="width:100%">Entrar</button>
@@ -22,6 +22,11 @@
     </div>
 
     <div id="appView" style="display:none">
+      <div class="sec-hero" style="margin-bottom:1rem">
+        <p class="page-kicker" style="margin-bottom:0.25rem">Campo · operação</p>
+        <h1 class="display" style="font-size:1.55rem;margin:0">Ordens de serviço</h1>
+        <p class="muted" style="margin:0.3rem 0 0">Aceitar · navegar · foto do depois · enviar à secretaria</p>
+      </div>
       <div id="alertaCampo" class="alerta-gabinete" style="display:none">
         <div class="alerta-gabinete-pulse"></div>
         <div class="alerta-gabinete-content">

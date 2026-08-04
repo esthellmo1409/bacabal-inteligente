@@ -140,9 +140,9 @@
     "categoria": "buraco",
     "secretaria": "obras",
     "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "descricao": "Problema na via — registrado pelo cidadão com local aproximado. Equipe deve conferir no ponto.",
     "bairro": "Bacabalzinho",
-    "endereco": "Rua Exemplo, 444",
+    "endereco": "Av. Getúlio Vargas, s/n",
     "lat": -4.311513670396063,
     "lng": -44.80853490307377,
     "status": "em_execucao",
@@ -151,7 +151,7 @@
       "nome": "Lucia Ferreira",
       "telefone": "(99) 91526-8560"
     },
-    "foto": null,
+    "foto": "/assets/buraco-demo-antes.jpg",
     "posteId": null,
     "historico": [
       {
@@ -176,7 +176,7 @@
     "custo": 0,
     "materiais": [],
     "horasTrabalhadas": 0,
-    "fotoAntes": null,
+    "fotoAntes": "/assets/buraco-demo-antes.jpg",
     "fotoDepois": null
   },
   {
@@ -360,9 +360,9 @@
     "categoria": "calcada",
     "secretaria": "obras",
     "titulo": "Calçada danificada",
-    "descricao": "Solicitação de calçada danificada registrada pelo cidadão.",
+    "descricao": "Problema na via — registrado pelo cidadão com local aproximado. Equipe deve conferir no ponto.",
     "bairro": "Bacabalzinho",
-    "endereco": "Rua Exemplo, 303",
+    "endereco": "Rua 15 de Novembro, s/n",
     "lat": -4.326539502549506,
     "lng": -44.81914046759474,
     "status": "em_execucao",
@@ -371,7 +371,7 @@
       "nome": "João Santos",
       "telefone": "(99) 95916-6518"
     },
-    "foto": null,
+    "foto": "/assets/buraco-demo-antes.jpg",
     "posteId": null,
     "historico": [
       {
@@ -396,7 +396,7 @@
     "custo": 0,
     "materiais": [],
     "horasTrabalhadas": 0,
-    "fotoAntes": null,
+    "fotoAntes": "/assets/buraco-demo-antes.jpg",
     "fotoDepois": null
   },
   {
@@ -445,9 +445,9 @@
     "categoria": "buraco",
     "secretaria": "obras",
     "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "descricao": "Problema na via — registrado pelo cidadão com local aproximado. Equipe deve conferir no ponto.",
     "bairro": "Vila Nova",
-    "endereco": "Rua Exemplo, 147",
+    "endereco": "Rua das Flores, s/n",
     "lat": -4.267350164287069,
     "lng": -44.80750558154187,
     "status": "novo",
@@ -456,7 +456,7 @@
       "nome": "Maria Silva",
       "telefone": "(99) 92926-9149"
     },
-    "foto": null,
+    "foto": "/assets/buraco-demo-antes.jpg",
     "posteId": null,
     "historico": [
       {
@@ -476,7 +476,7 @@
     "custo": 0,
     "materiais": [],
     "horasTrabalhadas": 0,
-    "fotoAntes": null,
+    "fotoAntes": "/assets/buraco-demo-antes.jpg",
     "fotoDepois": null
   },
   {
@@ -965,9 +965,9 @@
     "categoria": "buraco",
     "secretaria": "obras",
     "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "descricao": "Problema na via — registrado pelo cidadão com local aproximado. Equipe deve conferir no ponto.",
     "bairro": "Povoado Alto Alegre",
-    "endereco": "Rua Exemplo, 806",
+    "endereco": "Travessa São José, s/n",
     "lat": -4.272240822577481,
     "lng": -44.80602352984624,
     "status": "em_execucao",
@@ -976,7 +976,7 @@
       "nome": "João Santos",
       "telefone": "(99) 91152-7520"
     },
-    "foto": null,
+    "foto": "/assets/buraco-demo-antes.jpg",
     "posteId": null,
     "historico": [
       {
@@ -1001,7 +1001,7 @@
     "custo": 0,
     "materiais": [],
     "horasTrabalhadas": 0,
-    "fotoAntes": null,
+    "fotoAntes": "/assets/buraco-demo-antes.jpg",
     "fotoDepois": null
   },
   {
@@ -1670,9 +1670,9 @@
     "categoria": "buraco",
     "secretaria": "obras",
     "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "descricao": "Problema na via — registrado pelo cidadão com local aproximado. Equipe deve conferir no ponto.",
     "bairro": "Bacabalzinho",
-    "endereco": "Rua Exemplo, 786",
+    "endereco": "Rua do Comércio, s/n",
     "lat": -4.2999164809496975,
     "lng": -44.78220205094125,
     "status": "em_execucao",
@@ -1681,7 +1681,7 @@
       "nome": "João Santos",
       "telefone": "(99) 98797-4282"
     },
-    "foto": null,
+    "foto": "/assets/buraco-demo-antes.jpg",
     "posteId": null,
     "historico": [
       {
@@ -1706,7 +1706,7 @@
     "custo": 0,
     "materiais": [],
     "horasTrabalhadas": 0,
-    "fotoAntes": null,
+    "fotoAntes": "/assets/buraco-demo-antes.jpg",
     "fotoDepois": null
   },
   {
@@ -1850,9 +1850,9 @@
     "categoria": "calcada",
     "secretaria": "obras",
     "titulo": "Calçada danificada",
-    "descricao": "Solicitação de calçada danificada registrada pelo cidadão.",
+    "descricao": "Problema na via — registrado pelo cidadão com local aproximado. Equipe deve conferir no ponto.",
     "bairro": "Planalto",
-    "endereco": "Rua Exemplo, 166",
+    "endereco": "Av. Magalhães de Almeida, s/n",
     "lat": -4.304051362904112,
     "lng": -44.759794324374404,
     "status": "em_execucao",
@@ -1861,7 +1861,7 @@
       "nome": "Ana Costa",
       "telefone": "(99) 95495-4187"
     },
-    "foto": null,
+    "foto": "/assets/buraco-demo-antes.jpg",
     "posteId": null,
     "historico": [
       {
@@ -1886,7 +1886,7 @@
     "custo": 0,
     "materiais": [],
     "horasTrabalhadas": 0,
-    "fotoAntes": null,
+    "fotoAntes": "/assets/buraco-demo-antes.jpg",
     "fotoDepois": null
   },
   {
@@ -1895,9 +1895,9 @@
     "categoria": "buraco",
     "secretaria": "obras",
     "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "descricao": "Problema na via — registrado pelo cidadão com local aproximado. Equipe deve conferir no ponto.",
     "bairro": "Areal",
-    "endereco": "Rua Exemplo, 200",
+    "endereco": "Av. Getúlio Vargas, s/n",
     "lat": -4.290257912089104,
     "lng": -44.80036274988644,
     "status": "novo",
@@ -1906,7 +1906,7 @@
       "nome": "João Santos",
       "telefone": "(99) 97071-6348"
     },
-    "foto": null,
+    "foto": "/assets/buraco-demo-antes.jpg",
     "posteId": null,
     "historico": [
       {
@@ -1926,7 +1926,7 @@
     "custo": 0,
     "materiais": [],
     "horasTrabalhadas": 0,
-    "fotoAntes": null,
+    "fotoAntes": "/assets/buraco-demo-antes.jpg",
     "fotoDepois": null
   },
   {
@@ -2070,9 +2070,9 @@
     "categoria": "buraco",
     "secretaria": "obras",
     "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "descricao": "Problema na via — registrado pelo cidadão com local aproximado. Equipe deve conferir no ponto.",
     "bairro": "Mutirão",
-    "endereco": "Rua Exemplo, 89",
+    "endereco": "Rua 15 de Novembro, s/n",
     "lat": -4.269921028974114,
     "lng": -44.81847134538602,
     "status": "novo",
@@ -2081,7 +2081,7 @@
       "nome": "Lucia Ferreira",
       "telefone": "(99) 94700-6525"
     },
-    "foto": null,
+    "foto": "/assets/buraco-demo-antes.jpg",
     "posteId": null,
     "historico": [
       {
@@ -2101,7 +2101,7 @@
     "custo": 0,
     "materiais": [],
     "horasTrabalhadas": 0,
-    "fotoAntes": null,
+    "fotoAntes": "/assets/buraco-demo-antes.jpg",
     "fotoDepois": null
   },
   {

@@ -3,61 +3,137 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mapa Inteligente · Bacabal Conecta</title>
+  <title>Mapa da cidade · Bacabal Conecta</title>
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
 </head>
-<body>
+<body class="ops-body">
   <div class="wrap-wide">
     <div id="top"></div>
-    <h1 class="display" style="font-size:1.75rem;margin-bottom:0.35rem">Mapa Inteligente</h1>
-    <p class="muted" style="margin-bottom:1rem">Satélite com nomes de ruas · filtros · calor · rotas · equipes</p>
-    <div class="panel" style="margin-bottom:1rem">
-      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
-        <div class="map-search">
-          <input id="fBusca" type="search" placeholder="Buscar protocolo, bairro, categoria…" style="margin:0" />
-          <button type="button" id="fBuscaBtn" title="Buscar" aria-label="Buscar">🔍</button>
+
+    <header class="page-hero">
+      <div>
+        <p class="page-kicker">Território · tempo real</p>
+        <h1 class="display page-title">Mapa da cidade</h1>
+        <p class="muted page-sub">Satélite com nomes de rua · filtros · calor · rota do dia · equipes ao vivo</p>
+      </div>
+      <div class="page-hero-actions">
+        <a class="btn btn-sm" href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
+        <a class="btn btn-sm btn-primary" href="/prefeito.html?cidade=bacabal">Gabinete</a>
+      </div>
+    </header>
+
+    <div class="grid-4 map-kpis" id="kpis">
+      <div class="panel stat"><div class="label">No mapa</div><div class="value" id="kTotal">—</div></div>
+      <div class="panel stat"><div class="label">Abertos</div><div class="value" id="kAbertos">—</div></div>
+      <div class="panel stat"><div class="label">Em execução</div><div class="value" id="kExec">—</div></div>
+      <div class="panel stat"><div class="label">Urgentes / alta</div><div class="value" id="kUrg">—</div></div>
+    </div>
+
+    <div class="map-ops">
+      <aside class="map-ops-side panel">
+        <div class="map-ops-filters">
+          <div class="map-search">
+            <input id="fBusca" type="search" placeholder="Protocolo, bairro, categoria…" style="margin:0" />
+            <button type="button" id="fBuscaBtn" title="Buscar" aria-label="Buscar">🔍</button>
+          </div>
+          <select id="fStatus" style="margin:0"><option value="">Status</option></select>
+          <select id="fSec" style="margin:0"><option value="">Secretaria</option></select>
+          <select id="fBai" style="margin:0"><option value="">Bairro</option></select>
+          <select id="fPri" style="margin:0">
+            <option value="">Prioridade</option>
+            <option value="baixa">Baixa</option>
+            <option value="media">Média</option>
+            <option value="alta">Alta</option>
+            <option value="urgente">Urgente</option>
+          </select>
+          <div class="map-ops-toggles">
+            <label class="chip-toggle"><input type="checkbox" id="heat" /> Calor</label>
+            <label class="chip-toggle"><input type="checkbox" id="rota" /> Rota</label>
+            <label class="chip-toggle"><input type="checkbox" id="live" checked /> Equipes</label>
+          </div>
+          <div class="cta-row" style="margin-top:0.35rem">
+            <button class="btn btn-sm btn-primary" id="aplicar" type="button">Aplicar</button>
+            <button class="btn btn-sm" id="limpar" type="button">Limpar</button>
+          </div>
+          <p class="muted" style="margin:0.35rem 0 0;font-size:0.78rem"><span id="count">0</span> ocorrências</p>
         </div>
-        <select id="fStatus" style="margin:0"><option value="">Status</option></select>
-        <select id="fSec" style="margin:0"><option value="">Secretaria</option></select>
-        <select id="fBai" style="margin:0"><option value="">Bairro</option></select>
-        <select id="fPri" style="margin:0">
-          <option value="">Prioridade</option>
-          <option value="baixa">Baixa</option><option value="media">Média</option>
-          <option value="alta">Alta</option><option value="urgente">Urgente</option>
-        </select>
-        <input id="fDe" type="date" style="margin:0" />
-        <input id="fAte" type="date" style="margin:0" />
-        <label class="meta"><input type="checkbox" id="heat" /> Calor</label>
-        <label class="meta"><input type="checkbox" id="rota" /> Rotas</label>
-        <label class="meta"><input type="checkbox" id="live" checked /> Equipes ao vivo</label>
-        <button class="btn btn-sm btn-primary" id="aplicar">Aplicar</button>
-        <span class="count" id="count">0</span>
+        <div class="map-ops-list" id="lista"></div>
+      </aside>
+
+      <div class="map-ops-main">
+        <div class="map-shell map-shell-tall">
+          <div id="map" class="map"></div>
+          <div id="mapLegend"></div>
+        </div>
       </div>
     </div>
-    <div class="map-shell"><div id="map" class="map" style="height:560px"></div></div>
   </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
   <script src="/app.js"></script>
   <script src="/map.js"></script>
   <script>
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
-    let map, markers, heatLayer, routeLine, cfg;
+    let map, markers, heatLayer, routeLine, liveLayer, cfg, allList = [], selectedId = null;
+
+    function tempoRel(iso) {
+      if (!iso) return '';
+      const min = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+      if (min < 60) return 'há ' + min + ' min';
+      const h = Math.round(min / 60);
+      if (h < 48) return 'há ' + h + 'h';
+      return 'há ' + Math.round(h / 24) + 'd';
+    }
+
+    function cardHtml(c) {
+      const foto = MapBI.fotoUrl(c);
+      const active = selectedId === c.id ? ' is-active' : '';
+      return `
+        <button type="button" class="map-card${active}" data-id="${c.id}" data-lat="${c.lat}" data-lng="${c.lng}">
+          <div class="map-card-foto ${foto ? '' : 'sem'}">${foto ? `<img src="${foto}" alt="" />` : '<span>Sem foto</span>'}</div>
+          <div class="map-card-body">
+            <div class="map-card-top">
+              <strong>${c.titulo || c.categoria}</strong>
+              ${badge(c.status)}
+            </div>
+            <div class="meta">${c.protocolo || '—'} · ${c.bairro || '—'} · ${tempoRel(c.atualizadoEm || c.criadoEm)}</div>
+            <p>${(c.descricao || '').slice(0, 90)}${(c.descricao || '').length > 90 ? '…' : ''}</p>
+          </div>
+        </button>`;
+    }
+
+    function updateKpis(list) {
+      const abertos = list.filter(c => ['novo', 'aberto', 'em_analise', 'encaminhado'].includes(c.status)).length;
+      const exec = list.filter(c => ['em_execucao', 'em_andamento', 'aguardando_material', 'aguardando_aprovacao'].includes(c.status)).length;
+      const urg = list.filter(c => c.prioridade === 'urgente' || c.prioridade === 'alta').length;
+      kTotal.textContent = list.length;
+      kAbertos.textContent = abertos;
+      kExec.textContent = exec;
+      kUrg.textContent = urg;
+    }
 
     async function boot() {
       cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
-      document.getElementById('fStatus').innerHTML = '<option value="">Status</option>' + statusOptions();
-      document.getElementById('fSec').innerHTML = '<option value="">Secretaria</option>' +
+      document.getElementById('top').innerHTML = topbar('Mapa', cfg);
+      document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
+      fStatus.innerHTML = '<option value="">Status</option>' + statusOptions();
+      fSec.innerHTML = '<option value="">Secretaria</option>' +
         (cfg.secretarias || []).map(s => `<option value="${s.id}">${s.nome}</option>`).join('');
-      document.getElementById('fBai').innerHTML = '<option value="">Bairro</option>' +
+      fBai.innerHTML = '<option value="">Bairro</option>' +
         (cfg.bairros || []).map(b => `<option>${b}</option>`).join('');
-      map = L.map('map').setView([cfg.lat, cfg.lng], 15);
+
+      map = L.map('map', { zoomControl: false }).setView([cfg.lat, cfg.lng], 14);
+      L.control.zoom({ position: 'bottomright' }).addTo(map);
       MapBI.basemaps(map, 'hybrid');
       markers = L.layerGroup().addTo(map);
+      liveLayer = L.layerGroup().addTo(map);
+
       await apply();
-      setInterval(() => { if (live.checked) loadLive(); }, 15000);
+      setInterval(() => { if (live.checked) loadLive().catch(() => {}); }, 15000);
+      setTimeout(() => map.invalidateSize(), 200);
     }
 
     async function apply() {
@@ -66,55 +142,112 @@
       if (fSec.value) q.set('secretaria', fSec.value);
       if (fBai.value) q.set('bairro', fBai.value);
       if (fPri.value) q.set('prioridade', fPri.value);
-      if (fDe.value) q.set('de', fDe.value);
-      if (fAte.value) q.set('ate', fAte.value);
-      const list = await api('/api/chamados?' + q.toString());
+      allList = await api('/api/chamados?' + q.toString());
+      const pts = allList.filter(c => c.lat && c.lng);
+      const query = (fBusca.value || '').trim().toLowerCase();
+      const filtered = query
+        ? pts.filter(c => [
+            c.protocolo, c.titulo, c.categoria, c.bairro, c.descricao, c.secretaria, c.status,
+          ].join(' ').toLowerCase().includes(query))
+        : pts;
+
+      filtered.sort((a, b) => String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || '')));
+
+      count.textContent = filtered.length;
+      updateKpis(filtered);
+      lista.innerHTML = filtered.length
+        ? filtered.slice(0, 40).map(cardHtml).join('')
+        : '<p class="muted" style="padding:0.75rem">Nenhuma ocorrência com esses filtros.</p>';
+
+      lista.querySelectorAll('.map-card').forEach(btn => {
+        btn.onclick = () => {
+          selectedId = btn.dataset.id;
+          lista.querySelectorAll('.map-card').forEach(el => el.classList.toggle('is-active', el === btn));
+          const lat = Number(btn.dataset.lat);
+          const lng = Number(btn.dataset.lng);
+          map.setView([lat, lng], 17, { animate: true });
+          markers.eachLayer(layer => {
+            if (layer.getPopup && layer.__cid === selectedId) layer.openPopup();
+          });
+        };
+      });
+
       markers.clearLayers();
       if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
       if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
 
-      const pts = list.filter(c => c.lat && c.lng);
-      const q = (document.getElementById('fBusca').value || '').trim().toLowerCase();
-      const filtered = q
-        ? pts.filter(c => [
-            c.protocolo, c.titulo, c.categoria, c.bairro, c.descricao, c.secretaria, c.status,
-          ].join(' ').toLowerCase().includes(q))
-        : pts;
-      document.getElementById('count').textContent = filtered.length + ' no mapa';
-
       if (heat.checked && window.L && L.heatLayer) {
-        heatLayer = L.heatLayer(filtered.map(c => [c.lat, c.lng, c.prioridade === 'urgente' ? 0.9 : 0.5]), { radius: 28 }).addTo(map);
+        heatLayer = L.heatLayer(
+          filtered.map(c => [c.lat, c.lng, c.prioridade === 'urgente' ? 1 : c.prioridade === 'alta' ? 0.7 : 0.45]),
+          { radius: 32, blur: 22, maxZoom: 17 }
+        ).addTo(map);
       } else {
         filtered.forEach(c => {
-          L.circleMarker([c.lat, c.lng], {
-            radius: 8, color: '#fff', weight: 2,
-            fillColor: MapBI.STATUS_COLOR[c.status] || (c.prioridade === 'urgente' || c.prioridade === 'alta' ? '#e74c3c' : '#FF8000'),
-            fillOpacity: 0.9,
-          }).bindPopup(MapBI.popupHtml(c), { maxWidth: 280 }).addTo(markers);
+          const color = MapBI.STATUS_COLOR[c.status] || '#f07800';
+          const urgent = c.prioridade === 'urgente' || c.prioridade === 'alta';
+          const m = L.circleMarker([c.lat, c.lng], {
+            radius: urgent ? 10 : 7,
+            color: '#fff',
+            weight: 2,
+            fillColor: color,
+            fillOpacity: 0.92,
+          }).bindPopup(MapBI.popupHtml(c), { maxWidth: 300, className: 'bi-popup-wrap' });
+          m.__cid = c.id;
+          m.on('click', () => {
+            selectedId = c.id;
+            lista.querySelectorAll('.map-card').forEach(el => {
+              el.classList.toggle('is-active', el.dataset.id === c.id);
+              if (el.dataset.id === c.id) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            });
+          });
+          m.addTo(markers);
         });
+      }
+
+      if (filtered.length) {
+        try {
+          map.fitBounds(filtered.map(c => [c.lat, c.lng]), { padding: [40, 40], maxZoom: 15 });
+        } catch (_) {}
       }
 
       if (rota.checked) {
         const r = await api('/api/rota?lat=' + cfg.lat + '&lng=' + cfg.lng + (fSec.value ? '&secretaria=' + fSec.value : ''));
-        const latlngs = [[cfg.lat, cfg.lng], ...r.rota.map(p => [p.lat, p.lng])];
-        routeLine = L.polyline(latlngs, { color: '#398A21', weight: 3 }).addTo(map);
+        const latlngs = [[cfg.lat, cfg.lng], ...(r.rota || []).map(p => [p.lat, p.lng])];
+        if (latlngs.length > 1) {
+          routeLine = L.polyline(latlngs, { color: '#2f8a28', weight: 4, opacity: 0.85 }).addTo(map);
+        }
       }
       await loadLive();
     }
 
     async function loadLive() {
-      if (!live.checked) return;
+      if (!live.checked) {
+        liveLayer.clearLayers();
+        return;
+      }
+      liveLayer.clearLayers();
       const track = await api('/api/rastreamento');
-      track.forEach(t => {
-        L.marker([t.lat, t.lng]).bindPopup(`Equipe ${t.equipeId}<br>${fmtDate(t.atualizadoEm)}`).addTo(markers);
+      (track || []).forEach(t => {
+        L.circleMarker([t.lat, t.lng], {
+          radius: 9, color: '#fff', weight: 2, fillColor: '#111', fillOpacity: 0.95,
+        }).bindPopup(`<strong>Equipe ${t.equipeId}</strong><br>${fmtDate(t.atualizadoEm)}`).addTo(liveLayer);
       });
     }
 
     document.getElementById('aplicar').onclick = () => apply().catch(e => toast(e.message));
+    document.getElementById('limpar').onclick = () => {
+      fBusca.value = ''; fStatus.value = ''; fSec.value = ''; fBai.value = ''; fPri.value = '';
+      heat.checked = false; rota.checked = false;
+      apply().catch(e => toast(e.message));
+    };
     document.getElementById('fBuscaBtn').onclick = () => apply().catch(e => toast(e.message));
     document.getElementById('fBusca').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') { e.preventDefault(); apply().catch(err => toast(err.message)); }
     });
+    ['heat', 'rota', 'live'].forEach(id => {
+      document.getElementById(id).addEventListener('change', () => apply().catch(e => toast(e.message)));
+    });
+
     boot().catch(e => toast(e.message));
   </script>
 </body>

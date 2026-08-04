@@ -323,7 +323,7 @@ function topbar(active, cfg) {
     if (papel === 'secretaria' || papel === 'admin') {
       links.push([cityLink('/secretaria.html'), 'Minha secretaria']);
     }
-    if (papel === 'campo' || papel === 'admin') {
+    if (papel === 'campo' || papel === 'admin' || papel === 'secretaria') {
       links.push([cityLink('/equipes.html'), 'Campo']);
     }
     if (papel === 'prefeito' || papel === 'admin') {
