@@ -1,0 +1,13 @@
+{
+  "produto": "CidadeHub",
+  "tagline": "Cidade inteligente para qualquer prefeitura",
+  "versao": "2.0.0",
+  "usuarios": [
+    {
+      "id": "super",
+      "nome": "Super Admin",
+      "senha": "super123",
+      "papel": "platform"
+    }
+  ]
+}

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cidadão · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.8rem;margin-bottom:0.35rem">App do cidadão</h1>
+    <p class="muted" style="margin-bottom:1.25rem">Fotografe o problema, envie com GPS e acompanhe o protocolo.</p>
+
+    <div id="sucesso" class="success-box" style="display:none"></div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3 style="margin-bottom:0.85rem">Novo chamado</h3>
+        <label>Tipo de problema</label>
+        <div class="cats" id="cats"></div>
+
+        <label>Descrição</label>
+        <textarea id="descricao" placeholder="Ex.: buraco grande na frente do nº 120…"></textarea>
+
+        <label>Foto</label>
+        <input type="file" id="foto" accept="image/*" capture="environment" />
+        <img id="preview" class="preview" alt="Prévia" />
+        <div id="iaBox" class="muted" style="margin-bottom:0.9rem;font-size:0.85rem"></div>
+
+        <label>Bairro</label>
+        <select id="bairro"></select>
+
+        <label>Seu nome</label>
+        <input id="nome" placeholder="Nome completo" />
+
+        <label>Telefone / WhatsApp</label>
+        <input id="telefone" placeholder="(99) 9xxxx-xxxx" />
+
+        <p class="muted" id="gpsHint" style="margin-bottom:0.85rem">Obtendo localização…</p>
+        <button class="btn btn-primary" id="enviar" type="button" style="width:100%">Enviar chamado</button>
+      </div>
+
+      <div>
+        <div class="panel" style="margin-bottom:1rem">
+          <h3 style="margin-bottom:0.85rem">Acompanhar protocolo</h3>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <input id="protocolo" placeholder="Ex.: 20261001" style="margin:0;flex:1;min-width:140px" />
+            <button class="btn" id="buscar" type="button">Buscar</button>
+          </div>
+          <p class="muted" style="margin:0.65rem 0 0;font-size:0.8rem">Ou busque pelos seus protocolos recentes / telefone.</p>
+          <div id="meus" class="chip-row" style="margin-top:0.65rem"></div>
+          <div style="display:flex;gap:0.5rem;margin-top:0.65rem;flex-wrap:wrap">
+            <input id="telBusca" placeholder="Seu WhatsApp" style="margin:0;flex:1;min-width:140px" />
+            <button class="btn btn-sm" id="buscarTel" type="button">Meus chamados</button>
+          </div>
+          <div id="resultado" style="margin-top:1rem"></div>
+        </div>
+        <div class="panel">
+          <h3 style="margin-bottom:0.75rem">Local no mapa</h3>
+          <div id="map" class="map"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>Chamado roteado automaticamente para a secretaria.</span>
+      <a id="linkSec" href="/secretaria.html">Painel das secretarias</a>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/app.js"></script>
+  <script src="/map.js"></script>
+  <script>
+    if (new URLSearchParams(location.search).get('cidade')) {
+      setCidade(new URLSearchParams(location.search).get('cidade'));
+    }
+    if (!requireCidade()) throw new Error('sem cidade');
+
+    let categoria = null;
+    let fotoData = null;
+    let urgencia = null;
+    let lat = -4.2917, lng = -44.7917;
+    let map, marker;
+
+    function renderMeus() {
+      const box = document.getElementById('meus');
+      const list = meusProtocolos();
+      if (!list.length) {
+        box.innerHTML = '';
+        return;
+      }
+      box.innerHTML = list.map(p =>
+        `<button type="button" class="chip" data-p="${p}">${p}</button>`
+      ).join('');
+      box.querySelectorAll('.chip').forEach(el => {
+        el.onclick = () => {
+          document.getElementById('protocolo').value = el.dataset.p;
+          document.getElementById('buscar').click();
+        };
+      });
+    }
+
+    function renderChamado(c) {
+      const box = document.getElementById('resultado');
+      box.innerHTML = `
+        <div class="item">
+          <div class="item-head">
+            <strong>${c.titulo}</strong>
+            ${badge(c.status)}
+          </div>
+          <div class="meta">
+            Protocolo <strong>${c.protocolo}</strong>
+            · Prioridade ${prioridadeLabel(c.prioridade)}
+            · ${c.bairro}
+            · ${fmtDate(c.criadoEm)}
+          </div>
+          <p class="muted">${c.descricao}</p>
+          ${c.foto ? `<img class="preview show" src="${c.foto}" alt="Foto do chamado" style="max-height:140px;margin-top:0.5rem" />` : ''}
+          <div class="actions">
+            <button class="btn btn-sm" type="button" onclick="copyText('${c.protocolo}')">Copiar protocolo</button>
+          </div>
+            <div class="meta" style="margin-top:0.85rem"><strong>Linha do tempo</strong></div>
+          ${timelineHtml(c.historico)}
+          ${c.status === 'concluido' ? `
+            <div style="margin-top:0.85rem">
+              <strong>Avaliar atendimento</strong>
+              <div class="actions">
+                <button class="btn btn-sm" type="button" onclick="avaliar('${c.id}',5)">⭐ 5</button>
+                <button class="btn btn-sm" type="button" onclick="avaliar('${c.id}',4)">⭐ 4</button>
+                <button class="btn btn-sm" type="button" onclick="avaliar('${c.id}',3)">⭐ 3</button>
+              </div>
+              ${c.avaliacao ? `<div class="meta">Sua nota: ${c.avaliacao.nota}/5</div>` : ''}
+            </div>` : ''}
+        </div>
+      `;
+      if (c.lat && c.lng) {
+        marker.setLatLng([c.lat, c.lng]);
+        map.setView([c.lat, c.lng], 16);
+      }
+    }
+
+    async function init() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Cidadão', cfg);
+      document.getElementById('linkSec').href = cityLink('/secretaria.html');
+      document.title = (cfg.produto || cfg.cidade) + ' · Cidadão';
+
+      lat = cfg.lat; lng = cfg.lng;
+
+      const bairroSel = document.getElementById('bairro');
+      bairroSel.innerHTML = (cfg.bairros || ['Centro']).map(b =>
+        `<option>${b}</option>`
+      ).join('');
+
+      const cats = document.getElementById('cats');
+      cats.innerHTML = cfg.categorias.map(c => `
+        <div class="cat" data-id="${c.id}">
+          <span class="icon">${c.icon}</span>
+          <span class="name">${c.label}</span>
+        </div>
+      `).join('');
+      cats.querySelectorAll('.cat').forEach(el => {
+        el.onclick = () => {
+          cats.querySelectorAll('.cat').forEach(x => x.classList.remove('selected'));
+          el.classList.add('selected');
+          categoria = el.dataset.id;
+        };
+      });
+
+      map = L.map('map').setView([lat, lng], 16);
+      MapBI.basemaps(map, 'hybrid');
+      marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+      marker.on('dragend', () => {
+        const p = marker.getLatLng();
+        lat = p.lat; lng = p.lng;
+        document.getElementById('gpsHint').textContent =
+          `Localização: ${lat.toFixed(5)}, ${lng.toFixed(5)} (ajustável no mapa)`;
+      });
+      map.on('click', e => {
+        lat = e.latlng.lat; lng = e.latlng.lng;
+        marker.setLatLng(e.latlng);
+        document.getElementById('gpsHint').textContent =
+          `Localização: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      });
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          lat = pos.coords.latitude;
+          lng = pos.coords.longitude;
+          marker.setLatLng([lat, lng]);
+          map.setView([lat, lng], 16);
+          document.getElementById('gpsHint').textContent =
+            `GPS ativo: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        }, () => {
+          document.getElementById('gpsHint').textContent =
+            'GPS indisponível — use o mapa para marcar o local.';
+        });
+      }
+
+      renderMeus();
+
+      const pUrl = new URLSearchParams(location.search).get('protocolo');
+      if (pUrl) {
+        document.getElementById('protocolo').value = pUrl;
+        document.getElementById('buscar').click();
+      }
+    }
+
+    document.getElementById('foto').onchange = e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        fotoData = reader.result;
+        const img = document.getElementById('preview');
+        img.src = fotoData;
+        img.classList.add('show');
+        const box = document.getElementById('iaBox');
+        box.textContent = 'IA analisando a foto…';
+        try {
+          const ia = await api('/api/ia/foto', {
+            method: 'POST',
+            body: JSON.stringify({
+              foto: fotoData,
+              texto: document.getElementById('descricao').value,
+            }),
+          });
+          urgencia = ia.urgencia;
+          box.innerHTML = `<strong style="color:var(--brand)">IA ${ia.confianca}%</strong> — ${ia.label} · urgência ${ia.urgencia}. ${ia.aviso}`;
+          categoria = ia.categoria;
+          document.querySelectorAll('.cat').forEach(el => {
+            el.classList.toggle('selected', el.dataset.id === ia.categoria);
+          });
+          const desc = document.getElementById('descricao');
+          if (!desc.value.trim()) desc.value = ia.descricaoSugerida;
+        } catch (err) {
+          box.textContent = 'Não foi possível analisar — escolha o tipo manualmente.';
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+
+    document.getElementById('enviar').onclick = async () => {
+      if (!categoria) return toast('Selecione o tipo de problema');
+      const descricao = document.getElementById('descricao').value.trim();
+      if (!descricao && !fotoData) return toast('Informe descrição ou foto');
+
+      const btn = document.getElementById('enviar');
+      btn.disabled = true;
+      try {
+        const chamado = await api('/api/chamados', {
+          method: 'POST',
+          body: JSON.stringify({
+            categoria,
+            descricao,
+            bairro: document.getElementById('bairro').value,
+            nome: document.getElementById('nome').value.trim() || 'Cidadão',
+            telefone: document.getElementById('telefone').value.trim(),
+            lat, lng,
+            foto: fotoData,
+            urgencia,
+            prioridade: urgencia === 'alta' ? 'alta' : urgencia === 'baixa' ? 'baixa' : 'media',
+          }),
+        });
+
+        saveMeuProtocolo(chamado.protocolo);
+        renderMeus();
+
+        const ok = document.getElementById('sucesso');
+        ok.style.display = 'block';
+        ok.innerHTML = `
+          <strong>Chamado aberto</strong>
+          <div class="protocolo-big">${chamado.protocolo}</div>
+          <p class="muted" style="margin:0.35rem 0 0.75rem">Guarde este número. A secretaria já recebeu na fila.</p>
+          <div class="actions">
+            <button class="btn btn-sm btn-primary" type="button" onclick="copyText('${chamado.protocolo}')">Copiar protocolo</button>
+            <a class="btn btn-sm" href="${cityLink('/cidadao.html')}&protocolo=${chamado.protocolo}">Link de acompanhamento</a>
+          </div>
+        `;
+        ok.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        document.getElementById('protocolo').value = chamado.protocolo;
+        document.getElementById('descricao').value = '';
+        document.getElementById('foto').value = '';
+        fotoData = null;
+        urgencia = null;
+        document.getElementById('preview').classList.remove('show');
+        document.getElementById('iaBox').textContent = '';
+        document.querySelectorAll('.cat').forEach(x => x.classList.remove('selected'));
+        categoria = null;
+
+        renderChamado(chamado);
+        toast('Protocolo ' + chamado.protocolo);
+      } catch (e) {
+        toast(e.message);
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    document.getElementById('buscar').onclick = async () => {
+      const p = document.getElementById('protocolo').value.trim();
+      if (!p) return toast('Informe o protocolo');
+      try {
+        const list = await api('/api/chamados?protocolo=' + encodeURIComponent(p));
+        const box = document.getElementById('resultado');
+        if (!list.length) {
+          box.innerHTML = '<p class="muted">Nenhum chamado encontrado.</p>';
+          return;
+        }
+        renderChamado(list[0]);
+      } catch (e) {
+        toast(e.message);
+      }
+    };
+
+    document.getElementById('buscarTel').onclick = async () => {
+      const tel = document.getElementById('telBusca').value.trim();
+      if (!tel) return toast('Informe o telefone');
+      try {
+        const list = await api('/api/chamados?telefone=' + encodeURIComponent(tel));
+        const box = document.getElementById('resultado');
+        if (!list.length) {
+          box.innerHTML = '<p class="muted">Nenhum chamado neste telefone.</p>';
+          return;
+        }
+        list.slice(0, 8).forEach(c => saveMeuProtocolo(c.protocolo));
+        renderMeus();
+        box.innerHTML = list.map(c => `
+          <div class="item" style="cursor:pointer" data-p="${c.protocolo}">
+            <div class="item-head">
+              <strong>${c.titulo}</strong>
+              ${badge(c.status)}
+            </div>
+            <div class="meta">${c.protocolo} · ${c.bairro} · ${fmtDate(c.criadoEm)}</div>
+          </div>
+        `).join('');
+        box.querySelectorAll('[data-p]').forEach(el => {
+          el.onclick = () => {
+            document.getElementById('protocolo').value = el.dataset.p;
+            document.getElementById('buscar').click();
+          };
+        });
+      } catch (e) {
+        toast(e.message);
+      }
+    };
+
+    document.getElementById('protocolo').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('buscar').click();
+    });
+
+    window.avaliar = async (id, nota) => {
+      try {
+        await api('/api/chamados/' + id + '/avaliar', {
+          method: 'POST',
+          body: JSON.stringify({ nota, comentario: 'Avaliação do cidadão' }),
+        });
+        toast('Obrigado! Nota ' + nota);
+        document.getElementById('buscar').click();
+      } catch (e) { toast(e.message); }
+    };
+
+    init().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

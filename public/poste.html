@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Poste QR · CidadeHub</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+    <div class="panel" style="max-width:420px;margin:2rem auto;text-align:center">
+      <div class="brand-mark" style="margin:0 auto 1rem;width:56px;height:56px;font-size:1.2rem">💡</div>
+      <h1 class="display" style="font-size:1.7rem" id="titulo">Poste —</h1>
+      <p class="muted" style="margin:0.5rem 0 1.25rem">
+        Relato rápido de lâmpada apagada neste município.
+      </p>
+      <label style="text-align:left">Seu nome (opcional)</label>
+      <input id="nome" placeholder="Cidadão" />
+      <label style="text-align:left">WhatsApp (opcional)</label>
+      <input id="telefone" placeholder="(99) 9xxxx-xxxx" />
+      <button class="btn btn-primary" id="enviar" style="width:100%">Lâmpada apagada — Enviar</button>
+      <div id="ok" style="margin-top:1rem"></div>
+    </div>
+    <div class="footer"><span>QR: /poste.html?id=NUMERO&amp;cidade=slug</span></div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    if (new URLSearchParams(location.search).get('cidade')) {
+      setCidade(new URLSearchParams(location.search).get('cidade'));
+    }
+    if (!requireCidade()) throw new Error('sem cidade');
+
+    const params = new URLSearchParams(location.search);
+    const posteId = params.get('id') || '1457';
+    document.getElementById('titulo').textContent = 'Poste ' + posteId;
+
+    let lat, lng;
+    loadCityBrand().then(cfg => {
+      document.getElementById('top').innerHTML = topbar('Poste QR', cfg);
+      lat = cfg.lat; lng = cfg.lng;
+    });
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        lat = pos.coords.latitude;
+        lng = pos.coords.longitude;
+      });
+    }
+
+    document.getElementById('enviar').onclick = async () => {
+      const btn = document.getElementById('enviar');
+      btn.disabled = true;
+      try {
+        const c = await api('/api/postes/report', {
+          method: 'POST',
+          body: JSON.stringify({
+            posteId, lat, lng,
+            nome: document.getElementById('nome').value,
+            telefone: document.getElementById('telefone').value,
+          }),
+        });
+        document.getElementById('ok').innerHTML = `
+          <div class="item" style="text-align:left">
+            <strong>Enviado!</strong>
+            <div class="meta">Protocolo ${c.protocolo}</div>
+            <a href="${cityLink('/cidadao.html')}">Acompanhar</a>
+          </div>
+        `;
+        toast('Chamado do poste ' + posteId + ' aberto');
+      } catch (e) {
+        toast(e.message);
+        btn.disabled = false;
+      }
+    };
+  </script>
+</body>
+</html>

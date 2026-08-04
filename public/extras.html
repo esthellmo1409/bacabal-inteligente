@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Módulos extras · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.75rem;margin-bottom:0.35rem">Módulos extras</h1>
+    <p class="muted" style="margin-bottom:1rem">Diferenciais para expandir o contrato modular</p>
+    <div class="grid-3" id="grid"></div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    const links = {
+      ia_imagens: '/ia.html', rastreamento: '/mapa.html', bi: '/prefeito.html',
+      whatsapp_bot: '/whatsapp.html', assinatura: '/chamados.html', portal_transp: '/transparencia.html',
+      estoque: '/cadastro.html', custos: '/relatorios.html', alertas: '/notificacoes.html',
+      defesa_civil: '/secretaria.html', transito: '/secretaria.html', iluminacao: '/poste.html?id=1457',
+      arborizacao: '/secretaria.html', lixo: '/secretaria.html',
+    };
+    (async () => {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      const data = await api('/api/modulos');
+      document.getElementById('grid').innerHTML = data.extras.map(e => `
+        <div class="panel">
+          <div style="font-size:1.75rem;margin-bottom:0.35rem">${e.icon}</div>
+          <h3>${e.nome}</h3>
+          <p class="muted" style="margin:0.5rem 0">${e.desc}</p>
+          <span class="badge badge-${e.status === 'demo' ? 'concluido' : 'em_analise'}">${e.status}</span>
+          ${links[e.id] ? `<div style="margin-top:0.75rem"><a class="btn btn-sm" href="${cityLink(links[e.id])}">Abrir</a></div>` : ''}
+        </div>`).join('');
+    })().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

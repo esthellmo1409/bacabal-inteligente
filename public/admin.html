@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin · CidadeHub</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+
+    <div id="loginView" class="panel login-box">
+      <h2 style="margin-bottom:0.35rem">Admin da plataforma</h2>
+      <p class="muted" style="margin-bottom:1rem">Cadastre qualquer município em poucos passos.</p>
+      <label>Usuário</label>
+      <input id="usuario" value="super" />
+      <label>Senha</label>
+      <input id="senha" type="password" value="super123" />
+      <button class="btn btn-primary" id="loginBtn" style="width:100%">Entrar</button>
+    </div>
+
+    <div id="appView" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+        <div>
+          <h1 class="display" style="font-size:1.7rem">Municípios</h1>
+          <p class="muted">Novo cliente = novo tenant. Sem fork de código.</p>
+        </div>
+        <button class="btn btn-sm" id="sair">Sair</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3 style="margin-bottom:0.85rem">Cadastrar prefeitura</h3>
+          <label>Nome</label>
+          <input id="nome" placeholder="Ex.: Caxias" />
+          <label>UF</label>
+          <input id="uf" maxlength="2" placeholder="MA" />
+          <label>Slug (opcional)</label>
+          <input id="slug" placeholder="caxias" />
+          <label>Nome do produto</label>
+          <input id="produto" placeholder="Caxias Inteligente" />
+          <div class="grid-3">
+            <div>
+              <label>Cor primária</label>
+              <input id="cor1" type="color" value="#3dcf9a" style="height:42px;padding:0.2rem" />
+            </div>
+            <div>
+              <label>Cor secundária</label>
+              <input id="cor2" type="color" value="#1f8f68" style="height:42px;padding:0.2rem" />
+            </div>
+            <div>
+              <label>Fundo</label>
+              <input id="cor3" type="color" value="#0b1f1a" style="height:42px;padding:0.2rem" />
+            </div>
+          </div>
+          <label>Latitude</label>
+          <input id="lat" type="number" step="any" value="-4.8" />
+          <label>Longitude</label>
+          <input id="lng" type="number" step="any" value="-44.3" />
+          <label>Bairros (um por linha)</label>
+          <textarea id="bairros" placeholder="Centro&#10;Vila Nova">Centro
+Vila Nova</textarea>
+          <label>Logo (URL ou deixe vazio)</label>
+          <input id="logo" placeholder="https://…" />
+          <button class="btn btn-primary" id="criar" style="width:100%">Criar município</button>
+        </div>
+
+        <div>
+          <div class="panel" style="margin-bottom:1rem">
+            <h3 style="margin-bottom:0.75rem">Clientes ativos</h3>
+            <div class="list" id="lista"></div>
+          </div>
+          <div class="panel">
+            <h3>O que é criado automaticamente</h3>
+            <p class="muted" style="margin-top:0.5rem">
+              Secretarias padrão, categorias de serviço, usuários (admin, prefeito, equipes),
+              base vazia de chamados e obras. Pronto para white-label.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer"><span>CidadeHub · onboarding de prefeituras</span></div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    document.getElementById('top').innerHTML = topbar('Admin');
+
+    function showApp() {
+      document.getElementById('loginView').style.display = 'none';
+      document.getElementById('appView').style.display = 'block';
+      refresh();
+    }
+
+    async function trySession() {
+      if (!localStorage.getItem('bi_token')) return;
+      try {
+        const u = await api('/api/me');
+        if (u.papel !== 'platform') throw new Error('not platform');
+        showApp();
+      } catch {
+        localStorage.removeItem('bi_token');
+      }
+    }
+
+    document.getElementById('loginBtn').onclick = async () => {
+      try {
+        const r = await api('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            usuario: document.getElementById('usuario').value.trim(),
+            senha: document.getElementById('senha').value,
+            plataforma: true,
+          }),
+        });
+        localStorage.setItem('bi_token', r.token);
+        showApp();
+        toast('Logado na plataforma');
+      } catch (e) {
+        toast(e.message);
+      }
+    };
+
+    document.getElementById('sair').onclick = () => {
+      localStorage.removeItem('bi_token');
+      location.reload();
+    };
+
+    async function refresh() {
+      const list = await api('/api/municipios');
+      document.getElementById('lista').innerHTML = list.map(m => `
+        <div class="item">
+          <div class="item-head">
+            <strong>${m.nome} / ${m.uf}</strong>
+            <span class="tag live">${m.slug}</span>
+          </div>
+          <div class="meta">${m.produto}</div>
+          <div class="actions">
+            <a class="btn btn-sm btn-primary" href="/cidadao.html?cidade=${m.slug}" onclick="setCidade('${m.slug}')">Abrir</a>
+          </div>
+        </div>
+      `).join('') || '<p class="muted">Nenhum município ainda.</p>';
+    }
+
+    document.getElementById('criar').onclick = async () => {
+      const bairros = document.getElementById('bairros').value
+        .split('\n').map(s => s.trim()).filter(Boolean);
+      try {
+        const m = await api('/api/municipios', {
+          method: 'POST',
+          body: JSON.stringify({
+            nome: document.getElementById('nome').value,
+            uf: document.getElementById('uf').value,
+            slug: document.getElementById('slug').value || undefined,
+            produto: document.getElementById('produto').value || undefined,
+            lat: document.getElementById('lat').value,
+            lng: document.getElementById('lng').value,
+            logo: document.getElementById('logo').value || null,
+            bairros,
+            tema: {
+              primaria: document.getElementById('cor1').value,
+              secundaria: document.getElementById('cor2').value,
+              fundo: document.getElementById('cor3').value,
+            },
+          }),
+        });
+        toast('Município ' + m.nome + ' criado!');
+        document.getElementById('nome').value = '';
+        refresh();
+      } catch (e) {
+        toast(e.message);
+      }
+    };
+
+    trySession();
+  </script>
+</body>
+</html>

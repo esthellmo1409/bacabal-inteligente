@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Relatórios · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.75rem;margin-bottom:0.35rem">Relatórios</h1>
+    <p class="muted" style="margin-bottom:1rem">PDF · Excel/CSV · bairro · secretaria · tempo médio · SLA · rankings</p>
+    <div class="grid-2">
+      <div class="panel">
+        <label>Tipo</label>
+        <select id="tipo">
+          <option value="chamados">Chamados</option>
+          <option value="bairro">Por bairro</option>
+          <option value="secretaria">Por secretaria</option>
+          <option value="equipes">Ranking equipes</option>
+          <option value="sla">SLA / pendentes</option>
+        </select>
+        <label>Formato</label>
+        <select id="formato">
+          <option value="csv">CSV</option>
+          <option value="excel">Excel (CSV)</option>
+          <option value="pdf">PDF (texto)</option>
+        </select>
+        <button class="btn btn-primary" id="gerar" style="width:100%;margin-top:0.75rem">Gerar e baixar</button>
+      </div>
+      <div class="panel">
+        <h3>Indicadores rápidos</h3>
+        <div id="kpi" class="muted" style="margin-top:0.75rem"></div>
+      </div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    (async () => {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      const m = await api('/api/metricas');
+      kpi.innerHTML = `
+        <div>Total: <strong>${m.total}</strong></div>
+        <div>Pendentes: <strong>${m.pendentes}</strong></div>
+        <div>Tempo médio: <strong>${m.tempoMedioDias} dias</strong></div>
+        <div>Taxa resolução: <strong>${m.taxaResolucao}%</strong></div>
+        <div>SLA estourado: <strong>${m.slaEstourado}</strong></div>
+        <div>Custos serviços: <strong>${money(m.custoTotal)}</strong></div>`;
+    })().catch(e => toast(e.message));
+
+    gerar.onclick = async () => {
+      try {
+        const r = await api(`/api/relatorios/export?tipo=${tipo.value}&formato=${formato.value}`);
+        downloadText(r.nome, r.conteudo, r.mime || 'text/plain;charset=utf-8');
+        toast('Download iniciado');
+      } catch (e) { toast(e.message); }
+    };
+  </script>
+</body>
+</html>

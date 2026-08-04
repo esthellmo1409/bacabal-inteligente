@@ -1,0 +1,24 @@
+{
+  "data": "2026-08-04",
+  "atualizadoEm": "2026-08-04T14:10:10.855Z",
+  "unidades": {
+    "US-HOSP": {
+      "naFila": 28,
+      "atendidosHoje": 94,
+      "tempoMedioMin": 110,
+      "metaAtendimentos": 120
+    },
+    "US-UBS1": {
+      "naFila": 9,
+      "atendidosHoje": 41,
+      "tempoMedioMin": 38,
+      "metaAtendimentos": 60
+    },
+    "US-UBS2": {
+      "naFila": 14,
+      "atendidosHoje": 22,
+      "tempoMedioMin": 55,
+      "metaAtendimentos": 50
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "slug": "imperatriz",
+  "cidade": "Imperatriz",
+  "uf": "MA",
+  "produto": "Imperatriz Inteligente",
+  "versao": "2.0.0",
+  "lat": -5.5265,
+  "lng": -47.4917,
+  "zoom": 13,
+  "tema": {
+    "primaria": "#5bb8e8",
+    "secundaria": "#1a6f9a",
+    "fundo": "#0a1620"
+  },
+  "logo": null,
+  "bairros": [
+    "Centro",
+    "Bacuri",
+    "Nova Imperatriz",
+    "Parque Sanharó",
+    "Beira Rio",
+    "Bom Sucesso"
+  ]
+}

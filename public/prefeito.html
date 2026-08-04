@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gabinete do Prefeito · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    .eixo-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin:1rem 0 1.25rem; }
+    .eixo-tab {
+      border:1px solid var(--line); background:#fff; border-radius:999px;
+      padding:0.55rem 1.1rem; font-weight:800; font-size:0.85rem; cursor:pointer;
+      color: var(--ink);
+    }
+    .eixo-tab.active {
+      background: linear-gradient(135deg,#FF8000,#398A21); color:#fff; border-color:transparent;
+    }
+    .eixo-tab small { display:block; font-weight:600; opacity:.85; font-size:0.68rem; margin-top:0.1rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap-wide">
+    <div id="top"></div>
+
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap">
+      <div>
+        <div class="flag-bar"><span></span><span></span><span></span></div>
+        <h1 class="display" style="font-size:1.85rem">Gabinete do Prefeito</h1>
+        <p class="muted">Uma tela só · Cidade · Saúde · Eventos — decidir, cobrar e priorizar</p>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-sm" id="refresh">Atualizar</button>
+        <button class="btn btn-sm btn-primary" id="loginPref">Entrar como prefeito</button>
+      </div>
+    </div>
+
+    <div class="eixo-tabs" id="tabs">
+      <button type="button" class="eixo-tab active" data-eixo="cidade">Cidade<small>Ruas, obras, limpeza</small></button>
+      <button type="button" class="eixo-tab" data-eixo="saude">Saúde<small>Hospital, UBS, visita</small></button>
+      <button type="button" class="eixo-tab" data-eixo="eventos">Eventos<small>Agenda e estrutura</small></button>
+    </div>
+
+    <div class="grid-4" id="kpis"></div>
+
+    <div class="panel" style="margin-top:1rem;margin-bottom:1rem;background:linear-gradient(135deg,rgba(255,128,0,.08),rgba(57,138,33,.06));border-color:rgba(255,128,0,.25)">
+      <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:start">
+        <div>
+          <h3 style="margin-bottom:0.35rem" id="tituloDec">Central de decisões</h3>
+          <p class="muted" style="margin:0" id="subtituloDec">Gabinete decide · secretaria executa</p>
+        </div>
+        <div id="acoesEixo" class="cta-row"></div>
+      </div>
+      <div class="list" id="filaDecisoes" style="margin-top:0.85rem"></div>
+    </div>
+
+    <div class="grid-2" id="blocoExtra" style="margin-bottom:1rem"></div>
+
+    <div class="grid-2" style="margin-top:1rem">
+      <div class="panel">
+        <h3 style="margin-bottom:0.85rem">Status (eixo atual)</h3>
+        <div class="chart-box"><canvas id="chartStatus"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3 style="margin-bottom:0.85rem" id="chartSecTitle">Por secretaria</h3>
+        <div class="chart-box"><canvas id="chartSec"></canvas></div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:1rem">
+      <div>
+        <h3 class="section-title" style="margin-top:0">Mapa</h3>
+        <div class="map-shell">
+          <div class="map-toolbar">
+            <select id="filtroStatus"><option value="">Todos os status</option></select>
+            <select id="filtroBairro"><option value="">Todos os bairros</option></select>
+            <span class="count" id="mapCount">0</span>
+          </div>
+          <div id="map" class="map"></div>
+          <div id="mapLegend"></div>
+        </div>
+      </div>
+      <div>
+        <div class="panel" style="margin-bottom:1rem">
+          <h3 style="margin-bottom:0.85rem">Histórico de decisões</h3>
+          <div id="histDec" class="list"></div>
+        </div>
+        <div class="panel">
+          <h3 style="margin-bottom:0.85rem">Obras da cidade</h3>
+          <div id="obras" class="list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>Cidade · Saúde · Eventos no mesmo Gabinete</span>
+      <a id="linkSec" href="/secretaria.html">Secretarias</a>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/app.js"></script>
+  <script src="/map.js"></script>
+  <script>
+    setCidade('bacabal');
+    let cfg, mapState, eixo = 'cidade';
+    let chartStatus, chartSec;
+    let filtersWired = false;
+    let lastFila = null;
+
+    const mid = '#2163e8';
+    const colors = {
+      novo: mid, aberto: mid, em_analise: '#c99700', encaminhado: '#8e44ad',
+      em_execucao: '#f7c32e', aguardando_material: '#e67e22', concluido: '#0cbc87', cancelado: '#e74c3c',
+    };
+
+    async function boot() {
+      cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Gabinete', cfg);
+      document.getElementById('linkSec').href = cityLink('/secretaria.html');
+      document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
+      mapState = MapBI.create('map', { center: [cfg.lat, cfg.lng], zoom: 13 });
+      document.querySelectorAll('.eixo-tab').forEach(btn => {
+        btn.onclick = () => {
+          eixo = btn.dataset.eixo;
+          document.querySelectorAll('.eixo-tab').forEach(b => b.classList.toggle('active', b === btn));
+          load();
+        };
+      });
+      await load();
+    }
+
+    async function loginPrefeito() {
+      try {
+        const r = await api('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({ usuario: 'prefeito', senha: 'prefeito123', cidade: getCidade() }),
+        });
+        localStorage.setItem('bi_token', r.token);
+        toast('Gabinete autenticado');
+        loginPref.textContent = 'Logado: Prefeito';
+      } catch (e) { toast(e.message); }
+    }
+
+    async function decidir(id, acao, extra = {}) {
+      try {
+        const r = await api('/api/gabinete/decidir', {
+          method: 'POST',
+          body: JSON.stringify({ chamadoId: id, acao, eixo, ...extra }),
+        });
+        toast(r.mensagem || 'Decisão ok');
+        await load();
+      } catch (e) { toast(e.message); }
+    }
+
+    async function visitaSurpresa() {
+      if (!lastFila?.unidades?.length) return toast('Sem unidades cadastradas');
+      const opts = lastFila.unidades.map(u => u.id + ' — ' + u.nome).join('\n');
+      const escolha = prompt('ID da unidade:\n' + lastFila.unidades.map(u => u.id + ' = ' + u.nome).join('\n'), lastFila.unidades[0].id);
+      if (!escolha) return;
+      const atendimentoOk = confirm('Atendimento OK na unidade?\nOK = sim · Cancelar = NÃO (gera cobrança)');
+      const filaOk = confirm('Fila está aceitável?\nOK = sim · Cancelar = NÃO');
+      const limpezaOk = confirm('Limpeza/higiene OK?\nOK = sim · Cancelar = NÃO');
+      const observacao = prompt('Observação do prefeito:', '') || '';
+      try {
+        const r = await api('/api/gabinete/visita-surpresa', {
+          method: 'POST',
+          body: JSON.stringify({
+            unidadeId: escolha.trim(),
+            atendimentoOk, filaOk, limpezaOk, observacao,
+          }),
+        });
+        toast(r.problemas?.length ? 'Visita com pendências — Saúde cobrada' : 'Visita OK registrada');
+        await load();
+      } catch (e) { toast(e.message); }
+    }
+
+    function renderAcoesEixo(g) {
+      const box = document.getElementById('acoesEixo');
+      if (eixo === 'saude') {
+        box.innerHTML = `
+          <a class="btn btn-sm" href="${cityLink('/plantao.html')}">Check-in plantão</a>
+          <a class="btn btn-sm" href="${cityLink('/secretaria.html')}">Fila da Saúde</a>
+          <button class="btn btn-sm btn-primary" id="btnVisita" type="button">Visita surpresa</button>`;
+        document.getElementById('btnVisita').onclick = visitaSurpresa;
+        tituloDec.textContent = 'Saúde — olho do Gabinete';
+        subtituloDec.textContent = 'Atendimentos do dia · plantão · visita surpresa · cobrança';
+      } else if (eixo === 'eventos') {
+        box.innerHTML = '';
+        tituloDec.textContent = 'Eventos — agenda e estrutura';
+        subtituloDec.textContent = 'Priorizar estrutura, segurança e limpeza dos eventos da cidade';
+      } else {
+        box.innerHTML = '';
+        tituloDec.textContent = 'Cidade — ruas e serviços';
+        subtituloDec.textContent = 'Obras, limpeza, iluminação — priorizar e cobrar secretarias';
+      }
+    }
+
+    function renderExtra(g, saudeHoje) {
+      const box = document.getElementById('blocoExtra');
+      if (eixo === 'saude' && saudeHoje) {
+        box.innerHTML = `
+          <div class="panel" style="grid-column:1/-1">
+            <h3 style="margin-bottom:0.35rem">Hoje na Saúde</h3>
+            <p class="muted" style="margin-bottom:0.85rem">
+              Atendimentos, fila e cobertura de plantão · atualizado ${fmtDate(saudeHoje.atualizadoEm)}
+            </p>
+            <div class="grid-4" style="margin-bottom:1rem">
+              <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${saudeHoje.totais.atendidosHoje}</div></div>
+              <div class="panel stat"><div class="label">Na fila agora</div><div class="value">${saudeHoje.totais.naFila}</div></div>
+              <div class="panel stat"><div class="label">Espera média</div><div class="value">${saudeHoje.totais.tempoMedioMin}<span style="font-size:1rem"> min</span></div></div>
+              <div class="panel stat"><div class="label">Plantões ok</div><div class="value">${saudeHoje.totais.plantoesOk}/${saudeHoje.totais.plantoesTotal}</div>
+                <div class="hint">${saudeHoje.totais.unidadesCriticas} unidade(s) em alerta</div></div>
+            </div>
+            <div class="list">
+              ${saudeHoje.unidades.map(u => `
+                <div class="item">
+                  <div class="item-head">
+                    <strong>${u.nome}</strong>
+                    ${u.critico
+                      ? '<span class="badge badge-cancelado">Alerta</span>'
+                      : '<span class="badge badge-concluido">Ok</span>'}
+                  </div>
+                  <div class="meta">
+                    Fila ${u.naFila} · Atendidos ${u.atendidosHoje}/${u.metaAtendimentos || '—'} · Espera ~${u.tempoMedioMin} min
+                  </div>
+                  <div class="meta">
+                    Plantão:
+                    ${u.plantao?.status === 'ativo'
+                      ? `<strong>${u.plantao.profissional || 'Confirmado'}</strong> · check-in há ${u.plantao.minutosDesdeCheckIn ?? '—'} min`
+                      : u.plantao?.status === 'checkin_atrasado'
+                        ? `<strong style="color:#c0392b">Check-in atrasado</strong> (${u.plantao.profissional || '—'})`
+                        : '<strong style="color:#c0392b">Sem confirmação de plantão</strong>'}
+                  </div>
+                  ${(u.alertas || []).length ? `<div class="meta">${u.alertas.join(' · ')}</div>` : ''}
+                  ${u.critico ? `
+                    <div class="actions">
+                      <button class="btn btn-sm btn-warn" onclick="cobrarUnidade('${u.id}','${u.nome.replace(/'/g, '')}')">Cobrar secretaria</button>
+                    </div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>`;
+      } else if (eixo === 'eventos') {
+        box.innerHTML = `
+          <div class="panel" style="grid-column:1/-1">
+            <h3 style="margin-bottom:0.75rem">Agenda de eventos</h3>
+            <div class="list">${(g.agenda||[]).map(e => `
+              <div class="item">
+                <div class="item-head"><strong>${e.nome}</strong>
+                  <span class="badge badge-${e.status==='confirmado'?'concluido':'em_analise'}">${e.status}</span>
+                </div>
+                <div class="meta">${e.data} · ${e.local} · público ~${e.publicoEstimado || '—'}</div>
+              </div>`).join('') || '<p class="muted">Sem eventos</p>'}
+            </div>
+          </div>`;
+      } else {
+        box.innerHTML = '';
+      }
+    }
+
+    async function cobrarUnidade(unidadeId, nome) {
+      const pendente = (lastFila?.fila || []).find(c => c.unidadeId === unidadeId)
+        || (lastFila?.fila || [])[0];
+      if (!pendente) {
+        toast('Sem chamado aberto — use visita surpresa ou abra protocolo na Saúde');
+        return;
+      }
+      await decidir(pendente.id, 'cobrar', {
+        nota: `Cobrança do Gabinete sobre unidade ${nome}: verificar fila, plantão e atendimento.`,
+      });
+    }
+    window.cobrarUnidade = cobrarUnidade;
+
+    async function load() {
+      const m = await api('/api/metricas');
+      const obras = await api('/api/obras');
+      const g = await api('/api/gabinete/fila?eixo=' + eixo);
+      lastFila = g;
+      let saudeHoje = null;
+      if (eixo === 'saude') {
+        saudeHoje = await api('/api/saude/hoje');
+      }
+
+      document.getElementById('kpis').innerHTML = eixo === 'saude' && saudeHoje ? `
+        <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${saudeHoje.totais.atendidosHoje}</div></div>
+        <div class="panel stat"><div class="label">Na fila</div><div class="value">${saudeHoje.totais.naFila}</div></div>
+        <div class="panel stat"><div class="label">Espera média</div><div class="value">${saudeHoje.totais.tempoMedioMin}<span style="font-size:1rem"> min</span></div></div>
+        <div class="panel stat"><div class="label">Alertas</div><div class="value">${saudeHoje.totais.unidadesCriticas}</div>
+          <div class="hint">Plantão ${saudeHoje.totais.plantoesOk}/${saudeHoje.totais.plantoesTotal}</div></div>
+      ` : eixo === 'eventos' ? `
+        <div class="panel stat"><div class="label">Pendências eventos</div><div class="value">${g.resumo.totalPendentes}</div></div>
+        <div class="panel stat"><div class="label">Críticos</div><div class="value">${g.resumo.criticos}</div></div>
+        <div class="panel stat"><div class="label">Na agenda</div><div class="value">${g.resumo.eventosProximos || 0}</div></div>
+        <div class="panel stat"><div class="label">Prioridade gabinete</div><div class="value">${g.resumo.destacados}</div></div>
+      ` : `
+        <div class="panel stat"><div class="label">Pendentes cidade</div><div class="value">${g.resumo.totalPendentes}</div></div>
+        <div class="panel stat"><div class="label">Críticos</div><div class="value">${g.resumo.criticos}</div></div>
+        <div class="panel stat"><div class="label">Prioridade gabinete</div><div class="value">${g.resumo.destacados}</div></div>
+        <div class="panel stat"><div class="label">Resolução geral</div><div class="value">${m.taxaResolucao}%</div></div>
+      `;
+
+      renderAcoesEixo(g);
+      renderExtra(g, saudeHoje);
+
+      document.getElementById('filaDecisoes').innerHTML = g.fila.length ? g.fila.slice(0, 8).map(c => `
+        <div class="item">
+          <div class="item-head">
+            <strong>${c.protocolo} · ${c.titulo}</strong>
+            ${badge(c.status)}
+            ${c.slaEstourado ? '<span class="badge badge-cancelado">SLA</span>' : ''}
+            ${c.avaliacao ? `<span class="badge badge-em_analise">★ ${c.avaliacao.nota}</span>` : ''}
+          </div>
+          <div class="meta">${c.secretariaNome} · ${c.bairro} · ${prioridadeLabel(c.prioridade)} · ${c.horasAberto}h
+            ${c.eventoId ? ' · evento ' + c.eventoId : ''} ${c.unidadeId ? ' · ' + c.unidadeId : ''}</div>
+          <div class="actions">
+            <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
+            <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+            <button class="btn btn-sm" onclick="decidir('${c.id}','determinar_prazo')">Prazo 3 dias</button>
+            <button class="btn btn-sm" onclick="decidir('${c.id}','autorizar_execucao')">Autorizar</button>
+          </div>
+        </div>
+      `).join('') : '<p class="muted">Nenhuma pendência neste eixo.</p>';
+
+      document.getElementById('histDec').innerHTML = (g.decisoes || []).length
+        ? g.decisoes.slice(0, 8).map(d => `
+          <div class="item"><div class="meta">${fmtDate(d.em)} · <strong>${d.acao}</strong> — ${d.detalhe}</div></div>
+        `).join('')
+        : '<p class="muted">Sem decisões neste eixo ainda.</p>';
+
+      // charts from filtered heatmap
+      const cats = cfg.categorias || [];
+      const heat = (m.heatmap || []).filter(p => {
+        const fake = { categoria: p.categoria, secretaria: p.secretaria, eixo: p.eixo };
+        // approximate: match secretaria sets
+        if (eixo === 'saude') return p.secretaria === 'saude' || ['demora_atendimento','falta_medico','superlotacao','limpeza_ubs','avaliacao_atendimento','visita_surpresa'].includes(p.categoria);
+        if (eixo === 'eventos') return p.secretaria === 'eventos' || String(p.categoria||'').includes('evento');
+        return p.secretaria !== 'saude' && p.secretaria !== 'eventos';
+      });
+
+      const porStatus = {};
+      heat.forEach(p => { porStatus[p.status] = (porStatus[p.status] || 0) + 1; });
+      // fallback use fila statuses if heat empty for eixo
+      if (!Object.keys(porStatus).length) {
+        g.fila.forEach(c => { porStatus[c.status] = (porStatus[c.status] || 0) + 1; });
+      }
+
+      const stLabels = Object.keys(porStatus).map(statusLabel);
+      const stData = Object.values(porStatus);
+      const stColors = Object.keys(porStatus).map(k => colors[k] || mid);
+      if (!chartStatus) {
+        chartStatus = new Chart(document.getElementById('chartStatus'), {
+          type: 'doughnut',
+          data: { labels: stLabels, datasets: [{ data: stData, backgroundColor: stColors, borderWidth: 0 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
+        });
+      } else {
+        chartStatus.data.labels = stLabels;
+        chartStatus.data.datasets[0].data = stData;
+        chartStatus.data.datasets[0].backgroundColor = stColors;
+        chartStatus.update();
+      }
+
+      const porSec = {};
+      g.fila.forEach(c => { porSec[c.secretariaNome] = (porSec[c.secretariaNome] || 0) + 1; });
+      const secLabels = Object.keys(porSec);
+      const secData = Object.values(porSec);
+      document.getElementById('chartSecTitle').textContent = eixo === 'eventos' ? 'Pendências por tipo' : 'Fila por área';
+      if (!chartSec) {
+        chartSec = new Chart(document.getElementById('chartSec'), {
+          type: 'bar',
+          data: { labels: secLabels, datasets: [{ data: secData, backgroundColor: '#FF8000', borderRadius: 8 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } },
+        });
+      } else {
+        chartSec.data.labels = secLabels;
+        chartSec.data.datasets[0].data = secData;
+        chartSec.update();
+      }
+
+      document.getElementById('obras').innerHTML = obras.map(o => `
+        <div class="item">
+          <div class="item-head"><strong><span class="obra-dot obra-${o.status}"></span>${o.nome}</strong><span class="muted">${o.percentual}%</span></div>
+          <div class="meta">${money(o.valor)} · ${o.empresa}</div>
+        </div>
+      `).join('');
+
+      const points = heat.length ? heat : (m.heatmap || []);
+      MapBI.setPoints(mapState, points.map(p => ({ ...p, titulo: p.categoria })));
+
+      const stSel = document.getElementById('filtroStatus');
+      const bSel = document.getElementById('filtroBairro');
+      if (!filtersWired) {
+        filtersWired = true;
+        Object.keys(m.porStatus || {}).forEach(k => {
+          const o = document.createElement('option');
+          o.value = k; o.textContent = MapBI.statusLabel(k);
+          stSel.appendChild(o);
+        });
+        Object.keys(m.porBairro || {}).sort().forEach(b => {
+          const o = document.createElement('option');
+          o.value = b; o.textContent = b;
+          bSel.appendChild(o);
+        });
+        const apply = () => {
+          document.getElementById('mapCount').textContent =
+            MapBI.setFilters(mapState, { status: stSel.value, bairro: bSel.value }) + ' no mapa';
+        };
+        stSel.onchange = apply;
+        bSel.onchange = apply;
+      }
+      document.getElementById('mapCount').textContent =
+        MapBI.setFilters(mapState, { status: stSel.value, bairro: bSel.value }) + ' no mapa';
+    }
+
+    window.decidir = decidir;
+    document.getElementById('loginPref').onclick = loginPrefeito;
+    document.getElementById('refresh').onclick = () => load().catch(e => toast(e.message));
+    boot().catch(e => toast(e.message));
+    setInterval(() => load().catch(() => {}), 30000);
+  </script>
+</body>
+</html>

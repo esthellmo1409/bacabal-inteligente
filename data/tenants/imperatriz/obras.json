@@ -1,0 +1,28 @@
+[
+  {
+    "id": "OBR-001",
+    "nome": "Revitalização Orla",
+    "status": "em_andamento",
+    "percentual": 40,
+    "valor": 3200000,
+    "empresa": "Tocantins Construções",
+    "prazo": "2027-03-01",
+    "bairro": "Beira Rio",
+    "lat": -5.540210857104593,
+    "lng": -47.49216733482831,
+    "fotos": []
+  },
+  {
+    "id": "OBR-002",
+    "nome": "UBS Parque Sanharó",
+    "status": "concluida",
+    "percentual": 100,
+    "valor": 890000,
+    "empresa": "Saúde Obra Ltda",
+    "prazo": "2026-05-10",
+    "bairro": "Parque Sanharó",
+    "lat": -5.5180566783529486,
+    "lng": -47.499723108759305,
+    "fotos": []
+  }
+]

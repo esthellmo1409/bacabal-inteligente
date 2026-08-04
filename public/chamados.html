@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestão de Chamados · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+      <div>
+        <h1 class="display" style="font-size:1.75rem">Gestão de Chamados</h1>
+        <p class="muted">Abrir, editar, priorizar, anexar, assinar e imprimir protocolo</p>
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-sm" href="${''}" id="linkCid">Portal cidadão</a>
+        <button class="btn btn-sm btn-primary" id="btnNovo">Novo chamado</button>
+      </div>
+    </div>
+
+    <div id="loginHint" class="panel" style="display:none;margin-bottom:1rem">
+      <p class="muted">Faça login como secretaria/admin para editar.
+        <a id="loginLink" href="/login.html">Entrar</a></p>
+    </div>
+
+    <div class="panel" style="margin-bottom:1rem">
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        <select id="fStatus" style="margin:0"><option value="">Status</option></select>
+        <select id="fSec" style="margin:0"><option value="">Secretaria</option></select>
+        <select id="fPri" style="margin:0">
+          <option value="">Prioridade</option>
+          <option value="baixa">Baixa</option><option value="media">Média</option>
+          <option value="alta">Alta</option><option value="urgente">Urgente</option>
+        </select>
+        <input id="fBai" placeholder="Bairro" style="margin:0;max-width:140px" />
+        <input id="fDe" type="date" style="margin:0" />
+        <input id="fAte" type="date" style="margin:0" />
+        <button class="btn btn-sm" id="filtrar">Filtrar</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel"><div class="list" id="lista"></div></div>
+      <div class="panel" id="detalhe"><p class="muted">Selecione um chamado</p></div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    let cfg, selected = null, user = null;
+
+    async function boot() {
+      cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Chamados', cfg);
+      document.getElementById('linkCid').href = cityLink('/cidadao.html');
+      document.getElementById('loginLink').href = cityLink('/login.html');
+      document.getElementById('fStatus').innerHTML = '<option value="">Status</option>' + statusOptions();
+      document.getElementById('fSec').innerHTML = '<option value="">Secretaria</option>' +
+        (cfg.secretarias || []).map(s => `<option value="${s.id}">${s.nome}</option>`).join('');
+      try { user = await api('/api/me'); } catch { user = null; }
+      document.getElementById('loginHint').style.display = user ? 'none' : 'block';
+      const id = new URLSearchParams(location.search).get('id');
+      await load(id);
+    }
+
+    async function load(focusId) {
+      const q = new URLSearchParams();
+      if (fStatus.value) q.set('status', fStatus.value);
+      if (fSec.value) q.set('secretaria', fSec.value);
+      if (fPri.value) q.set('prioridade', fPri.value);
+      if (fBai.value.trim()) q.set('bairro', fBai.value.trim());
+      if (fDe.value) q.set('de', fDe.value);
+      if (fAte.value) q.set('ate', fAte.value);
+      const list = await api('/api/chamados?' + q.toString());
+      document.getElementById('lista').innerHTML = list.length ? list.map(c => `
+        <div class="item" style="cursor:pointer" data-id="${c.id}">
+          <div class="item-head"><strong>${c.protocolo} · ${c.titulo}</strong>${badge(c.status)}</div>
+          <div class="meta">${c.bairro} · ${prioridadeLabel(c.prioridade)} · ${fmtDate(c.criadoEm)}</div>
+        </div>`).join('') : '<p class="muted">Nenhum chamado</p>';
+      document.querySelectorAll('#lista [data-id]').forEach(el => {
+        el.onclick = () => openDetail(el.dataset.id);
+      });
+      if (focusId) openDetail(focusId);
+      else if (list[0]) openDetail(list[0].id);
+    }
+
+    async function openDetail(id) {
+      selected = await api('/api/chamados/' + id);
+      const c = selected;
+      const canEdit = !!user;
+      document.getElementById('detalhe').innerHTML = `
+        <h3 style="margin-bottom:0.5rem">${c.titulo} · ${c.protocolo}</h3>
+        <div class="meta" style="margin-bottom:0.75rem">${c.id} · ${c.secretaria} · ${c.bairro}</div>
+        ${badge(c.status)} <span class="meta">Prioridade ${prioridadeLabel(c.prioridade)}</span>
+        <p class="muted" style="margin:0.75rem 0">${c.descricao}</p>
+        ${c.foto ? `<img class="preview show" src="${c.foto}" style="max-height:140px" />` : ''}
+        <div class="meta">${c.cidadao?.nome || ''} ${c.cidadao?.telefone || ''}</div>
+        ${canEdit ? `
+        <label style="margin-top:0.75rem">Status</label>
+        <select id="dStatus">${statusOptions(c.status)}</select>
+        <label>Prioridade</label>
+        <select id="dPri">
+          ${['baixa','media','alta','urgente'].map(p => `<option value="${p}" ${c.prioridade===p?'selected':''}>${prioridadeLabel(p)}</option>`).join('')}
+        </select>
+        <label>Descrição</label>
+        <textarea id="dDesc">${c.descricao || ''}</textarea>
+        <label>Comentário interno</label>
+        <textarea id="dCom" placeholder="Só equipe vê…"></textarea>
+        <div class="actions">
+          <button class="btn btn-sm btn-primary" id="salvar">Salvar</button>
+          <button class="btn btn-sm" id="comentar">Comentar</button>
+          <button class="btn btn-sm" id="assinar">Assinar</button>
+          <button class="btn btn-sm" id="imprimir">Imprimir protocolo</button>
+          <button class="btn btn-sm" id="cancelar">Cancelar chamado</button>
+          <button class="btn btn-sm" id="anexar">Anexar foto</button>
+        </div>
+        <input type="file" id="fileAnexo" accept="image/*" style="display:none" />
+        ` : `<div class="actions"><button class="btn btn-sm" id="imprimir">Imprimir protocolo</button></div>`}
+        <div style="margin-top:1rem"><strong>Histórico</strong>${timelineHtml(c.historico)}</div>
+        ${(c.comentarios||[]).length ? `<div style="margin-top:0.75rem"><strong>Comentários</strong>
+          ${c.comentarios.map(x => `<div class="meta">${fmtDate(x.em)} · ${x.por}: ${x.texto}</div>`).join('')}</div>` : ''}
+        ${c.assinatura ? `<div class="meta" style="margin-top:0.75rem">Assinado por ${c.assinatura.por} · ${c.assinatura.hash}</div>` : ''}
+        ${c.avaliacao ? `<div class="meta">Avaliação: ${c.avaliacao.nota}/5 — ${c.avaliacao.comentario || ''}</div>` : ''}
+      `;
+      document.getElementById('imprimir').onclick = async () => {
+        const pdf = await api('/api/chamados/' + c.id + '/protocolo');
+        downloadText(pdf.nome, pdf.conteudo);
+        toast('Protocolo baixado');
+      };
+      if (!canEdit) return;
+      document.getElementById('salvar').onclick = async () => {
+        try {
+          await api('/api/chamados/' + c.id, {
+            method: 'PATCH',
+            body: JSON.stringify({
+              status: dStatus.value,
+              prioridade: dPri.value,
+              descricao: dDesc.value,
+              nota: 'Atualização manual',
+            }),
+          });
+          toast('Salvo');
+          load(c.id);
+        } catch (e) { toast(e.message); }
+      };
+      document.getElementById('comentar').onclick = async () => {
+        if (!dCom.value.trim()) return toast('Escreva o comentário');
+        try {
+          await api('/api/chamados/' + c.id + '/comentario', {
+            method: 'POST', body: JSON.stringify({ texto: dCom.value, interno: true }),
+          });
+          toast('Comentário adicionado');
+          openDetail(c.id);
+        } catch (e) { toast(e.message); }
+      };
+      document.getElementById('assinar').onclick = async () => {
+        try {
+          await api('/api/chamados/' + c.id + '/assinar', { method: 'POST', body: '{}' });
+          toast('Assinatura registrada');
+          openDetail(c.id);
+        } catch (e) { toast(e.message); }
+      };
+      document.getElementById('cancelar').onclick = async () => {
+        const motivo = prompt('Motivo do cancelamento:');
+        if (motivo === null) return;
+        try {
+          await api('/api/chamados/' + c.id, {
+            method: 'PATCH',
+            body: JSON.stringify({ status: 'cancelado', motivoCancelamento: motivo || 'Cancelado' }),
+          });
+          toast('Cancelado');
+          load(c.id);
+        } catch (e) { toast(e.message); }
+      };
+      document.getElementById('anexar').onclick = () => fileAnexo.click();
+      fileAnexo.onchange = e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = async () => {
+          try {
+            await api('/api/chamados/' + c.id + '/anexo', {
+              method: 'POST', body: JSON.stringify({ foto: r.result, tipo: 'foto' }),
+            });
+            toast('Anexo ok');
+            openDetail(c.id);
+          } catch (err) { toast(err.message); }
+        };
+        r.readAsDataURL(f);
+      };
+    }
+
+    document.getElementById('filtrar').onclick = () => load();
+    document.getElementById('btnNovo').onclick = () => { location.href = cityLink('/cidadao.html'); };
+    boot().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

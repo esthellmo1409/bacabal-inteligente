@@ -1,0 +1,26 @@
+[
+  {
+    "id": "US-HOSP",
+    "nome": "Hospital Municipal de Bacabal",
+    "tipo": "hospital",
+    "bairro": "Centro",
+    "lat": -4.2817,
+    "lng": -44.8017
+  },
+  {
+    "id": "US-UBS1",
+    "nome": "UBS Centro",
+    "tipo": "ubs",
+    "bairro": "Centro",
+    "lat": -4.2917,
+    "lng": -44.7917
+  },
+  {
+    "id": "US-UBS2",
+    "nome": "UBS São José",
+    "tipo": "ubs",
+    "bairro": "São José",
+    "lat": -4.306699999999999,
+    "lng": -44.7817
+  }
+]

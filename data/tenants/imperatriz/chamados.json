@@ -1,0 +1,882 @@
+[
+  {
+    "id": "IMP-1001",
+    "protocolo": "20261001",
+    "categoria": "lixo",
+    "secretaria": "limpeza",
+    "titulo": "Lixo / Entulho",
+    "descricao": "Solicitação de lixo / entulho registrada pelo cidadão.",
+    "bairro": "Nova Imperatriz",
+    "endereco": "Rua Exemplo, 44",
+    "lat": -5.489149654513997,
+    "lng": -47.515859624098795,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 98463-3526"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-25T01:48:24.943Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-30T01:48:24.943Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-06-25T01:48:24.943Z",
+    "atualizadoEm": "2026-07-30T01:48:24.943Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1002",
+    "protocolo": "20261002",
+    "categoria": "outros",
+    "secretaria": "ouvidoria",
+    "titulo": "Outros",
+    "descricao": "Solicitação de outros registrada pelo cidadão.",
+    "bairro": "Nova Imperatriz",
+    "endereco": "Rua Exemplo, 50",
+    "lat": -5.548475952758489,
+    "lng": -47.487985975208545,
+    "status": "em_execucao",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 92086-3745"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-31T01:48:24.943Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T01:48:24.943Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-31T01:48:24.943Z",
+    "atualizadoEm": "2026-08-04T01:48:24.943Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1003",
+    "protocolo": "20261003",
+    "categoria": "sinalizacao",
+    "secretaria": "transito",
+    "titulo": "Sinalização",
+    "descricao": "Solicitação de sinalização registrada pelo cidadão.",
+    "bairro": "Bom Sucesso",
+    "endereco": "Rua Exemplo, 785",
+    "lat": -5.562756216468737,
+    "lng": -47.529867812196514,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 94900-5006"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-03T01:48:24.943Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-30T01:48:24.943Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-03T01:48:24.943Z",
+    "atualizadoEm": "2026-07-30T01:48:24.943Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1004",
+    "protocolo": "20261004",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "Bacuri",
+    "endereco": "Rua Exemplo, 620",
+    "lat": -5.525440597267619,
+    "lng": -47.50305955365442,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 92237-2401"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-04T01:48:24.943Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T01:48:24.943Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-08-04T01:48:24.943Z",
+    "atualizadoEm": "2026-08-04T01:48:24.943Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1005",
+    "protocolo": "20261005",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Beira Rio",
+    "endereco": "Rua Exemplo, 549",
+    "lat": -5.499674985670991,
+    "lng": -47.475965375257985,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 97354-9625"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-27T01:48:24.943Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-03T01:48:24.943Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-06-27T01:48:24.943Z",
+    "atualizadoEm": "2026-08-03T01:48:24.943Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1006",
+    "protocolo": "20261006",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Parque Sanharó",
+    "endereco": "Rua Exemplo, 609",
+    "lat": -5.5624476373624345,
+    "lng": -47.531256335171804,
+    "status": "em_analise",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 98443-5468"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-10T01:48:24.943Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-27T01:48:24.943Z",
+        "status": "em_analise",
+        "nota": "Atualizado para em_analise"
+      }
+    ],
+    "criadoEm": "2026-07-10T01:48:24.943Z",
+    "atualizadoEm": "2026-07-27T01:48:24.943Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1007",
+    "protocolo": "20261007",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "Parque Sanharó",
+    "endereco": "Rua Exemplo, 33",
+    "lat": -5.564298771711187,
+    "lng": -47.528253926064956,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 96722-8336"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-29T01:48:24.943Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-27T01:48:24.943Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-06-29T01:48:24.943Z",
+    "atualizadoEm": "2026-07-27T01:48:24.943Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1008",
+    "protocolo": "20261008",
+    "categoria": "poda",
+    "secretaria": "meio_ambiente",
+    "titulo": "Poda de árvore",
+    "descricao": "Solicitação de poda de árvore registrada pelo cidadão.",
+    "bairro": "Bacuri",
+    "endereco": "Rua Exemplo, 433",
+    "lat": -5.534222843520397,
+    "lng": -47.51751752583407,
+    "status": "em_analise",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 95118-2824"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-26T01:48:24.943Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-03T01:48:24.943Z",
+        "status": "em_analise",
+        "nota": "Atualizado para em_analise"
+      }
+    ],
+    "criadoEm": "2026-06-26T01:48:24.943Z",
+    "atualizadoEm": "2026-08-03T01:48:24.943Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1009",
+    "protocolo": "20261009",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "Centro",
+    "endereco": "Rua Exemplo, 393",
+    "lat": -5.5641868873298925,
+    "lng": -47.45356879563163,
+    "status": "novo",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 91427-1087"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-07T01:48:24.943Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-07-07T01:48:24.943Z",
+    "atualizadoEm": "2026-07-07T01:48:24.943Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1010",
+    "protocolo": "20261010",
+    "categoria": "poda",
+    "secretaria": "meio_ambiente",
+    "titulo": "Poda de árvore",
+    "descricao": "Solicitação de poda de árvore registrada pelo cidadão.",
+    "bairro": "Centro",
+    "endereco": "Rua Exemplo, 242",
+    "lat": -5.528674785274866,
+    "lng": -47.51470565668766,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 94230-1783"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-06T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T01:48:24.944Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-06T01:48:24.944Z",
+    "atualizadoEm": "2026-08-04T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1011",
+    "protocolo": "20261011",
+    "categoria": "sinalizacao",
+    "secretaria": "transito",
+    "titulo": "Sinalização",
+    "descricao": "Solicitação de sinalização registrada pelo cidadão.",
+    "bairro": "Bacuri",
+    "endereco": "Rua Exemplo, 419",
+    "lat": -5.561546079198696,
+    "lng": -47.499463165341666,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 95658-1382"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-28T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-28T01:48:24.944Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-28T01:48:24.944Z",
+    "atualizadoEm": "2026-07-28T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1012",
+    "protocolo": "20261012",
+    "categoria": "sinalizacao",
+    "secretaria": "transito",
+    "titulo": "Sinalização",
+    "descricao": "Solicitação de sinalização registrada pelo cidadão.",
+    "bairro": "Nova Imperatriz",
+    "endereco": "Rua Exemplo, 29",
+    "lat": -5.549314584615733,
+    "lng": -47.5008811626487,
+    "status": "novo",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 98317-6028"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-27T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-06-27T01:48:24.944Z",
+    "atualizadoEm": "2026-06-27T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1013",
+    "protocolo": "20261013",
+    "categoria": "outros",
+    "secretaria": "ouvidoria",
+    "titulo": "Outros",
+    "descricao": "Solicitação de outros registrada pelo cidadão.",
+    "bairro": "Beira Rio",
+    "endereco": "Rua Exemplo, 208",
+    "lat": -5.527084050092567,
+    "lng": -47.46402778908123,
+    "status": "novo",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 95149-5119"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-21T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-06-21T01:48:24.944Z",
+    "atualizadoEm": "2026-06-21T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1014",
+    "protocolo": "20261014",
+    "categoria": "outros",
+    "secretaria": "ouvidoria",
+    "titulo": "Outros",
+    "descricao": "Solicitação de outros registrada pelo cidadão.",
+    "bairro": "Parque Sanharó",
+    "endereco": "Rua Exemplo, 489",
+    "lat": -5.540871964183249,
+    "lng": -47.48109940952107,
+    "status": "em_execucao",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 95641-3554"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-30T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-28T01:48:24.944Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-30T01:48:24.944Z",
+    "atualizadoEm": "2026-07-28T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1015",
+    "protocolo": "20261015",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Parque Sanharó",
+    "endereco": "Rua Exemplo, 640",
+    "lat": -5.545961990088889,
+    "lng": -47.48641667870338,
+    "status": "em_execucao",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 95303-8081"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-29T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T01:48:24.944Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-06-29T01:48:24.944Z",
+    "atualizadoEm": "2026-08-04T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1016",
+    "protocolo": "20261016",
+    "categoria": "lixo",
+    "secretaria": "limpeza",
+    "titulo": "Lixo / Entulho",
+    "descricao": "Solicitação de lixo / entulho registrada pelo cidadão.",
+    "bairro": "Bacuri",
+    "endereco": "Rua Exemplo, 324",
+    "lat": -5.564273013624464,
+    "lng": -47.48441035395461,
+    "status": "novo",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 94339-2759"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-15T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-07-15T01:48:24.944Z",
+    "atualizadoEm": "2026-07-15T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1017",
+    "protocolo": "20261017",
+    "categoria": "lixo",
+    "secretaria": "limpeza",
+    "titulo": "Lixo / Entulho",
+    "descricao": "Solicitação de lixo / entulho registrada pelo cidadão.",
+    "bairro": "Beira Rio",
+    "endereco": "Rua Exemplo, 761",
+    "lat": -5.491422947085566,
+    "lng": -47.482243072581724,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 93977-5263"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-14T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-02T01:48:24.944Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-14T01:48:24.944Z",
+    "atualizadoEm": "2026-08-02T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1018",
+    "protocolo": "20261018",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Nova Imperatriz",
+    "endereco": "Rua Exemplo, 83",
+    "lat": -5.511152415541255,
+    "lng": -47.50677745818223,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 99544-2659"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-03T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-03T01:48:24.944Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-08-03T01:48:24.944Z",
+    "atualizadoEm": "2026-08-03T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1019",
+    "protocolo": "20261019",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Centro",
+    "endereco": "Rua Exemplo, 61",
+    "lat": -5.507178694568958,
+    "lng": -47.5022369288786,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 98605-9334"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-29T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T01:48:24.944Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-06-29T01:48:24.944Z",
+    "atualizadoEm": "2026-08-04T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "IMP-1020",
+    "protocolo": "20261020",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Nova Imperatriz",
+    "endereco": "Rua Exemplo, 681",
+    "lat": -5.550086411065912,
+    "lng": -47.49453936964857,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 91330-5271"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-01T01:48:24.944Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-01T01:48:24.944Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-08-01T01:48:24.944Z",
+    "atualizadoEm": "2026-08-01T01:48:24.944Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  }
+]

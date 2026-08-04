@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Configurações · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.75rem;margin-bottom:0.35rem">Configurações</h1>
+    <p class="muted" style="margin-bottom:1rem">Brasão · logo · cidade · cores · secretarias · horário · API · backup · LGPD</p>
+    <div class="panel" id="form">
+      <p class="muted">Carregando…</p>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    let full;
+    (async () => {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      full = await api('/api/config/full');
+      form.innerHTML = `
+        <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem">
+          <img src="${full.brasao || full.logo || '/brasao.svg'}" alt="Brasão" style="height:72px" />
+          <div><strong>${full.produto}</strong><div class="meta">${full.cidade}/${full.uf}</div></div>
+        </div>
+        <label>Nome do produto</label><input id="produto" value="${full.produto || ''}" />
+        <label>Cidade</label><input id="cidadeNome" value="${full.cidade || ''}" />
+        <label>Logo URL</label><input id="logo" value="${full.logo || ''}" />
+        <label>Brasão URL</label><input id="brasao" value="${full.brasao || ''}" />
+        <label>Cor primária</label><input id="cor1" type="color" value="${full.tema?.primaria || '#FF8000'}" />
+        <label>Cor secundária</label><input id="cor2" type="color" value="${full.tema?.secundaria || '#398A21'}" />
+        <label>Horário de funcionamento</label><input id="horario" value="${full.horarioFuncionamento || ''}" />
+        <label>API webhook</label><input id="webhook" value="${full.api?.webhookUrl || ''}" />
+        <label>LGPD — DPO</label><input id="dpo" value="${full.lgpd?.dpo || ''}" />
+        <label>LGPD — retenção (dias)</label><input id="retencao" type="number" value="${full.lgpd?.retencaoDias || 1825}" />
+        <label>Backup automático</label>
+        <select id="backup"><option value="true" ${full.backup?.automatico ? 'selected' : ''}>Sim</option>
+          <option value="false" ${!full.backup?.automatico ? 'selected' : ''}>Não</option></select>
+        <div class="actions">
+          <button class="btn btn-primary" id="salvar">Salvar (admin)</button>
+          <button class="btn" id="doBackup">Gerar backup agora</button>
+        </div>
+        <p class="muted" style="margin-top:0.75rem;font-size:0.8rem">Segurança: sessões Bearer em memória · senhas demo em JSON (piloto).</p>
+      `;
+      salvar.onclick = async () => {
+        try {
+          await api('/api/config', {
+            method: 'PUT',
+            body: JSON.stringify({
+              produto: produto.value,
+              cidade: cidadeNome.value,
+              logo: logo.value,
+              brasao: brasao.value,
+              horarioFuncionamento: horario.value,
+              tema: { primaria: cor1.value, secundaria: cor2.value, fundo: full.tema?.fundo },
+              api: { ...(full.api || {}), webhookUrl: webhook.value },
+              lgpd: { ...(full.lgpd || {}), dpo: dpo.value, retencaoDias: Number(retencao.value) },
+              backup: { automatico: backup.value === 'true', hora: full.backup?.hora || '02:00' },
+            }),
+          });
+          toast('Configuração salva');
+          applyTheme({ primaria: cor1.value, secundaria: cor2.value });
+        } catch (e) { toast(e.message); }
+      };
+      doBackup.onclick = async () => {
+        try {
+          const r = await api('/api/backup', { method: 'POST', body: '{}' });
+          toast('Backup ' + r.em);
+        } catch (e) { toast(e.message); }
+      };
+    })().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

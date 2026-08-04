@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: bacabal-inteligente
+    runtime: node
+    plan: free
+    buildCommand: "echo ready"
+    startCommand: "node server.js"
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production

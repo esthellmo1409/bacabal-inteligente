@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "bacabal",
+    "nome": "Bacabal",
+    "uf": "MA",
+    "produto": "Bacabal Inteligente",
+    "lat": -4.2917,
+    "lng": -44.7917,
+    "tema": {
+      "primaria": "#2163e8",
+      "secundaria": "#1a4fba",
+      "fundo": "#f7f8f9"
+    },
+    "logo": "/assets/logo-prefeitura.png",
+    "bairros": [
+      "Centro",
+      "Bacabalzinho",
+      "Areal",
+      "Mutirão",
+      "São José",
+      "Vila Nova",
+      "Planalto",
+      "Povoado Alto Alegre",
+      "São Francisco",
+      "Pedreiras",
+      "Conjunto Habitacional",
+      "Alto do Bode"
+    ],
+    "ativo": true,
+    "criadoEm": "2026-08-04T01:48:24.897Z"
+  },
+  {
+    "slug": "imperatriz",
+    "nome": "Imperatriz",
+    "uf": "MA",
+    "produto": "Imperatriz Inteligente",
+    "lat": -5.5265,
+    "lng": -47.4917,
+    "tema": {
+      "primaria": "#5bb8e8",
+      "secundaria": "#1a6f9a",
+      "fundo": "#0a1620"
+    },
+    "logo": null,
+    "bairros": [
+      "Centro",
+      "Bacuri",
+      "Nova Imperatriz",
+      "Parque Sanharó",
+      "Beira Rio",
+      "Bom Sucesso"
+    ],
+    "ativo": true,
+    "criadoEm": "2026-08-04T01:48:24.909Z"
+  }
+]

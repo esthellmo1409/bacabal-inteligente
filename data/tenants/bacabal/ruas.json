@@ -1,0 +1,122 @@
+[
+  {
+    "id": "RUA-0A",
+    "nome": "Av. Principal — Centro",
+    "bairro": "Centro"
+  },
+  {
+    "id": "RUA-0B",
+    "nome": "Rua das Flores — Centro",
+    "bairro": "Centro"
+  },
+  {
+    "id": "RUA-1A",
+    "nome": "Av. Principal — Bacabalzinho",
+    "bairro": "Bacabalzinho"
+  },
+  {
+    "id": "RUA-1B",
+    "nome": "Rua das Flores — Bacabalzinho",
+    "bairro": "Bacabalzinho"
+  },
+  {
+    "id": "RUA-2A",
+    "nome": "Av. Principal — Areal",
+    "bairro": "Areal"
+  },
+  {
+    "id": "RUA-2B",
+    "nome": "Rua das Flores — Areal",
+    "bairro": "Areal"
+  },
+  {
+    "id": "RUA-3A",
+    "nome": "Av. Principal — Mutirão",
+    "bairro": "Mutirão"
+  },
+  {
+    "id": "RUA-3B",
+    "nome": "Rua das Flores — Mutirão",
+    "bairro": "Mutirão"
+  },
+  {
+    "id": "RUA-4A",
+    "nome": "Av. Principal — São José",
+    "bairro": "São José"
+  },
+  {
+    "id": "RUA-4B",
+    "nome": "Rua das Flores — São José",
+    "bairro": "São José"
+  },
+  {
+    "id": "RUA-5A",
+    "nome": "Av. Principal — Vila Nova",
+    "bairro": "Vila Nova"
+  },
+  {
+    "id": "RUA-5B",
+    "nome": "Rua das Flores — Vila Nova",
+    "bairro": "Vila Nova"
+  },
+  {
+    "id": "RUA-6A",
+    "nome": "Av. Principal — Planalto",
+    "bairro": "Planalto"
+  },
+  {
+    "id": "RUA-6B",
+    "nome": "Rua das Flores — Planalto",
+    "bairro": "Planalto"
+  },
+  {
+    "id": "RUA-7A",
+    "nome": "Av. Principal — Povoado Alto Alegre",
+    "bairro": "Povoado Alto Alegre"
+  },
+  {
+    "id": "RUA-7B",
+    "nome": "Rua das Flores — Povoado Alto Alegre",
+    "bairro": "Povoado Alto Alegre"
+  },
+  {
+    "id": "RUA-8A",
+    "nome": "Av. Principal — São Francisco",
+    "bairro": "São Francisco"
+  },
+  {
+    "id": "RUA-8B",
+    "nome": "Rua das Flores — São Francisco",
+    "bairro": "São Francisco"
+  },
+  {
+    "id": "RUA-9A",
+    "nome": "Av. Principal — Pedreiras",
+    "bairro": "Pedreiras"
+  },
+  {
+    "id": "RUA-9B",
+    "nome": "Rua das Flores — Pedreiras",
+    "bairro": "Pedreiras"
+  },
+  {
+    "id": "RUA-10A",
+    "nome": "Av. Principal — Conjunto Habitacional",
+    "bairro": "Conjunto Habitacional"
+  },
+  {
+    "id": "RUA-10B",
+    "nome": "Rua das Flores — Conjunto Habitacional",
+    "bairro": "Conjunto Habitacional"
+  },
+  {
+    "id": "RUA-11A",
+    "nome": "Av. Principal — Alto do Bode",
+    "bairro": "Alto do Bode"
+  },
+  {
+    "id": "RUA-11B",
+    "nome": "Rua das Flores — Alto do Bode",
+    "bairro": "Alto do Bode"
+  }
+]

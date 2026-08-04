@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inteligência Artificial · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.75rem;margin-bottom:0.35rem">Inteligência Artificial</h1>
+    <p class="muted" style="margin-bottom:1rem">Foto, classificação, duplicidade, priorização, relatório, PDF, resumo e chat</p>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Analisar foto</h3>
+        <input type="file" id="foto" accept="image/*" />
+        <label>Texto auxiliar</label>
+        <textarea id="texto" placeholder="buraco na rua…"></textarea>
+        <button class="btn btn-primary" id="analisar" style="width:100%">Identificar problema</button>
+        <pre id="iaOut" class="muted" style="margin-top:0.75rem;white-space:pre-wrap;font-size:0.8rem"></pre>
+      </div>
+      <div class="panel">
+        <h3>Duplicidade + priorizar</h3>
+        <label>Categoria id</label><input id="dupCat" value="buraco" />
+        <label>Lat / Lng</label>
+        <div style="display:flex;gap:0.5rem"><input id="dupLat" value="-4.2917" /><input id="dupLng" value="-44.7917" /></div>
+        <button class="btn" id="dupBtn" style="width:100%">Detectar duplicidade</button>
+        <div id="dupOut" style="margin-top:0.75rem"></div>
+        <hr style="margin:1rem 0;border:none;border-top:1px solid var(--line)" />
+        <button class="btn btn-sm" id="resumo">Resumir ocorrências</button>
+        <button class="btn btn-sm" id="relatorio">Gerar relatório PDF</button>
+        <pre id="resumoOut" class="muted" style="margin-top:0.75rem;white-space:pre-wrap;font-size:0.8rem"></pre>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:1rem">
+      <h3>Chat com IA</h3>
+      <div class="chat-box" style="height:240px">
+        <div class="chat-msgs" id="chat"></div>
+        <div style="display:flex;gap:0.5rem">
+          <input id="msg" placeholder="Pergunte sobre a fila…" style="margin:0" />
+          <button class="btn btn-primary" id="send">Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    let fotoData = null;
+    (async () => {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      dupLat.value = cfg.lat; dupLng.value = cfg.lng;
+    })();
+
+    foto.onchange = e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => { fotoData = r.result; };
+      r.readAsDataURL(f);
+    };
+
+    analisar.onclick = async () => {
+      try {
+        const r = await api('/api/ia/foto', {
+          method: 'POST', body: JSON.stringify({ foto: fotoData, texto: texto.value }),
+        });
+        iaOut.textContent = JSON.stringify(r, null, 2);
+        if (r.urgencia === 'alta' || r.urgencia === 'urgente') toast('Prioridade sugerida: URGENTE');
+      } catch (e) { toast(e.message); }
+    };
+
+    dupBtn.onclick = async () => {
+      try {
+        const r = await api('/api/ia/duplicidade', {
+          method: 'POST',
+          body: JSON.stringify({ categoria: dupCat.value, lat: Number(dupLat.value), lng: Number(dupLng.value) }),
+        });
+        dupOut.innerHTML = r.duplicatas.length
+          ? r.duplicatas.map(d => `<div class="meta">${d.protocolo} · ${d.distanciaM}m · ${d.titulo}</div>`).join('')
+          : '<p class="muted">Nenhuma duplicata próxima</p>';
+      } catch (e) { toast(e.message); }
+    };
+
+    resumo.onclick = async () => {
+      const r = await api('/api/ia/resumo');
+      resumoOut.textContent = r.resumo;
+    };
+    relatorio.onclick = async () => {
+      const r = await api('/api/ia/relatorio', { method: 'POST', body: '{}' });
+      downloadText(r.nome, r.conteudo);
+      toast('PDF/texto baixado');
+    };
+
+    async function sendChat() {
+      const message = msg.value.trim();
+      if (!message) return;
+      const u = document.createElement('div'); u.className = 'bubble user'; u.textContent = message; chat.appendChild(u);
+      msg.value = '';
+      const r = await api('/api/ia/secretaria', { method: 'POST', body: JSON.stringify({ message }) });
+      const b = document.createElement('div'); b.className = 'bubble bot'; b.textContent = r.reply; chat.appendChild(b);
+      chat.scrollTop = chat.scrollHeight;
+    }
+    send.onclick = () => sendChat().catch(e => toast(e.message));
+    msg.addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
+  </script>
+</body>
+</html>

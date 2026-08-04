@@ -1,0 +1,24 @@
+/* Template visual — Prefeitura de Bacabal (bacabal.ma.gov.br)
+ *
+ * Fonte: themes/portal/assets/css/style.css
+ * --bs-primary: #2163e8
+ *
+ * Uso: importado no fim de styles.css ou referenciado como guia.
+ * As variáveis canônicas estão em :root de styles.css.
+ */
+:root {
+  --pmb-primary: #2163e8;
+  --pmb-primary-dark: #1a4fba;
+  --pmb-primary-hover: #285aeb;
+  --pmb-info: #4f9ef8;
+  --pmb-success: #0cbc87;
+  --pmb-warning: #f7c32e;
+  --pmb-danger: #d6293e;
+  --pmb-secondary: #595d69;
+  --pmb-dark: #191a1f;
+  --pmb-body: #29292e;
+  --pmb-bg: #f7f8f9;
+  --pmb-bg-2: #f0f1f3;
+  --pmb-border: #dfe0e5;
+  --pmb-white: #ffffff;
+}

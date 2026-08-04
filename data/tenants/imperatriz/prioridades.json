@@ -1,0 +1,26 @@
+[
+  {
+    "id": "baixa",
+    "label": "Baixa",
+    "peso": 1,
+    "slaHoras": 120
+  },
+  {
+    "id": "media",
+    "label": "Média",
+    "peso": 2,
+    "slaHoras": 72
+  },
+  {
+    "id": "alta",
+    "label": "Alta",
+    "peso": 3,
+    "slaHoras": 24
+  },
+  {
+    "id": "urgente",
+    "label": "Urgente",
+    "peso": 4,
+    "slaHoras": 8
+  }
+]

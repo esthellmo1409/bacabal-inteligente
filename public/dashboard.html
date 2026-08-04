@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:end;margin-bottom:1rem">
+      <div>
+        <h1 class="display" style="font-size:1.85rem">Dashboard</h1>
+        <p class="muted">Tela inicial operacional da cidade</p>
+      </div>
+      <button class="btn btn-sm" id="refresh">Atualizar</button>
+    </div>
+    <div class="grid-4" id="kpis"></div>
+    <div class="grid-2" style="margin-top:1rem">
+      <div class="panel"><h3 style="margin-bottom:0.75rem">Mapa da cidade</h3><div id="map" class="map"></div></div>
+      <div>
+        <div class="panel" style="margin-bottom:1rem"><h3>Por secretaria</h3><div class="chart-box"><canvas id="cSec"></canvas></div></div>
+        <div class="panel"><h3>Por bairro</h3><div class="chart-box" style="height:200px"><canvas id="cBai"></canvas></div></div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:1rem">
+      <div class="panel"><h3 style="margin-bottom:0.75rem">Ranking das equipes</h3><div id="rank" class="list"></div></div>
+      <div class="panel"><h3 style="margin-bottom:0.75rem">Últimos chamados</h3><div id="ultimos" class="list"></div></div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/app.js"></script>
+  <script src="/map.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    let mapState, cSec, cBai;
+    async function load() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Dashboard', cfg);
+      const m = await api('/api/dashboard');
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">Hoje</div><div class="value">${m.hoje}</div></div>
+        <div class="panel stat"><div class="label">Pendentes</div><div class="value">${m.pendentes}</div></div>
+        <div class="panel stat"><div class="label">Em execução</div><div class="value">${m.emExecucao}</div></div>
+        <div class="panel stat"><div class="label">Concluídos</div><div class="value">${m.concluidos}</div>
+          <div class="hint">Tempo médio ${m.tempoMedioDias} dias</div></div>`;
+      if (!mapState) mapState = MapBI.create('map', { center: [cfg.lat, cfg.lng], zoom: 13 });
+      MapBI.setPoints(mapState, m.heatmap || []);
+      const secs = Object.entries(m.porSecretaria || {});
+      const nomes = Object.fromEntries((m.secretarias || []).map(s => [s.id, s.nome]));
+      if (!cSec) {
+        cSec = new Chart(document.getElementById('cSec'), {
+          type: 'bar',
+          data: { labels: secs.map(([id]) => (nomes[id] || id).replace('Secretaria de ', '')),
+            datasets: [{ data: secs.map(([, n]) => n), backgroundColor: '#FF8000', borderRadius: 6 }] },
+          options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } },
+        });
+      } else {
+        cSec.data.labels = secs.map(([id]) => (nomes[id] || id).replace('Secretaria de ', ''));
+        cSec.data.datasets[0].data = secs.map(([, n]) => n);
+        cSec.update();
+      }
+      const bai = (m.rankingBairros || []).slice(0, 8);
+      if (!cBai) {
+        cBai = new Chart(document.getElementById('cBai'), {
+          type: 'bar',
+          data: { labels: bai.map(b => b.bairro), datasets: [{ data: bai.map(b => b.total), backgroundColor: '#398A21', borderRadius: 6 }] },
+          options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } },
+        });
+      } else {
+        cBai.data.labels = bai.map(b => b.bairro);
+        cBai.data.datasets[0].data = bai.map(b => b.total);
+        cBai.update();
+      }
+      document.getElementById('rank').innerHTML = (m.rankingEquipes || []).length
+        ? m.rankingEquipes.map((e, i) => `
+          <div class="item"><div class="item-head"><strong>#${i + 1} ${e.nome}</strong><span>${e.produtividade}%</span></div>
+          <div class="meta">${e.concluidos} concluídos · ${e.total} OS</div></div>`).join('')
+        : '<p class="muted">Cadastre equipes em Cadastros para ver o ranking.</p>';
+      document.getElementById('ultimos').innerHTML = (m.ultimos || []).map(c => `
+        <a class="item" href="${cityLink('/chamados.html')}&id=${c.id}" style="display:block;text-decoration:none;color:inherit">
+          <div class="item-head"><strong>${c.titulo}</strong>${badge(c.status)}</div>
+          <div class="meta">${c.protocolo} · ${c.bairro} · ${fmtDate(c.criadoEm)}</div>
+        </a>`).join('');
+    }
+    document.getElementById('refresh').onclick = () => load().catch(e => toast(e.message));
+    load().catch(e => toast(e.message));
+    setInterval(() => load().catch(() => {}), 30000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "slug": "bacabal",
+  "cidade": "Bacabal",
+  "uf": "MA",
+  "produto": "Bacabal Inteligente",
+  "versao": "2.0.0",
+  "lat": -4.2917,
+  "lng": -44.7917,
+  "zoom": 13,
+  "tema": {
+    "primaria": "#2163e8",
+    "secundaria": "#1a4fba",
+    "fundo": "#f7f8f9"
+  },
+  "logo": "/assets/logo-prefeitura.png",
+  "bairros": [
+    "Centro",
+    "Bacabalzinho",
+    "Areal",
+    "Mutirão",
+    "São José",
+    "Vila Nova",
+    "Planalto",
+    "Povoado Alto Alegre",
+    "São Francisco",
+    "Pedreiras",
+    "Conjunto Habitacional",
+    "Alto do Bode"
+  ]
+}

@@ -1,0 +1,17 @@
+# Dependências / runtime
+node_modules/
+.env
+.env.*
+
+# Túnel local / binários
+cloudflared.exe
+tunnel-out.txt
+tunnel-err.txt
+*.log
+
+# SO / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/

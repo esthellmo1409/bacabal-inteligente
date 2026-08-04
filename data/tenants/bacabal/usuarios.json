@@ -1,0 +1,62 @@
+[
+  {
+    "id": "admin",
+    "nome": "Administrador Municipal",
+    "senha": "admin123",
+    "papel": "admin",
+    "secretaria": null
+  },
+  {
+    "id": "prefeito",
+    "nome": "Gabinete do Prefeito",
+    "senha": "prefeito123",
+    "papel": "prefeito",
+    "secretaria": null
+  },
+  {
+    "id": "obras",
+    "nome": "Equipe Obras",
+    "senha": "obras123",
+    "papel": "secretaria",
+    "secretaria": "obras"
+  },
+  {
+    "id": "iluminacao",
+    "nome": "Equipe Iluminação",
+    "senha": "luz123",
+    "papel": "secretaria",
+    "secretaria": "iluminacao"
+  },
+  {
+    "id": "limpeza",
+    "nome": "Equipe Limpeza",
+    "senha": "limpo123",
+    "papel": "secretaria",
+    "secretaria": "limpeza"
+  },
+  {
+    "id": "campo",
+    "nome": "Operador de Campo",
+    "senha": "campo123",
+    "papel": "campo",
+    "secretaria": "obras",
+    "perfil": "campo",
+    "equipeId": "EQ-OBR-01"
+  },
+  {
+    "id": "saude",
+    "nome": "Equipe Saúde",
+    "senha": "saude123",
+    "papel": "secretaria",
+    "secretaria": "saude",
+    "perfil": "secretaria"
+  },
+  {
+    "id": "eventos",
+    "nome": "Equipe Eventos",
+    "senha": "evento123",
+    "papel": "secretaria",
+    "secretaria": "eventos",
+    "perfil": "secretaria"
+  }
+]

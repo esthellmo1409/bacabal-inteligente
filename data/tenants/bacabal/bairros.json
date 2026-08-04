@@ -1,0 +1,62 @@
+[
+  {
+    "id": "BR-01",
+    "nome": "Centro",
+    "populacaoEstimada": 5000
+  },
+  {
+    "id": "BR-02",
+    "nome": "Bacabalzinho",
+    "populacaoEstimada": 5800
+  },
+  {
+    "id": "BR-03",
+    "nome": "Areal",
+    "populacaoEstimada": 6600
+  },
+  {
+    "id": "BR-04",
+    "nome": "Mutirão",
+    "populacaoEstimada": 7400
+  },
+  {
+    "id": "BR-05",
+    "nome": "São José",
+    "populacaoEstimada": 8200
+  },
+  {
+    "id": "BR-06",
+    "nome": "Vila Nova",
+    "populacaoEstimada": 9000
+  },
+  {
+    "id": "BR-07",
+    "nome": "Planalto",
+    "populacaoEstimada": 9800
+  },
+  {
+    "id": "BR-08",
+    "nome": "Povoado Alto Alegre",
+    "populacaoEstimada": 10600
+  },
+  {
+    "id": "BR-09",
+    "nome": "São Francisco",
+    "populacaoEstimada": 11400
+  },
+  {
+    "id": "BR-10",
+    "nome": "Pedreiras",
+    "populacaoEstimada": 12200
+  },
+  {
+    "id": "BR-11",
+    "nome": "Conjunto Habitacional",
+    "populacaoEstimada": 13000
+  },
+  {
+    "id": "BR-12",
+    "nome": "Alto do Bode",
+    "populacaoEstimada": 13800
+  }
+]

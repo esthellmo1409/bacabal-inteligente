@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bacabal Inteligente — Prefeitura Municipal de Bacabal</title>
+  <meta name="description" content="Plataforma da Prefeitura de Bacabal para ocorrências urbanas, secretarias e painel do gabinete." />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/home.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+</head>
+<body class="landing">
+  <div class="pmb-topbar">
+    <div class="pmb-topbar-inner">
+      <div>
+        <a href="https://www.bacabal.ma.gov.br/" target="_blank" rel="noopener">Portal oficial</a>
+        <a href="https://www.bacabal.ma.gov.br/" target="_blank" rel="noopener">Ouvidoria</a>
+        <a href="https://www.bacabal.ma.gov.br/" target="_blank" rel="noopener">E-Sic</a>
+        <a href="https://www.bacabal.ma.gov.br/" target="_blank" rel="noopener">Transparência</a>
+      </div>
+      <div>(99) 3621-0533 · Centro · Bacabal/MA</div>
+    </div>
+  </div>
+
+  <header class="landing-header">
+    <div class="landing-header-inner">
+      <a class="landing-brand" href="/">
+        <img src="/assets/logo-prefeitura.png" alt="Brasão de Bacabal" />
+        <div>
+          <strong>Bacabal Inteligente</strong>
+          <span>Prefeitura Municipal de Bacabal</span>
+        </div>
+      </a>
+      <nav class="landing-nav" aria-label="Principal">
+        <a href="/reuniao.html?cidade=bacabal">Reunião</a>
+        <a href="/pitch.html?cidade=bacabal">Pitch</a>
+        <a href="/demo.html?cidade=bacabal">Demo</a>
+        <a href="/modulos.html?cidade=bacabal">Módulos</a>
+        <a href="/cidadao.html?cidade=bacabal">Cidadão</a>
+        <a href="/dashboard.html?cidade=bacabal">Dashboard</a>
+        <a class="nav-cta" href="/login.html?cidade=bacabal">Acessar</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero-carousel" aria-roledescription="carousel" aria-label="Destaques Bacabal Inteligente">
+    <div class="carousel-track" id="carouselTrack">
+      <article class="carousel-slide is-active" data-index="0">
+        <div class="carousel-copy">
+          <p class="kicker">Prefeitura Municipal de Bacabal · MA</p>
+          <h1>Bacabal Inteligente</h1>
+          <p class="lead">
+            Do chamado na rua ao painel do gabinete — atendimento urbano com
+            mapa, protocolo e acompanhamento em tempo real.
+          </p>
+          <div class="carousel-actions">
+            <a class="btn-hero btn-hero-primary" href="/pitch.html?cidade=bacabal">Pitch do prefeito</a>
+            <a class="btn-hero btn-hero-ghost" href="/demo.html?cidade=bacabal">Demo 5 min</a>
+          </div>
+        </div>
+        <div class="carousel-visual">
+          <img src="/assets/slide-nova.png" alt="Nova Bacabal — identidade do portal oficial" />
+        </div>
+      </article>
+
+      <article class="carousel-slide" data-index="1">
+        <div class="carousel-copy">
+          <p class="kicker">Para o cidadão</p>
+          <h1>Foto, mapa e protocolo</h1>
+          <p class="lead">
+            Registre buraco, lâmpada apagada ou lixo irregular em poucos toques.
+            Acompanhe o andamento sem ligar de novo.
+          </p>
+          <div class="carousel-actions">
+            <a class="btn-hero btn-hero-primary" href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
+            <a class="btn-hero btn-hero-ghost" href="/poste.html?id=1457&cidade=bacabal">Poste com QR</a>
+          </div>
+        </div>
+        <div class="carousel-visual">
+          <img src="/assets/slide-bacabal.png" alt="Bacabal — banner institucional" />
+        </div>
+      </article>
+
+      <article class="carousel-slide" data-index="2">
+        <div class="carousel-copy">
+          <p class="kicker">Para a gestão</p>
+          <h1>Gabinete com visão da cidade</h1>
+          <p class="lead">
+            Secretarias com fila própria, mapa por bairro e indicadores para a
+            TV do prefeito — transparência operacional no dia a dia.
+          </p>
+          <div class="carousel-actions">
+            <a class="btn-hero btn-hero-primary" href="/login.html?cidade=bacabal">Acessar sistema</a>
+            <a class="btn-hero btn-hero-ghost" href="/prefeito.html?cidade=bacabal">Ver dashboard</a>
+          </div>
+        </div>
+        <div class="carousel-visual">
+          <img src="/assets/slide-transparencia.png" alt="Transparência pública — portal oficial" />
+        </div>
+      </article>
+    </div>
+
+    <div class="carousel-nav">
+      <button type="button" class="carousel-arrow" id="prevSlide" aria-label="Anterior">‹</button>
+      <div class="carousel-dots" id="carouselDots" role="tablist"></div>
+      <button type="button" class="carousel-arrow" id="nextSlide" aria-label="Próximo">›</button>
+    </div>
+  </section>
+
+  <div class="landing-metrics" id="stats" aria-live="polite"></div>
+
+  <main class="landing-main">
+    <div class="landing-section-head">
+      <p class="eyebrow">Como funciona</p>
+      <h2>Três portas. Uma cidade organizada.</h2>
+      <p>Cidadão, secretaria e gabinete no mesmo sistema — no ritmo do portal da prefeitura.</p>
+      <p style="margin-top:0.75rem">
+        <a class="btn btn-primary" href="/demo.html?cidade=bacabal">Iniciar demonstração de 5 minutos</a>
+      </p>
+    </div>
+
+    <div class="landing-pillars">
+      <article class="landing-pillar">
+        <div class="ico">01</div>
+        <h3>Cidadão</h3>
+        <p>Fotografe o problema, marque no mapa e receba o protocolo. Sem fila e sem perder o andamento.</p>
+        <a href="/cidadao.html?cidade=bacabal">Abrir chamado →</a>
+      </article>
+      <article class="landing-pillar">
+        <div class="ico">02</div>
+        <h3>Secretarias</h3>
+        <p>Cada equipe vê só a sua fila, atualiza status e gera parecer. Mais controle, menos improvisação.</p>
+        <a href="/secretaria.html?cidade=bacabal">Entrar na fila →</a>
+      </article>
+      <article class="landing-pillar">
+        <div class="ico">03</div>
+        <h3>Gabinete</h3>
+        <p>Indicadores, bairros críticos e mapa da cidade para decisão rápida no dia a dia da gestão.</p>
+        <a href="/prefeito.html?cidade=bacabal">Ver dashboard →</a>
+      </article>
+    </div>
+
+    <div class="landing-section-head">
+      <p class="eyebrow">Território</p>
+      <h2>Situação atual no mapa</h2>
+      <p>Ocorrências demonstrativas em Bacabal. Filtre por status ou bairro.</p>
+    </div>
+
+    <div class="landing-map-block">
+      <div class="map-shell">
+        <div class="map-toolbar">
+          <select id="filtroStatus"><option value="">Todos os status</option></select>
+          <select id="filtroBairro"><option value="">Todos os bairros</option></select>
+          <button class="btn btn-sm" id="resetMap" type="button">Visão geral</button>
+          <span class="count" id="mapCount">—</span>
+        </div>
+        <div id="mapHome" class="map"></div>
+        <div id="mapLegend"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="landing-footer">
+    <div class="landing-footer-inner">
+      <div>
+        <strong style="color:#2f7319">Bacabal Inteligente</strong>
+        · Travessa 15 de Novembro, 229, Centro · CEP 65700-000
+      </div>
+      <div>
+        <a href="https://www.bacabal.ma.gov.br/" target="_blank" rel="noopener">bacabal.ma.gov.br</a>
+        · (99) 3621-0533
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/app.js"></script>
+  <script src="/map.js"></script>
+  <script>
+    setCidade('bacabal');
+
+    // Carousel — 3 slides, como o banner do portal
+    (function () {
+      const slides = [...document.querySelectorAll('.carousel-slide')];
+      const dotsWrap = document.getElementById('carouselDots');
+      let i = 0;
+      let timer;
+
+      slides.forEach((_, idx) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Slide ' + (idx + 1));
+        b.onclick = () => go(idx);
+        dotsWrap.appendChild(b);
+      });
+
+      function render() {
+        slides.forEach((s, idx) => s.classList.toggle('is-active', idx === i));
+        [...dotsWrap.children].forEach((d, idx) => d.classList.toggle('is-active', idx === i));
+      }
+
+      function go(n) {
+        i = (n + slides.length) % slides.length;
+        render();
+        restart();
+      }
+
+      function restart() {
+        clearInterval(timer);
+        timer = setInterval(() => go(i + 1), 6500);
+      }
+
+      document.getElementById('prevSlide').onclick = () => go(i - 1);
+      document.getElementById('nextSlide').onclick = () => go(i + 1);
+      const root = document.querySelector('.hero-carousel');
+      root.addEventListener('mouseenter', () => clearInterval(timer));
+      root.addEventListener('mouseleave', restart);
+      render();
+      restart();
+    })();
+
+    (async () => {
+      const cfg = await loadCityBrand();
+      document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
+
+      const m = await api('/api/metricas');
+      document.getElementById('stats').innerHTML = `
+        <div class="landing-metric"><div class="label">Chamados</div><div class="value">${m.total}</div></div>
+        <div class="landing-metric"><div class="label">Resolvidos</div><div class="value">${m.taxaResolucao}%</div></div>
+        <div class="landing-metric"><div class="label">Tempo médio</div><div class="value">${m.tempoMedioDias}d</div></div>
+        <div class="landing-metric"><div class="label">Em aberto</div><div class="value">${m.porStatus.aberto || 0}</div></div>
+      `;
+
+      const state = MapBI.create('mapHome', { center: [cfg.lat, cfg.lng], zoom: 13 });
+      const points = (m.heatmap || []).map(p => ({ ...p, titulo: p.categoria }));
+      document.getElementById('mapCount').textContent = MapBI.setPoints(state, points) + ' no mapa';
+
+      const stSel = document.getElementById('filtroStatus');
+      Object.keys(m.porStatus || {}).forEach(k => {
+        const o = document.createElement('option');
+        o.value = k;
+        o.textContent = MapBI.statusLabel(k);
+        stSel.appendChild(o);
+      });
+      const bSel = document.getElementById('filtroBairro');
+      Object.keys(m.porBairro || {}).sort().forEach(b => {
+        const o = document.createElement('option');
+        o.value = b;
+        o.textContent = b;
+        bSel.appendChild(o);
+      });
+
+      const apply = () => {
+        document.getElementById('mapCount').textContent =
+          MapBI.setFilters(state, { status: stSel.value, bairro: bSel.value }) + ' no mapa';
+      };
+      stSel.onchange = apply;
+      bSel.onchange = apply;
+      document.getElementById('resetMap').onclick = () => {
+        stSel.value = '';
+        bSel.value = '';
+        apply();
+        state.map.setView([cfg.lat, cfg.lng], 13);
+      };
+    })().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

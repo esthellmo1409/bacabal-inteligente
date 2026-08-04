@@ -1,0 +1,184 @@
+[
+  {
+    "id": "buraco",
+    "label": "Buraco / Tapa-buraco",
+    "secretaria": "obras",
+    "icon": "🕳️",
+    "eixo": "cidade"
+  },
+  {
+    "id": "lampada",
+    "label": "Lâmpada apagada",
+    "secretaria": "iluminacao",
+    "icon": "💡",
+    "eixo": "cidade"
+  },
+  {
+    "id": "lixo",
+    "label": "Lixo / Entulho",
+    "secretaria": "limpeza",
+    "icon": "🗑️",
+    "eixo": "cidade"
+  },
+  {
+    "id": "poda",
+    "label": "Poda de árvore",
+    "secretaria": "meio_ambiente",
+    "icon": "🌳",
+    "eixo": "cidade"
+  },
+  {
+    "id": "calcada",
+    "label": "Calçada danificada",
+    "secretaria": "obras",
+    "icon": "🧱",
+    "eixo": "cidade"
+  },
+  {
+    "id": "sinalizacao",
+    "label": "Sinalização",
+    "secretaria": "transito",
+    "icon": "🚦",
+    "eixo": "cidade"
+  },
+  {
+    "id": "esgoto",
+    "label": "Esgoto / Alagamento",
+    "secretaria": "defesa_civil",
+    "icon": "💧",
+    "eixo": "cidade"
+  },
+  {
+    "id": "outros",
+    "label": "Outros",
+    "secretaria": "ouvidoria",
+    "icon": "📋",
+    "eixo": "cidade"
+  },
+  {
+    "id": "pavimentacao",
+    "label": "Pavimentação",
+    "secretaria": "obras",
+    "icon": "🛣️",
+    "eixo": "cidade"
+  },
+  {
+    "id": "meio_fio",
+    "label": "Meio-fio",
+    "secretaria": "obras",
+    "icon": "🧱",
+    "eixo": "cidade"
+  },
+  {
+    "id": "galerias",
+    "label": "Galerias / drenagem",
+    "secretaria": "obras",
+    "icon": "🕳️",
+    "eixo": "cidade"
+  },
+  {
+    "id": "poste_apagado",
+    "label": "Poste apagado",
+    "secretaria": "iluminacao",
+    "icon": "💡",
+    "eixo": "cidade"
+  },
+  {
+    "id": "curto_circuito",
+    "label": "Curto circuito",
+    "secretaria": "iluminacao",
+    "icon": "⚡",
+    "eixo": "cidade"
+  },
+  {
+    "id": "arvore_caida",
+    "label": "Árvore caída",
+    "secretaria": "meio_ambiente",
+    "icon": "🌳",
+    "eixo": "cidade"
+  },
+  {
+    "id": "limpeza_verde",
+    "label": "Limpeza de área verde",
+    "secretaria": "meio_ambiente",
+    "icon": "🌿",
+    "eixo": "cidade"
+  },
+  {
+    "id": "demora_atendimento",
+    "label": "Demora no atendimento",
+    "secretaria": "saude",
+    "icon": "⏱️",
+    "eixo": "saude"
+  },
+  {
+    "id": "falta_medico",
+    "label": "Falta de médico / plantão",
+    "secretaria": "saude",
+    "icon": "🩺",
+    "eixo": "saude"
+  },
+  {
+    "id": "superlotacao",
+    "label": "Superlotação",
+    "secretaria": "saude",
+    "icon": "🏥",
+    "eixo": "saude"
+  },
+  {
+    "id": "limpeza_ubs",
+    "label": "Limpeza / higiene da unidade",
+    "secretaria": "saude",
+    "icon": "✨",
+    "eixo": "saude"
+  },
+  {
+    "id": "avaliacao_atendimento",
+    "label": "Avaliação do atendimento",
+    "secretaria": "saude",
+    "icon": "⭐",
+    "eixo": "saude"
+  },
+  {
+    "id": "visita_surpresa",
+    "label": "Visita surpresa do Gabinete",
+    "secretaria": "saude",
+    "icon": "👁️",
+    "eixo": "saude"
+  },
+  {
+    "id": "estrutura_evento",
+    "label": "Estrutura do evento",
+    "secretaria": "eventos",
+    "icon": "🎪",
+    "eixo": "eventos"
+  },
+  {
+    "id": "som_iluminacao_evento",
+    "label": "Som / iluminação do evento",
+    "secretaria": "eventos",
+    "icon": "🔊",
+    "eixo": "eventos"
+  },
+  {
+    "id": "seguranca_evento",
+    "label": "Segurança no evento",
+    "secretaria": "eventos",
+    "icon": "🛡️",
+    "eixo": "eventos"
+  },
+  {
+    "id": "limpeza_pos_evento",
+    "label": "Limpeza pós-evento",
+    "secretaria": "eventos",
+    "icon": "🧹",
+    "eixo": "eventos"
+  },
+  {
+    "id": "divulgacao_evento",
+    "label": "Divulgação / organização",
+    "secretaria": "eventos",
+    "icon": "📢",
+    "eixo": "eventos"
+  }
+]

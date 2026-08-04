@@ -1,0 +1,32 @@
+[
+  {
+    "id": "PL-HOSP",
+    "unidadeId": "US-HOSP",
+    "data": "2026-08-04",
+    "profissional": "DR ALLISSON CARVALHO",
+    "cargo": "Plantão",
+    "iniciadoEm": "2026-08-04T09:10:10.858Z",
+    "ultimoCheckIn": "2026-08-04T14:17:01.266Z",
+    "status": "ativo"
+  },
+  {
+    "id": "PL-UBS1",
+    "unidadeId": "US-UBS1",
+    "data": "2026-08-04",
+    "profissional": "Dra. Ana Paula",
+    "cargo": "Clínica geral",
+    "iniciadoEm": "2026-08-04T10:10:10.858Z",
+    "ultimoCheckIn": "2026-08-04T13:10:10.858Z",
+    "status": "ativo"
+  },
+  {
+    "id": "PL-UBS2",
+    "unidadeId": "US-UBS2",
+    "data": "2026-08-04",
+    "profissional": null,
+    "cargo": "Plantão UBS",
+    "iniciadoEm": null,
+    "ultimoCheckIn": null,
+    "status": "sem_confirmacao"
+  }
+]

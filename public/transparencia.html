@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transparência · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.75rem;margin-bottom:0.35rem">Portal da Transparência</h1>
+    <p class="muted" style="margin-bottom:1rem">Obras, gastos, empresas, prazos e percentual executado</p>
+    <div class="grid-3" id="kpis" style="margin-bottom:1rem"></div>
+    <div class="panel" style="margin-bottom:1rem">
+      <h3>Empresas contratadas</h3>
+      <div id="empresas" class="chip-row" style="margin-top:0.75rem"></div>
+    </div>
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+        <h3>Obras</h3>
+        <button class="btn btn-sm" id="csv">Download CSV</button>
+      </div>
+      <div class="list" id="lista"></div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    let data;
+    (async () => {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      data = await api('/api/transparencia');
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">Gasto obras</div><div class="value" style="font-size:1.3rem">${money(data.gastos.obras)}</div></div>
+        <div class="panel stat"><div class="label">Serviços</div><div class="value" style="font-size:1.3rem">${money(data.gastos.servicos)}</div></div>
+        <div class="panel stat"><div class="label">Total</div><div class="value" style="font-size:1.3rem">${money(data.gastos.total)}</div></div>`;
+      document.getElementById('empresas').innerHTML = data.empresas.map(e => `<span class="chip">${e}</span>`).join('');
+      document.getElementById('lista').innerHTML = data.obras.map(o => `
+        <div class="item">
+          <div class="item-head"><strong>${o.nome}</strong><span>${o.percentual}%</span></div>
+          <div class="meta">${money(o.valor)} · executado ${money(o.gastoExecutado || 0)} · ${o.empresa}</div>
+          <div class="meta">Prazo ${o.prazo || '—'} · ${o.bairro || ''} · status ${o.status}</div>
+          ${(o.fotos||[]).length ? o.fotos.map(f => `<img class="preview show" src="${f}" style="max-height:80px;display:inline-block;width:120px;margin-right:0.35rem" />`).join('') : ''}
+        </div>`).join('');
+    })().catch(e => toast(e.message));
+
+    document.getElementById('csv').onclick = () => {
+      if (!data) return;
+      const headers = ['id','nome','status','percentual','valor','gastoExecutado','empresa','prazo','bairro'];
+      const lines = [headers.join(';')].concat(data.obras.map(o => headers.map(h => o[h] ?? '').join(';')));
+      downloadText('transparencia_obras.csv', '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
+    };
+  </script>
+</body>
+</html>

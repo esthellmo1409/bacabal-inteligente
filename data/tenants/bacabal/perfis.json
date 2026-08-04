@@ -1,0 +1,44 @@
+[
+  {
+    "id": "admin",
+    "nome": "Administrador",
+    "permissoes": [
+      "*"
+    ]
+  },
+  {
+    "id": "prefeito",
+    "nome": "Gabinete",
+    "permissoes": [
+      "dashboard",
+      "relatorios",
+      "transparencia",
+      "chamados.ler"
+    ]
+  },
+  {
+    "id": "secretaria",
+    "nome": "Secretaria",
+    "permissoes": [
+      "chamados",
+      "equipes",
+      "mapa",
+      "ia"
+    ]
+  },
+  {
+    "id": "campo",
+    "nome": "Equipe de campo",
+    "permissoes": [
+      "equipes",
+      "chamados.atualizar"
+    ]
+  },
+  {
+    "id": "cidadao",
+    "nome": "Cidadão",
+    "permissoes": [
+      "cidadao"
+    ]
+  }
+]

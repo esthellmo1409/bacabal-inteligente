@@ -1,0 +1,42 @@
+[
+  {
+    "id": "EQ-OBR-01",
+    "nome": "Equipe Tapa-buraco 01",
+    "secretaria": "obras",
+    "lider": "Carlos Mendes",
+    "membros": 4,
+    "ativo": true
+  },
+  {
+    "id": "EQ-OBR-02",
+    "nome": "Equipe Pavimentação",
+    "secretaria": "obras",
+    "lider": "Roberto Alves",
+    "membros": 6,
+    "ativo": true
+  },
+  {
+    "id": "EQ-ILU-01",
+    "nome": "Equipe Iluminação Norte",
+    "secretaria": "iluminacao",
+    "lider": "Paulo Souza",
+    "membros": 3,
+    "ativo": true
+  },
+  {
+    "id": "EQ-LIM-01",
+    "nome": "Equipe Limpeza Centro",
+    "secretaria": "limpeza",
+    "lider": "Fernanda Dias",
+    "membros": 5,
+    "ativo": true
+  },
+  {
+    "id": "EQ-AMB-01",
+    "nome": "Equipe Arborização",
+    "secretaria": "meio_ambiente",
+    "lider": "Juliana Rocha",
+    "membros": 3,
+    "ativo": true
+  }
+]

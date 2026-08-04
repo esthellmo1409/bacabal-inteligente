@@ -1,0 +1,26 @@
+[
+  {
+    "id": "MAT-01",
+    "nome": "Asfalto frio (kg)",
+    "estoque": 1200,
+    "minimo": 300,
+    "secretaria": "obras",
+    "custoUnitario": 4.5
+  },
+  {
+    "id": "MAT-02",
+    "nome": "Lâmpada LED 100W",
+    "estoque": 85,
+    "minimo": 40,
+    "secretaria": "iluminacao",
+    "custoUnitario": 68
+  },
+  {
+    "id": "MAT-03",
+    "nome": "Saco de lixo 200L",
+    "estoque": 400,
+    "minimo": 100,
+    "secretaria": "limpeza",
+    "custoUnitario": 1.2
+  }
+]

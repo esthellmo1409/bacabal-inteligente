@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Administração · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.75rem;margin-bottom:0.35rem">Administração</h1>
+    <p class="muted" style="margin-bottom:1rem">Permissões · perfis · logs · auditoria · histórico · backup</p>
+    <div id="loginView" class="panel login-box">
+      <h2>Admin municipal</h2>
+      <label>Usuário</label><input id="usuario" value="admin" />
+      <label>Senha</label><input id="senha" type="password" value="admin123" />
+      <button class="btn btn-primary" id="loginBtn" style="width:100%">Entrar</button>
+    </div>
+    <div id="appView" style="display:none">
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Perfis de acesso</h3>
+          <div id="perfis" class="list" style="margin-top:0.75rem"></div>
+        </div>
+        <div class="panel">
+          <h3>Usuários</h3>
+          <div id="users" class="list" style="margin-top:0.75rem"></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>Logs / auditoria</h3>
+          <button class="btn btn-sm" id="backup">Backup automático agora</button>
+        </div>
+        <div id="logs" class="list" style="margin-top:0.75rem"></div>
+      </div>
+      <p class="muted" style="margin-top:1rem">Super plataforma: <a href="/admin.html">admin.html</a> (tenants)</p>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    async function bootBrand() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+    }
+    bootBrand();
+
+    async function show() {
+      loginView.style.display = 'none';
+      appView.style.display = 'block';
+      const perfis = await api('/api/cadastro/perfis');
+      const users = await api('/api/cadastro/usuarios');
+      const logs = await api('/api/logs');
+      document.getElementById('perfis').innerHTML = perfis.map(p => `
+        <div class="item"><div class="item-head"><strong>${p.nome}</strong></div>
+        <div class="meta">${(p.permissoes || []).join(', ')}</div></div>`).join('') || '<p class="muted">Sem perfis</p>';
+      document.getElementById('users').innerHTML = users.map(u => `
+        <div class="item"><div class="item-head"><strong>${u.nome}</strong><span class="meta">${u.papel}</span></div>
+        <div class="meta">${u.id} · perfil ${u.perfil || '—'}</div></div>`).join('');
+      document.getElementById('logs').innerHTML = logs.slice(0, 40).map(l => `
+        <div class="item"><div class="meta">${fmtDate(l.em)} · ${l.por} · <strong>${l.acao}</strong> — ${l.detalhe}</div></div>`).join('')
+        || '<p class="muted">Sem logs</p>';
+    }
+
+    loginBtn.onclick = async () => {
+      try {
+        const r = await api('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({ usuario: usuario.value.trim(), senha: senha.value, cidade: getCidade() }),
+        });
+        localStorage.setItem('bi_token', r.token);
+        await show();
+      } catch (e) { toast(e.message); }
+    };
+    backup.onclick = async () => {
+      try {
+        const r = await api('/api/backup', { method: 'POST', body: '{}' });
+        toast('Backup ' + r.em);
+        show();
+      } catch (e) { toast(e.message); }
+    };
+    if (localStorage.getItem('bi_token')) {
+      api('/api/me').then(u => { if (u.papel === 'admin') show(); }).catch(() => {});
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastros · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.75rem;margin-bottom:0.35rem">Cadastros</h1>
+    <p class="muted" style="margin-bottom:1rem">Usuários, secretarias, equipes, veículos, equipamentos, bairros, ruas, categorias e prioridades</p>
+    <div class="panel" style="margin-bottom:1rem">
+      <div class="chip-row" id="tabs"></div>
+      <p class="muted" id="auth" style="margin-top:0.75rem;font-size:0.85rem"></p>
+    </div>
+    <div class="grid-2">
+      <div class="panel"><div class="list" id="lista"></div></div>
+      <div class="panel">
+        <h3 style="margin-bottom:0.75rem">Novo / editar</h3>
+        <label>JSON do registro</label>
+        <textarea id="json" rows="14" placeholder='{ "id": "...", "nome": "..." }'></textarea>
+        <div class="actions">
+          <button class="btn btn-sm btn-primary" id="salvar">Salvar</button>
+          <button class="btn btn-sm" id="apagar">Excluir por id</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    const types = ['usuarios','secretarias','equipes','veiculos','equipamentos','bairros','ruas','categorias','prioridades','materiais'];
+    let tipo = 'equipes', user = null;
+
+    async function boot() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      document.getElementById('tabs').innerHTML = types.map(t =>
+        `<button type="button" class="chip" data-t="${t}">${t}</button>`
+      ).join('');
+      document.querySelectorAll('#tabs .chip').forEach(el => {
+        el.onclick = () => { tipo = el.dataset.t; load(); };
+      });
+      try { user = await api('/api/me'); } catch { user = null; }
+      document.getElementById('auth').textContent = user
+        ? `Logado: ${user.nome} (${user.papel}) — escrita exige admin`
+        : 'Somente leitura sem login admin. Entre em Login.';
+      await load();
+    }
+
+    async function load() {
+      const list = await api('/api/cadastro/' + tipo);
+      document.getElementById('lista').innerHTML = list.length ? list.map(item => `
+        <div class="item" style="cursor:pointer" data-json='${JSON.stringify(item).replace(/'/g, "&#39;")}'>
+          <div class="item-head"><strong>${item.nome || item.label || item.id}</strong></div>
+          <div class="meta">${item.id} ${item.secretaria ? '· ' + item.secretaria : ''} ${item.papel ? '· ' + item.papel : ''}</div>
+        </div>`).join('') : '<p class="muted">Vazio — rode seed ou crie o primeiro.</p>';
+      document.querySelectorAll('#lista .item').forEach(el => {
+        el.onclick = () => { json.value = JSON.stringify(JSON.parse(el.dataset.json), null, 2); };
+      });
+    }
+
+    document.getElementById('salvar').onclick = async () => {
+      try {
+        const body = JSON.parse(json.value);
+        const list = await api('/api/cadastro/' + tipo);
+        const exists = list.some(x => x.id === body.id);
+        await api('/api/cadastro/' + tipo, {
+          method: exists ? 'PUT' : 'POST',
+          body: JSON.stringify(body),
+        });
+        toast('Salvo');
+        load();
+      } catch (e) { toast(e.message); }
+    };
+    document.getElementById('apagar').onclick = async () => {
+      try {
+        const body = JSON.parse(json.value);
+        if (!body.id) return toast('Informe id');
+        await api('/api/cadastro/' + tipo + '?id=' + encodeURIComponent(body.id), { method: 'DELETE' });
+        toast('Excluído');
+        json.value = '';
+        load();
+      } catch (e) { toast(e.message); }
+    };
+    boot().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

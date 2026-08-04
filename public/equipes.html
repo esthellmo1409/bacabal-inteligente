@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>App das Equipes · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.7rem;margin-bottom:0.35rem">Aplicativo das Equipes</h1>
+    <p class="muted" style="margin-bottom:1rem">Ordem de serviço · aceitar · GPS · foto antes/depois · material · horas · encerrar</p>
+
+    <div id="loginView" class="panel login-box">
+      <h2>Login de campo</h2>
+      <label>Usuário</label><input id="usuario" value="campo" />
+      <label>Senha</label><input id="senha" type="password" value="campo123" />
+      <button class="btn btn-primary" id="loginBtn" style="width:100%">Entrar</button>
+      <p class="muted" style="margin-top:0.75rem;font-size:0.8rem">Demo: campo/campo123 · ou obras/obras123</p>
+    </div>
+
+    <div id="appView" style="display:none">
+      <div class="grid-3" id="kpis" style="margin-bottom:1rem"></div>
+      <div class="grid-2">
+        <div class="panel"><div id="map" class="map"></div></div>
+        <div class="panel">
+          <h3 style="margin-bottom:0.75rem">Ordens do dia</h3>
+          <div class="list" id="lista"></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:1rem" id="osBox"><p class="muted">Selecione uma OS</p></div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/app.js"></script>
+  <script src="/map.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    let user, cfg, map, layer, selected;
+
+    async function trySession() {
+      if (!localStorage.getItem('bi_token')) return;
+      try {
+        user = await api('/api/me');
+        showApp();
+      } catch { localStorage.removeItem('bi_token'); }
+    }
+
+    document.getElementById('loginBtn').onclick = async () => {
+      try {
+        const r = await api('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({ usuario: usuario.value.trim(), senha: senha.value, cidade: getCidade() }),
+        });
+        localStorage.setItem('bi_token', r.token);
+        user = r.user;
+        showApp();
+      } catch (e) { toast(e.message); }
+    };
+
+    async function showApp() {
+      cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Campo', cfg);
+      loginView.style.display = 'none';
+      appView.style.display = 'block';
+      if (!map) {
+        map = L.map('map').setView([cfg.lat, cfg.lng], 15);
+        MapBI.basemaps(map, 'hybrid');
+        layer = L.layerGroup().addTo(map);
+      }
+      await load();
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(async pos => {
+          try {
+            await api('/api/rastreamento', {
+              method: 'POST',
+              body: JSON.stringify({
+                equipeId: user.equipeId || 'EQ-OBR-01',
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude,
+              }),
+            });
+          } catch (_) {}
+        });
+      }
+    }
+
+    async function load() {
+      const data = await api('/api/rota?lat=' + cfg.lat + '&lng=' + cfg.lng +
+        (user.secretaria ? '&secretaria=' + user.secretaria : ''));
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">OS</div><div class="value">${data.rota.length}</div></div>
+        <div class="panel stat"><div class="label">Km</div><div class="value">${data.totalKm}</div></div>
+        <div class="panel stat"><div class="label">Min</div><div class="value">${data.tempoEstimadoMin}</div></div>`;
+      layer.clearLayers();
+      const latlngs = [[cfg.lat, cfg.lng], ...data.rota.map(p => [p.lat, p.lng])];
+      L.polyline(latlngs, { color: '#398A21', weight: 3 }).addTo(layer);
+      data.rota.forEach(p => L.circleMarker([p.lat, p.lng], { radius: 9, fillColor: '#FF8000', fillOpacity: 1, color: '#fff' })
+        .bindPopup(`#${p.ordem} ${p.titulo}`).addTo(layer));
+      if (latlngs.length > 1) map.fitBounds(latlngs, { padding: [30, 30] });
+
+      document.getElementById('lista').innerHTML = data.rota.map(p => `
+        <div class="item" style="cursor:pointer" data-id="${p.id}">
+          <div class="item-head"><strong>${p.ordem}. ${p.titulo}</strong>${badge(p.status)}</div>
+          <div class="meta">${p.protocolo} · ${p.bairro} · ~${p.etaMin} min</div>
+          <div class="actions">
+            <a class="btn btn-sm" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}">Navegar GPS</a>
+          </div>
+        </div>`).join('') || '<p class="muted">Sem OS pendentes</p>';
+      document.querySelectorAll('#lista [data-id]').forEach(el => {
+        el.onclick = (e) => { if (e.target.tagName === 'A') return; openOS(el.dataset.id); };
+      });
+    }
+
+    async function openOS(id) {
+      selected = await api('/api/chamados/' + id);
+      const c = selected;
+      document.getElementById('osBox').innerHTML = `
+        <h3>OS ${c.protocolo}</h3>
+        <p class="muted">${c.descricao}</p>
+        <div class="actions" style="margin-bottom:0.75rem">
+          <button class="btn btn-sm btn-primary" id="aceitar">Aceitar serviço</button>
+          <button class="btn btn-sm" id="antes">Foto antes</button>
+          <button class="btn btn-sm" id="depois">Foto depois</button>
+        </div>
+        <input type="file" id="fAntes" accept="image/*" capture="environment" style="display:none" />
+        <input type="file" id="fDepois" accept="image/*" capture="environment" style="display:none" />
+        <label>Material usado</label>
+        <div style="display:flex;gap:0.5rem">
+          <input id="matNome" placeholder="Ex.: asfalto frio" style="margin:0" />
+          <input id="matQtd" type="number" value="1" style="margin:0;max-width:80px" />
+          <button class="btn btn-sm" id="addMat">Registrar</button>
+        </div>
+        <label>Horas trabalhadas</label>
+        <div style="display:flex;gap:0.5rem">
+          <input id="horas" type="number" step="0.5" value="2" style="margin:0" />
+          <button class="btn btn-sm" id="addHoras">Salvar horas</button>
+        </div>
+        <label>Custo (R$)</label>
+        <input id="custo" type="number" value="0" />
+        <button class="btn btn-primary" id="encerrar" style="width:100%;margin-top:0.75rem">Encerrar serviço</button>
+        <div style="margin-top:0.75rem">${c.fotoAntes ? '<img class="preview show" src="'+c.fotoAntes+'" style="max-height:100px"/>' : ''}
+        ${c.fotoDepois ? '<img class="preview show" src="'+c.fotoDepois+'" style="max-height:100px"/>' : ''}</div>
+      `;
+      aceitar.onclick = async () => {
+        await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'aceitar', equipeId: user.equipeId }) });
+        toast('OS aceita'); openOS(c.id); load();
+      };
+      antes.onclick = () => fAntes.click();
+      depois.onclick = () => fDepois.click();
+      fAntes.onchange = e => readFoto(e, 'antes');
+      fDepois.onchange = e => readFoto(e, 'depois');
+      addMat.onclick = async () => {
+        await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'material', nome: matNome.value, qtd: Number(matQtd.value) }) });
+        toast('Material ok');
+      };
+      addHoras.onclick = async () => {
+        await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'horas', horas: Number(horas.value) }) });
+        toast('Horas ok');
+      };
+      encerrar.onclick = async () => {
+        await api('/api/chamados/' + c.id + '/os', {
+          method: 'POST',
+          body: JSON.stringify({ acao: 'encerrar', custo: Number(custo.value), fotoDepois: c.fotoDepois }),
+        });
+        toast('Serviço encerrado');
+        load();
+      };
+    }
+
+    function readFoto(e, tipo) {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = async () => {
+        await api('/api/chamados/' + selected.id + '/anexo', {
+          method: 'POST', body: JSON.stringify({ foto: r.result, tipo }),
+        });
+        toast('Foto ' + tipo);
+        openOS(selected.id);
+      };
+      r.readAsDataURL(f);
+    }
+
+    (async () => {
+      const cfg0 = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Campo', cfg0);
+      trySession();
+    })();
+  </script>
+</body>
+</html>

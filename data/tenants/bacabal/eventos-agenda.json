@@ -1,0 +1,37 @@
+[
+  {
+    "id": "EVT-01",
+    "nome": "Feira Livre Municipal",
+    "local": "Centro",
+    "data": "2026-08-06",
+    "status": "confirmado",
+    "publicoEstimado": 3000,
+    "destaqueGabinete": true
+  },
+  {
+    "id": "EVT-02",
+    "nome": "Show Cultural Praça da Matriz",
+    "local": "Praça da Matriz",
+    "data": "2026-08-13",
+    "status": "planejamento",
+    "publicoEstimado": 5000,
+    "destaqueGabinete": true
+  },
+  {
+    "id": "EVT-03",
+    "nome": "Campanha de Vacinação",
+    "local": "Hospital Municipal",
+    "data": "2026-08-09",
+    "status": "confirmado",
+    "publicoEstimado": 800,
+    "eixo": "saude"
+  },
+  {
+    "id": "EVT-04",
+    "nome": "Abertura do Campeonato Amador",
+    "local": "Estádio Municipal",
+    "data": "2026-08-18",
+    "status": "confirmado",
+    "publicoEstimado": 2000
+  }
+]

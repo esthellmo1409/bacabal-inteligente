@@ -1,0 +1,2816 @@
+[
+  {
+    "id": "BAC-1001",
+    "protocolo": "20261001",
+    "categoria": "poda",
+    "secretaria": "meio_ambiente",
+    "titulo": "Poda de árvore",
+    "descricao": "Solicitação de poda de árvore registrada pelo cidadão.",
+    "bairro": "Mutirão",
+    "endereco": "Rua Exemplo, 865",
+    "lat": -4.3026548105034035,
+    "lng": -44.81036702144909,
+    "status": "em_execucao",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 94184-8207"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-27T01:48:24.927Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-01T01:48:24.927Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-27T01:48:24.927Z",
+    "atualizadoEm": "2026-08-01T01:48:24.927Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-AMB-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1002",
+    "protocolo": "20261002",
+    "categoria": "poda",
+    "secretaria": "meio_ambiente",
+    "titulo": "Poda de árvore",
+    "descricao": "Solicitação de poda de árvore registrada pelo cidadão.",
+    "bairro": "Povoado Alto Alegre",
+    "endereco": "Rua Exemplo, 398",
+    "lat": -4.326620019355886,
+    "lng": -44.7950821769552,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 91508-1606"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-10T01:48:24.927Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T01:48:24.927Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-10T01:48:24.927Z",
+    "atualizadoEm": "2026-08-04T01:48:24.927Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-AMB-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1003",
+    "protocolo": "20261003",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Bacabalzinho",
+    "endereco": "Rua Exemplo, 327",
+    "lat": -4.302206523240375,
+    "lng": -44.80154582522885,
+    "status": "em_execucao",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 91434-5626"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-09T01:48:24.927Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-30T01:48:24.927Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-09T01:48:24.927Z",
+    "atualizadoEm": "2026-07-30T01:48:24.927Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1004",
+    "protocolo": "20261004",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Bacabalzinho",
+    "endereco": "Rua Exemplo, 444",
+    "lat": -4.311513670396063,
+    "lng": -44.80853490307377,
+    "status": "em_execucao",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 91526-8560"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-19T01:48:24.928Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-30T01:48:24.928Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-19T01:48:24.928Z",
+    "atualizadoEm": "2026-07-30T01:48:24.928Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-02",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1005",
+    "protocolo": "20261005",
+    "categoria": "outros",
+    "secretaria": "ouvidoria",
+    "titulo": "Outros",
+    "descricao": "Solicitação de outros registrada pelo cidadão.",
+    "bairro": "São José",
+    "endereco": "Rua Exemplo, 525",
+    "lat": -4.298940472492544,
+    "lng": -44.755054682556505,
+    "status": "novo",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 93576-6984"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-02T01:48:24.928Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-07-02T01:48:24.928Z",
+    "atualizadoEm": "2026-07-02T01:48:24.928Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1006",
+    "protocolo": "20261006",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Mutirão",
+    "endereco": "Rua Exemplo, 156",
+    "lat": -4.28070111223885,
+    "lng": -44.82197113355102,
+    "status": "em_analise",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 94671-9515"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-12T01:48:24.928Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-29T01:48:24.928Z",
+        "status": "em_analise",
+        "nota": "Atualizado para em_analise"
+      }
+    ],
+    "criadoEm": "2026-07-12T01:48:24.928Z",
+    "atualizadoEm": "2026-07-29T01:48:24.928Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1007",
+    "protocolo": "20261007",
+    "categoria": "sinalizacao",
+    "secretaria": "transito",
+    "titulo": "Sinalização",
+    "descricao": "Solicitação de sinalização registrada pelo cidadão.",
+    "bairro": "Povoado Alto Alegre",
+    "endereco": "Rua Exemplo, 743",
+    "lat": -4.269329805439545,
+    "lng": -44.79389488693865,
+    "status": "em_analise",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 92127-5194"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-25T01:48:24.928Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-27T01:48:24.928Z",
+        "status": "em_analise",
+        "nota": "Atualizado para em_analise"
+      }
+    ],
+    "criadoEm": "2026-07-25T01:48:24.928Z",
+    "atualizadoEm": "2026-07-27T01:48:24.928Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1008",
+    "protocolo": "20261008",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 191",
+    "lat": -4.3109294719267925,
+    "lng": -44.77231380593853,
+    "status": "em_analise",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 97069-4474"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-15T01:48:24.928Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-01T01:48:24.928Z",
+        "status": "em_analise",
+        "nota": "Atualizado para em_analise"
+      }
+    ],
+    "criadoEm": "2026-07-15T01:48:24.928Z",
+    "atualizadoEm": "2026-08-01T01:48:24.928Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1009",
+    "protocolo": "20261009",
+    "categoria": "calcada",
+    "secretaria": "obras",
+    "titulo": "Calçada danificada",
+    "descricao": "Solicitação de calçada danificada registrada pelo cidadão.",
+    "bairro": "Bacabalzinho",
+    "endereco": "Rua Exemplo, 303",
+    "lat": -4.326539502549506,
+    "lng": -44.81914046759474,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 95916-6518"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-22T01:48:24.928Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-28T01:48:24.928Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-06-22T01:48:24.928Z",
+    "atualizadoEm": "2026-07-28T01:48:24.928Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1010",
+    "protocolo": "20261010",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "São José",
+    "endereco": "Rua Exemplo, 418",
+    "lat": -4.281860069762656,
+    "lng": -44.786962657208704,
+    "status": "novo",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 98504-7294"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-11T01:48:24.928Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-07-11T01:48:24.928Z",
+    "atualizadoEm": "2026-07-11T01:48:24.928Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1011",
+    "protocolo": "20261011",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Vila Nova",
+    "endereco": "Rua Exemplo, 147",
+    "lat": -4.267350164287069,
+    "lng": -44.80750558154187,
+    "status": "novo",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 92926-9149"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-15T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-07-15T01:48:24.929Z",
+    "atualizadoEm": "2026-07-15T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1012",
+    "protocolo": "20261012",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Centro",
+    "endereco": "Rua Exemplo, 640",
+    "lat": -4.290281102481853,
+    "lng": -44.806175742563475,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 99696-1693"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-22T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-28T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-22T01:48:24.929Z",
+    "atualizadoEm": "2026-07-28T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1013",
+    "protocolo": "20261013",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "Vila Nova",
+    "endereco": "Rua Exemplo, 572",
+    "lat": -4.283034051015977,
+    "lng": -44.80089967321628,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 98651-6717"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-21T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-29T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-06-21T01:48:24.929Z",
+    "atualizadoEm": "2026-07-29T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-ILU-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1014",
+    "protocolo": "20261014",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "São José",
+    "endereco": "Rua Exemplo, 214",
+    "lat": -4.280367382082329,
+    "lng": -44.82594032640024,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 95969-8884"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-17T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-01T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-17T01:48:24.929Z",
+    "atualizadoEm": "2026-08-01T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-ILU-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1015",
+    "protocolo": "20261015",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Centro",
+    "endereco": "Rua Exemplo, 471",
+    "lat": -4.279252068286207,
+    "lng": -44.76896948813647,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 94254-4764"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-17T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-31T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-17T01:48:24.929Z",
+    "atualizadoEm": "2026-07-31T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1016",
+    "protocolo": "20261016",
+    "categoria": "outros",
+    "secretaria": "ouvidoria",
+    "titulo": "Outros",
+    "descricao": "Solicitação de outros registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 223",
+    "lat": -4.304098608085902,
+    "lng": -44.78307313511576,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 97743-8803"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-24T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-27T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-24T01:48:24.929Z",
+    "atualizadoEm": "2026-07-27T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1017",
+    "protocolo": "20261017",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Vila Nova",
+    "endereco": "Rua Exemplo, 272",
+    "lat": -4.298340848742872,
+    "lng": -44.79417281693634,
+    "status": "em_execucao",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 95010-6429"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-21T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-02T01:48:24.929Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-06-21T01:48:24.929Z",
+    "atualizadoEm": "2026-08-02T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1018",
+    "protocolo": "20261018",
+    "categoria": "calcada",
+    "secretaria": "obras",
+    "titulo": "Calçada danificada",
+    "descricao": "Solicitação de calçada danificada registrada pelo cidadão.",
+    "bairro": "Bacabalzinho",
+    "endereco": "Rua Exemplo, 44",
+    "lat": -4.285598910188398,
+    "lng": -44.7820997514826,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 94650-8452"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-22T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-02T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-22T01:48:24.929Z",
+    "atualizadoEm": "2026-08-02T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-02",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1019",
+    "protocolo": "20261019",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Bacabalzinho",
+    "endereco": "Rua Exemplo, 639",
+    "lat": -4.315404236452896,
+    "lng": -44.81208269282108,
+    "status": "novo",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 94906-6966"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-25T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-07-25T01:48:24.929Z",
+    "atualizadoEm": "2026-07-25T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1020",
+    "protocolo": "20261020",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 606",
+    "lat": -4.253182834055231,
+    "lng": -44.78705697109333,
+    "status": "novo",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 98411-6508"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-26T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-06-26T01:48:24.929Z",
+    "atualizadoEm": "2026-06-26T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-ILU-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1021",
+    "protocolo": "20261021",
+    "categoria": "lixo",
+    "secretaria": "limpeza",
+    "titulo": "Lixo / Entulho",
+    "descricao": "Solicitação de lixo / entulho registrada pelo cidadão.",
+    "bairro": "Mutirão",
+    "endereco": "Rua Exemplo, 517",
+    "lat": -4.292525152355296,
+    "lng": -44.800594800574544,
+    "status": "novo",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 94363-9437"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-26T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-06-26T01:48:24.929Z",
+    "atualizadoEm": "2026-06-26T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-LIM-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1022",
+    "protocolo": "20261022",
+    "categoria": "poda",
+    "secretaria": "meio_ambiente",
+    "titulo": "Poda de árvore",
+    "descricao": "Solicitação de poda de árvore registrada pelo cidadão.",
+    "bairro": "Areal",
+    "endereco": "Rua Exemplo, 723",
+    "lat": -4.278347804520039,
+    "lng": -44.82186728905817,
+    "status": "em_execucao",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 91026-5407"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-02T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-01T01:48:24.929Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-02T01:48:24.929Z",
+    "atualizadoEm": "2026-08-01T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-AMB-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1023",
+    "protocolo": "20261023",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Povoado Alto Alegre",
+    "endereco": "Rua Exemplo, 806",
+    "lat": -4.272240822577481,
+    "lng": -44.80602352984624,
+    "status": "em_execucao",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 91152-7520"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-31T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-30T01:48:24.929Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-31T01:48:24.929Z",
+    "atualizadoEm": "2026-07-30T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1024",
+    "protocolo": "20261024",
+    "categoria": "calcada",
+    "secretaria": "obras",
+    "titulo": "Calçada danificada",
+    "descricao": "Solicitação de calçada danificada registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 630",
+    "lat": -4.322057051804809,
+    "lng": -44.778523968645246,
+    "status": "concluido",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 99599-7768"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-20T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-26T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-20T01:48:24.929Z",
+    "atualizadoEm": "2026-07-26T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-02",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1025",
+    "protocolo": "20261025",
+    "categoria": "poda",
+    "secretaria": "meio_ambiente",
+    "titulo": "Poda de árvore",
+    "descricao": "Solicitação de poda de árvore registrada pelo cidadão.",
+    "bairro": "Povoado Alto Alegre",
+    "endereco": "Rua Exemplo, 450",
+    "lat": -4.255473322724869,
+    "lng": -44.82394335113315,
+    "status": "concluido",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 92909-1871"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-23T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-31T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-06-23T01:48:24.929Z",
+    "atualizadoEm": "2026-07-31T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-AMB-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1026",
+    "protocolo": "20261026",
+    "categoria": "poda",
+    "secretaria": "meio_ambiente",
+    "titulo": "Poda de árvore",
+    "descricao": "Solicitação de poda de árvore registrada pelo cidadão.",
+    "bairro": "São José",
+    "endereco": "Rua Exemplo, 740",
+    "lat": -4.311595447922124,
+    "lng": -44.804165726947176,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 97976-6237"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-28T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-01T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-06-28T01:48:24.929Z",
+    "atualizadoEm": "2026-08-01T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-AMB-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1027",
+    "protocolo": "20261027",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "Areal",
+    "endereco": "Rua Exemplo, 455",
+    "lat": -4.277559736094398,
+    "lng": -44.82640655936484,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 96076-4113"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-03T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-30T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-03T01:48:24.929Z",
+    "atualizadoEm": "2026-07-30T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-ILU-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1028",
+    "protocolo": "20261028",
+    "categoria": "lixo",
+    "secretaria": "limpeza",
+    "titulo": "Lixo / Entulho",
+    "descricao": "Solicitação de lixo / entulho registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 698",
+    "lat": -4.293184132920687,
+    "lng": -44.81998239814054,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 95558-3278"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-09T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-02T01:48:24.929Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-09T01:48:24.929Z",
+    "atualizadoEm": "2026-08-02T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-LIM-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1029",
+    "protocolo": "20261029",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "Povoado Alto Alegre",
+    "endereco": "Rua Exemplo, 274",
+    "lat": -4.270674786725015,
+    "lng": -44.785214527214286,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 93069-7436"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-04T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-04T01:48:24.929Z",
+    "atualizadoEm": "2026-08-04T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-ILU-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1030",
+    "protocolo": "20261030",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Vila Nova",
+    "endereco": "Rua Exemplo, 389",
+    "lat": -4.266207006464528,
+    "lng": -44.83007850833101,
+    "status": "concluido",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Maria Silva",
+      "telefone": "(99) 98307-9753"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-30T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-03T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-30T01:48:24.929Z",
+    "atualizadoEm": "2026-08-03T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-02",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1031",
+    "protocolo": "20261031",
+    "categoria": "outros",
+    "secretaria": "ouvidoria",
+    "titulo": "Outros",
+    "descricao": "Solicitação de outros registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 241",
+    "lat": -4.303002520193155,
+    "lng": -44.8214090890432,
+    "status": "em_execucao",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 92608-4309"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-04T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T01:48:24.929Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-08-04T01:48:24.929Z",
+    "atualizadoEm": "2026-08-04T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1032",
+    "protocolo": "20261032",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Centro",
+    "endereco": "Rua Exemplo, 333",
+    "lat": -4.293412205966227,
+    "lng": -44.78714274653484,
+    "status": "em_analise",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 93741-5381"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-27T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-29T01:48:24.929Z",
+        "status": "em_analise",
+        "nota": "Atualizado para em_analise"
+      }
+    ],
+    "criadoEm": "2026-06-27T01:48:24.929Z",
+    "atualizadoEm": "2026-07-29T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1033",
+    "protocolo": "20261033",
+    "categoria": "outros",
+    "secretaria": "ouvidoria",
+    "titulo": "Outros",
+    "descricao": "Solicitação de outros registrada pelo cidadão.",
+    "bairro": "Mutirão",
+    "endereco": "Rua Exemplo, 861",
+    "lat": -4.327900346589796,
+    "lng": -44.787327255848865,
+    "status": "novo",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 93295-4173"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-07T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-07-07T01:48:24.929Z",
+    "atualizadoEm": "2026-07-07T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1034",
+    "protocolo": "20261034",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Bacabalzinho",
+    "endereco": "Rua Exemplo, 295",
+    "lat": -4.296532382169928,
+    "lng": -44.82362876594671,
+    "status": "em_analise",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 92113-4698"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-01T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-26T01:48:24.929Z",
+        "status": "em_analise",
+        "nota": "Atualizado para em_analise"
+      }
+    ],
+    "criadoEm": "2026-08-01T01:48:24.929Z",
+    "atualizadoEm": "2026-07-26T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1035",
+    "protocolo": "20261035",
+    "categoria": "outros",
+    "secretaria": "ouvidoria",
+    "titulo": "Outros",
+    "descricao": "Solicitação de outros registrada pelo cidadão.",
+    "bairro": "Centro",
+    "endereco": "Rua Exemplo, 487",
+    "lat": -4.253902955360296,
+    "lng": -44.807518383810255,
+    "status": "novo",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 94790-9011"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-20T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-07-20T01:48:24.929Z",
+    "atualizadoEm": "2026-07-20T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1036",
+    "protocolo": "20261036",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Vila Nova",
+    "endereco": "Rua Exemplo, 435",
+    "lat": -4.279469818753703,
+    "lng": -44.77848593188837,
+    "status": "novo",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 95658-8434"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-16T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-07-16T01:48:24.929Z",
+    "atualizadoEm": "2026-07-16T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1037",
+    "protocolo": "20261037",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "Centro",
+    "endereco": "Rua Exemplo, 422",
+    "lat": -4.279633961354281,
+    "lng": -44.82719899226666,
+    "status": "em_analise",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 91811-2236"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-27T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-26T01:48:24.929Z",
+        "status": "em_analise",
+        "nota": "Atualizado para em_analise"
+      }
+    ],
+    "criadoEm": "2026-07-27T01:48:24.929Z",
+    "atualizadoEm": "2026-07-26T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-ILU-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1038",
+    "protocolo": "20261038",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 610",
+    "lat": -4.25904150937913,
+    "lng": -44.82156428840728,
+    "status": "concluido",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 99970-1385"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-01T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-02T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-08-01T01:48:24.929Z",
+    "atualizadoEm": "2026-08-02T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-02",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1039",
+    "protocolo": "20261039",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Bacabalzinho",
+    "endereco": "Rua Exemplo, 786",
+    "lat": -4.2999164809496975,
+    "lng": -44.78220205094125,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 98797-4282"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-16T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-26T01:48:24.929Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-16T01:48:24.929Z",
+    "atualizadoEm": "2026-07-26T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1040",
+    "protocolo": "20261040",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Solicitação de lâmpada apagada registrada pelo cidadão.",
+    "bairro": "Centro",
+    "endereco": "Rua Exemplo, 535",
+    "lat": -4.305383006482067,
+    "lng": -44.76917418362004,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 91953-7182"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-16T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-01T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-16T01:48:24.929Z",
+    "atualizadoEm": "2026-08-01T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-ILU-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1041",
+    "protocolo": "20261041",
+    "categoria": "esgoto",
+    "secretaria": "defesa_civil",
+    "titulo": "Esgoto / Alagamento",
+    "descricao": "Solicitação de esgoto / alagamento registrada pelo cidadão.",
+    "bairro": "Povoado Alto Alegre",
+    "endereco": "Rua Exemplo, 803",
+    "lat": -4.286433795540387,
+    "lng": -44.75221599939695,
+    "status": "em_execucao",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 98944-6968"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-21T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-27T01:48:24.929Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-21T01:48:24.929Z",
+    "atualizadoEm": "2026-07-27T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1042",
+    "protocolo": "20261042",
+    "categoria": "calcada",
+    "secretaria": "obras",
+    "titulo": "Calçada danificada",
+    "descricao": "Solicitação de calçada danificada registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 789",
+    "lat": -4.299789033623224,
+    "lng": -44.81874184832183,
+    "status": "concluido",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 96563-6188"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-28T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-03T01:48:24.929Z",
+        "status": "concluido",
+        "nota": "Atualizado para concluido"
+      }
+    ],
+    "criadoEm": "2026-07-28T01:48:24.929Z",
+    "atualizadoEm": "2026-08-03T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-02",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1043",
+    "protocolo": "20261043",
+    "categoria": "calcada",
+    "secretaria": "obras",
+    "titulo": "Calçada danificada",
+    "descricao": "Solicitação de calçada danificada registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 166",
+    "lat": -4.304051362904112,
+    "lng": -44.759794324374404,
+    "status": "em_execucao",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 95495-4187"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-16T01:48:24.929Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-31T01:48:24.929Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-16T01:48:24.929Z",
+    "atualizadoEm": "2026-07-31T01:48:24.929Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1044",
+    "protocolo": "20261044",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Areal",
+    "endereco": "Rua Exemplo, 200",
+    "lat": -4.290257912089104,
+    "lng": -44.80036274988644,
+    "status": "novo",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "João Santos",
+      "telefone": "(99) 97071-6348"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-21T01:48:24.930Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-06-21T01:48:24.930Z",
+    "atualizadoEm": "2026-06-21T01:48:24.930Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-02",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1045",
+    "protocolo": "20261045",
+    "categoria": "outros",
+    "secretaria": "ouvidoria",
+    "titulo": "Outros",
+    "descricao": "Solicitação de outros registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 841",
+    "lat": -4.3168924030797164,
+    "lng": -44.82321254790306,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Pedro Lima",
+      "telefone": "(99) 91033-3789"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-28T01:48:24.930Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-31T01:48:24.930Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-06-28T01:48:24.930Z",
+    "atualizadoEm": "2026-07-31T01:48:24.930Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1046",
+    "protocolo": "20261046",
+    "categoria": "poda",
+    "secretaria": "meio_ambiente",
+    "titulo": "Poda de árvore",
+    "descricao": "Solicitação de poda de árvore registrada pelo cidadão.",
+    "bairro": "Areal",
+    "endereco": "Rua Exemplo, 573",
+    "lat": -4.329611739772961,
+    "lng": -44.812332823949,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 98965-1568"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-03T01:48:24.930Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-07-26T01:48:24.930Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-08-03T01:48:24.930Z",
+    "atualizadoEm": "2026-07-26T01:48:24.930Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-AMB-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1047",
+    "protocolo": "20261047",
+    "categoria": "sinalizacao",
+    "secretaria": "transito",
+    "titulo": "Sinalização",
+    "descricao": "Solicitação de sinalização registrada pelo cidadão.",
+    "bairro": "Planalto",
+    "endereco": "Rua Exemplo, 425",
+    "lat": -4.307673626362533,
+    "lng": -44.77081579157097,
+    "status": "em_execucao",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Ana Costa",
+      "telefone": "(99) 92286-3573"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-07-25T01:48:24.930Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T01:48:24.930Z",
+        "status": "em_execucao",
+        "nota": "Atualizado para em_andamento"
+      }
+    ],
+    "criadoEm": "2026-07-25T01:48:24.930Z",
+    "atualizadoEm": "2026-08-04T01:48:24.930Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1048",
+    "protocolo": "20261048",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Solicitação de buraco / tapa-buraco registrada pelo cidadão.",
+    "bairro": "Mutirão",
+    "endereco": "Rua Exemplo, 89",
+    "lat": -4.269921028974114,
+    "lng": -44.81847134538602,
+    "status": "novo",
+    "prioridade": "baixa",
+    "cidadao": {
+      "nome": "Lucia Ferreira",
+      "telefone": "(99) 94700-6525"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-06-23T01:48:24.930Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-06-23T01:48:24.930Z",
+    "atualizadoEm": "2026-06-23T01:48:24.930Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-02",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1049",
+    "protocolo": "20261049",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "buraco na rua do centro teste funcional",
+    "bairro": "Centro",
+    "endereco": "",
+    "lat": -4.29,
+    "lng": -44.79,
+    "status": "novo",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Teste Demo",
+      "telefone": "99999999999"
+    },
+    "foto": null,
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-04T02:57:04.933Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      }
+    ],
+    "criadoEm": "2026-08-04T02:57:04.933Z",
+    "atualizadoEm": "2026-08-04T02:57:04.933Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": "EQ-OBR-01",
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1050",
+    "protocolo": "20261050",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Buraco grande na Av. Getúlio Vargas, em frente ao nº 210 — risco para motos.",
+    "bairro": "Centro",
+    "endereco": "Centro — ponto de demonstração",
+    "lat": -4.2877,
+    "lng": -44.7947,
+    "status": "novo",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Cidadão Demo",
+      "telefone": "(99) 98100-0000",
+      "email": ""
+    },
+    "foto": null,
+    "anexos": [],
+    "equipeId": "EQ-OBR-01",
+    "historico": [
+      {
+        "em": "2026-08-04T13:05:59.229Z",
+        "status": "novo",
+        "nota": "Chamado de demonstração (pitch)"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:05:59.229Z",
+    "atualizadoEm": "2026-08-04T13:05:59.229Z",
+    "demo": true,
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1052",
+    "protocolo": "20261052",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Poste apagado há 3 noites na Rua das Flores — pedestres sem iluminação.",
+    "bairro": "São José",
+    "endereco": "São José — ponto de demonstração",
+    "lat": -4.2977,
+    "lng": -44.786699999999996,
+    "status": "novo",
+    "prioridade": "urgente",
+    "cidadao": {
+      "nome": "Cidadão Demo",
+      "telefone": "(99) 98100-0000",
+      "email": ""
+    },
+    "foto": null,
+    "anexos": [],
+    "equipeId": "EQ-ILU-01",
+    "historico": [
+      {
+        "em": "2026-08-04T13:05:59.229Z",
+        "status": "novo",
+        "nota": "Chamado de demonstração (pitch)"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:05:59.229Z",
+    "atualizadoEm": "2026-08-04T13:05:59.229Z",
+    "demo": true,
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1054",
+    "protocolo": "20261054",
+    "categoria": "lixo",
+    "secretaria": "limpeza",
+    "titulo": "Lixo / Entulho",
+    "descricao": "Entulho acumulado na esquina — solicitação de remoção.",
+    "bairro": "Mutirão",
+    "endereco": "Mutirão — ponto de demonstração",
+    "lat": -4.2837,
+    "lng": -44.789699999999996,
+    "status": "novo",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Cidadão Demo",
+      "telefone": "(99) 98100-0000",
+      "email": ""
+    },
+    "foto": null,
+    "anexos": [],
+    "equipeId": "EQ-LIM-01",
+    "historico": [
+      {
+        "em": "2026-08-04T13:05:59.229Z",
+        "status": "novo",
+        "nota": "Chamado de demonstração (pitch)"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:05:59.229Z",
+    "atualizadoEm": "2026-08-04T13:05:59.229Z",
+    "demo": true,
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1053",
+    "protocolo": "20261053",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "BURACO GRANDE NA FRENTE DA CASA 123",
+    "bairro": "Mutirão",
+    "endereco": "",
+    "rua": "",
+    "lat": -4.227124114782107,
+    "lng": -44.79367879637366,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "ESTHELLMO HANGELLO",
+      "telefone": "86994213602",
+      "email": ""
+    },
+    "foto": null,
+    "anexos": [],
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-04T13:09:26.480Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T13:14:28.409Z",
+        "status": "concluido",
+        "nota": "Serviço concluído",
+        "por": "Equipe Obras"
+      },
+      {
+        "em": "2026-08-04T13:14:28.409Z",
+        "status": "concluido",
+        "nota": "Pronto para notificar o cidadão via WhatsApp",
+        "por": "sistema"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:09:26.480Z",
+    "atualizadoEm": "2026-08-04T13:14:28.409Z",
+    "duplicidadeSuspeita": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1054",
+    "protocolo": "20261054",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Buraco grande na Av. Getúlio Vargas, em frente ao nº 210 — risco para motos.",
+    "bairro": "Centro",
+    "endereco": "Centro — ponto de demonstração",
+    "lat": -4.2877,
+    "lng": -44.7947,
+    "status": "novo",
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "Cidadão Demo",
+      "telefone": "(99) 98100-0000",
+      "email": ""
+    },
+    "foto": null,
+    "anexos": [],
+    "equipeId": "EQ-OBR-01",
+    "historico": [
+      {
+        "em": "2026-08-04T13:28:54.848Z",
+        "status": "novo",
+        "nota": "Chamado de demonstração (pitch)"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:28:54.848Z",
+    "atualizadoEm": "2026-08-04T13:28:54.848Z",
+    "demo": true,
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1056",
+    "protocolo": "20261056",
+    "categoria": "lampada",
+    "secretaria": "iluminacao",
+    "titulo": "Lâmpada apagada",
+    "descricao": "Poste apagado há 3 noites na Rua das Flores — pedestres sem iluminação.",
+    "bairro": "São José",
+    "endereco": "São José — ponto de demonstração",
+    "lat": -4.2977,
+    "lng": -44.786699999999996,
+    "status": "novo",
+    "prioridade": "urgente",
+    "cidadao": {
+      "nome": "Cidadão Demo",
+      "telefone": "(99) 98100-0000",
+      "email": ""
+    },
+    "foto": null,
+    "anexos": [],
+    "equipeId": "EQ-ILU-01",
+    "historico": [
+      {
+        "em": "2026-08-04T13:28:54.848Z",
+        "status": "novo",
+        "nota": "Chamado de demonstração (pitch)"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:28:54.848Z",
+    "atualizadoEm": "2026-08-04T13:28:54.848Z",
+    "demo": true,
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1058",
+    "protocolo": "20261058",
+    "categoria": "lixo",
+    "secretaria": "limpeza",
+    "titulo": "Lixo / Entulho",
+    "descricao": "Entulho acumulado na esquina — solicitação de remoção.",
+    "bairro": "Mutirão",
+    "endereco": "Mutirão — ponto de demonstração",
+    "lat": -4.2837,
+    "lng": -44.789699999999996,
+    "status": "encaminhado",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Cidadão Demo",
+      "telefone": "(99) 98100-0000",
+      "email": ""
+    },
+    "foto": null,
+    "anexos": [],
+    "equipeId": "EQ-LIM-01",
+    "historico": [
+      {
+        "em": "2026-08-04T13:28:54.848Z",
+        "status": "novo",
+        "nota": "Chamado de demonstração (pitch)"
+      },
+      {
+        "em": "2026-08-04T13:57:06.089Z",
+        "status": "encaminhado",
+        "nota": "Cobrança do Gabinete: solicitar andamento imediato à secretaria.",
+        "por": "Gabinete do Prefeito"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:28:54.848Z",
+    "atualizadoEm": "2026-08-04T13:57:06.089Z",
+    "demo": true,
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null,
+    "cobrancas": [
+      {
+        "em": "2026-08-04T13:57:06.089Z",
+        "por": "Gabinete do Prefeito",
+        "texto": "Cobrança do Gabinete: solicitar andamento imediato à secretaria."
+      }
+    ]
+  },
+  {
+    "id": "BAC-1057",
+    "protocolo": "20261057",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "Buraco na frente da casa 19",
+    "bairro": "Centro",
+    "endereco": "",
+    "rua": "",
+    "lat": -4.227218884839183,
+    "lng": -44.793964161777325,
+    "status": "concluido",
+    "prioridade": "media",
+    "cidadao": {
+      "nome": "Arthur",
+      "telefone": "86994213602",
+      "email": ""
+    },
+    "foto": null,
+    "anexos": [],
+    "posteId": null,
+    "historico": [
+      {
+        "em": "2026-08-04T13:30:14.683Z",
+        "status": "novo",
+        "nota": "Chamado aberto pelo cidadão"
+      },
+      {
+        "em": "2026-08-04T13:32:33.958Z",
+        "status": "em_analise",
+        "nota": "Em análise pela secretaria",
+        "por": "Equipe Obras"
+      },
+      {
+        "em": "2026-08-04T13:32:45.606Z",
+        "status": "em_execucao",
+        "nota": "Equipe em execução",
+        "por": "Equipe Obras"
+      },
+      {
+        "em": "2026-08-04T13:32:57.609Z",
+        "status": "concluido",
+        "nota": "Serviço concluído",
+        "por": "Equipe Obras"
+      },
+      {
+        "em": "2026-08-04T13:32:57.609Z",
+        "status": "concluido",
+        "nota": "Pronto para notificar o cidadão via WhatsApp",
+        "por": "sistema"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:30:14.683Z",
+    "atualizadoEm": "2026-08-04T13:32:57.609Z",
+    "duplicidadeSuspeita": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  },
+  {
+    "id": "BAC-1058",
+    "protocolo": "20261058",
+    "status": "novo",
+    "prioridade": "urgente",
+    "foto": null,
+    "anexos": [],
+    "comentarios": [],
+    "historico": [
+      {
+        "em": "2026-08-04T13:52:29.353Z",
+        "status": "novo",
+        "nota": "Reclamação de atendimento"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:52:29.353Z",
+    "atualizadoEm": "2026-08-04T13:52:29.353Z",
+    "cidadao": {
+      "nome": "Cidadão",
+      "telefone": "(99) 98000-0000"
+    },
+    "lat": -4.2917,
+    "lng": -44.7917,
+    "categoria": "demora_atendimento",
+    "secretaria": "saude",
+    "titulo": "Demora no atendimento",
+    "descricao": "Fila longa na recepção do Hospital Municipal — espera acima de 2h.",
+    "bairro": "Centro",
+    "eixo": "saude",
+    "unidadeId": "US-HOSP",
+    "nota": "Reclamação de atendimento"
+  },
+  {
+    "id": "BAC-1059",
+    "protocolo": "20261059",
+    "status": "novo",
+    "prioridade": "alta",
+    "foto": null,
+    "anexos": [],
+    "comentarios": [],
+    "historico": [
+      {
+        "em": "2026-08-04T13:52:29.353Z",
+        "status": "novo",
+        "nota": "Registro"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:52:29.353Z",
+    "atualizadoEm": "2026-08-04T13:52:29.353Z",
+    "cidadao": {
+      "nome": "Cidadão",
+      "telefone": "(99) 98000-0000"
+    },
+    "lat": -4.2917,
+    "lng": -44.7917,
+    "categoria": "avaliacao_atendimento",
+    "secretaria": "saude",
+    "titulo": "Avaliação do atendimento",
+    "descricao": "Cidadão avaliou atendimento da UBS Centro com nota 2.",
+    "bairro": "Centro",
+    "eixo": "saude",
+    "unidadeId": "US-UBS1",
+    "avaliacao": {
+      "nota": 2,
+      "comentario": "Demorou muito",
+      "em": "2026-08-04T13:52:29.353Z"
+    }
+  },
+  {
+    "id": "BAC-1060",
+    "protocolo": "20261060",
+    "status": "novo",
+    "prioridade": "alta",
+    "foto": null,
+    "anexos": [],
+    "comentarios": [],
+    "historico": [
+      {
+        "em": "2026-08-04T13:52:29.353Z",
+        "status": "novo",
+        "nota": "Pendência de evento"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:52:29.353Z",
+    "atualizadoEm": "2026-08-04T13:52:29.353Z",
+    "cidadao": {
+      "nome": "Cidadão",
+      "telefone": "(99) 98000-0000"
+    },
+    "lat": -4.2917,
+    "lng": -44.7917,
+    "categoria": "estrutura_evento",
+    "secretaria": "eventos",
+    "titulo": "Estrutura do evento",
+    "descricao": "Palco e tendas incompletos para a Feira Livre — risco de atraso.",
+    "bairro": "Centro",
+    "eixo": "eventos",
+    "eventoId": "EVT-01",
+    "nota": "Pendência de evento"
+  },
+  {
+    "id": "BAC-1061",
+    "protocolo": "20261061",
+    "status": "novo",
+    "prioridade": "urgente",
+    "foto": null,
+    "anexos": [],
+    "comentarios": [],
+    "historico": [
+      {
+        "em": "2026-08-04T13:52:29.353Z",
+        "status": "novo",
+        "nota": "Registro"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:52:29.353Z",
+    "atualizadoEm": "2026-08-04T13:52:29.353Z",
+    "cidadao": {
+      "nome": "Cidadão",
+      "telefone": "(99) 98000-0000"
+    },
+    "lat": -4.2917,
+    "lng": -44.7917,
+    "categoria": "seguranca_evento",
+    "secretaria": "eventos",
+    "titulo": "Segurança no evento",
+    "descricao": "Solicitar reforço de segurança no Show da Praça.",
+    "bairro": "Centro",
+    "eixo": "eventos",
+    "eventoId": "EVT-02"
+  },
+  {
+    "id": "BAC-1062",
+    "protocolo": "20261062",
+    "categoria": "visita_surpresa",
+    "secretaria": "saude",
+    "eixo": "saude",
+    "titulo": "Visita surpresa do Gabinete",
+    "descricao": "Visita surpresa em Hospital Municipal de Bacabal. Checklist: fila=true, limpeza=false, atendimento=true. ",
+    "bairro": "Centro",
+    "endereco": "Hospital Municipal de Bacabal",
+    "lat": -4.2817,
+    "lng": -44.8017,
+    "status": "concluido",
+    "prioridade": "urgente",
+    "destaqueGabinete": true,
+    "unidadeId": "US-HOSP",
+    "visitaSurpresa": {
+      "em": "2026-08-04T13:58:41.723Z",
+      "checklist": {
+        "filaOk": true,
+        "limpezaOk": false,
+        "atendimentoOk": true,
+        "observacao": ""
+      },
+      "por": "Gabinete do Prefeito"
+    },
+    "cidadao": {
+      "nome": "Gabinete do Prefeito",
+      "telefone": ""
+    },
+    "historico": [
+      {
+        "em": "2026-08-04T13:58:41.723Z",
+        "status": "encaminhado",
+        "nota": "Visita surpresa: pendências (limpeza) — cobrança automática à Saúde",
+        "por": "Gabinete do Prefeito"
+      },
+      {
+        "em": "2026-08-04T14:17:11.287Z",
+        "status": "encaminhado",
+        "nota": "Cobrança do Gabinete sobre unidade Hospital Municipal de Bacabal: verificar fila, plantão e atendimento.",
+        "por": "Gabinete do Prefeito"
+      },
+      {
+        "em": "2026-08-04T14:31:37.581Z",
+        "status": "encaminhado",
+        "nota": "Cobrança do Gabinete sobre unidade Hospital Municipal de Bacabal: verificar fila, plantão e atendimento.",
+        "por": "Gabinete do Prefeito"
+      },
+      {
+        "em": "2026-08-04T14:32:05.652Z",
+        "status": "encaminhado",
+        "nota": "Cobrança do Gabinete sobre unidade UBS São José: verificar fila, plantão e atendimento.",
+        "por": "Gabinete do Prefeito"
+      },
+      {
+        "em": "2026-08-04T14:33:00.008Z",
+        "status": "concluido",
+        "nota": "Serviço concluído",
+        "por": "Equipe Saúde"
+      },
+      {
+        "em": "2026-08-04T14:33:06.708Z",
+        "status": "concluido",
+        "nota": "Serviço concluído",
+        "por": "Equipe Saúde"
+      },
+      {
+        "em": "2026-08-04T14:33:41.074Z",
+        "status": "concluido",
+        "nota": "Serviço concluído",
+        "por": "Equipe Saúde"
+      }
+    ],
+    "criadoEm": "2026-08-04T13:58:41.723Z",
+    "atualizadoEm": "2026-08-04T14:33:41.074Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null,
+    "cobrancas": [
+      {
+        "em": "2026-08-04T14:17:11.287Z",
+        "por": "Gabinete do Prefeito",
+        "texto": "Cobrança do Gabinete sobre unidade Hospital Municipal de Bacabal: verificar fila, plantão e atendimento."
+      },
+      {
+        "em": "2026-08-04T14:31:37.581Z",
+        "por": "Gabinete do Prefeito",
+        "texto": "Cobrança do Gabinete sobre unidade Hospital Municipal de Bacabal: verificar fila, plantão e atendimento."
+      },
+      {
+        "em": "2026-08-04T14:32:05.652Z",
+        "por": "Gabinete do Prefeito",
+        "texto": "Cobrança do Gabinete sobre unidade UBS São José: verificar fila, plantão e atendimento."
+      }
+    ]
+  },
+  {
+    "id": "BAC-1063",
+    "protocolo": "20261063",
+    "categoria": "visita_surpresa",
+    "secretaria": "saude",
+    "eixo": "saude",
+    "titulo": "Visita surpresa do Gabinete",
+    "descricao": "Visita surpresa em Hospital Municipal de Bacabal. Checklist: fila=true, limpeza=true, atendimento=true. ",
+    "bairro": "Centro",
+    "endereco": "Hospital Municipal de Bacabal",
+    "lat": -4.2817,
+    "lng": -44.8017,
+    "status": "concluido",
+    "prioridade": "media",
+    "destaqueGabinete": true,
+    "unidadeId": "US-HOSP",
+    "visitaSurpresa": {
+      "em": "2026-08-04T14:00:15.387Z",
+      "checklist": {
+        "filaOk": true,
+        "limpezaOk": true,
+        "atendimentoOk": true,
+        "observacao": ""
+      },
+      "por": "Gabinete do Prefeito"
+    },
+    "cidadao": {
+      "nome": "Gabinete do Prefeito",
+      "telefone": ""
+    },
+    "historico": [
+      {
+        "em": "2026-08-04T14:00:15.387Z",
+        "status": "concluido",
+        "nota": "Visita surpresa: unidade ok",
+        "por": "Gabinete do Prefeito"
+      }
+    ],
+    "criadoEm": "2026-08-04T14:00:15.387Z",
+    "atualizadoEm": "2026-08-04T14:00:15.387Z",
+    "anexos": [],
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0,
+    "fotoAntes": null,
+    "fotoDepois": null
+  }
+]

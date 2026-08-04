@@ -1,0 +1,54 @@
+[
+  {
+    "id": "OBR-001",
+    "nome": "Pavimentação Av. Getúlio Vargas",
+    "status": "em_andamento",
+    "percentual": 62,
+    "valor": 1850000,
+    "empresa": "Construtora Maranhão Ltda",
+    "prazo": "2026-11-30",
+    "bairro": "Centro",
+    "lat": -4.288614431949242,
+    "lng": -44.80762987737837,
+    "fotos": []
+  },
+  {
+    "id": "OBR-002",
+    "nome": "Reforma da Praça da Matriz",
+    "status": "concluida",
+    "percentual": 100,
+    "valor": 420000,
+    "empresa": "Obras & Cia",
+    "prazo": "2026-06-15",
+    "bairro": "Centro",
+    "lat": -4.301065473729793,
+    "lng": -44.77865563052838,
+    "fotos": []
+  },
+  {
+    "id": "OBR-003",
+    "nome": "Drenagem Bairro Mutirão",
+    "status": "atrasada",
+    "percentual": 35,
+    "valor": 980000,
+    "empresa": "InfraMA Engenharia",
+    "prazo": "2026-07-01",
+    "bairro": "Mutirão",
+    "lat": -4.300597930076813,
+    "lng": -44.77826652805283,
+    "fotos": []
+  },
+  {
+    "id": "OBR-004",
+    "nome": "Iluminação LED — São José",
+    "status": "em_andamento",
+    "percentual": 48,
+    "valor": 310000,
+    "empresa": "Luz Urbana SA",
+    "prazo": "2026-10-20",
+    "bairro": "São José",
+    "lat": -4.31044129006677,
+    "lng": -44.79580311355647,
+    "fotos": []
+  }
+]

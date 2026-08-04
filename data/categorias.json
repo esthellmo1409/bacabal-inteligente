@@ -1,0 +1,50 @@
+[
+  {
+    "id": "buraco",
+    "label": "Buraco / Tapa-buraco",
+    "secretaria": "obras",
+    "icon": "🕳️"
+  },
+  {
+    "id": "lampada",
+    "label": "Lâmpada apagada",
+    "secretaria": "iluminacao",
+    "icon": "💡"
+  },
+  {
+    "id": "lixo",
+    "label": "Lixo / Entulho",
+    "secretaria": "limpeza",
+    "icon": "🗑️"
+  },
+  {
+    "id": "poda",
+    "label": "Poda de árvore",
+    "secretaria": "meio_ambiente",
+    "icon": "🌳"
+  },
+  {
+    "id": "calcada",
+    "label": "Calçada danificada",
+    "secretaria": "obras",
+    "icon": "🧱"
+  },
+  {
+    "id": "sinalizacao",
+    "label": "Sinalização",
+    "secretaria": "transito",
+    "icon": "🚦"
+  },
+  {
+    "id": "esgoto",
+    "label": "Esgoto / Alagamento",
+    "secretaria": "defesa_civil",
+    "icon": "💧"
+  },
+  {
+    "id": "outros",
+    "label": "Outros",
+    "secretaria": "ouvidoria",
+    "icon": "📋"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "EQP-01",
+    "nome": "Roçadeira",
+    "secretaria": "meio_ambiente",
+    "status": "ok"
+  },
+  {
+    "id": "EQP-02",
+    "nome": "Gerador portátil",
+    "secretaria": "iluminacao",
+    "status": "ok"
+  },
+  {
+    "id": "EQP-03",
+    "nome": "Placa vibratória",
+    "secretaria": "obras",
+    "status": "manutencao"
+  }
+]

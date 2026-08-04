@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notificações · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.75rem;margin-bottom:0.35rem">Notificações</h1>
+    <p class="muted" style="margin-bottom:1rem">WhatsApp · SMS · Push · E-mail · conclusão · atraso</p>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Canais</h3>
+        <div id="canais" class="list" style="margin-top:0.75rem"></div>
+        <h3 style="margin-top:1rem">Enviar aviso</h3>
+        <label>Canal</label>
+        <select id="canal"><option>whatsapp</option><option>sms</option><option>push</option><option>email</option></select>
+        <label>Tipo</label>
+        <select id="tipo"><option value="conclusao">Conclusão</option><option value="atraso">Atraso</option><option value="aviso">Aviso</option></select>
+        <label>Destino</label><input id="destino" placeholder="telefone ou e-mail" />
+        <label>Título</label><input id="titulo" value="Atualização do protocolo" />
+        <label>Mensagem</label><textarea id="mensagem"></textarea>
+        <button class="btn btn-primary" id="enviar" style="width:100%">Registrar notificação</button>
+      </div>
+      <div class="panel">
+        <h3>Histórico</h3>
+        <div id="lista" class="list" style="margin-top:0.75rem"></div>
+      </div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    async function boot() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      const canais = await api('/api/notificacoes/canais');
+      document.getElementById('canais').innerHTML = canais.map(c => `
+        <div class="item"><div class="item-head"><strong>${c.nome}</strong>
+          <span class="badge badge-${c.ativo ? 'concluido' : 'cancelado'}">${c.modo}</span></div></div>`).join('');
+      await load();
+    }
+    async function load() {
+      const list = await api('/api/notificacoes');
+      document.getElementById('lista').innerHTML = list.length ? list.map(n => `
+        <div class="item">
+          <div class="item-head"><strong>${n.titulo}</strong><span class="meta">${n.canal}</span></div>
+          <div class="meta">${fmtDate(n.em)} · ${n.tipo} · ${n.destino || '—'}</div>
+          <p class="muted">${n.mensagem || ''}</p>
+        </div>`).join('') : '<p class="muted">Nenhuma notificação ainda</p>';
+    }
+    enviar.onclick = async () => {
+      try {
+        await api('/api/notificacoes', {
+          method: 'POST',
+          body: JSON.stringify({
+            canal: canal.value, tipo: tipo.value, destino: destino.value,
+            titulo: titulo.value, mensagem: mensagem.value,
+          }),
+        });
+        toast('Notificação registrada (demo)');
+        load();
+      } catch (e) { toast(e.message); }
+    };
+    boot().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

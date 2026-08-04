@@ -1,0 +1,1085 @@
+    <!DOCTYPE HTML>
+    <!-- BEGIN html -->
+    <html lang="en">
+    <!-- BEGIN head -->
+    <head>
+        <title>Prefeitura Municipal de Bacabal</title>
+
+        <!-- Meta Tags -->
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta itemprop="name" content="Portal da Transparencia - Prefeitura Municipal de Bacabal"/>
+        <meta itemprop="description" content="Nova Bacabal"/>
+        <meta itemprop="image" content="https://www.bacabal.ma.gov.br/themes/portal/images/default.jpg"/>
+        <meta itemprop="url" content="https://www.bacabal.ma.gov.br/themes/portal/images/icon/192x192.png"/>
+
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Portal da Transparencia - Prefeitura Municipal de Bacabal"/>
+        <meta property="og:description" content="Nova Bacabal"/>
+        <meta property="og:image" content="https://www.bacabal.ma.gov.br/themes/portal/images/default.jpg"/>
+        <meta property="og:url" content="https://www.bacabal.ma.gov.br/themes/portal/images/icon/192x192.png"/>
+        <meta property="og:site_name" content="Prefeitura Municipal de Bacabal"/>
+        <meta property="og:locale" content="pt_BR"/>
+        <meta property="article:author" content="https://www.facebook.com/BacabalMaranhao" />
+            <meta property="article:publisher" content="https://www.facebook.com/BacabalMaranhao" />
+
+        <meta property="twitter:card" content="summary_large_image"/>
+        <meta property="twitter:site" content="@djhost" />
+        <meta property="twitter:domain" content="https://www.bacabal.ma.gov.br"/>
+        <meta property="twitter:title" content="Portal da Transparencia - Prefeitura Municipal de Bacabal"/>
+        <meta property="twitter:description" content="Nova Bacabal"/>
+        <meta property="twitter:image" content="https://www.bacabal.ma.gov.br/themes/portal/images/default.jpg"/>
+        <meta property="twitter:url" content="https://www.bacabal.ma.gov.br/themes/portal/images/icon/192x192.png"/>
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="https://www.bacabal.ma.gov.br/uploads/images/logob-2.png" type="image/x-icon"/>
+
+    
+         	<!-- Dark mode -->
+	<script>
+		const storedTheme = localStorage.getItem('theme')
+ 
+		const getPreferredTheme = () => {
+			if (storedTheme) {
+				return storedTheme
+			}
+			return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'light'
+		}
+
+		const setTheme = function (theme) {
+			if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				document.documentElement.setAttribute('data-bs-theme', 'dark')
+			} else {
+				document.documentElement.setAttribute('data-bs-theme', theme)
+			}
+		}
+
+		setTheme(getPreferredTheme())
+
+		window.addEventListener('DOMContentLoaded', () => {
+		    var el = document.querySelector('.theme-icon-active');
+			if(el != 'undefined' && el != null) {
+				const showActiveTheme = theme => {
+				const activeThemeIcon = document.querySelector('.theme-icon-active use')
+				const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+				const svgOfActiveBtn = btnToActive.querySelector('.mode-switch use').getAttribute('href')
+
+				document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+					element.classList.remove('active')
+				})
+
+				btnToActive.classList.add('active')
+				activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+			}
+
+			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+				if (storedTheme !== 'light' || storedTheme !== 'dark') {
+					setTheme(getPreferredTheme())
+				}
+			})
+
+			showActiveTheme(getPreferredTheme())
+
+			document.querySelectorAll('[data-bs-theme-value]')
+				.forEach(toggle => {
+					toggle.addEventListener('click', () => {
+						const theme = toggle.getAttribute('data-bs-theme-value')
+						localStorage.setItem('theme', theme)
+						setTheme(theme)
+						showActiveTheme(theme)
+					})
+				})
+
+			}
+		})
+		
+	</script>
+
+	
+
+	<!-- Google Font -->
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+
+	<!-- Plugins CSS -->
+	<link rel="stylesheet" type="text/css" href="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/font-awesome/css/all.min.css">
+	<link rel="stylesheet" type="text/css" href="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/bootstrap-icons/bootstrap-icons.css">
+	<link rel="stylesheet" type="text/css" href="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/tiny-slider/tiny-slider.css">
+	<link rel="stylesheet" type="text/css" href="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/plyr/plyr.css">
+    <!-- Theme CSS -->
+	<link rel="stylesheet" type="text/css" href="https://www.bacabal.ma.gov.br/themes/portal/assets/css/style.css">
+    <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/js/jquery-latest.min.js"></script>
+    <link href="https://www.bacabal.ma.gov.br/themes/portal/assets/css/jquery.cookiebar.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/glightbox/css/glightbox.css">
+        <link rel='manifest' href='https://www.bacabal.ma.gov.br/themes/portal/manifest.php'>
+        <link rel="apple-touch-icon" href="https://www.bacabal.ma.gov.br/themes/portal/images/icon/192x192.png">
+        <meta name="theme-color" content="#FFFFFF"/>
+       <!-- VLibras -->
+<div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js" defer></script>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+      new window.VLibras.Widget('https://vlibras.gov.br/app');
+    });
+</script>
+<!-- VLibras -->
+      <style>
+        
+        .link a{
+            color:var(--cor-1) !important;
+        }
+        .link a:hover{text-decoration:none;color:var(--cor-1-esc)
+        }
+    </style>
+        <!-- END head -->
+        <script src="https://www.bacabal.ma.gov.br/adminportal/ckeditor.js"></script>
+    </head>
+    
+
+        
+
+<!-- Offcanvas START -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMenu">
+	<div class="offcanvas-header justify-content-end">
+		<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+	</div>
+	<div class="offcanvas-body d-flex flex-column pt-0">
+		<div>
+			<a href='https://www.bacabal.ma.gov.br' id='header-logo-image'><img src='https://www.bacabal.ma.gov.br/uploads/slides/2025/01/bacabal.png'/></a>
+
+			<!-- Nav START -->
+			<ul class="nav d-block flex-column my-4 ">
+				<li class="nav-item h5">
+					<a class="nav-link" href="https://www.bacabal.ma.gov.br/ouvidoria">Fale Conosco</a>
+				<li class="nav-item h5">
+					<a class="nav-link" href="https://www.bacabal.ma.gov.br/ouvidoria">Ouvidoria</a>
+				</li>
+				<li class="nav-item h5">
+					<a class="nav-link" href="https://www.bacabal.ma.gov.br/esic">E-Sic</a>
+				</li>
+				<li class="nav-item h5">
+					<a class="nav-link" href="https://www.bacabal.ma.gov.br/pesquisa">Pesquisa</a>
+				</li>
+				<li class="nav-item h5">
+					<a class="nav-link" href="https://www.bacabal.ma.gov.br/transparencia">Transparencia</a>
+				</li>
+				<li class="nav-item h5">
+					<a class="nav-link" href="https://www.bacabal.ma.gov.br/diario">Diario Oficial</a>
+				</li>
+				<li class="nav-item h5">
+					<a class="nav-link" href="https://www.bacabal.ma.gov.br/webmail">Webmail</a>
+				</li>
+				<li class="nav-item h5">
+					<a class="nav-link" href="chttps://www.bacabal.ma.gov.br/covid-19">Corona Virus (COVID-19)</a>
+				</li>
+			</ul>
+			<!-- Nav END -->
+			<!--<div class="bg-primary bg-opacity-10 p-4 mb-4 text-center w-100 rounded">
+				<span>Sub/span>
+				<h3>Titulo</h3>
+				<p>Texto simples</p>
+				<a href="#" class="btn btn-warning">View pricing plans</a>
+			</div>-->
+		</div>
+		<div class="mt-auto pb-3">
+			<!-- Address -->
+
+
+			<p class="text-body mb-2 fw-bold">Prefeitura Municipal de Bacabal</p>
+			<address class="mb-0"> <i class="fa fa-map-marker"></i> Endereço: Travessa 15 de Novembro, 229, Centro,
+				Bacabal/MA				CEP: 65700-000<br>
+			</address>
+			<p class="mb-2"><i class="fa fa-phone"></i> Telefone (99) 3621 0533 </p>
+			<i class="fa fa-clock-o"></i> Horário de atendimento <strong> das 8:00 as 13:00hs</strong>
+		</div>
+	</div>
+</div>
+<!-- Offcanvas END -->
+
+
+<style>
+	/* Custom Header Colors */
+	.navbar-top {
+		background-color: #FF8000 !important;
+		color: #ffffff !important;
+	}
+
+	.navbar-top .nav-link {
+		color: #ffffff !important;
+	}
+
+	.navbar-top .nav-link:hover {
+		color: #eeeeee !important;
+	}
+
+	.navbar-top .btn-outline-primary {
+		color: #ffffff !important;
+		border-color: #ffffff !important;
+	}
+
+	.navbar-top .btn-outline-primary:hover,
+	.navbar-top .btn-outline-primary.active {
+		background-color: #ffffff !important;
+		color: #FF8000 !important;
+	}
+
+	@media (min-width: 992px) {
+		.navbar-light .navbar-nav .nav-link {
+			color: #ffffff !important;
+		}
+
+		.navbar-light .navbar-nav .nav-link:hover,
+		.navbar-light .navbar-nav .nav-link.active {
+			color: #f0f0f0 !important;
+		}
+	}
+
+	/* Main Menu Background */
+	header .navbar-expand-lg {
+		background-color: #398A21 !important;
+	}
+
+	/* Logo Area Text if any */
+	.navbar-brand {
+		color: #ffffff !important;
+	}
+
+	/* Adjust dropdowns for better visibility on green background if needed, 
+	   though usually they overlay. We keep main links white. */
+	.navbar-nav .dropdown-menu {
+		border-top: 3px solid #03AE6D;
+	}
+
+	/* Mobile toggler */
+	.navbar-toggler {
+		border-color: rgba(255, 255, 255, 0.5) !important;
+	}
+
+	.navbar-toggler-icon {
+		filter: invert(1);
+	}
+
+	.navbar-toggler .text-body {
+		color: #ffffff !important;
+	}
+
+	/* Force white color for Search and Offcanvas icons */
+	.nav-search .nav-link,
+	.nav-search .nav-link i,
+	a[data-bs-toggle="offcanvas"],
+	a[data-bs-toggle="offcanvas"] i {
+		color: #ffffff !important;
+	}
+
+	@media (max-width: 991.98px) {
+		.navbar-collapse .nav-link {
+			color: #333333 !important;
+		}
+
+		.navbar-collapse .nav-link:hover,
+		.navbar-collapse .nav-link.active {
+			color: #000000 !important;
+		}
+	}
+</style>
+
+<!-- =======================
+Header START -->
+<header class="navbar-light navbar-sticky header-static">
+	<div class="navbar-top d-none d-lg-block small">
+		<div class="container">
+			<div class="d-md-flex justify-content-between align-items-center my-1 ">
+				<!-- Top bar left -->
+				<ul class="nav">
+					<li class="nav-item">
+						<a class="nav-link ps-0 " href="https://www.bacabal.ma.gov.br/ouvidoria"> <i class="fa fa-mail-bulk"
+								aria-hidden="true"></i> Fale Conosco</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="https://www.bacabal.ma.gov.br/ouvidoria"> <i class="fa fa-mail-bulk"></i> Ouvidoria</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="https://www.bacabal.ma.gov.br/esic"><i class="fa fa-exclamation-circle"></i> E-Sic</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="https://www.bacabal.ma.gov.br/pesquisa"><i class="fa fa-search"></i> Pesquisa</a></a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="https://www.bacabal.ma.gov.br/webmail"><i class="fa fa-envelope"></i> Webmail</a>
+					</li><!--
+					<li class="nav-item">
+						<a class="btn btn-sm btn-danger-soft" href="https://www.bacabal.ma.gov.br/covid-19"> COVID-19</a>
+					</li>-->
+				</ul>
+				<!-- Top bar right -->
+				<div class="d-flex align-items-center">
+					<!-- Font size accessibility START -->
+					<div class="btn-group me-3" role="group" aria-label="font size changer">
+						<input type="radio" class="btn-check" name="fntradio" id="font-sm">
+						<label class="btn btn-xs btn-outline-primary mb-0" for="font-sm">A-</label>
+
+						<input type="radio" class="btn-check" name="fntradio" id="font-default" checked>
+						<label class="btn btn-xs btn-outline-primary mb-0" for="font-default">A</label>
+
+						<input type="radio" class="btn-check" name="fntradio" id="font-lg">
+						<label class="btn btn-xs btn-outline-primary mb-0" for="font-lg">A+</label>
+					</div>
+
+					<!-- Dark mode options START -->
+					<div class="nav-item dropdown mx-2">
+						<!-- Switch button -->
+						<button class="modeswitch" id="bd-theme" type="button" aria-expanded="false"
+							data-bs-toggle="dropdown" data-bs-display="static" title="Contraste">
+							<svg class="theme-icon-active">
+								<use href="#"></use>
+							</svg>
+						</button>
+						<!-- Dropdown items -->
+						<ul class="dropdown-menu min-w-auto dropdown-menu-end" aria-labelledby="bd-theme">
+							<li class="mb-1">
+								<button type="button" class="dropdown-item d-flex align-items-center"
+									data-bs-theme-value="light">
+									<svg width="16" height="16" fill="currentColor"
+										class="bi bi-brightness-high-fill fa-fw mode-switch me-1" viewBox="0 0 16 16">
+										<path
+											d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z" />
+										<use href="#"></use>
+									</svg>Claro
+								</button>
+							</li>
+							<li class="mb-1">
+								<button type="button" class="dropdown-item d-flex align-items-center"
+									data-bs-theme-value="dark">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+										class="bi bi-moon-stars-fill fa-fw mode-switch me-1" viewBox="0 0 16 16">
+										<path
+											d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z" />
+										<path
+											d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z" />
+										<use href="#"></use>
+									</svg>Escuro
+								</button>
+							</li>
+							<li>
+								<button type="button" class="dropdown-item d-flex align-items-center active"
+									data-bs-theme-value="auto">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+										class="bi bi-circle-half fa-fw mode-switch me-1" viewBox="0 0 16 16">
+										<path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
+										<use href="#"></use>
+									</svg>Auto
+								</button>
+							</li>
+						</ul>
+					</div>
+					<!-- Dark mode options END -->
+
+					<ul class="nav">
+						<li class="nav-item">
+							<a class="nav-link px-2 fs-5" href="https://www.bacabal.ma.gov.br/acessibilidade" title="Acessibilidade"><i
+									class="fa fa-wheelchair"></i></a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link px-2 fs-5" href="https://www.bacabal.ma.gov.br/sitemap" title="Mapa do Site"><i
+									class="fa fa-sitemap"></i></a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link px-2 fs-5" href="https://www.facebook.com/BacabalMaranhao"
+								target="_blank" title="Facebook"><i class="fab fa-facebook-square"></i></a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link px-2 fs-5" href="https://www.instagram.com/prefeituradebacabal"
+								target="_blank" title="Instagram"><i class="fab fa-instagram-square"></i></a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link ps-2 pe-0 fs-5" href="https://www.bacabal.ma.gov.br/rss.php"><i
+									class="fa fa-rss-square"></i></a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<!-- Divider -->
+			<div class="border-bottom border-2 border-primary opacity-1"></div>
+		</div>
+	</div>
+
+	<!-- Logo Nav START -->
+	<nav class="navbar navbar-expand-lg">
+		<div class="container">
+			<!-- Logo START -->
+			<a class="navbar-brand" href="index.html">
+				<a href='https://www.bacabal.ma.gov.br' id='header-logo-image'><img style='max-width: 230px;  height: auto;' src='https://www.bacabal.ma.gov.br/uploads/slides/2025/01/bacabal.png'/></a>
+			</a>
+			<!-- Logo END -->
+
+			<!-- Responsive navbar toggler -->
+			<button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+				data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
+				aria-label="Toggle navigation">
+				<span class="text-body h6 d-none d-sm-inline-block">Menu</span>
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<!-- Main navbar START -->
+			<div class="collapse navbar-collapse" id="navbarCollapse">
+				<ul class="navbar-nav navbar-nav-scroll mx-auto">
+
+					<!-- Nav item 1 Demos -->
+					<li class="nav-item dropdown">
+						<a class="nav-link " href="https://www.bacabal.ma.gov.br/">Início</a>
+					</li>
+
+					<!-- Nav item 2 Pages -->
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle   "
+							href="#" id="pagesMenu" data-bs-toggle="dropdown" aria-haspopup="true"
+							aria-expanded="false">Governo</a>
+						<ul class="dropdown-menu" aria-labelledby="pagesMenu">
+							<li> <a class="dropdown-item" href="https://www.bacabal.ma.gov.br/perfil-do-prefeito">Prefeito e Vice</a>
+							</li>
+							<li> <a class="dropdown-item" href="https://www.bacabal.ma.gov.br/prefeitura">A Prefeitura</a></li>
+							<!-- Dropdown submenu -->
+							<li class="dropdown-submenu dropend">
+								<a class="dropdown-item dropdown-toggle" href="https://www.bacabal.ma.gov.br/secretarias">Secretarias</a>
+								<ul class="dropdown-menu dropdown-menu-start" data-bs-popper="none">
+																				<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/14">ASSESSORIA DE COMUNICAÇÃO</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/15">CHEFIA DE GABINETE</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/16">PROCURADORIA MUNICIPAL</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/6">SECRETARIA DA MULHER</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/1">SECRETARIA DE ADMINISTRAÇÃO</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/9">SECRETARIA DE AGRICULTURA</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/2">SECRETARIA DE ASSISTÊNCIA SOCIAL</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/13">SECRETARIA DE CULTURA</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/3">SECRETARIA DE EDUCAÇÃO</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/20">SECRETARIA DE EMPREGO E RENDA</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/12">SECRETARIA DE ESPORTE E LAZER</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/7">SECRETARIA DE FINANÇAS</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/19">SECRETARIA DE JUVENTUDE</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/10">SECRETARIA DE MEIO AMBIENTE</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/5">SECRETARIA DE OBRAS</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/4">SECRETARIA DE SAÚDE</a>
+											</li>
+																					<li> <a class="dropdown-item"
+													href="https://www.bacabal.ma.gov.br/secretaria/17">SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO</a>
+											</li>
+										
+								</ul>
+							</li>
+							<li class="dropdown-submenu dropend">
+								<a class="dropdown-item dropdown-toggle    "
+									href="#" id="pagesMenu" data-bs-toggle="dropdown" aria-haspopup="true"
+									aria-expanded="false">O Município</a>
+								<ul class="dropdown-menu dropdown-menu-start" data-bs-popper="none">
+									<li> <a class="dropdown-item" href="https://www.bacabal.ma.gov.br/obras-publicas">Obras</a></li>
+									<li> <a class="dropdown-item" href="https://www.bacabal.ma.gov.br/veiculos">Veículos</a></li>
+									<li> <a class="dropdown-item" href="https://www.bacabal.ma.gov.br/simbolos">Simbolos</a></li>
+									<li> <a class="dropdown-item" href="https://www.bacabal.ma.gov.br/dados-do-municipio">Dados do
+											Município</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="pagesMenu" data-bs-toggle="dropdown"
+							aria-haspopup="true" aria-expanded="false">Serviços</a>
+						<ul class="dropdown-menu" aria-labelledby="pagesMenu">
+							<li><a <a class='dropdown-item' target='_blank' href='https://www.bacabal.ma.gov.br/carta-de-servicos'>Carta de serviços</a></li><li><a <a class='dropdown-item' target='_blank' href='https://forthinformatica.com.br/login/'>Contracheque</a></li><li><a <a class='dropdown-item' target='_blank' href='https://bacabal-ma.prefeituramoderna.com.br/meuiss_new/nfe'>Nota Fiscal Eletrônica</a></li><li><a <a class='dropdown-item' target='_blank' href='https://bacabal-ma.prefeituramoderna.com.br/meuiptu/protocoloweb/'>Protocolo Web</a></li><li><a <a class='dropdown-item' target='_blank' href='https://www.saae.bacabal.ma.gov.br'>SAAE - Segunda Via</a></li><li><a <a class='dropdown-item' target='_blank' href='https://bacabal-ma.prefeituramoderna.com.br/meuiptu'>Tributos/IPTU</a></li><li><a <a class='dropdown-item' target='_blank' href='https://bacabal-ma.prefeituramoderna.com.br/meuiss_new/'>Tributos/ISS</a></li><li><a <a class='dropdown-item' target='_blank' href='https://bacabal-ma.prefeituramoderna.com.br/meuiss_new/taxas-diversas/'>Tributos/TAXAS</a></li>
+						</ul>
+					</li>
+					<!-- Nav item 4 Mega menu -->
+					<li class="nav-item dropdown dropdown-fullwidth">
+						<a class="nav-link dropdown-toggle  "
+							href="https://www.bacabal.ma.gov.br/transparencia" id="megaMenu" data-bs-toggle="dropdown"
+							aria-haspopup="true" aria-expanded="false"> Transparência</a>
+						<div class="dropdown-menu" aria-labelledby="megaMenu">
+							<div class="container ">
+								<div class="row g-4 p-3 flex-fill">
+									<!-- Card item START -->
+																		<div class="col-sm-6 col-lg-4">
+										<div class="card up-hover bg-transparent">
+											<ul class="nav">
+												<li class="list-inline-item" style="width: 100%;"><strong>Acesso a
+														Informação</strong></li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/ouvidoria"><i
+															class="fa fa-phone me-2 small fw-bold"></i>Ouvidoria</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft" href="https://www.bacabal.ma.gov.br/esic"><i
+															class="fas fa-exclamation-circle me-2 small fw-bold"></i>E-Sic</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/carta-de-servicos"><i
+															class="fas fa-book me-2 small fw-bold"></i>Carta de
+														Serviços</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft" href="https://www.bacabal.ma.gov.br/lgpd"><i
+															class="fas fa-gavel me-2 small fw-bold"></i>LGPD</a>
+												</li>
+											
+												<li class="list-inline-item" style="width: 100%;"><strong>Receitas e
+														Despesas</strong></li>
+												
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft" href="https://www.bacabal.ma.gov.br/receitas"><i
+															class="fas fa-plus me-2 small fw-bold"></i>Receitas</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-danger-soft" href="https://www.bacabal.ma.gov.br/despesas"><i
+															class="fas fa-minus me-2 small fw-bold"></i>Despesas</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft" href="https://www.bacabal.ma.gov.br/transparencia/emendas"><i
+															class="fa fa-dollar-sign me-2 small fw-bold"></i>Emendas Parlamentares</a>
+												</li>
+
+												<li class="list-inline-item" style="width: 100%;"><strong>Licitações e
+														Contratos</strong></li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/licitacoes"><i
+															class="fas fa-gavel me-2 small fw-bold"></i>Licitações</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/contratos/c"><i
+															class="fas fa-book me-2 small fw-bold"></i>Contratos</a>
+												</li>
+
+											</ul>
+
+										</div>
+									</div>
+									<!-- Card item END -->
+									<!-- Card item START -->
+									<div class="col-sm-6 col-lg-4">
+										<div class="card bg-transparent up-hover">
+											<ul class="nav">
+												<li class="list-inline-item" style="width: 100%;"><strong>Atos Oficiais
+														e Publicações</strong></li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft" href="https://www.bacabal.ma.gov.br/diario"><i
+															class="fas fa-book me-2 small fw-bold"></i>Diário
+														Oficial</a>
+												</li>
+
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/transferencias-volutarias"><i
+															class="fas fa-dollar-sign me-2 small fw-bold"></i>Transferências
+														Volutárias</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/pessoal"><i
+															class="fa fa-users me-2 small fw-bold"></i>Pessoal</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft" href="https://transparenciapublica.cloud/bacabal/Default.aspx?AcessoIndividual=lnkDiarias"><i
+															class="fas fa-dollar-sign me-2 small fw-bold"></i>Diarias</a>
+												</li>
+
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/prefeitura"><i
+															class="fas fa-sitemap me-2 small fw-bold"></i>Estrutura
+														Organizacional</a>
+												</li>
+
+
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft" href="https://www.bacabal.ma.gov.br/leis"><i
+															class="fas fa-gavel me-2 small fw-bold"></i>Leis</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft" target='_blank'
+														href="https://legislacao.al.ma.leg.br/ged/busca.html;jsessionid=KITm6wuj-0jYDiLCxnJPMq54d3NzYpjtad-pt7vu.00-srv-intranet?dswid=2672"><i
+															class="fas fa-gavel me-2 small fw-bold"></i>Leis
+														Estaduais</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft" target='_blank'
+														href="https://www4.planalto.gov.br/legislacao/portal-legis/legislacao-1/leis-ordinarias"><i
+															class="fas fa-gavel me-2 small fw-bold"></i>Leis
+														Federais</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/decretos"><i
+															class="fas fa-gavel me-2 small fw-bold"></i>Decretos</a>
+												</li>
+
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/portarias"><i
+															class="fas fa-gavel me-2 small fw-bold"></i>Portarias</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/editais"><i
+															class="fas fa-book me-2 small fw-bold"></i>Editais</a>
+												</li>
+
+											</ul>
+
+										</div>
+									</div>
+									<!-- Card item END -->
+									<!-- Card item START -->
+									<div class="col-sm-6 col-lg-4">
+										<div class="card bg-transparent up-hover">
+											<ul class="nav">
+												<li class="list-inline-item" style="width: 100%;"><strong>LRF - Lei de
+														Responsabilidade Fiscal</strong></li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/lrf/rgf"><i
+															class="fa fa-file-archive me-2 small fw-bold"></i>RGF-Relatórios
+														de Gestão Fiscal</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/lrf/rreo"><i
+															class="fas fa-file-archive me-2 small fw-bold"></i>RREO-Relatório
+														Resumido da Exec. Orçamentária</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/lrf/loa"><i
+															class="fa fa-gavel me-2 small fw-bold"></i>LOA-Lei
+														Orçamentária Anual</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/lrf/ldo"><i
+															class="fa fa-gavel me-2 small fw-bold"></i>LDO-Lei de
+														Diretrizes Orçamentárias</a>
+												</li>
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/lrf/ppa"><i
+															class="fas fa-file-archive me-2 small fw-bold"></i>PPA-Plano
+														Plurianual</a>
+												</li>
+
+												<li class="list-inline-item">
+													<a class="btn btn-sm btn-primary-soft"
+														href="https://www.bacabal.ma.gov.br/lrf/rcaa"><i
+															class="fas fa-file-archive me-2 small fw-bold"></i>Relatório
+														Circunstanciado do Ano Anterior
+													</a>
+												</li>
+
+
+
+											</ul>
+										</div>
+									</div>
+									<!-- Card item END -->
+
+								</div> <!-- Row END -->
+								<!-- Trending tags -->
+								<div class="row px-3">
+									<div class="col-12">
+										<ul class="list-inline mt-3">
+											<li class="list-inline-item">Não encontrou o que procurava? ecesse:</li>
+											<li class="list-inline-item"><a href="https://www.bacabal.ma.gov.br/transparencia"
+													class="btn btn-sm btn-success-soft"><i
+														class="fas fa-exclamation-circle me-2 small fw-bold"></i> Portal
+													da Transparencia</a></li>
+											<li class="list-inline-item">ou faça uma pesquisa!</li>
+											<li class="list-inline-item"><a href="https://www.bacabal.ma.gov.br/pesquisa"
+													class="btn btn-sm btn-danger-soft"><i
+														class="fas fa-search me-2 small fw-bold"></i> Pesquisa
+													Avançada</a></li>
+										</ul>
+									</div>
+								</div> <!-- Row END -->
+							</div>
+						</div>
+					</li>
+
+
+					<li class="nav-item"> <a class="nav-link "
+							href="https://www.bacabal.ma.gov.br/diario">Diário Oficial</a></li>
+
+
+				</ul>
+			</div>
+			<!-- Main navbar END -->
+
+			<!-- Nav right START -->
+			<div class="nav flex-nowrap align-items-center">
+
+				<!-- Nav Search -->
+				<div class="nav-item dropdown dropdown-toggle-icon-none nav-search">
+					<a class="nav-link dropdown-toggle" role="button" href="#" id="navSearch" data-bs-toggle="dropdown"
+						aria-expanded="false">
+						<i class="bi bi-search fs-4"> </i>
+					</a>
+					<div class="dropdown-menu dropdown-menu-end shadow rounded p-2" aria-labelledby="navSearch">
+						<form class="input-group" action="https://www.bacabal.ma.gov.br/pesquisa" method="post">
+							<input class="form-control border-success" type="search" name="s" placeholder="Pesquisar"
+								aria-label="Search">
+							<button class="btn btn-success m-0" type="submit">Pesquisar</button>
+						</form>
+					</div>
+				</div>
+				<!-- Offcanvas menu toggler -->
+				<div class="nav-item">
+					<a class="nav-link p-0" data-bs-toggle="offcanvas" href="#offcanvasMenu" role="button"
+						aria-controls="offcanvasMenu">
+						<i class="bi bi-text-right rtl-flip fs-2" data-bs-target="#offcanvasMenu"> </i>
+					</a>
+				</div>
+			</div>
+			<!-- Nav right END -->
+		</div>
+	</nav>
+	<!-- Logo Nav END -->
+</header>
+<!-- =======================
+Header END -->
+        <!-- BEGIN #content -->
+
+        
+<main>
+
+<!-- =======================
+Inner intro START -->
+<section class="overflow-hidden">
+	<div class="container">
+		<div class="row">
+      <div class="col-md-9 text-center mx-auto my-0 my-md-5 py-0 py-lg-5 position-relative z-index-9">
+        <!-- SVG shape START -->
+        <figure class="position-absolute top-50 start-50 translate-middle opacity-7 z-index-n9">
+          <svg width="650" height="379" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"  viewBox="0 0 510 297">
+            <g>
+            <path class="fill-primary opacity-1" d="M121,147.4c0,6-4.8,10.8-10.8,10.8H47.6c-6,0-10.8-4.8-10.8-10.8v-11.5c0-6,4.8-10.8,10.8-10.8h62.6
+              c6,0,10.8,4.8,10.8,10.8V147.4z"/>
+            <path class="fill-primary opacity-1" d="M179.4,90.2c0,6-4.8,10.8-10.8,10.8h-62.6c-6,0-10.8-4.8-10.8-10.8V78.7c0-6,4.8-10.8,10.8-10.8h62.6
+              c6,0,10.8,4.8,10.8,10.8V90.2z"/>
+            <path class="fill-primary opacity-1" d="M459.1,26.3c0,6-4.8,10.8-10.8,10.8h-62.6c-6,0-10.8-4.8-10.8-10.8V14.8c0-6,4.8-10.8,10.8-10.8h62.6
+              c6,0,10.8,4.8,10.8,10.8V26.3z"/>
+            <path class="fill-primary opacity-1" d="M422.1,66.9c0,6-4.8,10.8-10.8,10.8h-62.6c-6,0-10.8-4.8-10.8-10.8V55.3c0-6,4.8-10.8,10.8-10.8h62.6
+              c6,0,10.8,4.8,10.8,10.8V66.9z"/>
+            <path class="fill-primary opacity-1" d="M275.8,282.6c0,5.9-4.8,10.8-10.8,10.8h-62.6c-6,0-10.8-4.8-10.8-10.8v-11.5c0-6,4.8-10.8,10.8-10.8h62.6
+              c6,0,10.8,4.8,10.8,10.8V282.6z"/>
+            <path class="fill-primary opacity-1" d="M87.7,42.9c0,5.9-4.8,10.8-10.8,10.8H14.3c-6,0-10.8-4.8-10.8-10.8V31.4c0-6,4.8-10.8,10.8-10.8h62.6
+              c6,0,10.8,4.8,10.8,10.8V42.9z"/>
+            <path class="fill-primary opacity-1" d="M505.9,123.4c0,6-4.8,10.8-10.8,10.8h-62.6c-6,0-10.8-4.8-10.8-10.8v-11.5c0-6,4.8-10.8,10.8-10.8h62.6
+              c6,0,10.8,4.8,10.8,10.8V123.4z"/>
+            <path class="fill-primary opacity-1" d="M482.5,204.9c0,5.9-4.8,10.8-10.8,10.8h-62.6c-6,0-10.8-4.8-10.8-10.8v-11.5c0-6,4.8-10.8,10.8-10.8h62.6
+              c5.9,0,10.8,4.8,10.8,10.8V204.9z"/>
+            <path class="fill-primary opacity-1" d="M408.3,258.8c0,5.9-4.8,10.8-10.8,10.8H335c-6,0-10.8-4.8-10.8-10.8v-11.5c0-6,4.8-10.8,10.8-10.8h62.6
+              c6,0,10.8,4.8,10.8,10.8V258.8z"/>
+            <path class="fill-primary opacity-1" d="M147,252.5c0,5.9-4.8,10.8-10.8,10.8H73.6c-6,0-10.8-4.8-10.8-10.8V241c0-5.9,4.8-10.8,10.8-10.8h62.6
+              c6,0,10.8,4.8,10.8,10.8V252.5z"/>
+            </g>
+           </svg>
+        </figure>
+        <!-- SVG shape START -->
+        <!-- Content -->
+        <h1 class="display-1 text-primary">Erro 404</h1>
+        <h2>Página não encontrada</h2>
+        <p>Desculpe o link que você está tentando acessar não foi encontrado.</p>
+        <a href="https://www.bacabal.ma.gov.br" class="btn btn-danger-soft mt-3"><i class="fas fa-long-arrow-alt-left me-3"></i>Voltar para a pagina Inicial</a>
+      </div>
+    </div>
+	</div>
+</section>
+<!-- =======================
+Inner intro END -->
+</main> 
+        <!-- BEGIN #footer -->
+        <!-- =======================
+Footer START -->
+<footer class="bg-dark">
+	<div class="container">
+
+		<!-- Widgets START -->
+		<div class="row pt-5">
+			<!-- Footer Widget -->
+			<div class="col-md-6 col-lg-3 mb-4">
+				<h5 class="mb-2 text-white">Prefeito</h5>
+				<!-- Item -->
+				<div class="mb-4 position-relative">
+				<a href="https://www.bacabal.ma.gov.br/perfil-do-prefeito" ><img
+                            src="https://www.bacabal.ma.gov.br/uploads/images/foto.jpg" alt="José Roberto Costa Santos"/></a>
+                <strong><a class="badge text-bg-info mb-2" href="https://www.bacabal.ma.gov.br/perfil-do-prefeito">José Roberto Costa Santos</a></strong>
+				</div>
+				
+			</div>
+
+			<!-- Footer Widget -->
+			<div class="col-md-8 col-lg-9 mb-4">
+				<h5 class="mb-2 text-white">Secretarias/Orgãos</h5>
+				<div class="mb-4 position-relative">
+									
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/14">ASSESSORIA DE COMUNICAÇÃO - Responsavel: WANDERSON RICARDO SILVA DE PAULA </a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/15">CHEFIA DE GABINETE - Responsavel: MAYRA SAMPAIO PIRES</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/16">PROCURADORIA MUNICIPAL - Responsavel: MÁXIMA REGINA SANTOS DE CARV</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/6">SECRETARIA DA MULHER - Responsavel: LUDMILLA ROSEANY RAMOS MATOS</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/1">SECRETARIA DE ADMINISTRAÇÃO - Responsavel: ERIKA DE CÁSSIA SIQUEIRA LUCENA</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/9">SECRETARIA DE AGRICULTURA - Responsavel: RAIMUNDO JOÃO ANDRADE FILHO SEGUNDO</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/2">SECRETARIA DE ASSISTÊNCIA SOCIAL - Responsavel: LARISSA BASTOS SILVA</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/13">SECRETARIA DE CULTURA - Responsavel: LEONARDO DIEGO DA SILVA CIPRIANO</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/3">SECRETARIA DE EDUCAÇÃO - Responsavel: ROSILDA ALVES DOS SANTOS</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/20">SECRETARIA DE EMPREGO E RENDA - Responsavel: ERICA MICHELE DO NASCIMENTO LOPES</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/12">SECRETARIA DE ESPORTE E LAZER - Responsavel: MAURO CESAR NONATO SANTOS</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/7">SECRETARIA DE FINANÇAS - Responsavel: FRANCISCO ALVES DE ARAUJO</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/19">SECRETARIA DE JUVENTUDE - Responsavel: GLEICIANE BRANDÃO CARVALHO</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/10">SECRETARIA DE MEIO AMBIENTE - Responsavel: LIDUINA FRANCISCA TAVARES DE SOUSA LIMA</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/5">SECRETARIA DE OBRAS - Responsavel: WELBER MARTINS TEIXEIRA</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/4">SECRETARIA DE SAÚDE - Responsavel: YVANNA LOPES CARVALHAL DE ALMEIDA</a>
+
+						
+                       
+                        					
+							<a class="nav-link text-white" href="https://www.bacabal.ma.gov.br/secretaria/17">SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO - Responsavel: MARCIO SIDNEY SOUSA CAVALCANTE</a>
+
+						
+                       
+                        						<div><hr>
+				<strong class="mb-4 text-white">Prefeitura Municipal de Bacabal</strong><br>
+			<p class="text-body-secondary">  <i class="fa fa-map-marker"></i> Endereço: Travessa 15 de Novembro, 229, Centro, Bacabal/MA                CEP: 65700-000<br>
+                <i class="fa fa-phone"></i> Telefone (99) 3621 0533 <i class="fa fa-envelope"></i> Email faleconosco@bacabal.ma.gov.br                <i class="fa fa-clock-o"></i> Horário de atendimento <strong> das 8:00 as 13:00hs</strong>
+				</p>
+				
+			</div>
+		
+		</div>
+		<!-- Widgets END -->
+	</div>
+
+	<!-- Footer copyright START -->
+	<div class="bg-dark-overlay-3 mt-2>
+		<div class="container">
+			<div class="row align-items-center justify-content-md-between py-4">
+				<div class="col-md-6">
+					<!-- Copyright -->
+					<div class="text-center text-md-start text-primary-hover text-body-secondary">
+					<div class="footer-copyright-logo">
+					<a href="https://www.bacabal.ma.gov.br"><img src="https://www.bacabal.ma.gov.br/uploads/images/logob-2.png" alt="Prefeitura Municipal de Bacabal"/></a>
+					</div>	&copy;  2026 Prefeitura Municipal de Bacabal. Todos os Direitos Reservados.<br/>Desenvolvido por <a
+					href="https://www.agenciaplus.com.br" title="Agência +" target="_blank">www.agenciaplus.com.br</a>
+					
+					</div>
+				</div>
+				<div class="col-md-6 d-sm-flex align-items-center justify-content-center justify-content-md-end">
+				
+					<ul class="nav text-primary-hover text-center text-sm-end justify-content-center justify-content-center mt-3 mt-md-0">
+						<li class="nav-item"><a class="nav-link" href="https://www.bacabal.ma.gov.br">Início</a></li>
+						<li class="nav-item"><a class="nav-link" href="https://www.bacabal.ma.gov.br/diario">Diário Oficial</a></li>
+						<li class="nav-item"><a class="nav-link pe-0" href="https://www.bacabal.ma.gov.br/transparencia">Portal da Transparência</a></li>
+						<li class="nav-item"><a class="nav-link pe-0" href="https://www.bacabal.ma.gov.br/ouvidoria">Ouvidoria</a></li>
+						<li class="nav-item"><a class="nav-link pe-0" href="https://www.bacabal.ma.gov.br/esic">e-Sic</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Footer copyright END -->
+</footer>
+<!-- =======================
+Footer END -->
+
+<!-- Back to top -->
+<div class="back-top"><i class="bi bi-arrow-up-short"></i></div>
+ <!-- Bootstrap JS -->
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+       
+        <!-- Vendors -->
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/tiny-slider/tiny-slider.js"></script>
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/sticky-js/sticky.min.js"></script>
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/plyr/plyr.js"></script>
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/vendor/glightbox/js/glightbox.js"></script>
+        <!-- Template Functions -->
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/js/functions.js"></script>
+        
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/js/FileSaver.min.js"></script>
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/js/tableExport.min.new.js"></script>
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/js/jquery.base64.js"></script>
+
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/js/sprintf.js"></script>
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/js/jspdf.min.js"></script>
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/js/jspdf.plugin.autotable.js"></script>
+        <script src="https://www.bacabal.ma.gov.br/themes/portal/assets/js/base64.js"></script>
+    <!-- END html -->
+    </body>
+    </html>
+    <script> 
+            var URLBASE ='https://www.bacabal.ma.gov.br';
+            </script>
+         <script src="https://www.bacabal.ma.gov.br/themes/portal/js/jquery.cookiebar.js"></script>
+        <script>
+        'use strict';
+        $.cookieBar({
+        fixed: true
+        });
+     </script>
+<script>
+    $(function() {
+        var nav = $('#menuRelatorio');
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 150) {
+                nav.addClass("menu-fixo");
+                $('body').css('padding-top', 70);
+            } else {
+                nav.removeClass("menu-fixo");
+                $('body').css('padding-top', 0);
+            }
+        });
+    });
+    function datatable(table, title, subtitle, colorheader) {
+
+var doc = new jsPDF("l", 'pt', 'letter');
+
+
+var res = doc.autoTableHtmlToJson(document.getElementById(table));
+
+
+
+var header = function(data) {
+    doc.setFontSize(14);
+    doc.setTextColor(40);
+    doc.setFontStyle('normal');
+    //doc.addImage(headerImgData, 'JPEG', data.settings.margin.left, 20, 50, 50);
+    doc.text(title, data.settings.margin.left, 40);
+    doc.text(subtitle, data.settings.margin.left, 60);
+
+
+};
+
+
+var options = {
+    beforePageContent: header,
+    startY: doc.autoTableEndPosY() + 80,
+    margin: {
+        top: 80
+    },
+    theme: 'grid',
+    headerStyles: {
+        fillColor: colorheader,
+        halign: 'center'
+    },
+    styles: {
+        overflow: 'linebreak',
+        fontSize: 8,
+        tableWidth: 'auto',
+        columnWidth: 'auto',
+    }
+};
+
+doc.autoTable(res.columns, res.data, options);
+
+
+
+
+
+doc.save(table + '.pdf');
+
+}
+</script>

@@ -1,0 +1,50 @@
+[
+  {
+    "em": "2026-08-04T14:32:05.677Z",
+    "acao": "gabinete.decidir",
+    "detalhe": "cobrar 20261062",
+    "por": "Equipe Saúde"
+  },
+  {
+    "em": "2026-08-04T14:31:37.596Z",
+    "acao": "gabinete.decidir",
+    "detalhe": "cobrar 20261062",
+    "por": "Equipe Saúde"
+  },
+  {
+    "em": "2026-08-04T14:17:11.307Z",
+    "acao": "gabinete.decidir",
+    "detalhe": "cobrar 20261062",
+    "por": "Gabinete do Prefeito"
+  },
+  {
+    "em": "2026-08-04T14:17:01.268Z",
+    "acao": "saude.plantao",
+    "detalhe": "iniciar US-HOSP DR ALLISSON CARVALHO",
+    "por": "Gabinete do Prefeito"
+  },
+  {
+    "em": "2026-08-04T14:15:07.083Z",
+    "acao": "saude.plantao",
+    "detalhe": "iniciar US-HOSP DR ESTHELLMO CARVALHO",
+    "por": "Gabinete do Prefeito"
+  },
+  {
+    "em": "2026-08-04T13:57:06.110Z",
+    "acao": "gabinete.decidir",
+    "detalhe": "cobrar 20261058",
+    "por": "anon"
+  },
+  {
+    "em": "2026-08-04T13:28:54.864Z",
+    "acao": "demo.preparar",
+    "detalhe": "3 chamados de pitch",
+    "por": "anon"
+  },
+  {
+    "em": "2026-08-04T13:05:59.276Z",
+    "acao": "demo.preparar",
+    "detalhe": "3 chamados de pitch",
+    "por": "anon"
+  }
+]

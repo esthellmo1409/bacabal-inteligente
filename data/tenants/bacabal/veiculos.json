@@ -1,0 +1,26 @@
+[
+  {
+    "id": "VEI-01",
+    "placa": "BAC1A23",
+    "tipo": "Caminhão",
+    "secretaria": "obras",
+    "equipeId": "EQ-OBR-01",
+    "status": "disponivel"
+  },
+  {
+    "id": "VEI-02",
+    "placa": "BAC2B45",
+    "tipo": "Cesta aérea",
+    "secretaria": "iluminacao",
+    "equipeId": "EQ-ILU-01",
+    "status": "em_uso"
+  },
+  {
+    "id": "VEI-03",
+    "placa": "BAC3C67",
+    "tipo": "Compactador",
+    "secretaria": "limpeza",
+    "equipeId": "EQ-LIM-01",
+    "status": "disponivel"
+  }
+]

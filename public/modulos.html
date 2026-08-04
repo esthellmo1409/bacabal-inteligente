@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Módulos · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.85rem;margin-bottom:0.35rem">Plataforma modular</h1>
+    <p class="muted" style="margin-bottom:1.25rem">
+      Venda por módulo. Núcleo: Atendimento ao Cidadão + Gestão de Chamados.
+      Expanda secretarias, campo, IA, transparência e BI conforme a prefeitura.
+    </p>
+    <div class="grid-3" id="grupos"></div>
+    <div class="footer"><span>CidadeHub · 15 módulos + extras</span></div>
+  </div>
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    const labels = { core: 'Núcleo', gestao: 'Gestão', admin: 'Admin', cidadao: 'Cidadão', extras: 'Extras' };
+    async function boot() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      const data = await api('/api/modulos');
+      const by = {};
+      data.modulos.forEach(m => {
+        by[m.grupo] = by[m.grupo] || [];
+        by[m.grupo].push(m);
+      });
+      document.getElementById('grupos').innerHTML = Object.entries(by).map(([g, items]) => `
+        <div class="panel">
+          <h3>${labels[g] || g}</h3>
+          <div class="list" style="margin-top:0.75rem">
+            ${items.map(m => `
+              <a class="item" href="${cityLink(m.path)}" style="display:block;text-decoration:none;color:inherit">
+                <div class="item-head"><strong>${m.nome}</strong></div>
+                <div class="meta">${m.desc}</div>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      `).join('') + `
+        <div class="panel">
+          <h3>Extras (diferencial)</h3>
+          <div class="list" style="margin-top:0.75rem">
+            ${data.extras.map(e => `
+              <div class="item">
+                <div class="item-head"><strong>${e.icon} ${e.nome}</strong>
+                  <span class="badge badge-${e.status === 'demo' ? 'concluido' : 'em_analise'}">${e.status}</span>
+                </div>
+                <div class="meta">${e.desc}</div>
+              </div>
+            `).join('')}
+            <a class="btn btn-sm btn-primary" style="margin-top:0.75rem" href="${cityLink('/extras.html')}">Abrir hub de extras</a>
+          </div>
+        </div>
+      `;
+    }
+    boot().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

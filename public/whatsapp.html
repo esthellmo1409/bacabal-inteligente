@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WhatsApp · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.7rem;margin-bottom:0.35rem">WhatsApp do município</h1>
+    <p class="muted" style="margin-bottom:1.25rem">
+      No interior o canal já é WhatsApp — este módulo formaliza abertura e aviso de status (demo com wa.me).
+    </p>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3 style="margin-bottom:0.85rem">Montar mensagem</h3>
+        <label>Protocolo ou ID do chamado</label>
+        <input id="protocolo" placeholder="Ex.: 20261001" />
+        <label>Tipo</label>
+        <select id="tipo">
+          <option value="abertura">Abertura</option>
+          <option value="status" selected>Atualização de status</option>
+          <option value="conclusao">Conclusão</option>
+        </select>
+        <button class="btn btn-primary" id="gerar" style="width:100%">Gerar link WhatsApp</button>
+        <div id="out" style="margin-top:1rem"></div>
+      </div>
+      <div class="panel">
+        <h3 style="margin-bottom:0.75rem">Últimos envios (log)</h3>
+        <div class="list" id="log"></div>
+        <p class="muted" style="margin-top:0.75rem;font-size:0.8rem">
+          Produção: WhatsApp Business API. Aqui usamos link wa.me para pitch sem custo.
+        </p>
+      </div>
+    </div>
+    <div class="footer"><span>Módulo WhatsApp · wedge para cidade média</span></div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    if (new URLSearchParams(location.search).get('cidade')) setCidade(new URLSearchParams(location.search).get('cidade'));
+    requireCidade();
+
+    async function boot() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('WhatsApp', cfg);
+      await loadLog();
+    }
+
+    async function loadLog() {
+      const log = await api('/api/whatsapp/log');
+      document.getElementById('log').innerHTML = log.length ? log.slice(0, 12).map(l => `
+        <div class="item">
+          <div class="meta">${fmtDate(l.em)} · ${l.chamadoId} · ${l.tipo}</div>
+          <p class="muted">${l.texto}</p>
+        </div>
+      `).join('') : '<p class="muted">Nenhuma mensagem ainda.</p>';
+    }
+
+    document.getElementById('gerar').onclick = async () => {
+      try {
+        const r = await api('/api/whatsapp/mensagem', {
+          method: 'POST',
+          body: JSON.stringify({
+            protocolo: document.getElementById('protocolo').value.trim(),
+            tipo: document.getElementById('tipo').value,
+          }),
+        });
+        document.getElementById('out').innerHTML = `
+          <div class="item">
+            <strong>Pronto</strong>
+            <p class="muted" style="margin:0.5rem 0">${r.texto}</p>
+            <a class="btn btn-primary btn-sm" href="${r.link}" target="_blank" rel="noopener">Abrir WhatsApp</a>
+          </div>
+        `;
+        loadLog();
+      } catch (e) {
+        toast(e.message);
+      }
+    };
+
+    boot().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

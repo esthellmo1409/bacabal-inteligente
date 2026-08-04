@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+
+    <div class="panel login-box" style="text-align:center">
+      <img src="/assets/logo-prefeitura.png" alt="Brasão oficial" style="width:88px;height:auto;margin:0 auto 1rem;display:block;background:#111;border-radius:50%;padding:6px" />
+      <div class="flag-bar" style="margin:0 auto 1rem"><span></span><span></span><span></span></div>
+      <p class="eyebrow">Acesso institucional</p>
+      <h1 class="display" style="font-size:clamp(1.6rem,4vw,2rem);margin-bottom:0.35rem">Bacabal Inteligente</h1>
+      <p class="muted" style="margin-bottom:1.25rem;font-weight:500;letter-spacing:-0.015em">Prefeitura Municipal de Bacabal · MA</p>
+
+      <div style="text-align:left">
+        <label>Perfil</label>
+        <select id="perfil">
+          <option value="prefeito">Gabinete do Prefeito</option>
+          <option value="obras" selected>Secretaria de Obras</option>
+          <option value="iluminacao">Iluminação Pública</option>
+          <option value="limpeza">Limpeza Urbana</option>
+          <option value="saude">Secretaria de Saúde</option>
+          <option value="eventos">Cultura e Eventos</option>
+          <option value="admin">Administrador</option>
+        </select>
+        <label>Usuário</label>
+        <input id="usuario" value="obras" />
+        <label>Senha</label>
+        <input id="senha" type="password" value="obras123" />
+        <button class="btn btn-primary" id="entrar" style="width:100%">Entrar</button>
+      </div>
+
+      <p class="muted" style="margin-top:1rem;font-size:0.8rem">
+        Saúde: saude / saude123 · Eventos: eventos / evento123 · Obras: obras123
+      </p>
+    </div>
+
+    <div class="footer">
+      <span>Protótipo · sem integração real de SSO</span>
+      <a href="/cidadao.html?cidade=bacabal">Sou cidadão — abrir chamado</a>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    setCidade('bacabal');
+    const senhas = {
+      prefeito: 'prefeito123',
+      obras: 'obras123',
+      iluminacao: 'luz123',
+      limpeza: 'limpo123',
+      saude: 'saude123',
+      eventos: 'evento123',
+      admin: 'admin123',
+    };
+
+    (async () => {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Login', cfg);
+    })();
+
+    document.getElementById('perfil').onchange = () => {
+      const p = document.getElementById('perfil').value;
+      document.getElementById('usuario').value = p;
+      document.getElementById('senha').value = senhas[p] || 'admin123';
+    };
+
+    document.getElementById('entrar').onclick = async () => {
+      try {
+        const r = await api('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            usuario: document.getElementById('usuario').value.trim(),
+            senha: document.getElementById('senha').value,
+            cidade: 'bacabal',
+          }),
+        });
+        localStorage.setItem('bi_token', r.token);
+        toast('Bem-vindo, ' + r.user.nome);
+        if (r.user.papel === 'prefeito' || r.user.papel === 'admin') {
+          location.href = '/prefeito.html?cidade=bacabal';
+        } else {
+          location.href = '/secretaria.html?cidade=bacabal';
+        }
+      } catch (e) {
+        toast(e.message);
+      }
+    };
+  </script>
+</body>
+</html>

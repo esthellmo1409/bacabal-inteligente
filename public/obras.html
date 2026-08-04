@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Obras Transparentes · CidadeHub</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.8rem;margin-bottom:0.35rem">Obras Transparentes</h1>
+    <p class="muted" style="margin-bottom:1rem">
+      <span class="obra-dot obra-concluida"></span> concluídas ·
+      <span class="obra-dot obra-em_andamento"></span> em andamento ·
+      <span class="obra-dot obra-atrasada"></span> atrasadas
+    </p>
+    <div class="panel" style="margin-bottom:1rem"><div id="map" class="map"></div></div>
+    <div class="list" id="lista"></div>
+    <div class="footer"><span>Valor, empresa, prazo e % — por município</span></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/app.js"></script>
+  <script src="/map.js"></script>
+  <script>
+    if (new URLSearchParams(location.search).get('cidade')) {
+      setCidade(new URLSearchParams(location.search).get('cidade'));
+    }
+    if (!requireCidade()) throw new Error('sem cidade');
+
+    const statusMap = { concluida: 'concluída', em_andamento: 'em andamento', atrasada: 'atrasada' };
+
+    async function init() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Obras', cfg);
+      const obras = await api('/api/obras');
+      const map = L.map('map').setView([cfg.lat, cfg.lng], 15);
+      MapBI.basemaps(map, 'hybrid');
+
+      const color = { concluida: '#3dcf9a', em_andamento: '#e8a838', atrasada: '#e85d5d' };
+      obras.forEach(o => {
+        L.circleMarker([o.lat, o.lng], {
+          radius: 10, color: color[o.status], fillColor: color[o.status], fillOpacity: 0.85, weight: 2,
+        }).bindPopup(`<strong>${o.nome}</strong><br>${o.percentual}% · ${money(o.valor)}`).addTo(map);
+      });
+
+      document.getElementById('lista').innerHTML = obras.map(o => `
+        <div class="panel item">
+          <div class="item-head">
+            <strong><span class="obra-dot obra-${o.status}"></span>${o.nome}</strong>
+            <span class="badge badge-${o.status === 'concluida' ? 'concluido' : 'em_andamento'}">${statusMap[o.status]}</span>
+          </div>
+          <div class="meta">${o.bairro} · prazo ${o.prazo}</div>
+          <div class="bar-track" style="margin:0.5rem 0"><div class="bar-fill" style="width:${o.percentual}%;background:${color[o.status]}"></div></div>
+          <div class="meta">${o.percentual}% · ${money(o.valor)} · ${o.empresa}</div>
+        </div>
+      `).join('');
+    }
+
+    init().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

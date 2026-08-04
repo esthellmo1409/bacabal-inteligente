@@ -1,0 +1,54 @@
+[
+  {
+    "em": "2026-08-04T14:32:05.652Z",
+    "acao": "cobrar",
+    "por": "Gabinete do Prefeito",
+    "chamadoId": "BAC-1062",
+    "protocolo": "20261062",
+    "detalhe": "Cobrança enviada à secretaria (saude)",
+    "eixo": "saude"
+  },
+  {
+    "em": "2026-08-04T14:31:37.581Z",
+    "acao": "cobrar",
+    "por": "Gabinete do Prefeito",
+    "chamadoId": "BAC-1062",
+    "protocolo": "20261062",
+    "detalhe": "Cobrança enviada à secretaria (saude)",
+    "eixo": "saude"
+  },
+  {
+    "em": "2026-08-04T14:17:11.287Z",
+    "acao": "cobrar",
+    "por": "Gabinete do Prefeito",
+    "chamadoId": "BAC-1062",
+    "protocolo": "20261062",
+    "detalhe": "Cobrança enviada à secretaria (saude)",
+    "eixo": "saude"
+  },
+  {
+    "em": "2026-08-04T14:00:15.387Z",
+    "acao": "visita_surpresa",
+    "eixo": "saude",
+    "por": "Gabinete do Prefeito",
+    "protocolo": "20261063",
+    "detalhe": "Hospital Municipal de Bacabal: OK"
+  },
+  {
+    "em": "2026-08-04T13:58:41.723Z",
+    "acao": "visita_surpresa",
+    "eixo": "saude",
+    "por": "Gabinete do Prefeito",
+    "protocolo": "20261062",
+    "detalhe": "Hospital Municipal de Bacabal: limpeza"
+  },
+  {
+    "em": "2026-08-04T13:57:06.089Z",
+    "acao": "cobrar",
+    "por": "Gabinete do Prefeito",
+    "chamadoId": "BAC-1058",
+    "protocolo": "20261058",
+    "detalhe": "Cobrança enviada à secretaria (limpeza)",
+    "eixo": "saude"
+  }
+]
