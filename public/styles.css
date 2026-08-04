@@ -820,6 +820,7 @@ input:focus, select:focus, textarea:focus {
 .badge-encaminhado { background: #f3e8ff; color: #6b21a8; }
 .badge-em_andamento, .badge-em_execucao { background: #fdf497; color: #7a6200; }
 .badge-aguardando_material { background: #ffedd5; color: #c2410c; }
+.badge-aguardando_aprovacao { background: #e0f2fe; color: #0369a1; }
 .badge-concluido { background: #e6faf3; color: #0a966c; }
 .badge-cancelado { background: #fee2e2; color: #b91c1c; }
 

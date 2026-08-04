@@ -109,6 +109,7 @@ function statusLabel(s) {
     em_execucao: 'Em execução',
     em_andamento: 'Em execução',
     aguardando_material: 'Aguardando material',
+    aguardando_aprovacao: 'Aguardando aprovação',
     concluido: 'Concluído',
     cancelado: 'Cancelado',
   })[s] || s;
@@ -136,7 +137,13 @@ function antesDepoisHtml(c) {
         <div class="antes-depois-label">Depois</div>
         ${depois
           ? `<img class="preview show foto-zoom" src="${depois}" alt="Foto depois" onclick="openFotoLightbox(this.src)" />`
-          : `<div class="antes-depois-empty">${c.status === 'concluido' ? 'Aguardando registro' : 'Equipe ainda não enviou'}</div>`}
+          : `<div class="antes-depois-empty">${
+              c.status === 'concluido'
+                ? 'Aguardando registro'
+                : c.status === 'aguardando_aprovacao'
+                  ? 'Enviado — secretaria avaliando'
+                  : 'Equipe ainda não enviou'
+            }</div>`}
       </div>
     </div>
   `;

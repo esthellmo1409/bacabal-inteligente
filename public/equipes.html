@@ -284,7 +284,7 @@
       document.getElementById('osBox').innerHTML = `
         <h3>OS ${c.protocolo}</h3>
         <p class="muted">${c.descricao || ''}</p>
-        <p class="meta" style="margin:0.35rem 0 0.75rem">Toque na foto para ampliar. Para concluir, envie a foto <strong>DEPOIS</strong>.</p>
+        <p class="meta" style="margin:0.35rem 0 0.75rem">Toque na foto para ampliar. Ao enviar o <strong>depois</strong>, a Secretaria de Obras avalia e só ela finaliza.</p>
         ${antesDepoisHtml(c)}
         <div class="actions" style="margin:0.85rem 0">
           <button class="btn btn-sm btn-primary" id="aceitar">Aceitar serviço</button>
@@ -306,39 +306,45 @@
         </div>
         <label>Custo (R$)</label>
         <input id="custo" type="number" value="0" />
-        <button class="btn btn-primary" id="encerrar" style="width:100%;margin-top:0.75rem">Concluir serviço (com foto depois)</button>
+        ${c.status === 'aguardando_aprovacao'
+          ? `<div class="success-box" style="margin-top:0.75rem"><strong>Enviado para aprovação</strong><p class="muted" style="margin:0.35rem 0 0">A Secretaria de Obras está avaliando a foto do depois.</p></div>`
+          : `<button class="btn btn-primary" id="encerrar" style="width:100%;margin-top:0.75rem">Enviar foto do depois para aprovação</button>`
+        }
       `;
       document.getElementById('osBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      aceitar.onclick = async () => {
+      const aceitarBtn = document.getElementById('aceitar');
+      if (aceitarBtn) aceitarBtn.onclick = async () => {
         await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'aceitar', equipeId: user.equipeId }) });
         toast('OS aceita'); openOS(c.id); load();
       };
-      antes.onclick = () => fAntes.click();
-      depois.onclick = () => fDepois.click();
-      fAntes.onchange = e => readFoto(e, 'antes');
-      fDepois.onchange = e => readFoto(e, 'depois');
-      addMat.onclick = async () => {
+      const antesBtn = document.getElementById('antes');
+      const depoisBtn = document.getElementById('depois');
+      if (antesBtn) antesBtn.onclick = () => fAntes.click();
+      if (depoisBtn) depoisBtn.onclick = () => fDepois.click();
+      if (document.getElementById('fAntes')) fAntes.onchange = e => readFoto(e, 'antes');
+      if (document.getElementById('fDepois')) fDepois.onchange = e => readFoto(e, 'depois');
+      if (document.getElementById('addMat')) addMat.onclick = async () => {
         await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'material', nome: matNome.value, qtd: Number(matQtd.value) }) });
         toast('Material ok');
       };
-      addHoras.onclick = async () => {
+      if (document.getElementById('addHoras')) addHoras.onclick = async () => {
         await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'horas', horas: Number(horas.value) }) });
         toast('Horas ok');
       };
-      encerrar.onclick = async () => {
-        const btn = document.getElementById('encerrar');
-        await withBusy(btn, 'Concluindo…', async () => {
+      const encerrarBtn = document.getElementById('encerrar');
+      if (encerrarBtn) encerrarBtn.onclick = async () => {
+        await withBusy(encerrarBtn, 'Enviando…', async () => {
           try {
             const atual = await api('/api/chamados/' + c.id);
             if (!atual.fotoDepois) {
-              toast('Tire a foto DEPOIS antes de concluir');
+              toast('Tire a foto DEPOIS antes de enviar');
               return;
             }
             await api('/api/chamados/' + c.id + '/os', {
               method: 'POST',
               body: JSON.stringify({ acao: 'encerrar', custo: Number(custo.value), fotoDepois: atual.fotoDepois }),
             });
-            toast('Concluído — antes e depois disponíveis para cidadão e Gabinete');
+            toast('Enviado à Obras — aguardando aprovação da foto');
             load();
             openOS(c.id);
           } catch (e) { toast(e.message); }
