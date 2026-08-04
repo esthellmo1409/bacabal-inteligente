@@ -77,6 +77,7 @@
   <script src="/app.js"></script>
   <script src="/map.js"></script>
   <script>
+    window.BI_AUTH_SLOT = 'campo';
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     let user, cfg, map, layer, selected;
     let timer = null;
@@ -144,11 +145,29 @@
     }
 
     async function trySession() {
-      if (!localStorage.getItem('bi_token')) return;
+      const key = authTokenKey();
+      if (!localStorage.getItem(key) && localStorage.getItem('bi_token')) {
+        // só migra se o token antigo for de campo (senão deixa secretaria em paz)
+        try {
+          localStorage.setItem(key, localStorage.getItem('bi_token'));
+          const u = await api('/api/me');
+          if (u.papel !== 'campo' && u.papel !== 'secretaria' && u.papel !== 'admin') {
+            localStorage.removeItem(key);
+            return;
+          }
+          user = u;
+          showApp();
+          return;
+        } catch {
+          localStorage.removeItem(key);
+          return;
+        }
+      }
+      if (!localStorage.getItem(key)) return;
       try {
         user = await api('/api/me');
         showApp();
-      } catch { localStorage.removeItem('bi_token'); }
+      } catch { localStorage.removeItem(key); }
     }
 
     document.getElementById('loginBtn').onclick = async () => {
@@ -159,8 +178,7 @@
             method: 'POST',
             body: JSON.stringify({ usuario: usuario.value.trim(), senha: senha.value, cidade: getCidade() }),
           });
-          localStorage.setItem('bi_token', r.token);
-          if (typeof setSession === 'function') setSession(r.token, r.user);
+          setSession(r.token, r.user);
           user = r.user;
           showApp();
         } catch (e) { toast(e.message); }

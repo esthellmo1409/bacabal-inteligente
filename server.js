@@ -122,13 +122,29 @@ function ensureDemoChamado(slug = 'bacabal') {
     }));
   } else {
     const prev = chamados[idx];
-    // Não sobrescreve progresso (aprovação, foto depois, status)
+    // Garante foto antes no demo
     if (!prev.foto && !prev.fotoAntes) {
       prev.foto = fotoUrl;
       prev.fotoAntes = fotoUrl;
     }
     if (!prev.secretaria) prev.secretaria = 'obras';
     if (!prev.demoFixo) prev.demoFixo = 'buraco-foto';
+    // Se já foi concluído no pitch, volta para aguardando aprovação (sempre tem botão Aprovar)
+    if (prev.status === 'concluido' || (!prev.fotoDepois && prev.status !== 'aguardando_aprovacao')) {
+      // só restaura fluxo de aprovação se estiver concluído (re-demo)
+      if (prev.status === 'concluido') {
+        prev.status = 'aguardando_aprovacao';
+        prev.fotoDepois = prev.fotoDepois || fotoUrl;
+        prev.aprovacaoSecretaria = null;
+        prev.historico = prev.historico || [];
+        prev.historico.push({
+          em: now,
+          status: 'aguardando_aprovacao',
+          nota: 'Demo restaurada — pronta para Aprovar e finalizar na Secretaria',
+        });
+        prev.atualizadoEm = now;
+      }
+    }
     chamados[idx] = normalizeChamado(prev);
   }
   writeTenant(slug, 'chamados.json', chamados);
