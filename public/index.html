@@ -34,12 +34,9 @@
       </a>
       <nav class="landing-nav" aria-label="Principal">
         <a href="/fluxo.html?cidade=bacabal">Como funciona</a>
-        <a class="nav-cidadao" href="/cidadao.html?cidade=bacabal" aria-label="Cidadão — Abrir chamado">
-          <span class="nav-cidadao-track">
-            <span>Cidadão</span>
-            <span>Abrir chamado</span>
-          </span>
-        </a>
+        <button type="button" class="nav-cidadao" id="navCidadao" aria-label="Cidadão">
+          Cidadão
+        </button>
         <a href="/mapa.html?cidade=bacabal">Mapa</a>
         <a class="nav-cta" href="/login.html?cidade=bacabal">Acessar</a>
       </nav>
@@ -196,6 +193,22 @@
   <script src="/map.js"></script>
   <script>
     setCidade('bacabal');
+
+    (function () {
+      const btn = document.getElementById('navCidadao');
+      if (!btn) return;
+      let ready = false;
+      btn.addEventListener('click', () => {
+        if (!ready) {
+          ready = true;
+          btn.textContent = 'Abrir chamado';
+          btn.classList.add('is-ready');
+          btn.setAttribute('aria-label', 'Abrir chamado');
+          return;
+        }
+        location.href = '/cidadao.html?cidade=bacabal';
+      });
+    })();
 
     // Carousel — 3 slides, como o banner do portal
     (function () {
