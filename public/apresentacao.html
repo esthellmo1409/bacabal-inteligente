@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Apresentação · uso interno</title>
+  <title>Bacabal Inteligente · Apresentação</title>
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/home.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
@@ -11,97 +11,96 @@
   <style>
     .ap { max-width: 880px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
     .ap-hero {
-      background: linear-gradient(145deg, #1a1a1a, #2f7319 55%, #ff8000 125%);
-      color: #fff; border-radius: 22px; padding: 1.75rem 1.5rem; margin-bottom: 1.25rem;
+      background: linear-gradient(145deg, #ff8000 0%, #e67300 40%, #398a21 100%);
+      color: #fff; border-radius: 22px; padding: 1.85rem 1.55rem; margin-bottom: 1.25rem;
+      box-shadow: 0 18px 44px rgba(255,128,0,.22);
     }
-    .ap-hero h1 { color:#fff; margin:.25rem 0 .4rem; font-size: clamp(1.5rem, 4vw, 2rem); letter-spacing:-.03em; }
-    .ap-hero p { margin:0; opacity:.92; line-height:1.45; max-width:38rem; }
-    .ap-kicker { font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
-    .warn {
-      background:#fff8f0; border:1px solid #ffd19a; border-radius:14px;
-      padding:.85rem 1rem; margin-bottom:1.15rem; font-size:.9rem; color:#5c3a00; line-height:1.45;
+    .ap-hero h1 {
+      color:#fff; margin:.3rem 0 .45rem;
+      font-size: clamp(1.55rem, 4vw, 2.15rem); letter-spacing:-.03em;
     }
+    .ap-hero p { margin:0; opacity:.94; line-height:1.45; max-width:36rem; }
+    .ap-kicker {
+      font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.9;
+    }
+    .order {
+      background:#fff; border:1px solid #e6e9ee; border-radius:16px;
+      padding:1.15rem 1.25rem; margin-bottom:1rem;
+      box-shadow: 0 8px 22px rgba(0,0,0,.04);
+    }
+    .order h2 { margin:0 0 .5rem; font-size:1.05rem; color:#2f7319; }
+    .order ol { margin:0; padding-left:1.2rem; color:#5c6570; line-height:1.55; font-size:.93rem; }
     .grid { display:grid; gap: .85rem; }
     @media(min-width:720px){ .grid{ grid-template-columns:1fr 1fr; } }
     .card {
       background:#fff; border:1px solid #e6e9ee; border-radius:16px;
-      padding:1.1rem 1.2rem; box-shadow: 0 8px 22px rgba(0,0,0,.04);
+      padding:1.15rem 1.2rem; box-shadow: 0 8px 22px rgba(0,0,0,.04);
+      display:flex; flex-direction:column;
     }
-    .card h3 { margin:0 0 .35rem; font-size:1.05rem; color:#2f7319; }
-    .card p { margin:0 0 .85rem; color:#5c6570; font-size:.9rem; line-height:1.45; }
-    .card .btn { margin-right:.35rem; margin-bottom:.35rem; }
-    .order {
-      background:#fff; border:1px solid #e6e9ee; border-radius:16px;
-      padding:1.15rem 1.25rem; margin-top:1rem;
+    .card h3 { margin:0 0 .35rem; font-size:1.05rem; color:#1a1a1a; }
+    .card p { margin:0 0 .95rem; color:#5c6570; font-size:.9rem; line-height:1.45; flex:1; }
+    .card .btn { align-self:flex-start; }
+    .phrase {
+      margin-top:1.15rem; border-left:4px solid #ff8000; background:#fff8f0;
+      border-radius:0 14px 14px 0; padding:.9rem 1rem;
+      font-weight:600; color:#1a1a1a; line-height:1.4;
     }
-    .order h3 { margin:0 0 .5rem; color:#1a1a1a; }
-    .order ol { margin:0; padding-left:1.2rem; color:#5c6570; line-height:1.55; font-size:.92rem; }
-    .link-home { display:inline-block; margin-top:1.25rem; font-size:.85rem; color:#5c6570; }
+    .foot {
+      margin-top:1.5rem; font-size:.8rem; color:#8a93a0; text-align:center;
+    }
+    .foot a { color:#5c6570; }
   </style>
 </head>
 <body class="landing" style="background:#f7f8f9">
   <div class="ap">
     <div class="ap-hero">
-      <div class="ap-kicker">Uso interno · não aparece na home pública</div>
-      <h1>Apresentação para o prefeito</h1>
+      <div class="ap-kicker">Prefeitura Municipal de Bacabal</div>
+      <h1>Bacabal Inteligente</h1>
       <p>
-        Tudo que você precisa na reunião, separado do portal do cidadão.
-        A home pública fica limpa — como se o sistema já estivesse no ar.
+        Visão geral do sistema: do cidadão na rua ao Gabinete —
+        com protocolo, mapa e acompanhamento por secretaria.
       </p>
-    </div>
-
-    <div class="warn">
-      <strong>Guarde este link:</strong>
-      <code style="word-break:break-all">/apresentacao.html</code>
-      — não está no menu da página principal.
     </div>
 
     <div class="order">
-      <h3>Ordem sugerida na reunião (10–15 min)</h3>
+      <h2>Roteiro da apresentação</h2>
       <ol>
-        <li><strong>Slides</strong> — visão geral sem clicar em outras telas</li>
-        <li><strong>Gabinete ao vivo</strong> — Saúde → Cobrar → Cidade</li>
-        <li><strong>Manual</strong> — deixar com ele para ensinar cada setor</li>
+        <li>Como funciona — visão em slides</li>
+        <li>Gabinete — Cidade, Saúde e Eventos ao vivo</li>
+        <li>Manual — capacitação de cada setor</li>
       </ol>
     </div>
 
-    <div class="grid" style="margin-top:1rem">
+    <div class="grid">
       <div class="card">
-        <h3>1. Como funciona (slides)</h3>
-        <p>Apresentação visual em etapas. Só seta / próximo.</p>
-        <a class="btn btn-primary" href="/fluxo.html?cidade=bacabal">Abrir slides</a>
+        <h3>Como funciona</h3>
+        <p>Do chamado à conclusão, em etapas ilustradas.</p>
+        <a class="btn btn-primary" href="/fluxo.html?cidade=bacabal">Iniciar</a>
       </div>
       <div class="card">
-        <h3>2. Gabinete ao vivo</h3>
-        <p>Login: <code>prefeito</code> / <code>prefeito123</code></p>
-        <a class="btn btn-primary" href="/prefeito.html?cidade=bacabal">Abrir Gabinete</a>
-        <a class="btn" href="/login.html?cidade=bacabal">Login</a>
+        <h3>Gabinete</h3>
+        <p>Painel do prefeito: priorizar, cobrar e acompanhar.</p>
+        <a class="btn btn-primary" href="/prefeito.html?cidade=bacabal">Abrir painel</a>
       </div>
       <div class="card">
-        <h3>3. Manual por setor</h3>
-        <p>Passo a passo para capacitar Cidadão, Secretarias, Campo, Saúde e Gabinete.</p>
+        <h3>Manual por setor</h3>
+        <p>Passo a passo para Cidadão, Secretarias, Campo, Saúde e Gabinete.</p>
         <a class="btn btn-primary" href="/manual.html?cidade=bacabal">Abrir manual</a>
       </div>
       <div class="card">
-        <h3>Kit rápido</h3>
-        <p>Preparar cenário, checklist e logins da demo.</p>
-        <a class="btn btn-primary" href="/reuniao.html?cidade=bacabal">Kit da reunião</a>
-        <a class="btn" href="/pitch.html?cidade=bacabal">Pitch 1 tela</a>
+        <h3>App do cidadão</h3>
+        <p>Abrir ocorrência com foto, mapa e protocolo.</p>
+        <a class="btn btn-primary" href="/cidadao.html?cidade=bacabal">Abrir</a>
       </div>
     </div>
 
-    <div class="card" style="margin-top:1rem">
-      <h3>Logins demo</h3>
-      <p style="margin:0;font-family:ui-monospace,Consolas,monospace;font-size:.86rem;line-height:1.7;color:#333">
-        Prefeito: prefeito / prefeito123<br />
-        Saúde: saude / saude123<br />
-        Eventos: eventos / evento123<br />
-        Obras: obras / obras123<br />
-        Campo: campo / campo123
-      </p>
+    <div class="phrase">
+      “Uma tela. Três prioridades. Resultado com protocolo.”
     </div>
 
-    <a class="link-home" href="/?cidade=bacabal">← Voltar à página pública</a>
+    <p class="foot">
+      <a href="/?cidade=bacabal">Portal Bacabal Inteligente</a>
+    </p>
   </div>
 </body>
 </html>
