@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clipe TV · Bacabal Inteligente</title>
+  <meta name="description" content="Clipe em loop para TV — Bacabal Inteligente, Prefeitura de Bacabal." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <style>
+    :root {
+      --ink: #0c1a12;
+      --snow: #f4f7f2;
+      --green: #2f7a22;
+      --green-deep: #1a4d14;
+      --orange: #f07800;
+      --gold: #e8b84a;
+      --line: rgba(255,255,255,.18);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #06140c;
+      color: var(--snow);
+      font-family: Manrope, system-ui, sans-serif;
+      cursor: none;
+    }
+
+    body.show-ui { cursor: default; }
+
+    .stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 90% 70% at 70% 20%, rgba(240,120,0,.28), transparent 55%),
+        radial-gradient(ellipse 80% 60% at 15% 80%, rgba(47,122,34,.45), transparent 50%),
+        linear-gradient(155deg, #0a1f12 0%, #12301a 42%, #0c1810 100%);
+    }
+
+    .stage::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+      opacity: .35;
+      pointer-events: none;
+      animation: gridDrift 40s linear infinite;
+    }
+
+    @keyframes gridDrift {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-64px, -64px); }
+    }
+
+    .glow {
+      position: absolute;
+      width: 55vw;
+      height: 55vw;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .35;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(240,120,0,.55), transparent 70%);
+      top: -10%;
+      right: -8%;
+      animation: glowPulse 8s ease-in-out infinite;
+    }
+
+    .glow.b {
+      background: radial-gradient(circle, rgba(47,122,34,.6), transparent 70%);
+      top: auto;
+      bottom: -20%;
+      left: -10%;
+      right: auto;
+      animation-delay: -3s;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { transform: scale(1); opacity: .3; }
+      50% { transform: scale(1.15); opacity: .45; }
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(2rem, 6vw, 5rem);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.04);
+      transition: opacity .9s ease, transform 1.1s cubic-bezier(.22,1,.36,1);
+    }
+
+    .scene.on {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    .scene.out {
+      opacity: 0;
+      transform: scale(.97);
+    }
+
+    .kicker {
+      font-size: clamp(.75rem, 1.4vw, 1.05rem);
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: clamp(.6rem, 1.5vw, 1.1rem);
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    .scene.on .kicker { animation: rise .7s .15s both; }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: clamp(1rem, 2.5vw, 1.75rem);
+      margin-bottom: clamp(.8rem, 2vw, 1.4rem);
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .scene.on .brand-row { animation: rise .8s .25s both; }
+
+    .brand-row img {
+      width: clamp(64px, 9vw, 120px);
+      height: clamp(64px, 9vw, 120px);
+      object-fit: contain;
+      filter: drop-shadow(0 12px 30px rgba(0,0,0,.35));
+    }
+
+    h1, .display {
+      font-family: 'Bricolage Grotesque', Manrope, sans-serif;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      line-height: .95;
+      font-size: clamp(2.6rem, 7.5vw, 6.5rem);
+      max-width: 16ch;
+      text-shadow: 0 10px 40px rgba(0,0,0,.35);
+      opacity: 0;
+      transform: translateY(28px);
+    }
+
+    .scene.on h1,
+    .scene.on .display { animation: rise .85s .35s both; }
+
+    .accent { color: var(--orange); }
+
+    .line {
+      margin-top: clamp(1rem, 2.5vw, 1.75rem);
+      font-size: clamp(1.05rem, 2.2vw, 1.85rem);
+      font-weight: 500;
+      line-height: 1.35;
+      max-width: 28ch;
+      color: rgba(244,247,242,.9);
+      opacity: 0;
+      transform: translateY(22px);
+    }
+
+    .scene.on .line { animation: rise .8s .55s both; }
+
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(.75rem, 2vw, 1.5rem);
+      margin-top: clamp(1.5rem, 3.5vw, 2.75rem);
+      max-width: 1100px;
+    }
+
+    .pillar {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: clamp(1rem, 2vw, 1.5rem);
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .scene.on .pillar:nth-child(1) { animation: rise .7s .45s both; }
+    .scene.on .pillar:nth-child(2) { animation: rise .7s .6s both; }
+    .scene.on .pillar:nth-child(3) { animation: rise .7s .75s both; }
+
+    .pillar strong {
+      display: block;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(1.2rem, 2.4vw, 1.85rem);
+      letter-spacing: -.03em;
+      margin-bottom: .35rem;
+    }
+
+    .pillar span {
+      font-size: clamp(.9rem, 1.5vw, 1.15rem);
+      color: rgba(244,247,242,.78);
+      line-height: 1.35;
+    }
+
+    .big-url {
+      margin-top: clamp(1.5rem, 3vw, 2.5rem);
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(1.35rem, 3.2vw, 2.6rem);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .scene.on .big-url { animation: rise .8s .7s both; }
+
+    .big-url em {
+      font-style: normal;
+      color: var(--orange);
+    }
+
+    @keyframes rise {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progress {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 5px;
+      background: rgba(255,255,255,.08);
+      z-index: 20;
+    }
+
+    .progress > i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--orange), var(--gold), var(--green));
+      transition: width .05s linear;
+    }
+
+    .hud {
+      position: absolute;
+      z-index: 30;
+      left: clamp(1rem, 3vw, 2rem);
+      right: clamp(1rem, 3vw, 2rem);
+      bottom: clamp(1.2rem, 3vw, 2rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+    }
+
+    body.show-ui .hud { opacity: 1; pointer-events: auto; cursor: default; }
+
+    .hud-left, .hud-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      align-items: center;
+    }
+
+    .hud button, .hud a {
+      font: 600 .8rem Manrope, sans-serif;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(0,0,0,.45);
+      color: #fff;
+      border-radius: 999px;
+      padding: .55rem 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .hud button:hover, .hud a:hover { border-color: var(--orange); }
+
+    .dots {
+      display: flex;
+      gap: .4rem;
+    }
+
+    .dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+    }
+
+    .dots span.on { background: var(--orange); }
+
+    .footer-brand {
+      position: absolute;
+      top: clamp(1rem, 3vw, 2rem);
+      right: clamp(1rem, 3vw, 2rem);
+      z-index: 15;
+      font-size: clamp(.7rem, 1.1vw, .9rem);
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+    }
+
+    @media (max-width: 720px) {
+      .pillars { grid-template-columns: 1fr; }
+      body { cursor: default; }
+      .hud { opacity: 1; pointer-events: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="glow"></div>
+    <div class="glow b"></div>
+    <div class="footer-brand">Prefeitura Municipal de Bacabal</div>
+
+    <section class="scene on" data-scene="0" aria-label="Abertura">
+      <div class="kicker">Nova plataforma da Prefeitura</div>
+      <div class="brand-row">
+        <img src="/assets/logo-prefeitura.png" alt="Brasão de Bacabal" />
+        <div>
+          <div class="kicker" style="margin:0">Cidade · Saúde · Eventos</div>
+        </div>
+      </div>
+      <h1>Bacabal<br /><span class="accent">Inteligente</span></h1>
+      <p class="line">A cidade no protocolo — do cidadão ao Gabinete.</p>
+    </section>
+
+    <section class="scene" data-scene="1" aria-label="Promessa">
+      <div class="kicker">Como funciona</div>
+      <p class="display">Gabinete decide.<br />Secretaria executa.<br /><span class="accent">Campo faz.</span></p>
+      <p class="line">Cobrança com registro. Antes e depois com foto. Sem depender só do WhatsApp.</p>
+    </section>
+
+    <section class="scene" data-scene="2" aria-label="Eixos">
+      <div class="kicker">Três eixos na mesma plataforma</div>
+      <h1 style="font-size:clamp(2rem,5.5vw,4.2rem)">Uma cidade.<br />Um comando.</h1>
+      <div class="pillars">
+        <div class="pillar">
+          <strong>Cidade</strong>
+          <span>Buraco, poste, limpeza — abertura com foto e GPS, equipe de campo e aprovação da secretaria.</span>
+        </div>
+        <div class="pillar">
+          <strong>Saúde</strong>
+          <span>Fila, plantão e visita surpresa com número — o que o prefeito já acompanha, agora com protocolo.</span>
+        </div>
+        <div class="pillar">
+          <strong>Eventos</strong>
+          <span>Agenda, estrutura e segurança sob o olhar do Gabinete.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" data-scene="3" aria-label="Cidadão">
+      <div class="kicker">Para o cidadão</div>
+      <p class="display">Abriu.<br />Protocolo.<br /><span class="accent">Acompanhou.</span></p>
+      <p class="line">Foto do problema, localização e status até a conclusão — com antes e depois.</p>
+    </section>
+
+    <section class="scene" data-scene="4" aria-label="Encerramento">
+      <div class="kicker">Bacabal / MA</div>
+      <h1>Gestão com<br /><span class="accent">prova.</span></h1>
+      <p class="line">Prefeitura Municipal de Bacabal — inovação a serviço de quem mora aqui.</p>
+      <p class="big-url">Acesse · <em>bacabal-inteligente</em></p>
+    </section>
+
+    <div class="progress"><i id="bar"></i></div>
+
+    <div class="hud" id="hud">
+      <div class="hud-left">
+        <button type="button" id="btnFs">Tela cheia</button>
+        <button type="button" id="btnVoice">Narração: off</button>
+        <button type="button" id="btnPause">Pausar</button>
+        <div class="dots" id="dots"></div>
+      </div>
+      <div class="hud-right">
+        <a href="/?cidade=bacabal">Site</a>
+        <a href="/pitch.html?cidade=bacabal">Pitch</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DUR = 7500;
+    const scenes = Array.from(document.querySelectorAll('.scene'));
+    const bar = document.getElementById('bar');
+    const dots = document.getElementById('dots');
+    const body = document.body;
+
+    const scripts = [
+      'Bacabal Inteligente. A nova plataforma da Prefeitura Municipal de Bacabal.',
+      'Gabinete decide. Secretaria executa. Campo faz. Tudo com protocolo e registro.',
+      'Cidade, Saúde e Eventos — um comando só para o prefeito acompanhar.',
+      'O cidadão abre o chamado com foto, recebe protocolo e acompanha até o fim.',
+      'Gestão com prova. Bacabal Inteligente — Prefeitura de Bacabal.',
+    ];
+
+    let idx = 0;
+    let t0 = performance.now();
+    let paused = false;
+    let voiceOn = false;
+    let raf = null;
+    let hideTimer = null;
+
+    scenes.forEach((_, i) => {
+      const d = document.createElement('span');
+      if (i === 0) d.classList.add('on');
+      dots.appendChild(d);
+    });
+
+    function speak(i) {
+      if (!voiceOn || !window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(scripts[i] || '');
+      u.lang = 'pt-BR';
+      u.rate = 1.02;
+      u.pitch = 1;
+      const voices = window.speechSynthesis.getVoices();
+      const pt = voices.find(v => /pt-BR|Portuguese/i.test(v.lang + v.name));
+      if (pt) u.voice = pt;
+      window.speechSynthesis.speak(u);
+    }
+
+    function show(i, fromUser) {
+      scenes.forEach((el, n) => {
+        el.classList.toggle('on', n === i);
+        el.classList.toggle('out', n !== i);
+      });
+      dots.querySelectorAll('span').forEach((d, n) => d.classList.toggle('on', n === i));
+      idx = i;
+      t0 = performance.now();
+      bar.style.width = '0%';
+      if (!fromUser) speak(i);
+      else speak(i);
+    }
+
+    function tick(now) {
+      if (!paused) {
+        const p = Math.min(1, (now - t0) / DUR);
+        bar.style.width = (p * 100) + '%';
+        if (p >= 1) show((idx + 1) % scenes.length);
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    function showUi() {
+      body.classList.add('show-ui');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => body.classList.remove('show-ui'), 4000);
+    }
+
+    document.getElementById('btnFs').onclick = () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    };
+
+    document.getElementById('btnPause').onclick = (e) => {
+      paused = !paused;
+      e.currentTarget.textContent = paused ? 'Continuar' : 'Pausar';
+      if (paused) window.speechSynthesis?.cancel();
+      else { t0 = performance.now(); speak(idx); }
+    };
+
+    document.getElementById('btnVoice').onclick = (e) => {
+      voiceOn = !voiceOn;
+      e.currentTarget.textContent = 'Narração: ' + (voiceOn ? 'on' : 'off');
+      if (voiceOn) {
+        window.speechSynthesis?.getVoices();
+        speak(idx);
+      } else window.speechSynthesis?.cancel();
+    };
+
+    window.addEventListener('mousemove', showUi);
+    window.addEventListener('touchstart', showUi, { passive: true });
+    window.addEventListener('keydown', (e) => {
+      showUi();
+      if (e.key === 'f' || e.key === 'F') document.getElementById('btnFs').click();
+      if (e.key === ' ') { e.preventDefault(); document.getElementById('btnPause').click(); }
+      if (e.key === 'ArrowRight') show((idx + 1) % scenes.length, true);
+      if (e.key === 'ArrowLeft') show((idx - 1 + scenes.length) % scenes.length, true);
+      if (e.key === 'v' || e.key === 'V') document.getElementById('btnVoice').click();
+    });
+
+    // Auto fullscreen hint on first interaction
+    stage.addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
+    }, { once: true });
+
+    if (window.speechSynthesis) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+
+    show(0);
+    raf = requestAnimationFrame(tick);
+    showUi();
+  </script>
+</body>
+</html>
