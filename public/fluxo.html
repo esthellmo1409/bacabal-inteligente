@@ -74,18 +74,18 @@
     }
     .slide.intro .slide-visual::after,
     .slide.outro .slide-visual::after {
-      background: linear-gradient(to top, rgba(15,20,16,.88) 0%, rgba(15,20,16,.35) 50%, rgba(255,128,0,.25) 100%);
+      background: linear-gradient(to top, rgba(10,14,11,.94) 0%, rgba(10,14,11,.55) 42%, rgba(10,14,11,.2) 70%, transparent 100%);
     }
     .slide.intro .slide-visual,
     .slide.outro .slide-visual {
       background: #1a1a1a;
     }
-
     .slide-copy {
       position: absolute; left: 0; right: 0; bottom: 0;
       z-index: 2;
-      padding: 1.5rem 1.5rem 1.25rem;
-      max-width: 820px;
+      padding: 1.75rem 1.5rem 1.5rem;
+      max-width: 760px;
+      pointer-events: none;
     }
     .slide-num {
       display: inline-block;
@@ -93,10 +93,12 @@
       text-transform: uppercase; color: #ffd19a; margin-bottom: .45rem;
     }
     .slide-copy h1 {
-      margin: 0 0 .45rem;
-      font-size: clamp(1.55rem, 4.5vw, 2.4rem);
-      letter-spacing: -.035em; line-height: 1.15;
-      text-shadow: 0 2px 18px rgba(0,0,0,.35);
+      margin: 0 0 .55rem;
+      font-size: clamp(1.45rem, 4vw, 2.2rem);
+      letter-spacing: -.035em; line-height: 1.2;
+      text-shadow: 0 2px 18px rgba(0,0,0,.55);
+      overflow-wrap: break-word;
+      word-break: normal;
     }
     .slide-copy p {
       margin: 0; max-width: 36rem;
@@ -186,7 +188,7 @@
     <div class="stage" id="stage">
       <article class="slide intro active" data-i="0">
         <div class="slide-visual">
-          <img src="/assets/fluxo-00-abertura.jpg" alt="" />
+          <img src="/assets/fluxo-abertura.jpg" alt="" />
         </div>
         <div class="slide-copy">
           <div class="slide-num">Abertura</div>
@@ -288,7 +290,7 @@
 
       <article class="slide outro" data-i="6">
         <div class="slide-visual">
-          <img src="/assets/fluxo-06-fechamento.jpg" alt="" />
+          <img src="/assets/fluxo-fechamento.jpg" alt="" />
         </div>
         <div class="slide-copy">
           <div class="slide-num">Fechamento</div>
