@@ -131,6 +131,34 @@
   background: var(--pmb-orange-deep);
 }
 
+.landing-nav .nav-cidadao {
+  display: inline-flex;
+  align-items: center;
+  height: 2.2rem;
+  overflow: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.landing-nav .nav-cidadao-track {
+  display: flex;
+  flex-direction: column;
+  transition: transform .35s cubic-bezier(.22, 1, .36, 1);
+  transform: translateY(0);
+}
+
+.landing-nav .nav-cidadao-track span {
+  display: flex;
+  align-items: center;
+  height: 2.2rem;
+  white-space: nowrap;
+}
+
+.landing-nav .nav-cidadao:hover .nav-cidadao-track,
+.landing-nav .nav-cidadao:focus-visible .nav-cidadao-track {
+  transform: translateY(-2.2rem);
+}
+
 /* —— Hero carousel —— */
 .hero-carousel {
   position: relative;
