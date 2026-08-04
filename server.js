@@ -723,12 +723,30 @@ async function handleAPI(req, res, pathname, url) {
       if (!validStatus.includes(st)) {
         return sendJSON(res, 400, { error: 'Status inválido', validos: validStatus });
       }
+      const statusAnterior = c.status;
       c.status = st;
       c.historico.push({
         em: now, status: st,
         nota: body.nota || `Status: ${st}`,
         por: user.nome,
       });
+      // Avisa a equipe de campo quando a secretaria encaminha
+      if (st === 'encaminhado' && statusAnterior !== 'encaminhado') {
+        const notifs = readTenant(slug, 'notificacoes.json', []);
+        notifs.unshift({
+          id: 'N-' + Date.now(),
+          em: now,
+          canal: 'app',
+          tipo: 'os_campo',
+          titulo: `Nova OS · ${c.protocolo}`,
+          destino: 'campo',
+          secretaria: c.secretaria,
+          mensagem: `${c.titulo} · ${c.bairro || ''} — encaminhada à equipe`,
+          chamadoId: c.id,
+          lida: false,
+        });
+        writeTenant(slug, 'notificacoes.json', notifs.slice(0, 300));
+      }
       if (st === 'concluido' && c.cidadao?.telefone) {
         c.historico.push({
           em: now, status: 'concluido',
@@ -874,7 +892,11 @@ async function handleAPI(req, res, pathname, url) {
     const secretaria = url.searchParams.get('secretaria') || '';
     let all = readTenant(slug, 'chamados.json', []).map(normalizeChamado);
     if (secretaria) all = all.filter((c) => c.secretaria === secretaria);
-    let list = all.filter((c) => isPendente(c.status));
+    // Fila de campo: só o que a secretaria já encaminhou / está em execução
+    const STATUS_CAMPO = new Set([
+      'encaminhado', 'em_execucao', 'aguardando_material',
+    ]);
+    let list = all.filter((c) => STATUS_CAMPO.has(c.status));
     const origem = {
       lat: Number(url.searchParams.get('lat')) || cfg.lat,
       lng: Number(url.searchParams.get('lng')) || cfg.lng,

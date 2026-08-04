@@ -80,8 +80,11 @@
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     let user, cfg, map, layer, selected;
     let timer = null;
-    let lastOsCount = Number(localStorage.getItem('bi_campo_os') || '-1');
-    let lastOsKey = localStorage.getItem('bi_campo_key') || '';
+    let alarmTimer = null;
+    let knownOsIds = (() => {
+      try { return JSON.parse(localStorage.getItem('bi_campo_ids') || '[]'); } catch { return []; }
+    })();
+    let baselineReady = localStorage.getItem('bi_campo_ids_ready') === '1';
     let audioCtx = null;
     let somLigado = localStorage.getItem('bi_campo_som') !== '0';
 
@@ -108,6 +111,26 @@
         setTimeout(() => { o.frequency.value = 1175; }, 120);
         setTimeout(() => { try { o.stop(); } catch (_) {} }, 280);
       } catch (_) {}
+    }
+
+    function startCampoAlarm() {
+      stopCampoAlarm();
+      playCampoSound();
+      alarmTimer = setInterval(() => playCampoSound(), 4000);
+    }
+
+    function stopCampoAlarm() {
+      if (alarmTimer) {
+        clearInterval(alarmTimer);
+        alarmTimer = null;
+      }
+    }
+
+    /** OS encaminhadas / em campo — base do alerta sonoro */
+    function idsParaAlerta(rota) {
+      return (rota || [])
+        .filter(p => ['encaminhado', 'em_execucao', 'aguardando_material'].includes(p.status))
+        .map(p => p.id);
     }
 
     function tempoRelativo(iso) {
@@ -180,7 +203,7 @@
     function cardRecente(p) {
       const foto = p.foto || p.fotoAntes;
       const pri = p.prioridade || 'media';
-      const isNovo = p.status === 'novo' || p.status === 'encaminhado' || p.status === 'em_analise';
+      const isNovo = p.status === 'encaminhado' || p.status === 'em_execucao';
       return `
         <div class="item chamado-card chamado-card-recente" style="cursor:pointer;${isNovo ? 'border-color:rgba(46,125,50,.45);box-shadow:0 0 0 1px rgba(46,125,50,.18)' : ''}" data-open="${p.id}">
           <div class="chamado-card-body">
@@ -194,7 +217,7 @@
               <div class="item-head">
                 <strong>${p.titulo} · ${p.protocolo}</strong>
                 ${badge(p.status)}
-                ${isNovo ? '<span class="badge badge-em_analise">Nova OS</span>' : ''}
+                ${p.status === 'encaminhado' ? '<span class="badge badge-em_analise">Nova OS</span>' : ''}
               </div>
               <div class="meta">${p.bairro || '—'} · ${tempoRelativo(p.atualizadoEm || p.criadoEm)}</div>
               <p class="muted" style="margin:0.35rem 0">${(p.descricao || '').slice(0, 120)}${(p.descricao || '').length > 120 ? '…' : ''}</p>
@@ -234,27 +257,34 @@
         <div class="panel stat"><div class="label">Concluídos</div><div class="value">${data.totalConcluidos || (data.concluidos || []).length}</div></div>
         <div class="panel stat"><div class="label">Km / Min</div><div class="value" style="font-size:1.35rem">${data.totalKm} · ${data.tempoEstimadoMin}</div></div>`;
 
-      // Notificação: chegou OS nova / mudou a fila — SOM só quando aumenta a fila
-      const chegou = lastOsCount >= 0 && data.rota.length > lastOsCount;
+      // Notificação por OS nova (ID) após a secretaria encaminhar
+      const idsAgora = idsParaAlerta(data.rota);
+      const novosIds = baselineReady
+        ? idsAgora.filter(id => !knownOsIds.includes(id))
+        : [];
+      const chegou = novosIds.length > 0;
+
       if (chegou) {
-        const novo = recentes[0];
+        const novo = (data.rota || []).find(p => novosIds.includes(p.id))
+          || recentes.find(p => novosIds.includes(p.id))
+          || recentes[0];
         const msg = novo
           ? `Nova ordem: ${novo.titulo} · ${novo.protocolo} (${novo.bairro || 'sem bairro'})`
           : 'Nova ordem de serviço na fila.';
-        playCampoSound();
+        startCampoAlarm();
         const box = document.getElementById('alertaCampo');
         box.style.display = 'block';
         box.classList.add('alerta-urgente');
         document.getElementById('alertaCampoTitulo').textContent = 'Nova OS para a equipe';
-        document.getElementById('alertaCampoTexto').textContent = msg + ' — veja em OS recentes.';
+        document.getElementById('alertaCampoTexto').textContent = msg + ' — abra a OS para silenciar.';
         document.getElementById('alertaCampoAcoes').innerHTML = novo
           ? `<button class="btn btn-sm btn-primary" onclick="openOS('${novo.id}')">Abrir agora</button>`
           : '';
         toast('Nova OS recebida');
         if (window.Notification && Notification.permission === 'granted') {
-          new Notification('Equipe de campo', { body: msg, tag: 'campo-os' });
+          new Notification('Equipe de campo', { body: msg, tag: 'campo-os-' + (novo?.id || 'x') });
         }
-      } else if (lastOsCount < 0 && recentes.length) {
+      } else if (!baselineReady && recentes.length) {
         document.getElementById('alertaCampo').style.display = 'block';
         document.getElementById('alertaCampo').classList.remove('alerta-urgente');
         document.getElementById('alertaCampoTitulo').textContent = 'OS recentes';
@@ -267,10 +297,13 @@
           box.style.display = 'none';
           box.classList.remove('alerta-urgente');
         }
+        stopCampoAlarm();
       }
-      lastOsCount = data.rota.length;
-      lastOsKey = key;
-      localStorage.setItem('bi_campo_os', String(lastOsCount));
+      knownOsIds = idsAgora;
+      baselineReady = true;
+      localStorage.setItem('bi_campo_ids', JSON.stringify(knownOsIds));
+      localStorage.setItem('bi_campo_ids_ready', '1');
+      localStorage.setItem('bi_campo_os', String(data.rota.length));
       localStorage.setItem('bi_campo_key', key);
 
       layer.clearLayers();
@@ -286,7 +319,7 @@
       document.getElementById('recentes').innerHTML = recentes.length
         ? recentes.map(cardRecente).join('')
         : '<p class="muted">Nenhuma OS recente. Aguarde a secretaria encaminhar.</p>';
-      document.getElementById('campoHint').textContent = 'Atualiza a cada 12s · som = nova OS';
+      document.getElementById('campoHint').textContent = 'Atualiza a cada 12s · som ao encaminhar OS';
 
       document.getElementById('lista').innerHTML = data.rota.map(p => `
         <div class="item" style="cursor:pointer" data-open="${p.id}">
@@ -318,6 +351,7 @@
     async function openOS(id) {
       selected = await api('/api/chamados/' + id);
       const c = selected;
+      stopCampoAlarm();
       const alerta = document.getElementById('alertaCampo');
       if (alerta) {
         alerta.classList.remove('alerta-urgente');
@@ -413,6 +447,7 @@
       somLigado = !somLigado;
       localStorage.setItem('bi_campo_som', somLigado ? '1' : '0');
       syncSomToggle();
+      if (!somLigado) stopCampoAlarm();
       toast(somLigado ? 'Som ligado' : 'Som mudo');
     });
     document.getElementById('refreshCampo')?.addEventListener('click', () => load().catch(e => toast(e.message)));
