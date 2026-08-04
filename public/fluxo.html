@@ -178,6 +178,47 @@
         padding: 2rem 2.25rem;
       }
     }
+
+    @media (max-width: 720px) {
+      .brand {
+        padding: 0.55rem 0.75rem;
+        gap: 0.5rem;
+      }
+      .brand span { display: none; }
+      .brand img { width: 30px; height: 30px; }
+      .brand strong { font-size: 0.78rem; }
+      .brand-home {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.6rem;
+      }
+      .progress { font-size: 0.7rem; }
+      .tree, .hint { display: none; }
+      .slide-copy {
+        padding: 1rem 0.9rem 1.1rem;
+        max-width: 100%;
+      }
+      .slide-copy h1 {
+        font-size: clamp(1.2rem, 6.5vw, 1.55rem);
+        margin-bottom: 0.35rem;
+      }
+      .slide-copy p {
+        font-size: 0.88rem;
+        line-height: 1.4;
+      }
+      .slide-copy ul { font-size: 0.82rem; margin-top: 0.45rem; }
+      .role { margin-top: 0.55rem; font-size: 0.62rem; }
+      .controls {
+        gap: 0.45rem;
+        padding: 0.65rem 0.7rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+      }
+      .nav-btn {
+        min-width: 0;
+        flex: 1;
+        padding: 0.7rem 0.55rem;
+        font-size: 0.82rem;
+      }
+      .dots { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -191,7 +232,7 @@
         </div>
       </div>
       <div class="brand-right">
-        <a class="brand-home" href="/?cidade=bacabal">Voltar ao início</a>
+        <a class="brand-home" href="/?cidade=bacabal">Início</a>
         <div class="progress" id="progress">1 / 7</div>
       </div>
     </header>
