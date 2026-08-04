@@ -139,8 +139,11 @@
           body: JSON.stringify({ usuario: 'prefeito', senha: 'prefeito123', cidade: getCidade() }),
         });
         localStorage.setItem('bi_token', r.token);
+        if (typeof setSession === 'function') setSession(r.token, r.user);
         toast('Gabinete autenticado');
         loginPref.textContent = 'Logado: Prefeito';
+        const cfg = await loadCityBrand();
+        document.getElementById('top').innerHTML = topbar('Gabinete', cfg);
       } catch (e) { toast(e.message); }
     }
 

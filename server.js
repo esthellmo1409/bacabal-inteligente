@@ -378,6 +378,7 @@ async function handleAPI(req, res, pathname, url) {
     const users = readTenant(cidade, 'usuarios.json', []);
     const u = users.find(x => x.id === body.usuario && x.senha === body.senha);
     if (!u) return sendJSON(res, 401, { error: 'Credenciais inválidas' });
+    if (u.ativo === false) return sendJSON(res, 403, { error: 'Acesso desativado. Fale com o administrador.' });
 
     const token = crypto.randomBytes(24).toString('hex');
     const session = {

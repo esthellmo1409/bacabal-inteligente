@@ -282,7 +282,7 @@ a:hover { text-decoration: underline; }
   color: var(--muted);
 }
 
-.nav { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.nav { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
 .nav a {
   color: var(--muted);
   text-decoration: none;
@@ -299,6 +299,29 @@ a:hover { text-decoration: underline; }
   border-color: var(--royal-line);
   text-decoration: none;
 }
+.nav-user {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #2f7319;
+  margin-left: 0.25rem;
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-logout {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.nav-logout:hover { border-color: #ff8000; color: #e67300; }
 
 h1, h2, .display {
   font-family: var(--display);

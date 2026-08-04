@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acessos · Super Admin</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    .acc-grid { display:grid; gap:1rem; }
+    @media(min-width:900px){ .acc-grid{ grid-template-columns:1.2fr .9fr; } }
+    .acc-note {
+      background:#fff8f0; border-left:4px solid #ff8000; border-radius:0 12px 12px 0;
+      padding:.85rem 1rem; margin-bottom:1rem; color:#5c3a00; font-size:.92rem; line-height:1.45;
+    }
+    .user-row {
+      display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+      align-items:flex-start; padding:.85rem 0; border-bottom:1px solid var(--line);
+    }
+    .user-row:last-child { border-bottom:0; }
+    .pill-off { color:#b42318; font-weight:700; font-size:.75rem; }
+    .pill-on { color:#2f7319; font-weight:700; font-size:.75rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <h1 class="display" style="font-size:1.7rem;margin-bottom:0.35rem">Super Admin · Acessos</h1>
+    <p class="muted" style="margin-bottom:1rem">O prefeito (ou admin) controla quem entra e o que cada um pode fazer.</p>
+
+    <div id="gate" class="panel login-box">
+      <h2>Entrar para gerenciar acessos</h2>
+      <p class="muted" style="margin-bottom:1rem">Somente Gabinete ou Administrador.</p>
+      <label>Usuário</label>
+      <input id="usuario" value="prefeito" />
+      <label>Senha</label>
+      <input id="senha" type="password" value="prefeito123" />
+      <button class="btn btn-primary" id="loginBtn" style="width:100%">Entrar</button>
+    </div>
+
+    <div id="app" style="display:none">
+      <div class="acc-note">
+        Aqui você ativa/desativa logins, troca senha e define o papel (Gabinete, Secretaria, Campo, Admin).
+        O cidadão comum <strong>não vê</strong> estas opções no menu público.
+      </div>
+      <div class="acc-grid">
+        <div class="panel">
+          <h3 style="margin-bottom:0.75rem">Usuários do sistema</h3>
+          <div id="lista"></div>
+        </div>
+        <div class="panel">
+          <h3 style="margin-bottom:0.75rem" id="formTitle">Novo acesso</h3>
+          <label>Login (id)</label>
+          <input id="fId" placeholder="ex.: obras2" />
+          <label>Nome</label>
+          <input id="fNome" placeholder="Nome exibido" />
+          <label>Senha</label>
+          <input id="fSenha" type="password" placeholder="Nova senha (obrigatória no cadastro)" />
+          <label>Papel</label>
+          <select id="fPapel">
+            <option value="prefeito">Gabinete (prefeito)</option>
+            <option value="secretaria">Secretaria</option>
+            <option value="campo">Campo</option>
+            <option value="admin">Administrador (super)</option>
+          </select>
+          <label>Secretaria (se papel = secretaria/campo)</label>
+          <input id="fSec" placeholder="obras, saude, limpeza…" />
+          <label style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem">
+            <input type="checkbox" id="fAtivo" checked /> Acesso ativo
+          </label>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem">
+            <button class="btn btn-primary" id="salvar" type="button">Salvar</button>
+            <button class="btn" id="limpar" type="button">Limpar</button>
+          </div>
+          <p class="muted" style="margin-top:.85rem;font-size:.8rem">
+            Ao editar, deixe a senha em branco para manter a atual.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+    let editing = null;
+
+    async function boot() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Acessos', cfg);
+      const u = getSessionUser();
+      if (u && (u.papel === 'prefeito' || u.papel === 'admin') && localStorage.getItem('bi_token')) {
+        await openApp();
+      }
+    }
+
+    async function openApp() {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      await loadUsers();
+    }
+
+    async function loadUsers() {
+      const users = await api('/api/cadastro/usuarios');
+      document.getElementById('lista').innerHTML = users.map(u => `
+        <div class="user-row">
+          <div>
+            <strong>${u.nome || u.id}</strong>
+            <div class="meta">${u.id} · ${u.papel}${u.secretaria ? ' · ' + u.secretaria : ''}</div>
+            <div class="${u.ativo === false ? 'pill-off' : 'pill-on'}">${u.ativo === false ? 'DESATIVADO' : 'ATIVO'}</div>
+          </div>
+          <button class="btn btn-sm" type="button" data-edit="${u.id}">Editar</button>
+        </div>
+      `).join('') || '<p class="muted">Nenhum usuário</p>';
+
+      document.querySelectorAll('[data-edit]').forEach(btn => {
+        btn.onclick = () => {
+          const u = users.find(x => x.id === btn.dataset.edit);
+          if (!u) return;
+          editing = u.id;
+          document.getElementById('formTitle').textContent = 'Editar: ' + u.id;
+          document.getElementById('fId').value = u.id;
+          document.getElementById('fId').disabled = true;
+          document.getElementById('fNome').value = u.nome || '';
+          document.getElementById('fSenha').value = '';
+          document.getElementById('fPapel').value = u.papel || 'secretaria';
+          document.getElementById('fSec').value = u.secretaria || '';
+          document.getElementById('fAtivo').checked = u.ativo !== false;
+        };
+      });
+    }
+
+    document.getElementById('loginBtn').onclick = async () => {
+      try {
+        const r = await api('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            usuario: document.getElementById('usuario').value.trim(),
+            senha: document.getElementById('senha').value,
+            cidade: getCidade(),
+          }),
+        });
+        if (!['prefeito', 'admin'].includes(r.user.papel)) {
+          toast('Somente prefeito ou admin podem gerenciar acessos');
+          return;
+        }
+        setSession(r.token, r.user);
+        document.getElementById('top').innerHTML = topbar('Acessos', await loadCityBrand());
+        await openApp();
+      } catch (e) { toast(e.message); }
+    };
+
+    document.getElementById('limpar').onclick = () => {
+      editing = null;
+      document.getElementById('formTitle').textContent = 'Novo acesso';
+      document.getElementById('fId').disabled = false;
+      document.getElementById('fId').value = '';
+      document.getElementById('fNome').value = '';
+      document.getElementById('fSenha').value = '';
+      document.getElementById('fPapel').value = 'secretaria';
+      document.getElementById('fSec').value = '';
+      document.getElementById('fAtivo').checked = true;
+    };
+
+    document.getElementById('salvar').onclick = async () => {
+      try {
+        const id = document.getElementById('fId').value.trim();
+        const nome = document.getElementById('fNome').value.trim();
+        const senha = document.getElementById('fSenha').value;
+        const papel = document.getElementById('fPapel').value;
+        const secretaria = document.getElementById('fSec').value.trim() || null;
+        const ativo = document.getElementById('fAtivo').checked;
+        if (!id || !nome) return toast('Informe login e nome');
+
+        if (editing) {
+          const body = { id, nome, papel, secretaria, ativo };
+          if (senha) body.senha = senha;
+          await api('/api/cadastro/usuarios', { method: 'PUT', body: JSON.stringify(body) });
+          toast('Acesso atualizado');
+        } else {
+          if (!senha) return toast('Informe a senha do novo acesso');
+          await api('/api/cadastro/usuarios', {
+            method: 'POST',
+            body: JSON.stringify({ id, nome, senha, papel, secretaria, ativo, perfil: papel }),
+          });
+          toast('Acesso criado');
+        }
+        document.getElementById('limpar').click();
+        await loadUsers();
+      } catch (e) { toast(e.message); }
+    };
+
+    boot().catch(e => toast(e.message));
+  </script>
+</body>
+</html>

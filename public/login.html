@@ -13,9 +13,9 @@
     <div class="panel login-box" style="text-align:center">
       <img src="/assets/logo-prefeitura.png" alt="Brasão oficial" style="width:88px;height:auto;margin:0 auto 1rem;display:block;background:#111;border-radius:50%;padding:6px" />
       <div class="flag-bar" style="margin:0 auto 1rem"><span></span><span></span><span></span></div>
-      <p class="eyebrow">Acesso institucional</p>
-      <h1 class="display" style="font-size:clamp(1.6rem,4vw,2rem);margin-bottom:0.35rem">Bacabal Inteligente</h1>
-      <p class="muted" style="margin-bottom:1.25rem;font-weight:500;letter-spacing:-0.015em">Prefeitura Municipal de Bacabal · MA</p>
+      <p class="eyebrow">Área administrativa</p>
+      <h1 class="display" style="font-size:clamp(1.6rem,4vw,2rem);margin-bottom:0.35rem">Acesso restrito</h1>
+      <p class="muted" style="margin-bottom:1.25rem;font-weight:500;letter-spacing:-0.015em">Somente servidores autorizados da Prefeitura de Bacabal</p>
 
       <div style="text-align:left">
         <label>Perfil</label>
@@ -81,9 +81,13 @@
           }),
         });
         localStorage.setItem('bi_token', r.token);
+        if (typeof setSession === 'function') setSession(r.token, r.user);
+        else localStorage.setItem('bi_user', JSON.stringify(r.user));
         toast('Bem-vindo, ' + r.user.nome);
         if (r.user.papel === 'prefeito' || r.user.papel === 'admin') {
           location.href = '/prefeito.html?cidade=bacabal';
+        } else if (r.user.papel === 'campo') {
+          location.href = '/equipes.html?cidade=bacabal';
         } else {
           location.href = '/secretaria.html?cidade=bacabal';
         }

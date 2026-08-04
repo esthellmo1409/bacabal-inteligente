@@ -146,21 +146,67 @@ function requireCidade() {
   return true;
 }
 
+function setSession(token, user) {
+  if (token) localStorage.setItem('bi_token', token);
+  if (user) localStorage.setItem('bi_user', JSON.stringify(user));
+}
+
+function clearSession() {
+  localStorage.removeItem('bi_token');
+  localStorage.removeItem('bi_user');
+}
+
+function getSessionUser() {
+  try {
+    return JSON.parse(localStorage.getItem('bi_user') || 'null');
+  } catch {
+    return null;
+  }
+}
+
+function logout() {
+  clearSession();
+  location.href = cityLink('/login.html');
+}
+
 function topbar(active, cfg) {
   const nome = cfg?.produto || 'Bacabal Inteligente';
   const sub = `${cfg?.cidade || 'Bacabal'} · ${cfg?.uf || 'MA'}`;
+  const user = getSessionUser();
 
-  const links = [
+  // Público: só o essencial. Áreas internas só após login.
+  let links = [
     ['/', 'Início'],
-    [cityLink('/demo.html'), 'Demo'],
-    [cityLink('/modulos.html'), 'Módulos'],
-    [cityLink('/dashboard.html'), 'Dashboard'],
-    [cityLink('/chamados.html'), 'Chamados'],
+    [cityLink('/fluxo.html'), 'Como funciona'],
     [cityLink('/cidadao.html'), 'Cidadão'],
-    [cityLink('/secretaria.html'), 'Secretarias'],
-    [cityLink('/prefeito.html'), 'Gabinete'],
-    [cityLink('/login.html'), 'Login'],
+    [cityLink('/mapa.html'), 'Mapa'],
   ];
+
+  if (!user) {
+    links.push([cityLink('/login.html'), 'Área administrativa']);
+  } else {
+    const papel = user.papel;
+    if (papel === 'prefeito' || papel === 'admin') {
+      links.push([cityLink('/prefeito.html'), 'Gabinete']);
+    }
+    if (papel === 'secretaria' || papel === 'admin') {
+      links.push([cityLink('/secretaria.html'), 'Minha secretaria']);
+    }
+    if (papel === 'campo' || papel === 'admin') {
+      links.push([cityLink('/equipes.html'), 'Campo']);
+    }
+    if (papel === 'prefeito' || papel === 'admin') {
+      links.push([cityLink('/acessos.html'), 'Acessos']);
+    }
+    if (papel === 'admin') {
+      links.push([cityLink('/admin-sistema.html'), 'Sistema']);
+    }
+  }
+
+  const userBit = user
+    ? `<span class="nav-user">${user.nome || user.id}</span>
+       <button type="button" class="nav-logout" onclick="logout()">Sair</button>`
+    : '';
 
   return `
   <div class="topbar">
@@ -175,6 +221,7 @@ function topbar(active, cfg) {
       ${links.map(([href, label]) =>
         `<a href="${href}" class="${active === label ? 'active' : ''}">${label}</a>`
       ).join('')}
+      ${userBit}
     </nav>
   </div>`;
 }
