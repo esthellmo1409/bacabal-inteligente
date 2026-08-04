@@ -768,16 +768,28 @@ async function handleAPI(req, res, pathname, url) {
       id: c.id,
       protocolo: c.protocolo,
       titulo: c.titulo,
+      descricao: c.descricao || '',
       bairro: c.bairro,
       status: c.status,
       prioridade: c.prioridade,
       secretaria: c.secretaria,
       lat: c.lat,
       lng: c.lng,
+      criadoEm: c.criadoEm,
+      atualizadoEm: c.atualizadoEm,
+      foto: c.fotoAntes || c.foto || null,
+      fotoAntes: c.fotoAntes || c.foto || null,
+      fotoDepois: c.fotoDepois || null,
+      cidadao: c.cidadao || null,
     }));
+    // Mais recentes primeiro na fila de campo (além da rota otimizada)
+    const recentes = [...pontos].sort((a, b) =>
+      String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
+    ).slice(0, 8);
     return sendJSON(res, 200, {
       origem,
       ...roteirizar({ origem, pontos }),
+      recentes,
       pendentes: pontos.length,
     });
   }

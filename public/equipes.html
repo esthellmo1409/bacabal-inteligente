@@ -22,15 +22,44 @@
     </div>
 
     <div id="appView" style="display:none">
+      <div id="alertaCampo" class="alerta-gabinete" style="display:none">
+        <div class="alerta-gabinete-pulse"></div>
+        <div class="alerta-gabinete-content">
+          <strong id="alertaCampoTitulo">Nova OS</strong>
+          <p class="muted" id="alertaCampoTexto" style="margin:0.35rem 0 0.65rem"></p>
+          <div class="cta-row" id="alertaCampoAcoes"></div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:1rem">
+        <div class="cta-row">
+          <button type="button" class="btn btn-sm som-toggle on" id="somToggle">🔔 Som ligado</button>
+          <button type="button" class="btn btn-sm" id="refreshCampo">Atualizar</button>
+        </div>
+        <span class="muted" id="campoHint" style="font-size:0.8rem">Atualiza a cada 12s</span>
+      </div>
+
       <div class="grid-3" id="kpis" style="margin-bottom:1rem"></div>
+
+      <div class="panel" style="margin-bottom:1rem;border-color:rgba(46,125,50,.35);background:linear-gradient(180deg,rgba(46,125,50,.06),transparent)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem">
+          <div>
+            <h3 style="margin:0">OS recentes</h3>
+            <p class="muted" style="margin:0.25rem 0 0;font-size:0.85rem">Encaminhadas pela secretaria — foto em destaque pra saber o que fazer.</p>
+          </div>
+          <span class="muted" id="recentesHint" style="font-size:0.8rem"></span>
+        </div>
+        <div class="list" id="recentes"></div>
+      </div>
+
       <div class="grid-2">
         <div class="panel"><div id="map" class="map"></div></div>
         <div class="panel">
-          <h3 style="margin-bottom:0.75rem">Ordens do dia</h3>
+          <h3 style="margin-bottom:0.75rem">Rota do dia</h3>
           <div class="list" id="lista"></div>
         </div>
       </div>
-      <div class="panel" style="margin-top:1rem" id="osBox"><p class="muted">Selecione uma OS</p></div>
+      <div class="panel" style="margin-top:1rem" id="osBox"><p class="muted">Selecione uma OS recente ou na rota</p></div>
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -39,6 +68,46 @@
   <script>
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     let user, cfg, map, layer, selected;
+    let timer = null;
+    let lastOsCount = Number(localStorage.getItem('bi_campo_os') || '-1');
+    let lastOsKey = localStorage.getItem('bi_campo_key') || '';
+    let audioCtx = null;
+    let somLigado = localStorage.getItem('bi_campo_som') !== '0';
+
+    function syncSomToggle() {
+      const btn = document.getElementById('somToggle');
+      if (!btn) return;
+      btn.classList.toggle('on', somLigado);
+      btn.classList.toggle('off', !somLigado);
+      btn.textContent = somLigado ? '🔔 Som ligado' : '🔕 Som mudo';
+    }
+
+    function playCampoSound() {
+      if (!somLigado) return;
+      try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = 880;
+        g.gain.value = 0.07;
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start();
+        setTimeout(() => { o.frequency.value = 1175; }, 120);
+        setTimeout(() => { try { o.stop(); } catch (_) {} }, 280);
+      } catch (_) {}
+    }
+
+    function tempoRelativo(iso) {
+      if (!iso) return '';
+      const min = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+      if (min < 1) return 'agora';
+      if (min < 60) return 'há ' + min + ' min';
+      const h = Math.round(min / 60);
+      if (h < 48) return 'há ' + h + 'h';
+      return 'há ' + Math.round(h / 24) + 'd';
+    }
 
     async function trySession() {
       if (!localStorage.getItem('bi_token')) return;
@@ -69,12 +138,18 @@
       document.getElementById('top').innerHTML = topbar('Campo', cfg);
       loginView.style.display = 'none';
       appView.style.display = 'block';
+      syncSomToggle();
       if (!map) {
         map = L.map('map').setView([cfg.lat, cfg.lng], 15);
         MapBI.basemaps(map, 'hybrid');
         layer = L.layerGroup().addTo(map);
       }
+      if (window.Notification && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
       await load();
+      if (timer) clearInterval(timer);
+      timer = setInterval(() => load().catch(() => {}), 12000);
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(async pos => {
           try {
@@ -91,13 +166,80 @@
       }
     }
 
+    function cardRecente(p) {
+      const foto = p.foto || p.fotoAntes;
+      const pri = p.prioridade || 'media';
+      const isNovo = p.status === 'novo' || p.status === 'encaminhado' || p.status === 'em_analise';
+      return `
+        <div class="item chamado-card chamado-card-recente" style="cursor:pointer;${isNovo ? 'border-color:rgba(46,125,50,.45);box-shadow:0 0 0 1px rgba(46,125,50,.18)' : ''}" data-open="${p.id}">
+          <div class="chamado-card-body">
+            <div class="chamado-card-foto ${foto ? '' : 'sem-foto'}">
+              ${foto
+                ? `<img class="foto-zoom" src="${foto}" alt="Foto da OS" onclick="event.stopPropagation(); openFotoLightbox(this.src)" />`
+                : `<span>Sem foto</span>`}
+              <span class="chamado-pri pri-${pri}">${prioridadeLabel(pri)}</span>
+            </div>
+            <div class="chamado-card-info">
+              <div class="item-head">
+                <strong>${p.titulo} · ${p.protocolo}</strong>
+                ${badge(p.status)}
+                ${isNovo ? '<span class="badge badge-em_analise">Nova OS</span>' : ''}
+              </div>
+              <div class="meta">${p.bairro || '—'} · ${tempoRelativo(p.atualizadoEm || p.criadoEm)}</div>
+              <p class="muted" style="margin:0.35rem 0">${(p.descricao || '').slice(0, 120)}${(p.descricao || '').length > 120 ? '…' : ''}</p>
+              <div class="actions">
+                <button class="btn btn-sm btn-primary" data-open="${p.id}">Abrir OS</button>
+                <a class="btn btn-sm" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}">Navegar GPS</a>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
     async function load() {
       const data = await api('/api/rota?lat=' + cfg.lat + '&lng=' + cfg.lng +
         (user.secretaria ? '&secretaria=' + user.secretaria : ''));
+      const recentes = data.recentes || [...(data.rota || [])].reverse().slice(0, 5);
+      const key = recentes.map(p => p.id + ':' + (p.atualizadoEm || '')).join('|');
+
       document.getElementById('kpis').innerHTML = `
         <div class="panel stat"><div class="label">OS</div><div class="value">${data.rota.length}</div></div>
         <div class="panel stat"><div class="label">Km</div><div class="value">${data.totalKm}</div></div>
         <div class="panel stat"><div class="label">Min</div><div class="value">${data.tempoEstimadoMin}</div></div>`;
+
+      // Notificação: chegou OS nova / mudou a fila
+      const chegou = lastOsCount >= 0 && (data.rota.length > lastOsCount || (key && key !== lastOsKey && data.rota.length > 0));
+      if (chegou) {
+        const novo = recentes[0];
+        const msg = novo
+          ? `Nova ordem: ${novo.titulo} · ${novo.protocolo} (${novo.bairro || 'sem bairro'})`
+          : 'Nova ordem de serviço na fila.';
+        playCampoSound();
+        const box = document.getElementById('alertaCampo');
+        box.style.display = 'block';
+        box.classList.add('alerta-urgente');
+        document.getElementById('alertaCampoTitulo').textContent = 'Nova OS para a equipe';
+        document.getElementById('alertaCampoTexto').textContent = msg + ' — veja em OS recentes.';
+        document.getElementById('alertaCampoAcoes').innerHTML = novo
+          ? `<button class="btn btn-sm btn-primary" onclick="openOS('${novo.id}')">Abrir agora</button>`
+          : '';
+        toast('Nova OS recebida');
+        if (window.Notification && Notification.permission === 'granted') {
+          new Notification('Equipe de campo', { body: msg, tag: 'campo-os' });
+        }
+      } else if (lastOsCount < 0 && recentes.length) {
+        document.getElementById('alertaCampo').style.display = 'block';
+        document.getElementById('alertaCampo').classList.remove('alerta-urgente');
+        document.getElementById('alertaCampoTitulo').textContent = 'OS recentes';
+        document.getElementById('alertaCampoTexto').textContent =
+          recentes.length + ' ordem(ns) na fila — as mais novas estão no topo com foto.';
+        document.getElementById('alertaCampoAcoes').innerHTML = '';
+      }
+      lastOsCount = data.rota.length;
+      lastOsKey = key;
+      localStorage.setItem('bi_campo_os', String(lastOsCount));
+      localStorage.setItem('bi_campo_key', key);
+
       layer.clearLayers();
       const latlngs = [[cfg.lat, cfg.lng], ...data.rota.map(p => [p.lat, p.lng])];
       L.polyline(latlngs, { color: '#398A21', weight: 3 }).addTo(layer);
@@ -105,26 +247,44 @@
         .bindPopup(`#${p.ordem} ${p.titulo}`).addTo(layer));
       if (latlngs.length > 1) map.fitBounds(latlngs, { padding: [30, 30] });
 
+      document.getElementById('recentesHint').textContent = recentes.length
+        ? 'Últimas ' + recentes.length + ' · mais nova primeiro'
+        : '';
+      document.getElementById('recentes').innerHTML = recentes.length
+        ? recentes.map(cardRecente).join('')
+        : '<p class="muted">Nenhuma OS recente. Aguarde a secretaria encaminhar.</p>';
+      document.getElementById('campoHint').textContent = 'Atualiza a cada 12s · som = nova OS';
+
       document.getElementById('lista').innerHTML = data.rota.map(p => `
-        <div class="item" style="cursor:pointer" data-id="${p.id}">
+        <div class="item" style="cursor:pointer" data-open="${p.id}">
           <div class="item-head"><strong>${p.ordem}. ${p.titulo}</strong>${badge(p.status)}</div>
           <div class="meta">${p.protocolo} · ${p.bairro} · ~${p.etaMin} min</div>
           <div class="actions">
+            <button class="btn btn-sm btn-primary" data-open="${p.id}">Abrir</button>
             <a class="btn btn-sm" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}">Navegar GPS</a>
           </div>
         </div>`).join('') || '<p class="muted">Sem OS pendentes</p>';
-      document.querySelectorAll('#lista [data-id]').forEach(el => {
-        el.onclick = (e) => { if (e.target.tagName === 'A') return; openOS(el.dataset.id); };
+
+      document.querySelectorAll('[data-open]').forEach(el => {
+        el.onclick = (e) => {
+          if (e.target.tagName === 'A' || e.target.classList.contains('foto-zoom')) return;
+          const id = el.getAttribute('data-open');
+          if (id) openOS(id);
+        };
       });
     }
 
     async function openOS(id) {
       selected = await api('/api/chamados/' + id);
       const c = selected;
+      const alerta = document.getElementById('alertaCampo');
+      if (alerta) {
+        alerta.classList.remove('alerta-urgente');
+      }
       document.getElementById('osBox').innerHTML = `
         <h3>OS ${c.protocolo}</h3>
         <p class="muted">${c.descricao || ''}</p>
-        <p class="meta" style="margin:0.35rem 0 0.75rem">Para concluir, a equipe <strong>precisa enviar a foto DEPOIS</strong> — cidadão e prefeito veem o antes e o depois.</p>
+        <p class="meta" style="margin:0.35rem 0 0.75rem">Toque na foto para ampliar. Para concluir, envie a foto <strong>DEPOIS</strong>.</p>
         ${antesDepoisHtml(c)}
         <div class="actions" style="margin:0.85rem 0">
           <button class="btn btn-sm btn-primary" id="aceitar">Aceitar serviço</button>
@@ -148,6 +308,7 @@
         <input id="custo" type="number" value="0" />
         <button class="btn btn-primary" id="encerrar" style="width:100%;margin-top:0.75rem">Concluir serviço (com foto depois)</button>
       `;
+      document.getElementById('osBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
       aceitar.onclick = async () => {
         await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'aceitar', equipeId: user.equipeId }) });
         toast('OS aceita'); openOS(c.id); load();
@@ -165,22 +326,26 @@
         toast('Horas ok');
       };
       encerrar.onclick = async () => {
-        try {
-          const atual = await api('/api/chamados/' + c.id);
-          if (!atual.fotoDepois) {
-            toast('Tire a foto DEPOIS antes de concluir');
-            return;
-          }
-          await api('/api/chamados/' + c.id + '/os', {
-            method: 'POST',
-            body: JSON.stringify({ acao: 'encerrar', custo: Number(custo.value), fotoDepois: atual.fotoDepois }),
-          });
-          toast('Concluído — antes e depois disponíveis para cidadão e Gabinete');
-          load();
-          openOS(c.id);
-        } catch (e) { toast(e.message); }
+        const btn = document.getElementById('encerrar');
+        await withBusy(btn, 'Concluindo…', async () => {
+          try {
+            const atual = await api('/api/chamados/' + c.id);
+            if (!atual.fotoDepois) {
+              toast('Tire a foto DEPOIS antes de concluir');
+              return;
+            }
+            await api('/api/chamados/' + c.id + '/os', {
+              method: 'POST',
+              body: JSON.stringify({ acao: 'encerrar', custo: Number(custo.value), fotoDepois: atual.fotoDepois }),
+            });
+            toast('Concluído — antes e depois disponíveis para cidadão e Gabinete');
+            load();
+            openOS(c.id);
+          } catch (e) { toast(e.message); }
+        });
       };
     }
+    window.openOS = openOS;
 
     function readFoto(e, tipo) {
       const f = e.target.files[0];
@@ -196,6 +361,14 @@
       };
       r.readAsDataURL(f);
     }
+
+    document.getElementById('somToggle')?.addEventListener('click', () => {
+      somLigado = !somLigado;
+      localStorage.setItem('bi_campo_som', somLigado ? '1' : '0');
+      syncSomToggle();
+      toast(somLigado ? 'Som ligado' : 'Som mudo');
+    });
+    document.getElementById('refreshCampo')?.addEventListener('click', () => load().catch(e => toast(e.message)));
 
     (async () => {
       const cfg0 = await loadCityBrand();

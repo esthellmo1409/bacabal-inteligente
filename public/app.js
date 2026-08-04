@@ -129,18 +129,41 @@ function antesDepoisHtml(c) {
       <div class="antes-depois-item">
         <div class="antes-depois-label">Antes</div>
         ${antes
-          ? `<img class="preview show" src="${antes}" alt="Foto antes" />`
+          ? `<img class="preview show foto-zoom" src="${antes}" alt="Foto antes" onclick="openFotoLightbox(this.src)" />`
           : `<div class="antes-depois-empty">Sem foto</div>`}
       </div>
       <div class="antes-depois-item">
         <div class="antes-depois-label">Depois</div>
         ${depois
-          ? `<img class="preview show" src="${depois}" alt="Foto depois" />`
+          ? `<img class="preview show foto-zoom" src="${depois}" alt="Foto depois" onclick="openFotoLightbox(this.src)" />`
           : `<div class="antes-depois-empty">${c.status === 'concluido' ? 'Aguardando registro' : 'Equipe ainda não enviou'}</div>`}
       </div>
     </div>
   `;
 }
+
+function openFotoLightbox(src) {
+  if (!src) return;
+  let box = document.getElementById('fotoLightbox');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'fotoLightbox';
+    box.className = 'foto-lightbox';
+    box.innerHTML = `
+      <button type="button" class="foto-lightbox-close" aria-label="Fechar">×</button>
+      <img alt="Foto ampliada" />
+    `;
+    box.addEventListener('click', (e) => {
+      if (e.target === box || e.target.classList.contains('foto-lightbox-close')) {
+        box.classList.remove('open');
+      }
+    });
+    document.body.appendChild(box);
+  }
+  box.querySelector('img').src = src;
+  box.classList.add('open');
+}
+window.openFotoLightbox = openFotoLightbox;
 
 function prioridadeLabel(p) {
   return ({ baixa: 'Baixa', media: 'Média', alta: 'Alta' })[p] || p || 'Média';

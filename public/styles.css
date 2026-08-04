@@ -279,6 +279,46 @@ a:hover { text-decoration: underline; }
   }
 }
 
+.antes-depois-item img,
+.foto-zoom,
+.chamado-card-foto img {
+  cursor: zoom-in;
+}
+.foto-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(10, 18, 32, 0.88);
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+.foto-lightbox.open { display: flex; }
+.foto-lightbox img {
+  max-width: min(96vw, 920px);
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.45);
+  background: #111;
+}
+.foto-lightbox-close {
+  position: absolute;
+  top: 0.85rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.92);
+  color: #111;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  font-weight: 700;
+}
+
 .antes-depois {
   display: grid;
   grid-template-columns: 1fr 1fr;
