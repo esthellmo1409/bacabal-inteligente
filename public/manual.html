@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manual por setor · Bacabal Inteligente</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/home.css" />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <style>
+    .man { max-width: 920px; margin: 0 auto; padding: 1.25rem 1rem 3.5rem; }
+    .man-hero {
+      background: linear-gradient(145deg, #1a1a1a 0%, #2f7319 60%, #ff8000 130%);
+      color: #fff; border-radius: 22px; padding: 1.75rem 1.5rem; margin-bottom: 1.25rem;
+    }
+    .man-hero h1 { color:#fff; margin:.3rem 0 .4rem; font-size: clamp(1.55rem, 4vw, 2.1rem); letter-spacing:-.03em; }
+    .man-hero p { margin:0; opacity:.92; max-width:40rem; line-height:1.45; }
+    .man-kicker { font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
+    .toc {
+      display:flex; flex-wrap:wrap; gap:.45rem; margin: 1rem 0 1.5rem;
+    }
+    .toc a {
+      text-decoration:none; font-size:.82rem; font-weight:700;
+      background:#fff; border:1px solid #e6e9ee; color:#2f7319;
+      padding:.45rem .7rem; border-radius:999px;
+    }
+    .toc a:hover { border-color:#ff8000; color:#e67300; }
+    .sector {
+      background:#fff; border:1px solid #e6e9ee; border-radius:18px;
+      padding:1.25rem 1.3rem; margin-bottom:1.1rem;
+      box-shadow: 0 8px 22px rgba(0,0,0,.04);
+      scroll-margin-top: 5rem;
+    }
+    .sector h2 {
+      margin:0 0 .35rem; font-size:1.25rem; color:#1a1a1a; letter-spacing:-.02em;
+      display:flex; align-items:center; gap:.55rem; flex-wrap:wrap;
+    }
+    .badge {
+      font-size:.68rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+      background:#eef7ea; color:#2f7319; padding:.25rem .5rem; border-radius:7px;
+    }
+    .badge.city { background:#fff4e8; color:#c45f00; }
+    .sector > .lead { margin:0 0 .9rem; color:#5c6570; line-height:1.45; }
+    .meta {
+      display:grid; gap:.4rem; margin-bottom:1rem;
+      font-size:.88rem; background:#f6f8f7; border-radius:12px; padding:.75rem .9rem;
+    }
+    .meta div { display:flex; flex-wrap:wrap; gap:.35rem .85rem; }
+    .meta strong { color:#1a1a1a; min-width:5.5rem; }
+    .meta code, .steps code {
+      font-family: ui-monospace, Consolas, monospace;
+      background:#fff; border:1px solid #e0e4e8; padding:.1rem .35rem; border-radius:5px;
+      font-size:.84em;
+    }
+    .steps { margin:0; padding-left:1.2rem; color:#333; line-height:1.55; font-size:.95rem; }
+    .steps li { margin-bottom:.55rem; }
+    .steps li strong { color:#1a1a1a; }
+    .tip {
+      margin-top:.9rem; padding:.75rem .9rem; border-left:4px solid #ff8000;
+      background:#fff8f0; border-radius:0 12px 12px 0;
+      font-size:.9rem; color:#333; line-height:1.45;
+    }
+    .print-note { font-size:.8rem; color:#5c6570; margin-top:1.5rem; }
+    @media print {
+      .landing-header, .pmb-topbar, #top, .toc { display:none !important; }
+      .sector { break-inside: avoid; box-shadow:none; }
+      .man-hero { background:#2f7319 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body class="landing" style="background:#f7f8f9">
+  <div class="man">
+    <div id="top"></div>
+
+    <div class="man-hero">
+      <div class="man-kicker">Manual de capacitação · por setor</div>
+      <h1>Como cada área usa o sistema</h1>
+      <p>
+        Material para o prefeito e as secretarias ensinarem a equipe.
+        Cada bloco tem login, tela e o passo a passo do dia a dia.
+      </p>
+    </div>
+
+    <nav class="toc" aria-label="Setores">
+      <a href="#cidadao">1. Cidadão</a>
+      <a href="#secretaria">2. Secretarias</a>
+      <a href="#campo">3. Campo</a>
+      <a href="#saude">4. Saúde</a>
+      <a href="#eventos">5. Eventos</a>
+      <a href="#gabinete">6. Gabinete</a>
+    </nav>
+
+    <section class="sector" id="cidadao">
+      <h2><span class="badge city">Setor 1</span> Cidadão</h2>
+      <p class="lead">Morador registra problema na rua e acompanha o protocolo — sem precisar de login de servidor.</p>
+      <div class="meta">
+        <div><strong>Tela</strong> <code>/cidadao.html</code></div>
+        <div><strong>Login</strong> Não precisa (acesso público)</div>
+        <div><strong>Objetivo</strong> Abrir ocorrência com foto + local e receber protocolo</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Abrir</strong> o link do cidadão no celular.</li>
+        <li><strong>Escolher</strong> o tipo (buraco, lâmpada, lixo etc.).</li>
+        <li><strong>Tirar foto</strong> do problema.</li>
+        <li><strong>Marcar</strong> o ponto no mapa (GPS) ou ajustar o pino.</li>
+        <li><strong>Escrever</strong> uma descrição curta e o bairro.</li>
+        <li><strong>Enviar</strong> — anotar o <strong>protocolo</strong> que aparece.</li>
+        <li><strong>Consultar</strong> depois com o número do protocolo (mesmo link).</li>
+      </ol>
+      <div class="tip">
+        <strong>Como ensinar:</strong> “Seu comprovante é o protocolo. Guarde o número — a prefeitura acompanha por ele.”
+      </div>
+    </section>
+
+    <section class="sector" id="secretaria">
+      <h2><span class="badge">Setor 2</span> Secretarias (Obras, Limpeza, Iluminação…)</h2>
+      <p class="lead">Cada secretaria vê só a fila dela, atualiza status e responde cobrança do Gabinete.</p>
+      <div class="meta">
+        <div><strong>Tela</strong> <code>/login.html</code> → <code>/secretaria.html</code></div>
+        <div><strong>Obras</strong> <code>obras</code> / <code>obras123</code></div>
+        <div><strong>Limpeza</strong> <code>limpeza</code> / <code>limpo123</code></div>
+        <div><strong>Iluminação</strong> <code>iluminacao</code> / <code>luz123</code></div>
+        <div><strong>Objetivo</strong> Tratar chamados, encaminhar e concluir com registro</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Entrar</strong> em Login e escolher a secretaria.</li>
+        <li><strong>Abrir</strong> a fila — só entram chamados da sua área.</li>
+        <li><strong>Ler</strong> foto, endereço, bairro e descrição.</li>
+        <li><strong>Mudar status</strong> conforme andamento (em análise → em execução → concluído).</li>
+        <li><strong>Encaminhar</strong> para equipe de campo, se precisar.</li>
+        <li>Se aparecer <strong>alerta/som de cobrança do Gabinete</strong>: abrir o chamado destacado, tratar na hora e atualizar o status.</li>
+        <li><strong>Concluir</strong> só quando o serviço foi feito de verdade — o protocolo fica no histórico.</li>
+      </ol>
+      <div class="tip">
+        <strong>Como ensinar:</strong> “A tela aberta é a mesa de trabalho. Cobrança do prefeito aparece aqui — não ignore o alerta.”
+      </div>
+    </section>
+
+    <section class="sector" id="campo">
+      <h2><span class="badge">Setor 3</span> Equipe de campo</h2>
+      <p class="lead">Quem executa na rua: lista do dia, endereço e prioridade no celular.</p>
+      <div class="meta">
+        <div><strong>Tela</strong> <code>/login.html</code> → equipes / mapa de campo</div>
+        <div><strong>Login</strong> <code>campo</code> / <code>campo123</code></div>
+        <div><strong>Objetivo</strong> Executar a ordem e devolver o resultado no protocolo</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Entrar</strong> com o usuário de campo.</li>
+        <li><strong>Ver a lista</strong> dos chamados do dia (endereço + foto).</li>
+        <li><strong>Ir ao local</strong> indicado no mapa.</li>
+        <li><strong>Executar</strong> o serviço.</li>
+        <li><strong>Atualizar</strong> para concluído (ou aguardando material, se faltar peça).</li>
+        <li>Se não der para fazer: registrar o motivo no chamado — a secretaria e o Gabinete veem.</li>
+      </ol>
+      <div class="tip">
+        <strong>Como ensinar:</strong> “Celular na rua substitui papel e WhatsApp solto. O protocolo só fecha quando você confirma.”
+      </div>
+    </section>
+
+    <section class="sector" id="saude">
+      <h2><span class="badge">Setor 4</span> Saúde (secretaria + plantão)</h2>
+      <p class="lead">Fila de ocorrências da Saúde + check-in de plantão (cobertura da unidade) + números do dia.</p>
+      <div class="meta">
+        <div><strong>Secretaria</strong> <code>/login.html</code> → <code>saude</code> / <code>saude123</code></div>
+        <div><strong>Plantão</strong> <code>/plantao.html</code> (check-in da unidade)</div>
+        <div><strong>Objetivo</strong> Cobertura confirmada + fila tratada + Gabinete enxergando o dia</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Na unidade:</strong> abrir Plantão e fazer o <strong>check-in</strong> do plantão do dia (confirma cobertura).</li>
+        <li><strong>Na secretaria:</strong> entrar com <code>saude</code> e ver a fila de chamados/pendências.</li>
+        <li><strong>Atualizar</strong> movimento do dia (atendidos, fila, espera), quando pedido.</li>
+        <li>Se o Gabinete <strong>cobrar</strong> ou registrar visita surpresa: tratar o item destacado e responder no status.</li>
+        <li>Manter a tela da secretaria aberta no horário de pico — o alerta chega ali.</li>
+      </ol>
+      <div class="tip">
+        <strong>Como ensinar:</strong> “Plantão não é ‘provar que o médico acordou’ — é confirmar que a unidade está coberta hoje.”
+      </div>
+    </section>
+
+    <section class="sector" id="eventos">
+      <h2><span class="badge">Setor 5</span> Cultura e Eventos</h2>
+      <p class="lead">Agenda da cidade e pendências de estrutura, segurança e limpeza viram protocolo.</p>
+      <div class="meta">
+        <div><strong>Tela</strong> Login → painel da secretaria / eixo Eventos no Gabinete</div>
+        <div><strong>Login</strong> <code>eventos</code> / <code>evento123</code></div>
+        <div><strong>Objetivo</strong> Organizar agenda e fechar pendências antes do evento</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Entrar</strong> com o usuário de Eventos.</li>
+        <li><strong>Conferir</strong> a agenda (feiras, shows, campanhas).</li>
+        <li><strong>Abrir ou receber</strong> pendências (estrutura, limpeza, segurança).</li>
+        <li><strong>Encaminhar</strong> para as secretarias parceiras, se precisar.</li>
+        <li><strong>Atualizar</strong> status até concluir — o Gabinete vê no eixo Eventos.</li>
+      </ol>
+      <div class="tip">
+        <strong>Como ensinar:</strong> “Evento sem pendência aberta no sistema = cidade pronta. Pendência aberta = risco no dia.”
+      </div>
+    </section>
+
+    <section class="sector" id="gabinete">
+      <h2><span class="badge city">Setor 6</span> Gabinete do Prefeito</h2>
+      <p class="lead">Uma tela com Cidade, Saúde e Eventos. Decide prioridade, cobra secretaria e acompanha resultado.</p>
+      <div class="meta">
+        <div><strong>Tela</strong> <code>/login.html</code> → <code>/prefeito.html</code></div>
+        <div><strong>Login</strong> <code>prefeito</code> / <code>prefeito123</code></div>
+        <div><strong>Objetivo</strong> Governar com número e protocolo — sem ligar para descobrir o óbvio</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Entrar</strong> no Gabinete.</li>
+        <li>Aba <strong>Cidade</strong>: ver fila, priorizar buraco/poste/lixo, definir prazo, cobrar.</li>
+        <li>Aba <strong>Saúde</strong>: ver atendidos, fila, plantão; registrar visita surpresa se for o caso.</li>
+        <li>Aba <strong>Eventos</strong>: conferir agenda e pendências.</li>
+        <li>Ao <strong>Cobrar</strong>: a secretaria recebe alerta na tela dela — depois acompanhar se o status mudou.</li>
+        <li>Usar o manual deste página para <strong>capacitar</strong> cada secretário com o bloco do setor dele.</li>
+      </ol>
+      <div class="tip">
+        <strong>Frase-chave:</strong> “O Gabinete decide. A secretaria executa. O campo faz. O protocolo prova.”
+      </div>
+    </section>
+
+    <p class="print-note">
+      Dica: use Ctrl+P para imprimir ou salvar em PDF e entregar a cada secretaria.
+      Demonstração rápida em slides: <a href="/fluxo.html?cidade=bacabal">/fluxo.html</a>
+    </p>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    setCidade('bacabal');
+    loadCityBrand().then(cfg => {
+      document.getElementById('top').innerHTML = topbar('Manual', cfg);
+    });
+  </script>
+</body>
+</html>
