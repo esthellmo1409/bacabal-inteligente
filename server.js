@@ -75,6 +75,70 @@ try {
   }
 } catch (_) { /* ok */ }
 
+/** Garante chamado demo com foto de buraco (arquivo estático) — sobrevive a redeploy no Railway. */
+function ensureDemoChamado(slug = 'bacabal') {
+  const fotoFile = path.join(PUBLIC_DIR, 'assets', 'buraco-demo-antes.jpg');
+  if (!fs.existsSync(fotoFile)) return;
+  if (!getMunicipio(slug) && !fs.existsSync(tenantPath(slug, 'chamados.json'))) return;
+
+  const fotoUrl = '/assets/buraco-demo-antes.jpg';
+  const chamados = readTenant(slug, 'chamados.json', []);
+  const cfg = readTenant(slug, 'config.json', {});
+  const cats = readTenant(slug, 'categorias.json', []);
+  const cat = cats.find(c => c.id === 'buraco') || cats[0];
+  if (!cat) return;
+
+  const now = new Date().toISOString();
+  const idx = chamados.findIndex(x => x.demoFixo === 'buraco-foto' || x.id === 'BAC-DEMO-BURACO');
+  const base = {
+    id: 'BAC-DEMO-BURACO',
+    protocolo: '20261064',
+    categoria: cat.id,
+    secretaria: 'obras',
+    titulo: cat.label || 'Buraco / Tapa-buraco',
+    descricao: 'buraco na rua 11 — demo com foto para Secretaria de Obras e equipe de campo',
+    bairro: 'Centro',
+    endereco: 'Rua 11 — ponto de demonstração',
+    lat: (cfg.lat || -4.2917) + 0.003,
+    lng: (cfg.lng || -44.7917) - 0.002,
+    prioridade: 'alta',
+    cidadao: { nome: 'João Barbosa', telefone: '99987878787', email: '' },
+    foto: fotoUrl,
+    fotoAntes: fotoUrl,
+    fotoDepois: null,
+    anexos: [{ tipo: 'foto', url: fotoUrl, em: now }],
+    demoFixo: 'buraco-foto',
+    atualizadoEm: now,
+  };
+
+  if (idx < 0) {
+    chamados.unshift(normalizeChamado({
+      ...base,
+      status: 'novo',
+      historico: [{ em: now, status: 'novo', nota: 'Chamado demo fixo com foto (não some no redeploy)' }],
+      criadoEm: now,
+    }));
+  } else {
+    const prev = chamados[idx];
+    // Mantém status se a equipe já avançou; só restaura foto/secretaria
+    chamados[idx] = normalizeChamado({
+      ...prev,
+      ...base,
+      status: prev.status && prev.status !== 'cancelado' ? prev.status : 'novo',
+      fotoDepois: prev.fotoDepois || null,
+      historico: prev.historico || [{ em: now, status: 'novo', nota: 'Chamado demo fixo com foto' }],
+      criadoEm: prev.criadoEm || now,
+    });
+  }
+  writeTenant(slug, 'chamados.json', chamados);
+}
+
+try {
+  ensureDemoChamado('bacabal');
+} catch (e) {
+  console.warn('ensureDemoChamado:', e.message);
+}
+
 function listMunicipios() {
   return readJSON(path.join(DATA_DIR, 'municipios.json'), []);
 }
@@ -850,7 +914,9 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
+  try { ensureDemoChamado('bacabal'); } catch (_) {}
   console.log(`\n  Bacabal Inteligente v3 → http://localhost:${PORT}`);
+  console.log(`  Dados: ${DATA_DIR}`);
   console.log(`  Módulos: /modulos.html · Dashboard · Chamados · Mapa · IA`);
   console.log(`  Roteiro: ROTEIRO-VALIDACAO.md\n`);
 });
