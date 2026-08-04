@@ -106,28 +106,81 @@
       });
     }
 
+    function duracaoTexto(c) {
+      const ini = c.criadoEm ? new Date(c.criadoEm).getTime() : 0;
+      const fim = (c.atualizadoEm || c.criadoEm) ? new Date(c.atualizadoEm || c.criadoEm).getTime() : Date.now();
+      if (!ini) return '';
+      const horas = Math.max(0, Math.round((fim - ini) / 3600000));
+      if (horas < 24) return horas <= 1 ? 'em cerca de 1 hora' : `em ${horas} horas`;
+      const dias = Math.round(horas / 24);
+      if (dias === 1) return 'em 1 dia';
+      return `em ${dias} dias`;
+    }
+
+    function timelineCidadao(historico) {
+      const chave = (historico || []).filter(h =>
+        ['novo', 'encaminhado', 'em_execucao', 'aguardando_aprovacao', 'concluido'].includes(h.status)
+      );
+      const visto = new Set();
+      const limpo = [];
+      for (const h of chave) {
+        if (visto.has(h.status)) continue;
+        visto.add(h.status);
+        limpo.push(h);
+      }
+      if (!limpo.length) return '';
+      return `
+        <div class="meta" style="margin-top:0.85rem"><strong>Andamento</strong></div>
+        ${timelineHtml(limpo.map(h => ({
+          ...h,
+          nota: ({
+            novo: 'Chamado registrado',
+            encaminhado: 'Encaminhado à equipe',
+            em_execucao: 'Equipe em campo',
+            aguardando_aprovacao: 'Serviço feito — em conferência',
+            concluido: 'Obra finalizada',
+          })[h.status] || '',
+        })))}
+      `;
+    }
+
     function renderChamado(c) {
       const box = document.getElementById('resultado');
+      const concluido = c.status === 'concluido';
+      const aguarda = c.status === 'aguardando_aprovacao';
       box.innerHTML = `
-        <div class="item">
+        <div class="item" style="${concluido ? 'border-color:rgba(12,188,135,.45);box-shadow:0 0 0 1px rgba(12,188,135,.2)' : ''}">
           <div class="item-head">
             <strong>${c.titulo}</strong>
             ${badge(c.status)}
           </div>
           <div class="meta">
             Protocolo <strong>${c.protocolo}</strong>
-            · Prioridade ${prioridadeLabel(c.prioridade)}
-            · ${c.bairro}
-            · ${fmtDate(c.criadoEm)}
+            · ${c.bairro || '—'}
+            · aberto em ${fmtDate(c.criadoEm)}
           </div>
-          <p class="muted">${c.descricao}</p>
+          <p class="muted">${c.descricao || ''}</p>
+          ${concluido ? `
+            <div class="success-box" style="margin:0.75rem 0">
+              <strong>Obra finalizada</strong>
+              <p class="muted" style="margin:0.35rem 0 0">
+                Seu chamado foi resolvido ${duracaoTexto(c)}.
+                Confira abaixo como estava (antes) e como ficou (depois).
+              </p>
+            </div>
+          ` : ''}
+          ${aguarda ? `
+            <div class="success-box" style="margin:0.75rem 0;background:linear-gradient(135deg,rgba(14,165,233,.1),rgba(255,255,255,.5));border-color:rgba(14,165,233,.35)">
+              <strong>Serviço executado — em conferência</strong>
+              <p class="muted" style="margin:0.35rem 0 0">A equipe enviou a foto do depois. A secretaria está validando antes de finalizar.</p>
+            </div>
+          ` : ''}
           ${antesDepoisHtml(c)}
           <div class="actions">
             <button class="btn btn-sm" type="button" onclick="copyText('${c.protocolo}')">Copiar protocolo</button>
           </div>
-            <div class="meta" style="margin-top:0.85rem"><strong>Linha do tempo</strong></div>
-          ${timelineHtml(c.historico)}
-          ${c.status === 'concluido' ? `
+          ${timelineCidadao(c.historico)}
+          ${concluido ? `
             <div style="margin-top:0.85rem">
               <strong>Avaliar atendimento</strong>
               <div class="actions">
