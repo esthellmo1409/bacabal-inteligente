@@ -43,7 +43,14 @@
           </div>
         </div>
         <a href="/mapa.html?cidade=bacabal">Mapa</a>
-        <a class="nav-cta" href="/login.html?cidade=bacabal">Acessar</a>
+        <div class="nav-drop">
+          <button type="button" class="nav-admin" id="navAdmin" aria-expanded="false" aria-haspopup="true">
+            Área administrativa
+          </button>
+          <div class="nav-drop-menu nav-drop-menu-admin" id="navAdminMenu" hidden>
+            <a href="/login.html?cidade=bacabal">Acessar</a>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -82,7 +89,7 @@
           </div>
         </div>
         <div class="carousel-visual">
-          <img src="/assets/slide-bacabal.png" alt="Bacabal — banner institucional" />
+          <img src="/assets/fluxo-01-cidadao.jpg" alt="Cidadão registrando ocorrência com foto e mapa" />
         </div>
       </article>
 
@@ -200,23 +207,31 @@
     setCidade('bacabal');
 
     (function () {
-      const btn = document.getElementById('navCidadao');
-      const menu = document.getElementById('navCidadaoMenu');
-      if (!btn || !menu) return;
-      const close = () => {
-        menu.hidden = true;
-        btn.setAttribute('aria-expanded', 'false');
-      };
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const open = menu.hidden;
-        menu.hidden = !open;
-        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      });
-      document.addEventListener('click', close);
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') close();
-      });
+      function bindDrop(btnId, menuId) {
+        const btn = document.getElementById(btnId);
+        const menu = document.getElementById(menuId);
+        if (!btn || !menu) return;
+        const close = () => {
+          menu.hidden = true;
+          btn.setAttribute('aria-expanded', 'false');
+        };
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const willOpen = menu.hidden;
+          document.querySelectorAll('.nav-drop-menu').forEach((m) => { m.hidden = true; });
+          document.querySelectorAll('.nav-cidadao, .nav-admin').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+          if (willOpen) {
+            menu.hidden = false;
+            btn.setAttribute('aria-expanded', 'true');
+          }
+        });
+        document.addEventListener('click', close);
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') close();
+        });
+      }
+      bindDrop('navCidadao', 'navCidadaoMenu');
+      bindDrop('navAdmin', 'navAdminMenu');
     })();
 
     // Carousel — 3 slides, como o banner do portal

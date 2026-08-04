@@ -135,25 +135,43 @@
   position: relative;
 }
 
-.landing-nav .nav-cidadao {
+.landing-nav .nav-cidadao,
+.landing-nav .nav-admin {
   appearance: none;
   border: 0;
   cursor: pointer;
   font: inherit;
   font-size: 0.86rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.015em;
-  color: rgba(255, 255, 255, 0.92);
-  background: transparent;
-  padding: 0.5rem 0.85rem;
+  padding: 0.5rem 0.95rem;
   border-radius: 999px;
-  transition: background .15s, color .15s;
+  transition: background .15s, color .15s, box-shadow .15s;
+}
+
+.landing-nav .nav-cidadao {
+  background: var(--pmb-orange);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 }
 
 .landing-nav .nav-cidadao:hover,
 .landing-nav .nav-cidadao[aria-expanded="true"] {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--pmb-orange-deep);
   color: #fff;
+}
+
+.landing-nav .nav-admin {
+  background: #fff;
+  color: var(--pmb-green-deep);
+  margin-left: 0.2rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.landing-nav .nav-admin:hover,
+.landing-nav .nav-admin[aria-expanded="true"] {
+  background: #f4fff0;
+  color: var(--pmb-green-deep);
 }
 
 .landing-nav .nav-drop-menu {
@@ -167,6 +185,13 @@
   padding: 0.35rem;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
   z-index: 80;
+}
+
+.landing-nav .nav-drop-menu-admin {
+  right: 0;
+  left: auto;
+  background: #fff;
+  border-color: #d7e6d0;
 }
 
 .landing-nav .nav-drop-menu[hidden] {
@@ -183,9 +208,17 @@
   font-weight: 700;
 }
 
+.landing-nav .nav-drop-menu-admin a {
+  color: var(--pmb-green-deep);
+}
+
 .landing-nav .nav-drop-menu a:hover {
   background: rgba(255, 255, 255, 0.14);
   text-decoration: none;
+}
+
+.landing-nav .nav-drop-menu-admin a:hover {
+  background: #eaf7e4;
 }
 
 /* —— Hero carousel —— */
@@ -592,6 +625,7 @@
 @media (max-width: 560px) {
   .pmb-topbar-inner { justify-content: center; }
   .landing-nav a:not(.nav-cta) { display: none; }
+  .landing-nav .nav-drop { display: block; }
   .landing-metrics { grid-template-columns: 1fr; }
   .landing-metric { border-right: none; border-bottom: 1px solid #eef1f6; }
 }

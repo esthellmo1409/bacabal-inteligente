@@ -74,13 +74,12 @@
     }
     .slide.intro .slide-visual::after,
     .slide.outro .slide-visual::after {
-      background: linear-gradient(145deg, rgba(255,128,0,.55), rgba(57,138,33,.65));
+      background: linear-gradient(to top, rgba(15,20,16,.88) 0%, rgba(15,20,16,.35) 50%, rgba(255,128,0,.25) 100%);
     }
     .slide.intro .slide-visual,
     .slide.outro .slide-visual {
-      background: linear-gradient(145deg, #ff8000, #398a21);
+      background: #1a1a1a;
     }
-    .slide.intro img, .slide.outro img { display: none; }
 
     .slide-copy {
       position: absolute; left: 0; right: 0; bottom: 0;
@@ -186,7 +185,9 @@
 
     <div class="stage" id="stage">
       <article class="slide intro active" data-i="0">
-        <div class="slide-visual"></div>
+        <div class="slide-visual">
+          <img src="/assets/fluxo-00-abertura.jpg" alt="" />
+        </div>
         <div class="slide-copy">
           <div class="slide-num">Abertura</div>
           <h1>Como a cidade trabalha no sistema</h1>
@@ -286,7 +287,9 @@
       </article>
 
       <article class="slide outro" data-i="6">
-        <div class="slide-visual"></div>
+        <div class="slide-visual">
+          <img src="/assets/fluxo-06-fechamento.jpg" alt="" />
+        </div>
         <div class="slide-copy">
           <div class="slide-num">Fechamento</div>
           <h1>Uma tela. Três prioridades. Resultado com protocolo.</h1>
