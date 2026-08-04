@@ -43,11 +43,14 @@ const MapGL = (() => {
       style: STYLES.streets,
       center,
       zoom,
-      pitch: opts.pitch ?? 48,
+      pitch: opts.pitch ?? 52,
       bearing: opts.bearing ?? -18,
       antialias: true,
       maxPitch: 65,
       attributionControl: true,
+      dragRotate: true,
+      pitchWithRotate: true,
+      // scrollZoom mantém o pitch — não achata o 3D
     });
 
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottomright');
@@ -56,14 +59,13 @@ const MapGL = (() => {
 
     const state = {
       map,
-      mode: '3d', // 3d | sat | hybrid
+      mode: '3d',
       markers: [],
       points: [],
       onSelect: opts.onSelect || null,
     };
 
     map.on('load', () => {
-      // Suave “névoa” de profundidade (sensação 3D)
       try {
         map.setFog({
           color: 'rgb(186, 210, 235)',
@@ -73,6 +75,15 @@ const MapGL = (() => {
           'star-intensity': 0.15,
         });
       } catch (_) {}
+    });
+
+    // Se algo zerar o pitch no modo 3D/híbrido, recupera a inclinação
+    map.on('zoomend', () => {
+      if (state.mode === 'sat') return;
+      const want = cameraForMode(state.mode).pitch;
+      if (map.getPitch() < want - 15) {
+        map.easeTo({ pitch: want, duration: 350 });
+      }
     });
 
     return state;
@@ -104,22 +115,24 @@ const MapGL = (() => {
     return sym ? sym.id : undefined;
   }
 
+  function cameraForMode(mode) {
+    if (mode === 'sat') return { pitch: 0, bearing: 0 };
+    if (mode === 'hybrid') return { pitch: 42, bearing: -12 };
+    return { pitch: 52, bearing: -18 }; // 3d
+  }
+
   function setMode(state, mode) {
     const map = state.map;
     const apply = () => {
       ensureSatLayers(map);
       state.mode = mode;
+      const cam = cameraForMode(mode);
       if (mode === '3d') {
         map.setLayoutProperty('bi-sat-layer', 'visibility', 'none');
-        map.easeTo({ pitch: 48, bearing: -18, duration: 700 });
-      } else if (mode === 'sat') {
+      } else {
         map.setLayoutProperty('bi-sat-layer', 'visibility', 'visible');
-        // esconde rótulos por cima do satélite puro? mantém pitch baixo
-        map.easeTo({ pitch: 0, bearing: 0, duration: 700 });
-      } else if (mode === 'hybrid') {
-        map.setLayoutProperty('bi-sat-layer', 'visibility', 'visible');
-        map.easeTo({ pitch: 35, bearing: -12, duration: 700 });
       }
+      map.easeTo({ pitch: cam.pitch, bearing: cam.bearing, duration: 700 });
     };
     if (map.isStyleLoaded()) apply();
     else map.once('load', apply);
@@ -166,16 +179,26 @@ const MapGL = (() => {
     });
 
     if (n && opts.fit !== false) {
+      const cam = cameraForMode(state.mode || '3d');
       try {
         if (n === 1) {
           const p = state.points.find(x => x.lat != null);
           state.map.easeTo({
             center: [Number(p.lng), Number(p.lat)],
-            zoom: Math.max(state.map.getZoom(), 15.5),
-            duration: 600,
+            zoom: Math.max(state.map.getZoom(), 15.2),
+            pitch: cam.pitch,
+            bearing: cam.bearing,
+            duration: 700,
           });
         } else {
-          state.map.fitBounds(bounds, { padding: 60, maxZoom: 15.5, duration: 700 });
+          // fitBounds sem pitch “achata” o 3D — forçamos a câmera inclinada
+          state.map.fitBounds(bounds, {
+            padding: 70,
+            maxZoom: 15.2,
+            duration: 800,
+            pitch: cam.pitch,
+            bearing: cam.bearing,
+          });
         }
       } catch (_) {}
     }
@@ -186,7 +209,14 @@ const MapGL = (() => {
     const m = state.markers.find(x => x.__cid === id);
     if (!m) return false;
     const ll = m.getLngLat();
-    state.map.easeTo({ center: ll, zoom: Math.max(state.map.getZoom(), 16), pitch: state.mode === 'sat' ? 0 : 45, duration: 700 });
+    const cam = cameraForMode(state.mode || '3d');
+    state.map.easeTo({
+      center: ll,
+      zoom: Math.max(state.map.getZoom(), 16),
+      pitch: cam.pitch,
+      bearing: cam.bearing,
+      duration: 700,
+    });
     m.togglePopup();
     return true;
   }
