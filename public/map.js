@@ -53,14 +53,17 @@ const MapBI = (() => {
   }
 
   /** Camadas base — satélite/híbrido + ruas.
-   *  De perto: mantém satélite e reforça nomes (overlay de ruas), sem pular pra mapa “simples”.
+   *  Em Bacabal o Esri não tem tile nítido além de ~17: se pedir 18+ vem
+   *  “Map data not yet available”. Por isso maxNativeZoom baixo = Leaflet
+   *  amplia a última foto boa em vez de mostrar o fundo bege.
    */
   function basemaps(map, defaultKey = 'hybrid') {
-    const SAT_NATIVE = 18; // permite aproximar mais; tile nativo escala depois
+    // Último zoom com imagem satélite real na região (acima disso só escala)
+    const SAT_NATIVE = 17;
 
     const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
-      maxZoom: 22,
+      maxZoom: 20,
       maxNativeZoom: 20,
       subdomains: 'abcd',
     });
@@ -69,8 +72,8 @@ const MapBI = (() => {
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         attribution: 'Satélite &copy; Esri',
-        maxZoom: 22,
-        maxNativeZoom: 19,
+        maxZoom: 20,
+        maxNativeZoom: SAT_NATIVE,
       }
     );
 
@@ -78,7 +81,7 @@ const MapBI = (() => {
       'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',
       {
         attribution: '&copy; CARTO',
-        maxZoom: 22,
+        maxZoom: 20,
         maxNativeZoom: 20,
         subdomains: 'abcd',
         pane: 'overlayPane',
@@ -86,13 +89,13 @@ const MapBI = (() => {
       }
     );
 
-    // Overlay claro só de perto (nomes grandes) — satélite continua embaixo
+    // De perto: mapa de ruas por cima (nomes legíveis) — satélite fica embaixo ampliado
     const streetsClose = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; CARTO',
-      maxZoom: 22,
+      maxZoom: 20,
       maxNativeZoom: 20,
       subdomains: 'abcd',
-      opacity: 0.72,
+      opacity: 0.78,
       pane: 'overlayPane',
     });
 
@@ -107,7 +110,7 @@ const MapBI = (() => {
     let mode = defaultKey === 'streets' ? 'streets' : defaultKey === 'sat' ? 'sat' : 'hybrid';
     const initial = mode === 'streets' ? streets : mode === 'sat' ? sat : hybrid;
     initial.addTo(map);
-    try { map.setMaxZoom(21); } catch (_) {}
+    try { map.setMaxZoom(19); } catch (_) {}
 
     map.on('baselayerchange', (e) => {
       if (e.name === 'Ruas') mode = 'streets';
@@ -118,11 +121,12 @@ const MapBI = (() => {
 
     function syncCloseOverlay() {
       const z = map.getZoom();
-      const needClearNames = mode === 'hybrid' && z >= 16;
+      // A partir do limite do satélite, reforça ruas pra nome ler bem
+      const needClearNames = mode === 'hybrid' && z >= SAT_NATIVE - 1;
       if (needClearNames) {
         if (!map.hasLayer(streetsClose)) streetsClose.addTo(map);
-        // satélite um pouco mais suave pra texto ler melhor
-        if (typeof sat.setOpacity === 'function') sat.setOpacity(0.85);
+        streetsClose.setOpacity(z >= SAT_NATIVE ? 0.88 : 0.72);
+        if (typeof sat.setOpacity === 'function') sat.setOpacity(z >= SAT_NATIVE ? 0.55 : 0.85);
       } else {
         if (map.hasLayer(streetsClose)) map.removeLayer(streetsClose);
         if (typeof sat.setOpacity === 'function') sat.setOpacity(1);
@@ -131,7 +135,6 @@ const MapBI = (() => {
 
     map.on('zoomend', syncCloseOverlay);
     map.on('zoom', syncCloseOverlay);
-    // estado inicial
     setTimeout(syncCloseOverlay, 0);
 
     L.control.layers(layers, {}, { position: 'topright', collapsed: true }).addTo(map);
@@ -145,7 +148,7 @@ const MapBI = (() => {
     const map = L.map(elId, {
       zoomControl: false,
       attributionControl: true,
-      maxZoom: 21,
+      maxZoom: 19,
     }).setView(center, zoom);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
