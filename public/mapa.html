@@ -14,6 +14,10 @@
     <p class="muted" style="margin-bottom:1rem">Satélite com nomes de ruas · filtros · calor · rotas · equipes</p>
     <div class="panel" style="margin-bottom:1rem">
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+        <div class="map-search">
+          <input id="fBusca" type="search" placeholder="Buscar protocolo, bairro, categoria…" style="margin:0" />
+          <button type="button" id="fBuscaBtn" title="Buscar" aria-label="Buscar">🔍</button>
+        </div>
         <select id="fStatus" style="margin:0"><option value="">Status</option></select>
         <select id="fSec" style="margin:0"><option value="">Secretaria</option></select>
         <select id="fBai" style="margin:0"><option value="">Bairro</option></select>
@@ -70,17 +74,23 @@
       if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
 
       const pts = list.filter(c => c.lat && c.lng);
-      document.getElementById('count').textContent = pts.length + ' no mapa';
+      const q = (document.getElementById('fBusca').value || '').trim().toLowerCase();
+      const filtered = q
+        ? pts.filter(c => [
+            c.protocolo, c.titulo, c.categoria, c.bairro, c.descricao, c.secretaria, c.status,
+          ].join(' ').toLowerCase().includes(q))
+        : pts;
+      document.getElementById('count').textContent = filtered.length + ' no mapa';
 
       if (heat.checked && window.L && L.heatLayer) {
-        heatLayer = L.heatLayer(pts.map(c => [c.lat, c.lng, c.prioridade === 'urgente' ? 0.9 : 0.5]), { radius: 28 }).addTo(map);
+        heatLayer = L.heatLayer(filtered.map(c => [c.lat, c.lng, c.prioridade === 'urgente' ? 0.9 : 0.5]), { radius: 28 }).addTo(map);
       } else {
-        pts.forEach(c => {
+        filtered.forEach(c => {
           L.circleMarker([c.lat, c.lng], {
             radius: 8, color: '#fff', weight: 2,
-            fillColor: c.prioridade === 'urgente' || c.prioridade === 'alta' ? '#e74c3c' : '#FF8000',
+            fillColor: MapBI.STATUS_COLOR[c.status] || (c.prioridade === 'urgente' || c.prioridade === 'alta' ? '#e74c3c' : '#FF8000'),
             fillOpacity: 0.9,
-          }).bindPopup(`<strong>${c.protocolo}</strong><br>${c.titulo}<br>${statusLabel(c.status)}`).addTo(markers);
+          }).bindPopup(MapBI.popupHtml(c), { maxWidth: 280 }).addTo(markers);
         });
       }
 
@@ -101,6 +111,10 @@
     }
 
     document.getElementById('aplicar').onclick = () => apply().catch(e => toast(e.message));
+    document.getElementById('fBuscaBtn').onclick = () => apply().catch(e => toast(e.message));
+    document.getElementById('fBusca').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); apply().catch(err => toast(err.message)); }
+    });
     boot().catch(e => toast(e.message));
   </script>
 </body>

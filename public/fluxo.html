@@ -40,6 +40,14 @@
     }
     .brand strong { display:block; font-size:.9rem; letter-spacing:-.02em; }
     .brand span { display:block; font-size:.68rem; opacity:.7; }
+    .brand-right { display:flex; align-items:center; gap:.75rem; flex-shrink:0; }
+    .brand-home {
+      text-decoration:none; color:#fff; font-size:.78rem; font-weight:700;
+      padding:.45rem .85rem; border-radius:999px;
+      border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08);
+      white-space:nowrap;
+    }
+    .brand-home:hover { background:rgba(255,255,255,.16); }
     .progress {
       font-size:.78rem; font-weight:700; letter-spacing:.04em;
       opacity:.85; white-space:nowrap;
@@ -182,7 +190,10 @@
           <span>Demonstração · só avançar os slides</span>
         </div>
       </div>
-      <div class="progress" id="progress">1 / 7</div>
+      <div class="brand-right">
+        <a class="brand-home" href="/?cidade=bacabal">Voltar ao início</a>
+        <div class="progress" id="progress">1 / 7</div>
+      </div>
     </header>
 
     <div class="stage" id="stage">

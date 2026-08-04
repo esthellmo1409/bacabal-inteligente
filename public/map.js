@@ -26,6 +26,20 @@ const MapBI = (() => {
     })[s] || s;
   }
 
+  function statusAction(s) {
+    return ({
+      novo: 'Aguardando a secretaria pegar o chamado.',
+      aberto: 'Aguardando a secretaria pegar o chamado.',
+      em_analise: 'Secretaria está analisando o caso.',
+      encaminhado: 'Já foi encaminhado para a equipe de campo.',
+      em_execucao: 'Equipe na rua executando o serviço agora.',
+      em_andamento: 'Equipe na rua executando o serviço agora.',
+      aguardando_material: 'Serviço pausado — aguardando material.',
+      concluido: 'Serviço concluído e registrado no protocolo.',
+      cancelado: 'Chamado cancelado.',
+    })[s] || 'Situação em acompanhamento.';
+  }
+
   /** Camadas base: Ruas, Satélite, Híbrido (satélite + nomes) */
   function basemaps(map, defaultKey = 'hybrid') {
     const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -88,7 +102,7 @@ const MapBI = (() => {
     basemaps(map, opts.basemap || 'hybrid');
 
     const layer = L.layerGroup().addTo(map);
-    const state = { map, layer, points: [], filterStatus: '', filterBairro: '' };
+    const state = { map, layer, points: [], filterStatus: '', filterBairro: '', filterQuery: '', markersById: {} };
 
     L.marker(center, {
       icon: L.divIcon({
@@ -103,21 +117,41 @@ const MapBI = (() => {
   }
 
   function popupHtml(p) {
+    const esc = (v) => String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const titulo = esc(p.titulo || p.categoria || 'Ocorrência');
+    const bairro = esc(p.bairro || '—');
+    const protocolo = p.protocolo ? esc(p.protocolo) : '';
+    const desc = p.descricao ? esc(String(p.descricao).slice(0, 140)) : '';
+    const acao = esc(statusAction(p.status));
+    const sec = p.secretaria ? esc(p.secretaria) : '';
     return `
       <div class="bi-popup">
         <div class="bi-popup-badge" style="background:${STATUS_COLOR[p.status] || '#2163e8'}">${statusLabel(p.status)}</div>
-        <strong>${p.titulo || p.categoria || 'Ocorrência'}</strong>
-        <div class="bi-popup-meta">${p.bairro || '—'}${p.protocolo ? ' · ' + p.protocolo : ''}</div>
-        ${p.descricao ? `<p>${String(p.descricao).slice(0, 120)}</p>` : ''}
+        <strong>${titulo}</strong>
+        <div class="bi-popup-meta">${bairro}${protocolo ? ' · Prot. ' + protocolo : ''}${sec ? ' · ' + sec : ''}</div>
+        <div class="bi-popup-acao"><b>O que está sendo feito:</b> ${acao}</div>
+        ${desc ? `<p>${desc}</p>` : ''}
       </div>
     `;
   }
 
+  function matchQuery(p, q) {
+    if (!q) return true;
+    const hay = [
+      p.protocolo, p.titulo, p.categoria, p.bairro, p.descricao, p.secretaria, p.id, statusLabel(p.status),
+    ].join(' ').toLowerCase();
+    return hay.includes(q);
+  }
+
   function render(state) {
     state.layer.clearLayers();
+    state.markersById = {};
+    const q = (state.filterQuery || '').trim().toLowerCase();
     const filtered = state.points.filter((p) => {
       if (state.filterStatus && p.status !== state.filterStatus) return false;
       if (state.filterBairro && p.bairro !== state.filterBairro) return false;
+      if (!matchQuery(p, q)) return false;
       return p.lat != null && p.lng != null;
     });
 
@@ -125,25 +159,34 @@ const MapBI = (() => {
     filtered.forEach((p) => {
       const color = STATUS_COLOR[p.status] || '#2163e8';
       const m = L.circleMarker([p.lat, p.lng], {
-        radius: state.filterStatus || state.filterBairro ? 9 : 7,
+        radius: state.filterStatus || state.filterBairro || q ? 9 : 7,
         color: '#fff',
         weight: 2,
         fillColor: color,
         fillOpacity: 0.88,
         className: 'bi-dot',
-      }).bindPopup(popupHtml(p), { maxWidth: 260 });
+      }).bindPopup(popupHtml(p), { maxWidth: 280 });
 
       m.on('mouseover', function () { this.setStyle({ radius: 11 }); });
       m.on('mouseout', function () {
-        this.setStyle({ radius: state.filterStatus || state.filterBairro ? 9 : 7 });
+        this.setStyle({ radius: state.filterStatus || state.filterBairro || q ? 9 : 7 });
       });
 
       m.addTo(state.layer);
+      if (p.id || p.protocolo) state.markersById[p.id || p.protocolo] = m;
       bounds.push([p.lat, p.lng]);
     });
 
-    if (bounds.length > 2 && (state.filterStatus || state.filterBairro)) {
-      try { state.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 }); } catch (_) {}
+    if (bounds.length && (state.filterStatus || state.filterBairro || q)) {
+      try {
+        if (bounds.length === 1) state.map.setView(bounds[0], 16);
+        else state.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+      } catch (_) {}
+      if (bounds.length === 1) {
+        const first = filtered[0];
+        const mk = state.markersById[first.id || first.protocolo];
+        if (mk) setTimeout(() => mk.openPopup(), 200);
+      }
     }
 
     return filtered.length;
@@ -154,9 +197,15 @@ const MapBI = (() => {
     return render(state);
   }
 
-  function setFilters(state, { status, bairro } = {}) {
+  function setFilters(state, { status, bairro, q } = {}) {
     if (status !== undefined) state.filterStatus = status || '';
     if (bairro !== undefined) state.filterBairro = bairro || '';
+    if (q !== undefined) state.filterQuery = q || '';
+    return render(state);
+  }
+
+  function search(state, query) {
+    state.filterQuery = (query || '').trim();
     return render(state);
   }
 
@@ -171,5 +220,5 @@ const MapBI = (() => {
     `;
   }
 
-  return { create, basemaps, setPoints, setFilters, legendHtml, STATUS_COLOR, statusLabel };
+  return { create, basemaps, setPoints, setFilters, search, legendHtml, STATUS_COLOR, statusLabel, statusAction, popupHtml };
 })();

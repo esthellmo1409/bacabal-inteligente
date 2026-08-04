@@ -176,6 +176,10 @@
     <div class="landing-map-block">
       <div class="map-shell">
         <div class="map-toolbar">
+          <div class="map-search">
+            <input id="mapBusca" type="search" placeholder="Buscar protocolo, bairro, categoria…" />
+            <button type="button" id="mapBuscaBtn" title="Buscar" aria-label="Buscar">🔍</button>
+          </div>
           <select id="filtroStatus"><option value="">Todos os status</option></select>
           <select id="filtroBairro"><option value="">Todos os bairros</option></select>
           <button class="btn btn-sm" id="resetMap" type="button">Visão geral</button>
@@ -287,7 +291,10 @@
       `;
 
       const state = MapBI.create('mapHome', { center: [cfg.lat, cfg.lng], zoom: 13 });
-      const points = (m.heatmap || []).map(p => ({ ...p, titulo: p.categoria }));
+      const points = (m.heatmap || []).map(p => ({
+        ...p,
+        titulo: p.titulo || p.categoria,
+      }));
       document.getElementById('mapCount').textContent = MapBI.setPoints(state, points) + ' no mapa';
 
       const stSel = document.getElementById('filtroStatus');
@@ -304,16 +311,26 @@
         o.textContent = b;
         bSel.appendChild(o);
       });
+      const busca = document.getElementById('mapBusca');
 
       const apply = () => {
         document.getElementById('mapCount').textContent =
-          MapBI.setFilters(state, { status: stSel.value, bairro: bSel.value }) + ' no mapa';
+          MapBI.setFilters(state, {
+            status: stSel.value,
+            bairro: bSel.value,
+            q: busca.value,
+          }) + ' no mapa';
       };
       stSel.onchange = apply;
       bSel.onchange = apply;
+      document.getElementById('mapBuscaBtn').onclick = apply;
+      busca.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); apply(); }
+      });
       document.getElementById('resetMap').onclick = () => {
         stSel.value = '';
         bSel.value = '';
+        busca.value = '';
         apply();
         state.map.setView([cfg.lat, cfg.lng], 13);
       };
