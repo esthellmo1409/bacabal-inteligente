@@ -820,15 +820,14 @@ async function handleAPI(req, res, pathname, url) {
     if (!slug) return;
     const cfg = readTenant(slug, 'config.json', {});
     const secretaria = url.searchParams.get('secretaria') || '';
-    let list = readTenant(slug, 'chamados.json', []).map(normalizeChamado).filter(
-      (c) => isPendente(c.status)
-    );
-    if (secretaria) list = list.filter((c) => c.secretaria === secretaria);
+    let all = readTenant(slug, 'chamados.json', []).map(normalizeChamado);
+    if (secretaria) all = all.filter((c) => c.secretaria === secretaria);
+    let list = all.filter((c) => isPendente(c.status));
     const origem = {
       lat: Number(url.searchParams.get('lat')) || cfg.lat,
       lng: Number(url.searchParams.get('lng')) || cfg.lng,
     };
-    const pontos = list.map((c) => ({
+    const mapPonto = (c) => ({
       id: c.id,
       protocolo: c.protocolo,
       titulo: c.titulo,
@@ -845,16 +844,26 @@ async function handleAPI(req, res, pathname, url) {
       fotoAntes: c.fotoAntes || c.foto || null,
       fotoDepois: c.fotoDepois || null,
       cidadao: c.cidadao || null,
-    }));
+    });
+    const pontos = list.map(mapPonto);
     // Mais recentes primeiro na fila de campo (além da rota otimizada)
     const recentes = [...pontos].sort((a, b) =>
       String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
     ).slice(0, 8);
+    const concluidos = all
+      .filter((c) => c.status === 'concluido')
+      .sort((a, b) =>
+        String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
+      )
+      .slice(0, 12)
+      .map(mapPonto);
     return sendJSON(res, 200, {
       origem,
       ...roteirizar({ origem, pontos }),
       recentes,
+      concluidos,
       pendentes: pontos.length,
+      totalConcluidos: all.filter((c) => c.status === 'concluido').length,
     });
   }
 

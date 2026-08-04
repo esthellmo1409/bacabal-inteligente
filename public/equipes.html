@@ -60,6 +60,17 @@
         </div>
       </div>
       <div class="panel" style="margin-top:1rem" id="osBox"><p class="muted">Selecione uma OS recente ou na rota</p></div>
+
+      <div class="panel" style="margin-top:1rem;border-color:rgba(12,188,135,.35);background:linear-gradient(180deg,rgba(12,188,135,.07),transparent)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem">
+          <div>
+            <h3 style="margin:0">Serviços concluídos</h3>
+            <p class="muted" style="margin:0.25rem 0 0;font-size:0.85rem">Com antes e depois — o que a equipe já entregou e a secretaria aprovou.</p>
+          </div>
+          <span class="muted" id="concluidosHint" style="font-size:0.8rem"></span>
+        </div>
+        <div class="list" id="concluidos"></div>
+      </div>
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -196,6 +207,22 @@
         </div>`;
     }
 
+    function cardConcluido(p) {
+      return `
+        <div class="item" style="cursor:pointer" data-open="${p.id}">
+          <div class="item-head">
+            <strong>${p.titulo} · ${p.protocolo}</strong>
+            ${badge('concluido')}
+          </div>
+          <div class="meta">${p.bairro || '—'} · finalizado ${tempoRelativo(p.atualizadoEm || p.criadoEm)} · ${fmtDate(p.atualizadoEm || p.criadoEm)}</div>
+          <p class="muted" style="margin:0.35rem 0">${(p.descricao || '').slice(0, 140)}${(p.descricao || '').length > 140 ? '…' : ''}</p>
+          ${antesDepoisHtml(p)}
+          <div class="actions">
+            <button class="btn btn-sm" data-open="${p.id}">Ver detalhes</button>
+          </div>
+        </div>`;
+    }
+
     async function load() {
       const data = await api('/api/rota?lat=' + cfg.lat + '&lng=' + cfg.lng +
         (user.secretaria ? '&secretaria=' + user.secretaria : ''));
@@ -203,9 +230,9 @@
       const key = recentes.map(p => p.id + ':' + (p.atualizadoEm || '')).join('|');
 
       document.getElementById('kpis').innerHTML = `
-        <div class="panel stat"><div class="label">OS</div><div class="value">${data.rota.length}</div></div>
-        <div class="panel stat"><div class="label">Km</div><div class="value">${data.totalKm}</div></div>
-        <div class="panel stat"><div class="label">Min</div><div class="value">${data.tempoEstimadoMin}</div></div>`;
+        <div class="panel stat"><div class="label">OS abertas</div><div class="value">${data.rota.length}</div></div>
+        <div class="panel stat"><div class="label">Concluídos</div><div class="value">${data.totalConcluidos || (data.concluidos || []).length}</div></div>
+        <div class="panel stat"><div class="label">Km / Min</div><div class="value" style="font-size:1.35rem">${data.totalKm} · ${data.tempoEstimadoMin}</div></div>`;
 
       // Notificação: chegou OS nova / mudou a fila
       const chegou = lastOsCount >= 0 && (data.rota.length > lastOsCount || (key && key !== lastOsKey && data.rota.length > 0));
@@ -265,9 +292,17 @@
           </div>
         </div>`).join('') || '<p class="muted">Sem OS pendentes</p>';
 
+      const concluidos = data.concluidos || [];
+      document.getElementById('concluidosHint').textContent = concluidos.length
+        ? concluidos.length + ' recentes · com antes e depois'
+        : '';
+      document.getElementById('concluidos').innerHTML = concluidos.length
+        ? concluidos.map(cardConcluido).join('')
+        : '<p class="muted">Nenhum serviço concluído ainda. Quando a Obras aprovar a foto, aparece aqui.</p>';
+
       document.querySelectorAll('[data-open]').forEach(el => {
         el.onclick = (e) => {
-          if (e.target.tagName === 'A' || e.target.classList.contains('foto-zoom')) return;
+          if (e.target.tagName === 'A' || e.target.classList.contains('foto-zoom') || e.target.closest('.antes-depois')) return;
           const id = el.getAttribute('data-open');
           if (id) openOS(id);
         };
