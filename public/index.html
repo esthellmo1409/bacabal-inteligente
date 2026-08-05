@@ -103,7 +103,7 @@
             TV do prefeito — visão operacional no dia a dia da gestão.
           </p>
           <div class="carousel-actions">
-            <a class="btn-hero btn-hero-primary" href="/login.html?cidade=bacabal">Acessar sistema</a>
+            <a class="btn-hero btn-hero-primary" id="ctaAcessarSistema" href="/login.html?cidade=bacabal">Acessar sistema</a>
             <a class="btn-hero btn-hero-ghost" href="/fluxo.html?cidade=bacabal">Como funciona</a>
           </div>
         </div>
@@ -212,19 +212,32 @@
     setCidade('bacabal');
 
     (function () {
+      function pulseCta(el, pulseClass) {
+        if (!el) return;
+        el.classList.remove('cta-pulse', 'cta-pulse-admin');
+        void el.offsetWidth;
+        el.classList.add(pulseClass || 'cta-pulse');
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        try { el.focus({ preventScroll: true }); } catch (_) { /* ok */ }
+        setTimeout(() => el.classList.remove('cta-pulse', 'cta-pulse-admin'), 3800);
+      }
+
       function focusAbrirChamado() {
-        // Garante o slide do cidadão (tem o botão Abrir chamado)
         if (typeof window.__homeCarouselGo === 'function') window.__homeCarouselGo(0);
         const cta =
           document.getElementById('ctaAbrirChamado') ||
           document.querySelector('.carousel-slide.is-active .btn-hero-primary');
-        if (!cta) return;
-        cta.classList.remove('cta-pulse');
-        void cta.offsetWidth;
-        cta.classList.add('cta-pulse');
-        cta.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        try { cta.focus({ preventScroll: true }); } catch (_) { /* ok */ }
-        setTimeout(() => cta.classList.remove('cta-pulse'), 2600);
+        pulseCta(cta, 'cta-pulse');
+      }
+
+      function focusAcessarSistema() {
+        // Slide da gestão — botão Acessar sistema
+        if (typeof window.__homeCarouselGo === 'function') window.__homeCarouselGo(2);
+        const cta =
+          document.getElementById('ctaAcessarSistema') ||
+          document.querySelector('.carousel-slide.is-active .btn-hero-primary');
+        // Espera o slide trocar pra rolar no botão certo
+        setTimeout(() => pulseCta(cta, 'cta-pulse-admin'), 80);
       }
 
       function bindDrop(btnId, menuId) {
@@ -245,10 +258,9 @@
             menu.hidden = false;
             btn.setAttribute('aria-expanded', 'true');
           }
-          // Cidadão: rola até Abrir chamado (mobile e PC) — feedback claro do clique
-          if (btnId === 'navCidadao' && willOpen) {
-            setTimeout(focusAbrirChamado, 60);
-          }
+          if (!willOpen) return;
+          if (btnId === 'navCidadao') setTimeout(focusAbrirChamado, 60);
+          if (btnId === 'navAdmin') setTimeout(focusAcessarSistema, 60);
         });
         menu.addEventListener('click', (e) => e.stopPropagation());
         // Evita fechar no mesmo toque do celular
