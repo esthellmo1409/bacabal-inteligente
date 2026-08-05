@@ -131,7 +131,16 @@
       box-shadow: 0 22px 60px rgba(26,79,186,.28);
       padding: 1rem 1.1rem 1.05rem;
       left: 50%; bottom: 1rem; transform: translateX(-50%);
+      max-height: min(42vh, 320px);
+      overflow: auto;
     }
+    .coach.minimized {
+      max-height: none;
+      padding: 0.65rem 0.85rem;
+    }
+    .coach.minimized h2,
+    .coach.minimized p,
+    .coach.minimized .coach-progress { display: none; }
     .coach-step {
       font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em;
       text-transform: uppercase; color: #e67300; margin-bottom: 0.35rem;
@@ -226,11 +235,53 @@
     #introGate img { width: 64px; height: 76px; object-fit: contain; margin-bottom: 0.75rem; }
 
     .sec-kpis { display:grid; grid-template-columns: repeat(3,1fr); gap:0.75rem; margin-bottom:1rem; }
+
+    /* Alvos clicáveis ficam acima do spotlight e longe do coach */
+    .cat.tut-target, .btn.tut-target, button.tut-target, .ticket-card.tut-target, .btn-hero.tut-target {
+      scroll-margin-top: 7.5rem;
+      scroll-margin-bottom: 8rem;
+    }
+
     @media (max-width: 700px) {
       .ticket-card { grid-template-columns: 1fr; }
       .ticket-card img { width: 100%; height: 140px; }
       .sec-kpis { grid-template-columns: 1fr; }
-      .tut-stage { padding-bottom: 9.5rem; }
+      /* Coach no TOPO no mobile — não cobre botões Embaixo */
+      .coach {
+        top: calc(64px + 0.5rem);
+        bottom: auto;
+        left: 0.75rem; right: 0.75rem; width: auto;
+        transform: none;
+        max-height: none;
+        padding: 0.7rem 0.85rem;
+        border-radius: 14px;
+      }
+      .coach h2 { font-size: 0.98rem; margin-bottom: 0.25rem; }
+      .coach p { font-size: 0.82rem; margin-bottom: 0.55rem; }
+      .tut-stage {
+        padding-top: 0.75rem;
+        padding-bottom: 1.25rem;
+      }
+      .tut-stage.home-mode { padding-top: 0; padding-bottom: 1.25rem; }
+      /* Espaço sob o coach sticky para o conteúdo / botões */
+      .tut-stage > .view.on {
+        padding-top: 7.5rem;
+      }
+      .tut-stage.home-mode > .view.on {
+        padding-top: 7rem;
+      }
+      .coach.minimized ~ * { }
+      body:has(.coach.minimized) .tut-stage > .view.on {
+        padding-top: 4.5rem;
+      }
+      body:has(.coach.minimized) .tut-stage.home-mode > .view.on {
+        padding-top: 4.25rem;
+      }
+      .cat.tut-target, .btn.tut-target, button.tut-target, .ticket-card.tut-target, .btn-hero.tut-target {
+        scroll-margin-top: 12rem;
+        scroll-margin-bottom: 2rem;
+        z-index: 80 !important;
+      }
     }
   </style>
 </head>
@@ -464,8 +515,8 @@
               </div>
               <div id="campoExecBox" style="display:none;margin-top:0.75rem">
                 <label>Foto do depois (prova)</label>
-                <img id="fotoDepoisTut" class="preview-tut show" src="/assets/buraco-demo-antes.jpg" alt="Foto depois" style="filter:saturate(1.2) brightness(1.05);border:2px solid #0cbc87" />
-                <p class="muted" style="font-size:0.8rem;margin:0.35rem 0 0.65rem">No app real a equipe tira foto nova. Aqui usamos a prova demo.</p>
+                <img id="fotoDepoisTut" class="preview-tut show" src="/assets/buraco-demo-depois.png" alt="Foto depois" style="border:2px solid #0cbc87" />
+                <p class="muted" style="font-size:0.8rem;margin:0.35rem 0 0.65rem">Foto do depois enviada pela equipe de campo.</p>
                 <button class="btn btn-primary" type="button" id="btnEnviarAprovacao" style="width:100%">Enviar para aprovação</button>
               </div>
               <p class="muted" id="campoDone" style="display:none;margin-top:0.65rem;color:#0a966c;font-weight:700">
@@ -491,7 +542,7 @@
             </div>
             <div>
               <div class="muted" style="font-size:0.75rem;font-weight:800;margin-bottom:0.35rem;color:#0a966c">DEPOIS</div>
-              <img src="/assets/buraco-demo-antes.jpg" alt="Depois" style="width:100%;height:140px;object-fit:cover;border-radius:12px;border:2px solid #0cbc87;filter:saturate(1.15) brightness(1.08)" />
+              <img src="/assets/buraco-demo-depois.png" alt="Depois" style="width:100%;height:140px;object-fit:cover;border-radius:12px;border:2px solid #0cbc87" />
             </div>
           </div>
           <div style="display:flex;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;align-items:center;margin-bottom:0.75rem">
@@ -540,7 +591,7 @@
                 </div>
                 <div>
                   <div class="muted" style="font-size:0.72rem;font-weight:800;color:#0a966c">DEPOIS</div>
-                  <img src="/assets/buraco-demo-antes.jpg" alt="" style="width:100%;height:100px;object-fit:cover;border-radius:10px;margin-top:0.25rem;border:2px solid #0cbc87;filter:saturate(1.15) brightness(1.08)" />
+                  <img src="/assets/buraco-demo-depois.png" alt="" style="width:100%;height:100px;object-fit:cover;border-radius:10px;margin-top:0.25rem;border:2px solid #0cbc87" />
                 </div>
               </div>
               <p style="margin:0.85rem 0 0;font-weight:700;color:#0a966c">Serviço feito e aprovado pela Secretaria de Obras.</p>
@@ -576,7 +627,10 @@
 
   <aside class="coach" id="coach" hidden>
     <div class="coach-progress"><i id="coachProg"></i></div>
-    <div class="coach-step" id="coachStep">Passo 1 de 9</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.25rem">
+      <div class="coach-step" id="coachStep" style="margin:0">Passo 1 de 9</div>
+      <button type="button" class="btn btn-sm" id="btnCoachToggle" style="padding:0.25rem 0.55rem;font-size:0.72rem">Recolher</button>
+    </div>
     <h2 id="coachTitle">Título</h2>
     <p id="coachText">Texto</p>
     <div class="coach-actions">
@@ -799,13 +853,23 @@
     }
 
     function setCoach(step) {
-      document.getElementById('coach').hidden = false;
+      const coach = document.getElementById('coach');
+      coach.hidden = false;
       document.getElementById('coachStep').textContent = `Passo ${step.id + 1} de ${STEPS.length}`;
       document.getElementById('coachTitle').textContent = step.title;
       document.getElementById('coachText').textContent = step.text;
       document.getElementById('coachProg').style.width = (((step.id) / (STEPS.length - 1)) * 100) + '%';
       document.getElementById('btnNext').textContent = step.requireClick ? 'Espere o clique destacado…' : (step.id === STEPS.length - 1 ? 'Concluir' : 'Continuar ▶');
       document.getElementById('btnNext').disabled = !!step.requireClick;
+      // No mobile, recolhe o texto quando precisa clicar — libera a tela
+      const mobile = window.matchMedia('(max-width: 700px)').matches;
+      if (mobile && step.requireClick) {
+        coach.classList.add('minimized');
+        document.getElementById('btnCoachToggle').textContent = 'Abrir ajuda';
+      } else if (mobile) {
+        coach.classList.remove('minimized');
+        document.getElementById('btnCoachToggle').textContent = 'Recolher';
+      }
     }
 
     function go(n) {
@@ -1015,6 +1079,11 @@
       document.getElementById('devolverHint').style.display = 'block';
     };
     document.getElementById('btnBuscarProto').onclick = () => onUserClick('#btnBuscarProto');
+    document.getElementById('btnCoachToggle').onclick = () => {
+      const coach = document.getElementById('coach');
+      const on = coach.classList.toggle('minimized');
+      document.getElementById('btnCoachToggle').textContent = on ? 'Abrir ajuda' : 'Recolher';
+    };
 
     audio.addEventListener('ended', () => document.getElementById('wave').classList.add('off'));
     audio.addEventListener('play', () => document.getElementById('wave').classList.remove('off'));
