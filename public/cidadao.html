@@ -17,8 +17,9 @@
         <p class="muted" style="margin:0.35rem 0 0;max-width:36rem">Foto, local e protocolo na hora. Acompanhe sem ligar de novo.</p>
         <div class="citizen-steps">
           <span>1 · Tipo</span>
-          <span>2 · Foto + GPS</span>
-          <span>3 · Protocolo</span>
+          <span>2 · Foto</span>
+          <span>3 · Dados</span>
+          <span>4 · Protocolo</span>
         </div>
       </div>
     </div>
@@ -33,11 +34,11 @@
         <div id="tipoEscolhido" class="tipo-escolhido" style="display:none"></div>
 
         <div id="blocoDescricao">
-          <label>Descrição</label>
-          <textarea id="descricao" placeholder="Ex.: buraco grande na frente do nº 120…"></textarea>
+          <label>Descrição do problema</label>
+          <textarea id="descricao" placeholder="Ex.: vi o problema na rua, na frente do nº 120…"></textarea>
         </div>
 
-        <label>Foto</label>
+        <label>Foto do problema</label>
         <input type="file" id="foto" accept="image/*" capture="environment" />
         <img id="preview" class="preview" alt="Prévia" />
         <div id="iaBox" class="muted" style="margin-bottom:0.9rem;font-size:0.85rem"></div>
@@ -45,11 +46,14 @@
         <label>Bairro</label>
         <select id="bairro"></select>
 
+        <label>Endereço do problema</label>
+        <input id="endereco" placeholder="Rua, número ou ponto de referência" />
+
         <label>Seu nome</label>
         <input id="nome" placeholder="Nome completo" />
 
-        <label>Telefone / WhatsApp</label>
-        <input id="telefone" placeholder="(99) 9xxxx-xxxx" />
+        <label>Telefone / WhatsApp <span class="muted" style="font-weight:500">(opcional)</span></label>
+        <input id="telefone" placeholder="Opcional — para receber atualizações" />
 
         <p class="muted" id="gpsHint" style="margin-bottom:0.85rem">Obtendo localização…</p>
         <button class="btn btn-primary" id="enviar" type="button" style="width:100%">Enviar chamado</button>
@@ -324,7 +328,11 @@
     document.getElementById('enviar').onclick = async () => {
       if (!categoria) return toast('Selecione o tipo de problema');
       const descricao = document.getElementById('descricao').value.trim();
-      if (!descricao && !fotoData) return toast('Informe descrição ou foto');
+      const endereco = document.getElementById('endereco').value.trim();
+      const nome = document.getElementById('nome').value.trim();
+      if (!nome) return toast('Informe o seu nome');
+      if (!descricao && !fotoData && !endereco) return toast('Informe foto, descrição ou endereço do problema');
+      const descricaoFinal = descricao || (endereco ? 'Problema em: ' + endereco : '');
 
       const btn = document.getElementById('enviar');
       await withBusy(btn, 'Enviando chamado…', async () => {
@@ -333,7 +341,7 @@
           try {
             const ia = await api('/api/ia/foto', {
               method: 'POST',
-              body: JSON.stringify({ foto: fotoData, texto: descricao }),
+              body: JSON.stringify({ foto: fotoData, texto: descricaoFinal }),
             });
             if (ia?.categoria && (!categoria || categoria === 'outros' || (ia.confianca || 0) >= 55)) {
               categoria = ia.categoria;
@@ -348,9 +356,10 @@
             method: 'POST',
             body: JSON.stringify({
               categoria,
-              descricao,
+              descricao: descricaoFinal,
               bairro: document.getElementById('bairro').value,
-              nome: document.getElementById('nome').value.trim() || 'Cidadão',
+              endereco,
+              nome: nome || 'Cidadão',
               telefone: document.getElementById('telefone').value.trim(),
               lat, lng,
               foto: fotoData,
@@ -382,6 +391,7 @@
 
           document.getElementById('protocolo').value = chamado.protocolo;
           document.getElementById('descricao').value = '';
+          document.getElementById('endereco').value = '';
           document.getElementById('foto').value = '';
           fotoData = null;
           urgencia = null;

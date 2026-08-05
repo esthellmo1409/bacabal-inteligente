@@ -382,8 +382,9 @@
             <p class="muted" style="margin:0.35rem 0 0;max-width:36rem">Foto, local e protocolo na hora. Acompanhe sem ligar de novo.</p>
             <div class="citizen-steps">
               <span id="stepChip1">1 · Tipo</span>
-              <span id="stepChip2">2 · Foto + GPS</span>
-              <span id="stepChip3">3 · Protocolo</span>
+              <span id="stepChip2">2 · Foto</span>
+              <span id="stepChip3">3 · Dados</span>
+              <span id="stepChip4">4 · Protocolo</span>
             </div>
           </div>
         </div>
@@ -413,21 +414,20 @@
             </div>
             <div id="tipoEscolhido" class="tipo-escolhido" style="display:none"></div>
 
-            <label>Descrição</label>
-            <textarea id="descricao" placeholder="Ex.: vi o problema na rua, na frente do nº 120…" readonly></textarea>
-
-            <label>Foto</label>
+            <label>Foto do problema</label>
+            <button class="btn" type="button" id="btnTirarFoto" style="width:100%;margin-bottom:0.55rem">📷 Tirar foto do problema</button>
             <img id="preview" class="preview-tut" src="/assets/buraco-demo-antes.jpg" alt="Foto do problema" />
-            <p class="muted" id="gpsHint" style="margin-bottom:0.85rem">📍 GPS: Rua 11, Centro · Bacabal/MA</p>
-
-            <label>Bairro</label>
-            <select id="bairro" disabled><option>Centro</option></select>
+            <p class="muted" id="gpsHint" style="display:none;margin-bottom:0.85rem">📍 GPS capturado: Rua 11, Centro · Bacabal/MA</p>
 
             <label>Seu nome</label>
-            <input id="nome" value="João Barbosa" readonly />
+            <input id="nome" value="" placeholder="Nome completo" readonly />
 
-            <label>Telefone / WhatsApp</label>
-            <input id="telefone" value="(99) 98787-8787" readonly />
+            <label>Endereço do problema</label>
+            <input id="endereco" value="" placeholder="Rua, número ou ponto de referência" readonly />
+            <textarea id="descricao" style="display:none" readonly></textarea>
+
+            <label>Telefone / WhatsApp <span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0">(opcional)</span></label>
+            <input id="telefone" value="" placeholder="Opcional — para receber atualizações" readonly />
 
             <button class="btn btn-primary" id="enviar" type="button" style="width:100%">Enviar chamado</button>
           </div>
@@ -662,8 +662,8 @@
       {
         id: 2,
         audio: '/assets/tutorial-audio/02.mp3',
-        title: '2 · Clique em Viu o problema na rua',
-        text: 'Agora sim: tela do cidadão. Escolha o tipo. Clique no card Viu o problema na rua.',
+        title: '2 · Clique no tipo do problema',
+        text: 'Escolha o tipo. Clique no card Viu o problema na rua.',
         view: 'viewCidadao',
         target: '#catBuraco',
         requireClick: '#catBuraco',
@@ -672,24 +672,51 @@
       {
         id: 3,
         audio: '/assets/tutorial-audio/03.mp3',
-        title: '3 · Foto, GPS e descrição',
-        text: 'A foto e o GPS entram no protocolo. A descrição já está no exemplo — no app real você digita e anexa a foto.',
+        title: '3 · Tire a foto do problema',
+        text: 'Agora a prova visual. Clique em Tirar foto do problema.',
         view: 'viewCidadao',
-        target: '#preview',
-        action: () => fillForm(),
+        target: '#btnTirarFoto',
+        requireClick: '#btnTirarFoto',
       },
       {
         id: 4,
+        audio: '/assets/tutorial-audio/03b.mp3',
+        title: '4 · Preencha o seu nome',
+        text: 'Digite o nome completo. No tutorial preenchemos o exemplo — no app real você escreve o seu.',
+        view: 'viewCidadao',
+        target: '#nome',
+        action: () => fillNome(),
+      },
+      {
+        id: 5,
+        audio: '/assets/tutorial-audio/03c.mp3',
+        title: '5 · Endereço do problema',
+        text: 'Informe a rua, o número ou um ponto de referência do problema.',
+        view: 'viewCidadao',
+        target: '#endereco',
+        action: () => fillEndereco(),
+      },
+      {
+        id: 6,
+        audio: '/assets/tutorial-audio/03d.mp3',
+        title: '6 · Telefone (opcional)',
+        text: 'Telefone ou WhatsApp é opcional. Pode deixar em branco ou informar para receber atualizações.',
+        view: 'viewCidadao',
+        target: '#telefone',
+        action: () => fillTelefoneOpcional(),
+      },
+      {
+        id: 7,
         audio: '/assets/tutorial-audio/04.mp3',
-        title: '4 · Clique em Enviar chamado',
-        text: 'Clique no botão azul Enviar chamado. O sistema gera o protocolo na hora.',
+        title: '7 · Clique em Enviar chamado',
+        text: 'Tudo preenchido. Clique no botão azul Enviar chamado para gerar o protocolo.',
         view: 'viewCidadao',
         target: '#enviar',
         requireClick: '#enviar',
         action: () => enviarChamado(),
       },
       {
-        id: 5,
+        id: 8,
         audio: '/assets/tutorial-audio/05.mp3',
         title: 'Protocolo na mão do cidadão',
         text: 'Obrigado pela colaboração! Número gerado. O cidadão acompanha sem ligar de novo. Em seguida vamos para a secretaria.',
@@ -697,18 +724,18 @@
         target: '#sucessoBox',
       },
       {
-        id: 6,
+        id: 9,
         audio: '/assets/tutorial-audio/06.mp3',
-        title: '5 · Secretaria: clique em Entrar',
+        title: '8 · Secretaria: clique em Entrar',
         text: 'Vez do secretário. Usuário obras / senha obras123. Clique em Entrar.',
         view: 'viewLogin',
         target: '#loginBtn',
         requireClick: '#loginBtn',
       },
       {
-        id: 7,
+        id: 10,
         audio: '/assets/tutorial-audio/07.mp3',
-        title: '6 · Clique em Encaminhar ao campo',
+        title: '9 · Clique em Encaminhar ao campo',
         text: 'O chamado chegou com foto. Clique em Encaminhar ao campo para direcionar a equipe.',
         view: 'viewFila',
         target: '#btnEncaminhar',
@@ -716,7 +743,7 @@
         action: () => encaminhar(),
       },
       {
-        id: 8,
+        id: 11,
         audio: '/assets/tutorial-audio/08.mp3',
         title: 'Encaminhado ao campo',
         text: 'A OS saiu da secretaria. Agora a equipe de campo recebe na rota do dia.',
@@ -724,51 +751,51 @@
         target: '#ticketCard',
       },
       {
-        id: 9,
+        id: 12,
         audio: '/assets/tutorial-audio/10.mp3',
-        title: '7 · Campo: Aceitar serviço',
+        title: '10 · Campo: Aceitar serviço',
         text: 'Equipe de campo vê a OS. Clique em Aceitar serviço.',
         view: 'viewCampo',
         target: '#btnAceitarOS',
         requireClick: '#btnAceitarOS',
       },
       {
-        id: 10,
+        id: 13,
         audio: '/assets/tutorial-audio/11.mp3',
-        title: '8 · Clique em Cheguei no local',
+        title: '11 · Clique em Cheguei no local',
         text: 'Serviço aceito. Clique em Cheguei no local para marcar presença na rua.',
         view: 'viewCampo',
         target: '#btnCheguei',
         requireClick: '#btnCheguei',
       },
       {
-        id: 11,
+        id: 14,
         audio: '/assets/tutorial-audio/12.mp3',
-        title: '9 · Enviar foto do depois',
+        title: '12 · Enviar foto do depois',
         text: 'Serviço feito. Clique em Enviar para aprovação da secretaria.',
         view: 'viewCampo',
         target: '#btnEnviarAprovacao',
         requireClick: '#btnEnviarAprovacao',
       },
       {
-        id: 12,
+        id: 15,
         audio: '/assets/tutorial-audio/13.mp3',
-        title: '10 · Secretaria confere',
+        title: '13 · Secretaria confere',
         text: 'Voltou para Obras com antes/depois. A secretaria pode aprovar ou devolver.',
         view: 'viewAprovar',
         target: '#btnAprovar',
       },
       {
-        id: 13,
+        id: 16,
         audio: '/assets/tutorial-audio/14.mp3',
-        title: '11 · Aprovar (ou Devolver)',
+        title: '14 · Aprovar (ou Devolver)',
         text: 'Devolver manda de volta ao campo. Neste tutorial clique em Aprovar conclusão.',
         view: 'viewAprovar',
         target: '#btnAprovar',
         requireClick: '#btnAprovar',
       },
       {
-        id: 14,
+        id: 17,
         audio: '/assets/tutorial-audio/15.mp3',
         title: 'Serviço concluído',
         text: 'Aprovado. Agora o cidadão consulta o protocolo.',
@@ -776,16 +803,16 @@
         target: '#aprovarDone',
       },
       {
-        id: 15,
+        id: 18,
         audio: '/assets/tutorial-audio/16.mp3',
-        title: '12 · Cidadão busca o protocolo',
+        title: '15 · Cidadão busca o protocolo',
         text: 'Digite o protocolo e clique em Buscar para ver o serviço feito.',
         view: 'viewConsulta',
         target: '#btnBuscarProto',
         requireClick: '#btnBuscarProto',
       },
       {
-        id: 16,
+        id: 19,
         audio: '/assets/tutorial-audio/16b.mp3',
         title: 'Protocolo: serviço feito',
         text: 'Status Concluído com foto do antes e do depois. O cidadão vê o resultado sem ligar.',
@@ -793,7 +820,7 @@
         target: '#consultaResult',
       },
       {
-        id: 17,
+        id: 20,
         audio: '/assets/tutorial-audio/17.mp3',
         title: 'Tutorial concluído',
         text: 'Fluxo completo de Obras. Depois fazemos Saúde e outras instituições.',
@@ -888,8 +915,8 @@
       waitingClick = step.requireClick || null;
       clearTargets();
       showView(step.view);
-      if (typeof step.action === 'function' && !step.requireClick) step.action();
       syncVisualState(step.id);
+      if (typeof step.action === 'function' && !step.requireClick) step.action();
       setCoach(step);
       playAudio(step.audio);
       setTimeout(() => aimCursor(step.target), 250);
@@ -946,13 +973,40 @@
     }
 
     function syncVisualState(id) {
-      if (id >= 3 && id <= 5) fillForm();
-      if (id === 5) enviarChamado();
-      if (id < 5) {
+      // Progressivo: só aplica o que já passou (id > etapa), pra não pular o clique
+      if (id > 2) selectCat('buraco');
+      else {
+        document.querySelectorAll('.cat').forEach((c) => c.classList.remove('selected'));
+        document.getElementById('tipoEscolhido').style.display = 'none';
+        document.getElementById('stepChip1').style.outline = '';
+      }
+      if (id > 3) showFoto();
+      else if (id <= 3) {
+        document.getElementById('preview').classList.remove('show');
+        document.getElementById('gpsHint').style.display = 'none';
+        document.getElementById('btnTirarFoto').textContent = '📷 Tirar foto do problema';
+        if (id < 3) document.getElementById('stepChip2').style.outline = '';
+      }
+      if (id > 4) fillNome(true);
+      else if (id <= 4) {
+        if (id < 4) document.getElementById('nome').value = '';
+      }
+      if (id > 5) fillEndereco(true);
+      else if (id < 5) {
+        document.getElementById('endereco').value = '';
+        document.getElementById('descricao').value = '';
+      }
+      if (id > 6) fillTelefoneOpcional(true);
+      else if (id < 6) document.getElementById('telefone').value = '';
+
+      if (id === 8) enviarChamado();
+      if (id < 8) {
         document.getElementById('formGrid').style.display = '';
         document.getElementById('sucessoBox').style.display = 'none';
+        if (id < 4) document.getElementById('stepChip3').style.outline = '';
+        if (id < 8) document.getElementById('stepChip4').style.outline = '';
       }
-      if (id < 8) {
+      if (id < 11) {
         document.getElementById('ticketActions').style.display = '';
         document.getElementById('ticketDone').style.display = 'none';
         document.getElementById('ticketBadge').className = 'badge badge-novo';
@@ -960,20 +1014,20 @@
         document.getElementById('kpiNovo').textContent = '1';
         document.getElementById('kpiEnc').textContent = '0';
       }
-      if (id >= 8) encaminhar();
+      if (id >= 11) encaminhar();
 
-      if (id < 9) resetCampoUI();
-      else if (id === 9) resetCampoUI();
-      else if (id === 10) { resetCampoUI(); aceitarOS(); }
-      else if (id === 11) { resetCampoUI(); aceitarOS(); chegueiLocal(); }
-      else if (id >= 12) { resetCampoUI(); aceitarOS(); chegueiLocal(); enviarAprovacao(); }
+      if (id < 12) resetCampoUI();
+      else if (id === 12) resetCampoUI();
+      else if (id === 13) { resetCampoUI(); aceitarOS(); }
+      else if (id === 14) { resetCampoUI(); aceitarOS(); chegueiLocal(); }
+      else if (id >= 15) { resetCampoUI(); aceitarOS(); chegueiLocal(); enviarAprovacao(); }
 
-      if (id < 13) resetAprovarUI();
-      else if (id === 13) resetAprovarUI();
-      else if (id >= 14) aprovarConclusao();
+      if (id < 16) resetAprovarUI();
+      else if (id === 16) resetAprovarUI();
+      else if (id >= 17) aprovarConclusao();
 
-      if (id < 16) document.getElementById('consultaResult').style.display = 'none';
-      if (id >= 16) document.getElementById('consultaResult').style.display = 'block';
+      if (id < 19) document.getElementById('consultaResult').style.display = 'none';
+      if (id >= 19) document.getElementById('consultaResult').style.display = 'block';
     }
 
     function selectCat(id) {
@@ -984,27 +1038,56 @@
       document.getElementById('stepChip1').style.outline = '2px solid #2163e8';
     }
 
-    function fillForm() {
+    function typeInto(el, text, instant) {
+      if (!el) return;
+      if (instant || el.value === text) {
+        el.value = text;
+        return;
+      }
+      el.value = '';
+      let k = 0;
+      const t = setInterval(() => {
+        el.value = text.slice(0, ++k);
+        if (k >= text.length) clearInterval(t);
+      }, 22);
+    }
+
+    function showFoto() {
       selectCat('buraco');
       document.getElementById('preview').classList.add('show');
-      const ta = document.getElementById('descricao');
-      const text = 'Vi o problema na Rua 11, Centro — risco para moto e carro.';
-      if (ta.value !== text) {
-        ta.value = '';
-        let k = 0;
-        const t = setInterval(() => {
-          ta.value = text.slice(0, ++k);
-          if (k >= text.length) clearInterval(t);
-        }, 18);
-      }
+      document.getElementById('gpsHint').style.display = 'block';
+      document.getElementById('btnTirarFoto').textContent = '✓ Foto anexada';
       document.getElementById('stepChip2').style.outline = '2px solid #2163e8';
+    }
+
+    function fillNome(instant) {
+      showFoto();
+      typeInto(document.getElementById('nome'), 'João Barbosa', instant);
+      document.getElementById('stepChip3').style.outline = '2px solid #2163e8';
+    }
+
+    function fillEndereco(instant) {
+      fillNome(true);
+      const end = 'Rua 11, nº 120 — Centro, Bacabal/MA';
+      typeInto(document.getElementById('endereco'), end, instant);
+      document.getElementById('descricao').value = 'Vi o problema na Rua 11, Centro — risco para moto e carro.';
+    }
+
+    function fillTelefoneOpcional(instant) {
+      fillEndereco(true);
+      // Exemplo preenchido, mas a narracao deixa claro que e opcional
+      typeInto(document.getElementById('telefone'), '(99) 98787-8787', instant);
+    }
+
+    function fillForm() {
+      fillTelefoneOpcional(true);
     }
 
     function enviarChamado() {
       fillForm();
       document.getElementById('formGrid').style.display = 'none';
       document.getElementById('sucessoBox').style.display = 'block';
-      document.getElementById('stepChip3').style.outline = '2px solid #2163e8';
+      document.getElementById('stepChip4').style.outline = '2px solid #2163e8';
     }
 
     function encaminhar() {
@@ -1025,13 +1108,14 @@
       }
       const step = STEPS[i];
       if (step.id === 2) selectCat('buraco');
-      if (step.id === 4) enviarChamado();
-      if (step.id === 7) encaminhar();
-      if (step.id === 9) aceitarOS();
-      if (step.id === 10) chegueiLocal();
-      if (step.id === 11) enviarAprovacao();
-      if (step.id === 13) aprovarConclusao();
-      if (step.id === 15) document.getElementById('consultaResult').style.display = 'block';
+      if (step.id === 3) showFoto();
+      if (step.id === 7) enviarChamado();
+      if (step.id === 10) encaminhar();
+      if (step.id === 12) aceitarOS();
+      if (step.id === 13) chegueiLocal();
+      if (step.id === 14) enviarAprovacao();
+      if (step.id === 16) aprovarConclusao();
+      if (step.id === 18) document.getElementById('consultaResult').style.display = 'block';
       waitingClick = null;
       document.getElementById('btnNext').disabled = false;
       document.getElementById('btnNext').textContent = 'Continuar ▶';
@@ -1060,9 +1144,17 @@
       document.getElementById('kpiEnc').textContent = '0';
       document.querySelectorAll('.cat').forEach((c) => c.classList.remove('selected'));
       document.getElementById('preview').classList.remove('show');
+      document.getElementById('gpsHint').style.display = 'none';
+      document.getElementById('btnTirarFoto').textContent = '📷 Tirar foto do problema';
       document.getElementById('descricao').value = '';
+      document.getElementById('nome').value = '';
+      document.getElementById('endereco').value = '';
+      document.getElementById('telefone').value = '';
       document.getElementById('tipoEscolhido').style.display = 'none';
       document.getElementById('consultaResult').style.display = 'none';
+      ['stepChip1','stepChip2','stepChip3','stepChip4'].forEach((id) => {
+        document.getElementById(id).style.outline = '';
+      });
       resetCampoUI();
       resetAprovarUI();
       go(0);
@@ -1078,6 +1170,7 @@
 
     document.getElementById('btnAbrirChamadoHome').onclick = () => onUserClick('#btnAbrirChamadoHome');
     document.getElementById('catBuraco').onclick = () => onUserClick('#catBuraco');
+    document.getElementById('btnTirarFoto').onclick = () => onUserClick('#btnTirarFoto');
     document.getElementById('enviar').onclick = () => onUserClick('#enviar');
     document.getElementById('loginBtn').onclick = () => onUserClick('#loginBtn');
     document.getElementById('btnEncaminhar').onclick = () => onUserClick('#btnEncaminhar');
