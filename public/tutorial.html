@@ -433,18 +433,135 @@
         </div>
       </div>
 
+      <!-- VIEW CAMPO -->
+      <div class="view" id="viewCampo">
+        <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+          <div>
+            <p class="page-kicker">Equipe de campo · rota do dia</p>
+            <h1 class="display" style="font-size:1.7rem;margin:0">Ordens de serviço</h1>
+            <p class="muted" style="margin:0.3rem 0 0">Login demo: <strong>campo / campo123</strong></p>
+          </div>
+        </div>
+        <div class="sec-kpis">
+          <div class="panel stat"><div class="label">Na rota</div><div class="value" id="kpiCampo">1</div></div>
+          <div class="panel stat"><div class="label">Em execução</div><div class="value" id="kpiExec">0</div></div>
+          <div class="panel stat"><div class="label">Enviados</div><div class="value" id="kpiEnv">0</div></div>
+        </div>
+        <div class="panel">
+          <div class="ticket-card" id="campoCard">
+            <img src="/assets/buraco-demo-antes.jpg" alt="Antes" id="campoFotoAntes" />
+            <div>
+              <div style="display:flex;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;align-items:center">
+                <strong>20261090 · Buraco / Tapa-buraco</strong>
+                <span class="badge badge-encaminhado" id="campoBadge">Encaminhado</span>
+              </div>
+              <div class="meta" style="margin:0.35rem 0 0.65rem">Centro · Rua 11 · OS da secretaria de Obras</div>
+              <div class="actions" id="campoActionsAceitar">
+                <button class="btn btn-sm btn-primary" type="button" id="btnAceitarOS">Aceitar serviço</button>
+              </div>
+              <div class="actions" id="campoActionsCheguei" style="display:none">
+                <button class="btn btn-sm btn-primary" type="button" id="btnCheguei">Cheguei no local</button>
+              </div>
+              <div id="campoExecBox" style="display:none;margin-top:0.75rem">
+                <label>Foto do depois (prova)</label>
+                <img id="fotoDepoisTut" class="preview-tut show" src="/assets/buraco-demo-antes.jpg" alt="Foto depois" style="filter:saturate(1.2) brightness(1.05);border:2px solid #0cbc87" />
+                <p class="muted" style="font-size:0.8rem;margin:0.35rem 0 0.65rem">No app real a equipe tira foto nova. Aqui usamos a prova demo.</p>
+                <button class="btn btn-primary" type="button" id="btnEnviarAprovacao" style="width:100%">Enviar para aprovação</button>
+              </div>
+              <p class="muted" id="campoDone" style="display:none;margin-top:0.65rem;color:#0a966c;font-weight:700">
+                ✓ Enviado à secretaria — aguardando aprovação.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW APROVAÇÃO SECRETARIA -->
+      <div class="view" id="viewAprovar">
+        <div style="margin-bottom:1rem">
+          <p class="page-kicker">Secretaria · aprovação</p>
+          <h1 class="display" style="font-size:1.7rem;margin:0">Conferir serviço</h1>
+          <p class="muted" style="margin:0.3rem 0 0">Campo enviou a foto do depois. Aprove ou devolva.</p>
+        </div>
+        <div class="panel">
+          <div class="grid-2" style="gap:0.85rem;margin-bottom:1rem">
+            <div>
+              <div class="muted" style="font-size:0.75rem;font-weight:800;margin-bottom:0.35rem">ANTES</div>
+              <img src="/assets/buraco-demo-antes.jpg" alt="Antes" style="width:100%;height:140px;object-fit:cover;border-radius:12px;border:1px solid var(--line)" />
+            </div>
+            <div>
+              <div class="muted" style="font-size:0.75rem;font-weight:800;margin-bottom:0.35rem;color:#0a966c">DEPOIS</div>
+              <img src="/assets/buraco-demo-antes.jpg" alt="Depois" style="width:100%;height:140px;object-fit:cover;border-radius:12px;border:2px solid #0cbc87;filter:saturate(1.15) brightness(1.08)" />
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;align-items:center;margin-bottom:0.75rem">
+            <strong>20261090 · Aguardando aprovação</strong>
+            <span class="badge badge-aguardando_aprovacao" id="aprovarBadge">Aguardando aprovação</span>
+          </div>
+          <div class="actions" id="aprovarActions">
+            <button class="btn btn-sm btn-danger" type="button" id="btnDevolver">Devolver ao campo</button>
+            <button class="btn btn-sm btn-primary" type="button" id="btnAprovar">Aprovar conclusão</button>
+          </div>
+          <p class="muted" id="aprovarDone" style="display:none;margin-top:0.75rem;color:#0a966c;font-weight:700">
+            ✓ Concluído. O cidadão já pode consultar o protocolo.
+          </p>
+          <p class="muted" id="devolverHint" style="display:none;margin-top:0.75rem;color:#8A5A00;font-weight:700">
+            Devolveria para o campo refazer a foto. Neste tutorial seguimos com Aprovar.
+          </p>
+        </div>
+      </div>
+
+      <!-- VIEW CONSULTA CIDADÃO -->
+      <div class="view" id="viewConsulta">
+        <div class="citizen-hero">
+          <div>
+            <p class="page-kicker">Cidadão · acompanhar</p>
+            <h1 class="display">Consultar protocolo</h1>
+            <p class="muted" style="margin:0.35rem 0 0">O cidadão digita o número e vê se o serviço foi feito.</p>
+          </div>
+        </div>
+        <div class="panel" style="max-width:560px">
+          <h3 style="margin-bottom:0.85rem">Acompanhar protocolo</h3>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem">
+            <input id="protocoloBusca" value="20261090" readonly style="margin:0;flex:1;min-width:140px" />
+            <button class="btn btn-primary" type="button" id="btnBuscarProto">Buscar</button>
+          </div>
+          <div id="consultaResult" style="display:none">
+            <div class="success-box-tut" style="text-align:left">
+              <div style="display:flex;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;align-items:center">
+                <strong>Protocolo 20261090</strong>
+                <span class="badge badge-concluido">Concluído</span>
+              </div>
+              <p class="muted" style="margin:0.5rem 0">Buraco / Tapa-buraco · Centro · Rua 11</p>
+              <div class="grid-2" style="gap:0.65rem">
+                <div>
+                  <div class="muted" style="font-size:0.72rem;font-weight:800">ANTES</div>
+                  <img src="/assets/buraco-demo-antes.jpg" alt="" style="width:100%;height:100px;object-fit:cover;border-radius:10px;margin-top:0.25rem" />
+                </div>
+                <div>
+                  <div class="muted" style="font-size:0.72rem;font-weight:800;color:#0a966c">DEPOIS</div>
+                  <img src="/assets/buraco-demo-antes.jpg" alt="" style="width:100%;height:100px;object-fit:cover;border-radius:10px;margin-top:0.25rem;border:2px solid #0cbc87;filter:saturate(1.15) brightness(1.08)" />
+                </div>
+              </div>
+              <p style="margin:0.85rem 0 0;font-weight:700;color:#0a966c">Serviço feito e aprovado pela Secretaria de Obras.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- VIEW FIM -->
       <div class="view" id="viewFim">
         <div class="panel" style="text-align:center;padding:2rem 1.25rem">
           <p class="page-kicker">Tutorial concluído</p>
-          <h1 class="display" style="font-size:1.8rem;margin-bottom:0.5rem">Você viu o fluxo completo</h1>
-          <p class="muted" style="max-width:34rem;margin:0 auto 1.25rem">
-            Cidadão registra com foto e GPS → protocolo → secretaria recebe → encaminha ao campo.
-            Agora faça no sistema real.
+          <h1 class="display" style="font-size:1.8rem;margin-bottom:0.5rem">Fluxo completo de Obras</h1>
+          <p class="muted" style="max-width:36rem;margin:0 auto 1.25rem">
+            Home → cidadão registra → secretaria encaminha → campo executa → secretaria aprova → cidadão consulta o protocolo.
+            Depois fazemos o mesmo para Saúde e outras instituições.
           </p>
           <div class="cta-row" style="justify-content:center">
-            <a class="btn btn-primary" href="/cidadao.html?cidade=bacabal">Abrir app cidadão</a>
-            <a class="btn" href="/secretaria.html?cidade=bacabal">Abrir secretaria</a>
+            <a class="btn btn-primary" href="/cidadao.html?cidade=bacabal">App cidadão</a>
+            <a class="btn" href="/equipes.html?cidade=bacabal">Equipe de campo</a>
+            <a class="btn" href="/secretaria.html?cidade=bacabal">Secretaria</a>
             <button class="btn" type="button" id="btnReplay">▶ Ver de novo</button>
           </div>
         </div>
@@ -549,16 +666,85 @@
       {
         id: 8,
         audio: '/assets/tutorial-audio/08.mp3',
-        title: 'Chamado direcionado',
-        text: 'Status Encaminhado. No sistema real o campo executa, manda a foto do depois e a secretaria aprova.',
+        title: 'Encaminhado ao campo',
+        text: 'A OS saiu da secretaria. Agora a equipe de campo recebe na rota do dia.',
         view: 'viewFila',
         target: '#ticketCard',
       },
       {
         id: 9,
-        audio: '/assets/tutorial-audio/09.mp3',
+        audio: '/assets/tutorial-audio/10.mp3',
+        title: '7 · Campo: Aceitar serviço',
+        text: 'Equipe de campo vê a OS. Clique em Aceitar serviço.',
+        view: 'viewCampo',
+        target: '#btnAceitarOS',
+        requireClick: '#btnAceitarOS',
+      },
+      {
+        id: 10,
+        audio: '/assets/tutorial-audio/11.mp3',
+        title: '8 · Clique em Cheguei no local',
+        text: 'Serviço aceito. Clique em Cheguei no local para marcar presença na rua.',
+        view: 'viewCampo',
+        target: '#btnCheguei',
+        requireClick: '#btnCheguei',
+      },
+      {
+        id: 11,
+        audio: '/assets/tutorial-audio/12.mp3',
+        title: '9 · Enviar foto do depois',
+        text: 'Serviço feito. Clique em Enviar para aprovação da secretaria.',
+        view: 'viewCampo',
+        target: '#btnEnviarAprovacao',
+        requireClick: '#btnEnviarAprovacao',
+      },
+      {
+        id: 12,
+        audio: '/assets/tutorial-audio/13.mp3',
+        title: '10 · Secretaria confere',
+        text: 'Voltou para Obras com antes/depois. A secretaria pode aprovar ou devolver.',
+        view: 'viewAprovar',
+        target: '#btnAprovar',
+      },
+      {
+        id: 13,
+        audio: '/assets/tutorial-audio/14.mp3',
+        title: '11 · Aprovar (ou Devolver)',
+        text: 'Devolver manda de volta ao campo. Neste tutorial clique em Aprovar conclusão.',
+        view: 'viewAprovar',
+        target: '#btnAprovar',
+        requireClick: '#btnAprovar',
+      },
+      {
+        id: 14,
+        audio: '/assets/tutorial-audio/15.mp3',
+        title: 'Serviço concluído',
+        text: 'Aprovado. Agora o cidadão consulta o protocolo.',
+        view: 'viewAprovar',
+        target: '#aprovarDone',
+      },
+      {
+        id: 15,
+        audio: '/assets/tutorial-audio/16.mp3',
+        title: '12 · Cidadão busca o protocolo',
+        text: 'Digite o protocolo e clique em Buscar para ver o serviço feito.',
+        view: 'viewConsulta',
+        target: '#btnBuscarProto',
+        requireClick: '#btnBuscarProto',
+      },
+      {
+        id: 16,
+        audio: '/assets/tutorial-audio/16b.mp3',
+        title: 'Protocolo: serviço feito',
+        text: 'Status Concluído com foto do antes e do depois. O cidadão vê o resultado sem ligar.',
+        view: 'viewConsulta',
+        target: '#consultaResult',
+      },
+      {
+        id: 17,
+        audio: '/assets/tutorial-audio/17.mp3',
         title: 'Tutorial concluído',
-        text: 'Fluxo completo: Home → Abrir chamado → Registrar → Secretaria → Encaminhar. Este tutorial não grava dados.',
+        text: 'Fluxo completo de Obras. Depois fazemos Saúde e outras instituições.',
         view: 'viewFim',
         target: null,
       },
@@ -629,15 +815,70 @@
       clearTargets();
       showView(step.view);
       if (typeof step.action === 'function' && !step.requireClick) step.action();
+      syncVisualState(step.id);
+      setCoach(step);
+      playAudio(step.audio);
+      setTimeout(() => aimCursor(step.target), 250);
+    }
 
-      // Estado visual coerente ao navegar entre passos
-      if (step.id >= 3 && step.id <= 5) fillForm();
-      if (step.id === 5) enviarChamado();
-      if (step.id < 5) {
+    function resetCampoUI() {
+      document.getElementById('campoBadge').className = 'badge badge-encaminhado';
+      document.getElementById('campoBadge').textContent = 'Encaminhado';
+      document.getElementById('campoActionsAceitar').style.display = '';
+      document.getElementById('campoActionsCheguei').style.display = 'none';
+      document.getElementById('campoExecBox').style.display = 'none';
+      document.getElementById('campoDone').style.display = 'none';
+      document.getElementById('kpiCampo').textContent = '1';
+      document.getElementById('kpiExec').textContent = '0';
+      document.getElementById('kpiEnv').textContent = '0';
+    }
+
+    function aceitarOS() {
+      document.getElementById('campoBadge').className = 'badge badge-em_execucao';
+      document.getElementById('campoBadge').textContent = 'Em execução';
+      document.getElementById('campoActionsAceitar').style.display = 'none';
+      document.getElementById('campoActionsCheguei').style.display = '';
+      document.getElementById('kpiCampo').textContent = '0';
+      document.getElementById('kpiExec').textContent = '1';
+    }
+
+    function chegueiLocal() {
+      document.getElementById('campoActionsCheguei').style.display = 'none';
+      document.getElementById('campoExecBox').style.display = 'block';
+    }
+
+    function enviarAprovacao() {
+      document.getElementById('campoExecBox').style.display = 'none';
+      document.getElementById('campoDone').style.display = 'block';
+      document.getElementById('campoBadge').className = 'badge badge-aguardando_aprovacao';
+      document.getElementById('campoBadge').textContent = 'Aguardando aprovação';
+      document.getElementById('kpiExec').textContent = '0';
+      document.getElementById('kpiEnv').textContent = '1';
+    }
+
+    function resetAprovarUI() {
+      document.getElementById('aprovarActions').style.display = '';
+      document.getElementById('aprovarDone').style.display = 'none';
+      document.getElementById('devolverHint').style.display = 'none';
+      document.getElementById('aprovarBadge').className = 'badge badge-aguardando_aprovacao';
+      document.getElementById('aprovarBadge').textContent = 'Aguardando aprovação';
+    }
+
+    function aprovarConclusao() {
+      document.getElementById('aprovarActions').style.display = 'none';
+      document.getElementById('aprovarDone').style.display = 'block';
+      document.getElementById('aprovarBadge').className = 'badge badge-concluido';
+      document.getElementById('aprovarBadge').textContent = 'Concluído';
+    }
+
+    function syncVisualState(id) {
+      if (id >= 3 && id <= 5) fillForm();
+      if (id === 5) enviarChamado();
+      if (id < 5) {
         document.getElementById('formGrid').style.display = '';
         document.getElementById('sucessoBox').style.display = 'none';
       }
-      if (step.view === 'viewFila' && step.id < 8) {
+      if (id < 8) {
         document.getElementById('ticketActions').style.display = '';
         document.getElementById('ticketDone').style.display = 'none';
         document.getElementById('ticketBadge').className = 'badge badge-novo';
@@ -645,11 +886,20 @@
         document.getElementById('kpiNovo').textContent = '1';
         document.getElementById('kpiEnc').textContent = '0';
       }
-      if (step.id >= 8) encaminhar();
+      if (id >= 8) encaminhar();
 
-      setCoach(step);
-      playAudio(step.audio);
-      setTimeout(() => aimCursor(step.target), 250);
+      if (id < 9) resetCampoUI();
+      else if (id === 9) resetCampoUI();
+      else if (id === 10) { resetCampoUI(); aceitarOS(); }
+      else if (id === 11) { resetCampoUI(); aceitarOS(); chegueiLocal(); }
+      else if (id >= 12) { resetCampoUI(); aceitarOS(); chegueiLocal(); enviarAprovacao(); }
+
+      if (id < 13) resetAprovarUI();
+      else if (id === 13) resetAprovarUI();
+      else if (id >= 14) aprovarConclusao();
+
+      if (id < 16) document.getElementById('consultaResult').style.display = 'none';
+      if (id >= 16) document.getElementById('consultaResult').style.display = 'block';
     }
 
     function selectCat(id) {
@@ -703,6 +953,11 @@
       if (step.id === 2) selectCat('buraco');
       if (step.id === 4) enviarChamado();
       if (step.id === 7) encaminhar();
+      if (step.id === 9) aceitarOS();
+      if (step.id === 10) chegueiLocal();
+      if (step.id === 11) enviarAprovacao();
+      if (step.id === 13) aprovarConclusao();
+      if (step.id === 15) document.getElementById('consultaResult').style.display = 'block';
       waitingClick = null;
       document.getElementById('btnNext').disabled = false;
       document.getElementById('btnNext').textContent = 'Continuar ▶';
@@ -733,6 +988,9 @@
       document.getElementById('preview').classList.remove('show');
       document.getElementById('descricao').value = '';
       document.getElementById('tipoEscolhido').style.display = 'none';
+      document.getElementById('consultaResult').style.display = 'none';
+      resetCampoUI();
+      resetAprovarUI();
       go(0);
     };
     document.getElementById('btnMute').onclick = () => {
@@ -749,6 +1007,14 @@
     document.getElementById('enviar').onclick = () => onUserClick('#enviar');
     document.getElementById('loginBtn').onclick = () => onUserClick('#loginBtn');
     document.getElementById('btnEncaminhar').onclick = () => onUserClick('#btnEncaminhar');
+    document.getElementById('btnAceitarOS').onclick = () => onUserClick('#btnAceitarOS');
+    document.getElementById('btnCheguei').onclick = () => onUserClick('#btnCheguei');
+    document.getElementById('btnEnviarAprovacao').onclick = () => onUserClick('#btnEnviarAprovacao');
+    document.getElementById('btnAprovar').onclick = () => onUserClick('#btnAprovar');
+    document.getElementById('btnDevolver').onclick = () => {
+      document.getElementById('devolverHint').style.display = 'block';
+    };
+    document.getElementById('btnBuscarProto').onclick = () => onUserClick('#btnBuscarProto');
 
     audio.addEventListener('ended', () => document.getElementById('wave').classList.add('off'));
     audio.addEventListener('play', () => document.getElementById('wave').classList.remove('off'));
