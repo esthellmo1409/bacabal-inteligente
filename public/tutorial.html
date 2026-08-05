@@ -6,6 +6,7 @@
   <title>Tutorial com áudio · Cidadão → Secretaria · Bacabal Conecta</title>
   <meta name="description" content="Tutorial narrado: registre o chamado e encaminhe na secretaria, com a cara do sistema." />
   <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/home.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <style>
     body.tutorial-lock { overflow: hidden; }
@@ -13,6 +14,7 @@
       min-height: 100vh;
       display: grid;
       grid-template-rows: auto 1fr;
+      background: #fff;
     }
     .tut-top {
       position: sticky; top: 0; z-index: 50;
@@ -39,12 +41,69 @@
       min-height: calc(100vh - 64px);
       padding: 1rem 1rem 7.5rem;
     }
+    .tut-stage.home-mode {
+      padding: 0 0 7.5rem;
+      max-width: none;
+      width: 100%;
+    }
 
     .view { display: none; }
     .view.on { display: block; animation: fadeIn .35s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-    .cat.tut-target, .btn.tut-target, button.tut-target, .ticket-card.tut-target {
+    /* Home fake (cara da landing) */
+    .tut-home .pmb-topbar { position: relative; }
+    .tut-home .landing-header { position: relative; }
+    .tut-home .hero-carousel {
+      min-height: min(520px, 70vh);
+      position: relative;
+      overflow: hidden;
+      background: #0f1410;
+    }
+    .tut-home .carousel-slide {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1.5rem;
+      align-items: center;
+      min-height: min(520px, 70vh);
+      width: min(1180px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+    .tut-home .carousel-copy { color: #fff; }
+    .tut-home .carousel-copy .kicker {
+      font-size: 0.75rem; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #ffd19a; margin-bottom: 0.65rem;
+    }
+    .tut-home .carousel-copy h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      letter-spacing: -0.04em; line-height: 1.1; margin: 0 0 0.75rem;
+    }
+    .tut-home .carousel-copy .lead {
+      color: rgba(255,255,255,.88); max-width: 34rem; margin: 0 0 1.25rem; line-height: 1.5;
+    }
+    .tut-home .carousel-actions { display:flex; flex-wrap:wrap; gap:0.65rem; }
+    .tut-home .carousel-visual img {
+      width: 100%; max-height: 360px; object-fit: cover; border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+    }
+    .tut-home .btn-hero {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.85rem 1.25rem; border-radius: 999px; font-weight: 800;
+      text-decoration: none; border: 2px solid transparent; cursor: pointer; font-size: 0.95rem;
+    }
+    .tut-home .btn-hero-primary {
+      background: #ff8000; color: #fff; border-color: #ff8000;
+    }
+    .tut-home .btn-hero-ghost {
+      background: transparent; color: #fff; border-color: rgba(255,255,255,.45);
+    }
+    @media (max-width: 800px) {
+      .tut-home .carousel-slide { grid-template-columns: 1fr; padding: 1.25rem 0; }
+      .tut-home .carousel-visual { order: -1; }
+    }
+
+    .cat.tut-target, .btn.tut-target, button.tut-target, .ticket-card.tut-target, .btn-hero.tut-target {
       position: relative;
       z-index: 40 !important;
       box-shadow: 0 0 0 4px rgba(33,99,232,.45), 0 12px 30px rgba(33,99,232,.25) !important;
@@ -206,9 +265,59 @@
       </div>
     </header>
 
-    <div class="tut-stage wrap">
+    <div class="tut-stage wrap" id="tutStage">
+      <!-- VIEW HOME -->
+      <div class="view on tut-home" id="viewHome">
+        <div class="pmb-topbar">
+          <div class="pmb-topbar-inner">
+            <div>
+              <span style="margin-right:0.85rem">Portal oficial</span>
+              <span style="margin-right:0.85rem">Ouvidoria</span>
+              <span>Transparência</span>
+            </div>
+            <div>(99) 3621-0533 · Centro · Bacabal/MA</div>
+          </div>
+        </div>
+        <header class="landing-header">
+          <div class="landing-header-inner">
+            <div class="landing-brand">
+              <img src="/assets/logo-prefeitura.png" alt="Brasão de Bacabal" />
+              <div>
+                <strong>Bacabal Conecta</strong>
+                <span style="display:block;font-size:0.72rem;opacity:.85">A cidade conectada de verdade</span>
+              </div>
+            </div>
+            <nav class="landing-nav" style="display:flex;gap:1rem;color:#fff;font-weight:700;font-size:0.88rem">
+              <span>Como funciona</span>
+              <span>Cidadão</span>
+              <span>Mapa</span>
+              <span>Admin</span>
+            </nav>
+          </div>
+        </header>
+        <section class="hero-carousel" style="background:linear-gradient(135deg,#1a3d14,#2f7319 45%,#0f1410)">
+          <article class="carousel-slide is-active">
+            <div class="carousel-copy">
+              <p class="kicker">Prefeitura Municipal de Bacabal · MA</p>
+              <h1>Bacabal Conecta</h1>
+              <p class="lead">
+                A cidade conectada de verdade — do chamado na rua ao painel do gabinete,
+                com mapa, protocolo e acompanhamento em tempo real.
+              </p>
+              <div class="carousel-actions">
+                <button type="button" class="btn-hero btn-hero-primary" id="btnAbrirChamadoHome">Abrir chamado</button>
+                <button type="button" class="btn-hero btn-hero-ghost" id="btnComoFuncionaFake">Como funciona</button>
+              </div>
+            </div>
+            <div class="carousel-visual">
+              <img src="/assets/slide-nova.png" alt="Nova Bacabal — identidade do portal oficial" />
+            </div>
+          </article>
+        </section>
+      </div>
+
       <!-- VIEW CIDADÃO -->
-      <div class="view on" id="viewCidadao">
+      <div class="view" id="viewCidadao">
         <div class="citizen-hero">
           <div>
             <p class="page-kicker">Cidadão · Bacabal Conecta</p>
@@ -366,83 +475,90 @@
     const STEPS = [
       {
         id: 0,
-        audio: '/assets/tutorial-audio/01.mp3',
-        title: 'Vamos começar',
-        text: 'Você vai registrar um buraco como cidadão e depois encaminhar na Secretaria de Obras — com a cara real do Bacabal Conecta.',
-        view: 'viewCidadao',
+        audio: '/assets/tutorial-audio/00.mp3',
+        title: 'Começamos na tela inicial',
+        text: 'Esta é a home do Bacabal Conecta — igual o cidadão vê ao abrir o site. Ainda não entrou no formulário.',
+        view: 'viewHome',
         target: null,
-        autoAdvanceMs: null,
       },
       {
         id: 1,
+        audio: '/assets/tutorial-audio/00b.mp3',
+        title: '1 · Clique em Abrir chamado',
+        text: 'Na home, clique no botão laranja Abrir chamado. É o primeiro clique do cidadão.',
+        view: 'viewHome',
+        target: '#btnAbrirChamadoHome',
+        requireClick: '#btnAbrirChamadoHome',
+      },
+      {
+        id: 2,
         audio: '/assets/tutorial-audio/02.mp3',
-        title: '1 · Clique em Buraco',
-        text: 'Primeiro passo: escolha o tipo do problema. Clique no card Buraco (ele fica azul com ✓).',
+        title: '2 · Clique em Buraco',
+        text: 'Agora sim: tela do cidadão. Escolha o tipo do problema. Clique no card Buraco.',
         view: 'viewCidadao',
         target: '#catBuraco',
         requireClick: '#catBuraco',
         action: () => selectCat('buraco'),
       },
       {
-        id: 2,
+        id: 3,
         audio: '/assets/tutorial-audio/03.mp3',
-        title: '2 · Foto, GPS e descrição',
-        text: 'A foto e o GPS entram no protocolo. A descrição já está preenchida no exemplo — no app real você digita e anexa a foto.',
+        title: '3 · Foto, GPS e descrição',
+        text: 'A foto e o GPS entram no protocolo. A descrição já está no exemplo — no app real você digita e anexa a foto.',
         view: 'viewCidadao',
         target: '#preview',
         action: () => fillForm(),
       },
       {
-        id: 3,
+        id: 4,
         audio: '/assets/tutorial-audio/04.mp3',
-        title: '3 · Clique em Enviar chamado',
-        text: 'Agora clique no botão azul Enviar chamado. O sistema gera o protocolo na hora.',
+        title: '4 · Clique em Enviar chamado',
+        text: 'Clique no botão azul Enviar chamado. O sistema gera o protocolo na hora.',
         view: 'viewCidadao',
         target: '#enviar',
         requireClick: '#enviar',
         action: () => enviarChamado(),
       },
       {
-        id: 4,
+        id: 5,
         audio: '/assets/tutorial-audio/05.mp3',
         title: 'Protocolo na mão do cidadão',
-        text: 'Pronto: número gerado. O cidadão acompanha sem ligar de novo. Em seguida vamos para a secretaria.',
+        text: 'Número gerado. O cidadão acompanha sem ligar de novo. Em seguida vamos para a secretaria.',
         view: 'viewCidadao',
         target: '#sucessoBox',
       },
       {
-        id: 5,
+        id: 6,
         audio: '/assets/tutorial-audio/06.mp3',
-        title: '4 · Secretaria: clique em Entrar',
-        text: 'Agora é a vez do secretário. Usuário obras / senha obras123. Clique em Entrar.',
+        title: '5 · Secretaria: clique em Entrar',
+        text: 'Vez do secretário. Usuário obras / senha obras123. Clique em Entrar.',
         view: 'viewLogin',
         target: '#loginBtn',
         requireClick: '#loginBtn',
-        action: () => {},
       },
       {
-        id: 6,
+        id: 7,
         audio: '/assets/tutorial-audio/07.mp3',
-        title: '5 · Clique em Encaminhar ao campo',
-        text: 'O chamado chegou com foto. O secretário clica em Encaminhar ao campo para direcionar a equipe.',
+        title: '6 · Clique em Encaminhar ao campo',
+        text: 'O chamado chegou com foto. Clique em Encaminhar ao campo para direcionar a equipe.',
         view: 'viewFila',
         target: '#btnEncaminhar',
         requireClick: '#btnEncaminhar',
         action: () => encaminhar(),
       },
       {
-        id: 7,
+        id: 8,
         audio: '/assets/tutorial-audio/08.mp3',
         title: 'Chamado direcionado',
-        text: 'Status mudou para Encaminhado. No sistema real o campo executa, manda a foto do depois e a secretaria aprova.',
+        text: 'Status Encaminhado. No sistema real o campo executa, manda a foto do depois e a secretaria aprova.',
         view: 'viewFila',
         target: '#ticketCard',
       },
       {
-        id: 8,
+        id: 9,
         audio: '/assets/tutorial-audio/09.mp3',
         title: 'Tutorial concluído',
-        text: 'Repita no app real: cidadão e secretaria. Este tutorial não grava dados no servidor.',
+        text: 'Fluxo completo: Home → Abrir chamado → Registrar → Secretaria → Encaminhar. Este tutorial não grava dados.',
         view: 'viewFim',
         target: null,
       },
@@ -454,9 +570,12 @@
     const audio = document.getElementById('narrator');
     const cursor = document.getElementById('cursor');
     const spotlight = document.getElementById('spotlight');
+    const tutStage = document.getElementById('tutStage');
 
     function showView(id) {
       document.querySelectorAll('.view').forEach((v) => v.classList.toggle('on', v.id === id));
+      tutStage.classList.toggle('home-mode', id === 'viewHome');
+      tutStage.classList.toggle('wrap', id !== 'viewHome');
     }
 
     function clearTargets() {
@@ -510,9 +629,24 @@
       clearTargets();
       showView(step.view);
       if (typeof step.action === 'function' && !step.requireClick) step.action();
-      // For requireClick steps, run setup before click if needed (except the click action itself)
-      if (step.id === 2) fillForm();
-      if (step.id === 4) enviarChamado();
+
+      // Estado visual coerente ao navegar entre passos
+      if (step.id >= 3 && step.id <= 5) fillForm();
+      if (step.id === 5) enviarChamado();
+      if (step.id < 5) {
+        document.getElementById('formGrid').style.display = '';
+        document.getElementById('sucessoBox').style.display = 'none';
+      }
+      if (step.view === 'viewFila' && step.id < 8) {
+        document.getElementById('ticketActions').style.display = '';
+        document.getElementById('ticketDone').style.display = 'none';
+        document.getElementById('ticketBadge').className = 'badge badge-novo';
+        document.getElementById('ticketBadge').textContent = 'Novo';
+        document.getElementById('kpiNovo').textContent = '1';
+        document.getElementById('kpiEnc').textContent = '0';
+      }
+      if (step.id >= 8) encaminhar();
+
       setCoach(step);
       playAudio(step.audio);
       setTimeout(() => aimCursor(step.target), 250);
@@ -566,13 +700,12 @@
         setTimeout(() => cursor.classList.remove('click'), 280);
       }
       const step = STEPS[i];
-      if (step.id === 1) selectCat('buraco');
-      if (step.id === 3) enviarChamado();
-      if (step.id === 6) encaminhar();
+      if (step.id === 2) selectCat('buraco');
+      if (step.id === 4) enviarChamado();
+      if (step.id === 7) encaminhar();
       waitingClick = null;
       document.getElementById('btnNext').disabled = false;
       document.getElementById('btnNext').textContent = 'Continuar ▶';
-      // avança sozinho após o clique certo
       setTimeout(() => go(i + 1), 650);
     }
 
@@ -599,6 +732,7 @@
       document.querySelectorAll('.cat').forEach((c) => c.classList.remove('selected'));
       document.getElementById('preview').classList.remove('show');
       document.getElementById('descricao').value = '';
+      document.getElementById('tipoEscolhido').style.display = 'none';
       go(0);
     };
     document.getElementById('btnMute').onclick = () => {
@@ -610,6 +744,7 @@
       else playAudio(STEPS[i].audio);
     };
 
+    document.getElementById('btnAbrirChamadoHome').onclick = () => onUserClick('#btnAbrirChamadoHome');
     document.getElementById('catBuraco').onclick = () => onUserClick('#catBuraco');
     document.getElementById('enviar').onclick = () => onUserClick('#enviar');
     document.getElementById('loginBtn').onclick = () => onUserClick('#loginBtn');
