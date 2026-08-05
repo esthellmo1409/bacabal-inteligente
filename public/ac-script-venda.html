@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Script de venda · Anselmo Carvalho · uso interno</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="description" content="Uso interno — não publicar no portal." />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <style>
+    :root {
+      --ink: #141814;
+      --muted: #5a645c;
+      --line: #e2e6e1;
+      --bg: #f4f6f3;
+      --paper: #fff;
+      --orange: #e67300;
+      --green: #2f7319;
+      --soft: #fff8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 1.25rem 1rem 3.5rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--orange);
+      background: var(--soft);
+      border: 1px solid #ffd7a8;
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    h1 {
+      font-size: clamp(1.55rem, 4vw, 2rem);
+      letter-spacing: -0.03em;
+      margin: 0 0 0.35rem;
+      line-height: 1.2;
+    }
+    .sub { color: var(--muted); margin: 0 0 1.25rem; max-width: 36rem; }
+    .hero {
+      background: linear-gradient(145deg, #ff8000 0%, #e67300 42%, #2f7319 100%);
+      color: #fff;
+      border-radius: 20px;
+      padding: 1.35rem 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 16px 40px rgba(230, 115, 0, 0.22);
+    }
+    .hero h2 { margin: 0 0 0.35rem; font-size: 1.15rem; color: #fff; }
+    .hero p { margin: 0; opacity: 0.95; font-size: 0.95rem; }
+    .who {
+      display: flex; gap: 0.85rem; align-items: center; flex-wrap: wrap;
+      margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.28);
+    }
+    .who strong { display: block; font-size: 1.05rem; }
+    .who span { opacity: 0.9; font-size: 0.85rem; }
+    section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.1rem 1.15rem;
+      margin-bottom: 0.85rem;
+    }
+    section h3 {
+      margin: 0 0 0.55rem;
+      font-size: 1rem;
+      color: var(--green);
+      letter-spacing: -0.02em;
+    }
+    section h4 {
+      margin: 0.85rem 0 0.35rem;
+      font-size: 0.88rem;
+      color: var(--ink);
+    }
+    p, li { font-size: 0.92rem; color: var(--ink); }
+    ul { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    li { margin: 0.25rem 0; color: var(--muted); }
+    .quote {
+      border-left: 4px solid var(--orange);
+      background: var(--soft);
+      border-radius: 0 12px 12px 0;
+      padding: 0.75rem 0.95rem;
+      margin: 0.65rem 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: pre-wrap;
+    }
+    .quote.soft {
+      font-weight: 500;
+      color: #2a322c;
+      background: #f7faf6;
+      border-left-color: var(--green);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      margin-top: 0.4rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f0f4ef; color: var(--green); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .warn {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 1.25rem;
+      padding: 0.75rem 0.9rem;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .print {
+      position: sticky; top: 0; z-index: 5;
+      display: flex; gap: 0.5rem; justify-content: flex-end;
+      padding: 0.65rem 0;
+      background: linear-gradient(180deg, var(--bg) 70%, transparent);
+    }
+    .print button {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0.45rem 0.9rem;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    @media print {
+      .print { display: none; }
+      body { background: #fff; }
+      .wrap { padding: 0; max-width: none; }
+      section, .hero { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="print">
+      <button type="button" onclick="window.print()">Imprimir / PDF</button>
+    </div>
+
+    <div class="badge">Uso interno · não está no site público</div>
+    <h1>Script de oferta ao prefeito</h1>
+    <p class="sub">Bacabal Conecta — estratégia de venda e falas prontas. Página separada, sem link na home nem no portal.</p>
+
+    <div class="hero">
+      <h2>Quem oferece</h2>
+      <p>Ferramenta de cidade com protocolo, mapa e cobrança por secretaria — sem vender “só um site”.</p>
+      <div class="who">
+        <div>
+          <strong>Anselmo Carvalho</strong>
+          <span>Responsável pela apresentação · piloto Obras · Bacabal/MA</span>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <h3>1 · Estratégia (alinhar o time)</h3>
+      <p><strong>Não venda site.</strong> Venda ordem: reclamação vira protocolo, secretaria tem fila, campo prova com foto, gabinete cobra com número.</p>
+      <table>
+        <thead>
+          <tr><th>Evite</th><th>Prefira</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>“Sistema moderno / tecnologia”</td><td>“Menos WhatsApp solto, mais prova e prazo”</td></tr>
+          <tr><td>Lista longa de módulos</td><td>1 fluxo: rua → protocolo → Obras → campo → concluído</td></tr>
+          <tr><td>“Igual cidade grande”</td><td>“Piloto em Bacabal, no ritmo da prefeitura”</td></tr>
+          <tr><td>Pressão de contrato</td><td>“Demo ao vivo + 15 dias de piloto com Obras”</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h3>2 · Abertura (30–45 s)</h3>
+      <div class="quote">“Prefeito, boa tarde. Sou o Anselmo Carvalho.
+Vim por um motivo objetivo: hoje muita reclamação da cidade some no WhatsApp, no telefone ou na conversa.
+A gente montou o Bacabal Conecta: o cidadão registra o problema com foto e local, ganha protocolo, a secretaria encaminha, a equipe de campo executa e o senhor acompanha no gabinete — com número, não no achismo.
+Em cinco minutos eu mostro o fluxo completo. Se fizer sentido, a gente fecha um piloto só com Obras.”</div>
+    </section>
+
+    <section>
+      <h3>3 · Roteiro da demo (5–7 min)</h3>
+
+      <h4>Dor (20 s)</h4>
+      <div class="quote soft">“O problema não é falta de vontade. É falta de rastreio. Sem protocolo, ninguém sabe quem recebeu, quem atrasou e o que foi feito de verdade.”</div>
+
+      <h4>Cidadão (1,5 min)</h4>
+      <p>Abrir chamado → tipo → foto → nome → endereço → telefone opcional → enviar.</p>
+      <div class="quote soft">“Aqui o morador não ‘manda no grupo’. Ele abre ocorrência oficial. Sai o protocolo: esse número é o comprovante dele e a trilha da prefeitura.”</div>
+      <div class="quote soft">“A gente ainda reforça colaboração: obrigado por ajudar a cidade — isso muda o tom da população.”</div>
+
+      <h4>Secretaria (1 min)</h4>
+      <div class="quote soft">“Secretaria não vira gargalo do senhor. Ela organiza a fila e manda pro campo. O prefeito governa prioridade; quem executa é a secretaria.”</div>
+
+      <h4>Campo (1 min)</h4>
+      <div class="quote soft">“Na rua, celular substitui papel. Sem foto do depois, o serviço não fecha. Isso protege a gestão.”</div>
+
+      <h4>Aprovação + consulta (1 min)</h4>
+      <div class="quote soft">“Fecha o ciclo: cidadão vê resultado sem ligar de novo. Menos reclamação repetida, mais confiança.”</div>
+
+      <h4>Gabinete (30–45 s)</h4>
+      <div class="quote soft">“O senhor não precisa autorizar cada buraco. O senhor vê o que está aberto, atrasado e urgente — e cobra com registro.”</div>
+    </section>
+
+    <section>
+      <h3>4 · Frases de fechamento</h3>
+      <div class="quote">“Uma tela. Fila organizada. Resultado com protocolo.”</div>
+      <div class="quote">“Não estamos vendendo site. Estamos vendendo prova, prazo e gente responsável.”</div>
+    </section>
+
+    <section>
+      <h3>5 · Objeções — resposta pronta</h3>
+
+      <h4>“Já temos portal / ouvidoria / e-SIC.”</h4>
+      <div class="quote soft">“Perfeito — isso fica. O Conecta não substitui transparência. Ele resolve a operação da rua: foto, GPS, fila da secretaria e prova do serviço.”</div>
+
+      <h4>“Vai dar trabalho pra equipe.”</h4>
+      <div class="quote soft">“O piloto começa em Obras, com login simples e tutorial narrado. Em uma tarde a equipe reproduz o fluxo. Campo só aceita, chega e manda a foto do depois.”</div>
+
+      <h4>“E o custo / internet do povo?”</h4>
+      <div class="quote soft">“Funciona no celular do cidadão, como WhatsApp. O importante é a prefeitura parar de perder chamado no áudio e no print.”</div>
+
+      <h4>“Parece sistema de capital.”</h4>
+      <div class="quote soft">“Foi pensado pra interior: fluxo curto, português claro, demo com a cara de Bacabal. Escala depois pra Saúde e outras secretarias.”</div>
+
+      <h4>“Preciso falar com TI / jurídico.”</h4>
+      <div class="quote soft">“Combinado. Eu deixo o link da demo, o tutorial e um resumo de uma página. A gente marca 15 minutos com quem o senhor indicar.”</div>
+
+      <h4>“Quanto custa?” (se perguntarem cedo)</h4>
+      <div class="quote soft">“Antes do número: piloto com Obras, escopo fechado, prazo e indicador — por exemplo, porcentagem de chamados com foto do depois. Aí a gente precifica pelo módulo e pelo suporte — sem surpresa.”</div>
+    </section>
+
+    <section>
+      <h3>6 · Pedido de fechamento (sempre sair com isso)</h3>
+      <div class="quote">“Prefeito, o pedido de hoje é só um:
+autorizar um piloto de 15 dias na Secretaria de Obras — com 1 ponto focal da secretaria e 1 da equipe de campo.
+Eu treino com o tutorial, a gente mede protocolo gerado e serviço com foto do depois, e o senhor vê no gabinete.
+Se entregar, expandimos. Se não entregar, a gente para sem drama.”</div>
+      <ul>
+        <li>Link da demo (uso interno do time)</li>
+        <li>Link do tutorial narrado</li>
+        <li>1 folha: logins demo + “protocolo = comprovante”</li>
+        <li>Contato: <strong>Anselmo Carvalho</strong></li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>7 · Elevador (20 s)</h3>
+      <div class="quote">“Anselmo Carvalho. Bacabal Conecta: problema na rua vira protocolo com foto; Obras encaminha; campo prova; gabinete cobra. Em cinco minutos eu mostro. Pedido: piloto de Obras por 15 dias.”</div>
+    </section>
+
+    <section>
+      <h3>8 · Como o time usa</h3>
+      <ul>
+        <li>Ensaiar a demo uma vez no tutorial (sem improvisar tela).</li>
+        <li>Na reunião: Anselmo fala; outra pessoa só troca tela se precisar.</li>
+        <li>Não abrir Admin/TV no meio — foco no fluxo cidadão → Obras → campo → concluído.</li>
+        <li>Fechar sempre com piloto, não com “vamos pensar num sistema completo”.</li>
+      </ul>
+    </section>
+
+    <p class="warn">
+      Esta página é privada de estratégia. Não há link na home, no menu nem no pitch público.
+      Guarde o endereço. Quem não tiver o link não encontra pelo site.
+    </p>
+  </div>
+</body>
+</html>
