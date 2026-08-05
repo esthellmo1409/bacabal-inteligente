@@ -345,6 +345,17 @@
 
 .btn-hero-primary:hover { background: #f4fff0; color: var(--pmb-green-deep); }
 
+.btn-hero-primary.cta-pulse {
+  animation: ctaPulse 0.85s ease 3;
+  box-shadow: 0 0 0 4px rgba(255, 128, 0, 0.45), 0 12px 28px rgba(255, 128, 0, 0.35);
+  z-index: 5;
+  position: relative;
+}
+@keyframes ctaPulse {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.03); }
+}
+
 .btn-hero-ghost {
   background: transparent;
   color: #fff;

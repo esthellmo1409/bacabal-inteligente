@@ -67,7 +67,7 @@
             com mapa, protocolo e acompanhamento em tempo real.
           </p>
           <div class="carousel-actions">
-            <a class="btn-hero btn-hero-primary" href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
+            <a class="btn-hero btn-hero-primary" id="ctaAbrirChamado" href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
             <a class="btn-hero btn-hero-ghost" href="/fluxo.html?cidade=bacabal">Como funciona</a>
           </div>
         </div>
@@ -212,6 +212,21 @@
     setCidade('bacabal');
 
     (function () {
+      function focusAbrirChamado() {
+        // Garante o slide do cidadão (tem o botão Abrir chamado)
+        if (typeof window.__homeCarouselGo === 'function') window.__homeCarouselGo(0);
+        const cta =
+          document.getElementById('ctaAbrirChamado') ||
+          document.querySelector('.carousel-slide.is-active .btn-hero-primary');
+        if (!cta) return;
+        cta.classList.remove('cta-pulse');
+        void cta.offsetWidth;
+        cta.classList.add('cta-pulse');
+        cta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        try { cta.focus({ preventScroll: true }); } catch (_) { /* ok */ }
+        setTimeout(() => cta.classList.remove('cta-pulse'), 2600);
+      }
+
       function bindDrop(btnId, menuId) {
         const btn = document.getElementById(btnId);
         const menu = document.getElementById(menuId);
@@ -229,6 +244,10 @@
           if (willOpen) {
             menu.hidden = false;
             btn.setAttribute('aria-expanded', 'true');
+          }
+          // Cidadão: rola até Abrir chamado (mobile e PC) — feedback claro do clique
+          if (btnId === 'navCidadao' && willOpen) {
+            setTimeout(focusAbrirChamado, 60);
           }
         });
         menu.addEventListener('click', (e) => e.stopPropagation());
@@ -269,6 +288,7 @@
         render();
         restart();
       }
+      window.__homeCarouselGo = go;
 
       function restart() {
         clearInterval(timer);
