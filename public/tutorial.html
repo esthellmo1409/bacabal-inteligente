@@ -9,17 +9,23 @@
   <link rel="stylesheet" href="/home.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <style>
-    body.tutorial-lock { overflow: hidden; }
+    body.tutorial-lock { overflow: auto; }
     .tut-shell {
       min-height: 100vh;
       min-height: 100dvh;
       display: grid;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: auto 1fr;
       background: #fff;
     }
+    .tut-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
     .tut-top {
-      position: sticky; top: 0; z-index: 50;
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.96);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--line);
       padding: 0.65rem 1rem;
@@ -40,12 +46,11 @@
     .tut-stage {
       position: relative;
       min-height: 0;
-      padding: 1rem 1rem 7.5rem;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
+      padding: 1rem 1rem 2rem;
+      overflow: visible;
     }
     .tut-stage.home-mode {
-      padding: 0 0 7.5rem;
+      padding: 0 0 2rem;
       max-width: none;
       width: 100%;
     }
@@ -118,29 +123,32 @@
     }
 
     .spotlight {
-      position: fixed; inset: 0; z-index: 30;
+      position: fixed; inset: 0; z-index: 20;
       pointer-events: none;
-      background: rgba(10, 18, 40, .55);
+      background: rgba(10, 18, 40, .28);
       opacity: 0; transition: opacity .3s;
     }
     .spotlight.on { opacity: 1; }
 
+    /* Coach SEMPRE no fluxo (sob o header) — nunca overlay flutuante cobrindo botões */
     .coach {
-      position: fixed; z-index: 60;
-      width: min(420px, calc(100vw - 1.5rem));
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: none;
       background: #fff;
-      border: 1px solid var(--royal-line);
-      border-radius: 18px;
-      box-shadow: 0 22px 60px rgba(26,79,186,.28);
-      padding: 1rem 1.1rem 1.05rem;
-      left: 50%; bottom: 1rem; transform: translateX(-50%);
-      max-height: min(42vh, 320px);
-      overflow: auto;
+      border: 0;
+      border-bottom: 1px solid var(--royal-line);
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0.75rem 1.1rem 0.85rem;
+      left: auto; bottom: auto; transform: none;
+      max-height: none;
+      overflow: visible;
     }
     .coach[hidden] { display: none !important; }
     .coach.minimized {
-      max-height: none;
-      padding: 0.55rem 0.75rem 0.6rem;
+      padding: 0.5rem 1.1rem 0.55rem;
     }
     .coach.minimized h2,
     .coach.minimized p,
@@ -151,15 +159,16 @@
       text-transform: uppercase; color: #e67300; margin-bottom: 0.35rem;
     }
     .coach h2 {
-      font-size: 1.15rem; margin: 0 0 0.4rem; letter-spacing: -0.03em; line-height: 1.25;
+      font-size: 1.05rem; margin: 0 0 0.35rem; letter-spacing: -0.03em; line-height: 1.25;
     }
     .coach p {
-      margin: 0 0 0.85rem; color: var(--muted); font-size: 0.92rem; line-height: 1.45;
+      margin: 0 0 0.7rem; color: var(--muted); font-size: 0.9rem; line-height: 1.45;
+      max-width: 52rem;
     }
     .coach-actions { display:flex; gap:0.45rem; flex-wrap:wrap; align-items:center; }
     .coach-progress {
       height: 5px; background: var(--surface2); border-radius: 99px; overflow: hidden;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.65rem;
     }
     .coach-progress > i {
       display:block; height:100%; width:0%;
@@ -241,50 +250,21 @@
 
     .sec-kpis { display:grid; grid-template-columns: repeat(3,1fr); gap:0.75rem; margin-bottom:1rem; }
 
-    /* Mobile: coach no fluxo (embaixo do header) — NÃO overlay em cima dos botões */
+    .cat.tut-target, .btn.tut-target, button.tut-target, .ticket-card.tut-target, .btn-hero.tut-target {
+      scroll-margin-top: 1.25rem;
+      scroll-margin-bottom: 1.5rem;
+    }
+
     @media (max-width: 900px) {
-      body.tutorial-lock { overflow: auto; }
       .ticket-card { grid-template-columns: 1fr; }
       .ticket-card img { width: 100%; height: 140px; }
       .sec-kpis { grid-template-columns: 1fr; }
-      .tut-top { position: relative; }
-      .coach {
-        position: relative !important;
-        top: auto !important;
-        bottom: auto !important;
-        left: auto !important;
-        right: auto !important;
-        transform: none !important;
-        width: 100% !important;
-        max-width: none;
-        max-height: none;
-        border-radius: 0;
-        border-left: 0;
-        border-right: 0;
-        border-top: 0;
-        box-shadow: 0 6px 18px rgba(26,79,186,.12);
-        padding: 0.65rem 0.85rem 0.7rem;
-        z-index: 40;
-      }
+      .coach { padding: 0.65rem 0.85rem 0.7rem; }
       .coach h2 { font-size: 0.95rem; margin-bottom: 0.2rem; }
       .coach p { font-size: 0.8rem; margin-bottom: 0.5rem; }
-      .tut-stage {
-        padding: 0.85rem 0.85rem 1.5rem !important;
-      }
-      .tut-stage.home-mode {
-        padding: 0 0 1.5rem !important;
-      }
-      .tut-stage > .view.on,
-      .tut-stage.home-mode > .view.on {
-        padding-top: 0 !important;
-      }
-      .cat.tut-target, .btn.tut-target, button.tut-target, .ticket-card.tut-target, .btn-hero.tut-target {
-        scroll-margin-top: 1rem;
-        scroll-margin-bottom: 2rem;
-        z-index: 5 !important;
-      }
-      /* Spotlight mais leve no mobile pra não “apertar” o botão */
-      .spotlight { background: rgba(10, 18, 40, .35); }
+      .tut-stage { padding: 0.85rem 0.85rem 1.5rem; }
+      .tut-stage.home-mode { padding: 0 0 1.5rem; }
+      .spotlight { background: rgba(10, 18, 40, .22); }
     }
 
     @media (max-width: 700px) {
@@ -310,35 +290,37 @@
   </div>
 
   <div class="tut-shell" id="appShell" hidden>
-    <header class="tut-top">
-      <div class="tut-brand">
-        <img src="/assets/logo-prefeitura.png" alt="" />
-        <div>
-          <strong>Bacabal Conecta</strong>
-          <span>Tutorial guiado · não altera dados reais</span>
+    <div class="tut-sticky">
+      <header class="tut-top">
+        <div class="tut-brand">
+          <img src="/assets/logo-prefeitura.png" alt="" />
+          <div>
+            <strong>Bacabal Conecta</strong>
+            <span>Tutorial guiado · não altera dados reais</span>
+          </div>
         </div>
-      </div>
-      <div class="tut-top-actions">
-        <button type="button" class="tut-mute on" id="btnMute">🔊 Áudio ligado</button>
-        <a class="btn btn-sm" href="/cidadao.html?cidade=bacabal">App real</a>
-        <a class="btn btn-sm" href="/?cidade=bacabal">Início</a>
-      </div>
-    </header>
+        <div class="tut-top-actions">
+          <button type="button" class="tut-mute on" id="btnMute">🔊 Áudio ligado</button>
+          <a class="btn btn-sm" href="/cidadao.html?cidade=bacabal">App real</a>
+          <a class="btn btn-sm" href="/?cidade=bacabal">Início</a>
+        </div>
+      </header>
 
-    <aside class="coach" id="coach" hidden>
-      <div class="coach-progress"><i id="coachProg"></i></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.25rem">
-        <div class="coach-step" id="coachStep" style="margin:0">Passo 1 de 9</div>
-        <button type="button" class="btn btn-sm" id="btnCoachToggle" style="padding:0.25rem 0.55rem;font-size:0.72rem">Recolher</button>
-      </div>
-      <h2 id="coachTitle">Título</h2>
-      <p id="coachText">Texto</p>
-      <div class="coach-actions">
-        <button class="btn btn-sm" type="button" id="btnPrev">◀ Voltar</button>
-        <button class="btn btn-sm btn-primary" type="button" id="btnNext">Continuar ▶</button>
-        <div class="audio-wave" id="wave"><span></span><span></span><span></span></div>
-      </div>
-    </aside>
+      <aside class="coach" id="coach" hidden>
+        <div class="coach-progress"><i id="coachProg"></i></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.25rem">
+          <div class="coach-step" id="coachStep" style="margin:0">Passo 1 de 9</div>
+          <button type="button" class="btn btn-sm" id="btnCoachToggle" style="padding:0.25rem 0.55rem;font-size:0.72rem">Recolher</button>
+        </div>
+        <h2 id="coachTitle">Título</h2>
+        <p id="coachText">Texto</p>
+        <div class="coach-actions">
+          <button class="btn btn-sm" type="button" id="btnPrev">◀ Voltar</button>
+          <button class="btn btn-sm btn-primary" type="button" id="btnNext">Continuar ▶</button>
+          <div class="audio-wave" id="wave"><span></span><span></span><span></span></div>
+        </div>
+      </aside>
+    </div>
 
     <div class="tut-stage wrap" id="tutStage">
       <!-- VIEW HOME -->
@@ -846,11 +828,24 @@
         return;
       }
       el.classList.add('tut-target');
+      const sticky = document.querySelector('.tut-sticky');
+      const pad = (sticky ? sticky.getBoundingClientRect().height : 0) + 16;
+      el.style.scrollMarginTop = pad + 'px';
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const r = el.getBoundingClientRect();
-      cursor.classList.add('show');
-      cursor.style.left = (r.left + r.width * 0.72) + 'px';
-      cursor.style.top = (r.top + r.height * 0.55) + 'px';
+      const place = () => {
+        const r = el.getBoundingClientRect();
+        const stickyH = sticky ? sticky.getBoundingClientRect().height : 0;
+        if (r.top < stickyH + 12) {
+          window.scrollBy({ top: r.top - stickyH - 20, behavior: 'smooth' });
+        } else if (r.bottom > window.innerHeight - 20) {
+          window.scrollBy({ top: r.bottom - window.innerHeight + 28, behavior: 'smooth' });
+        }
+        const r2 = el.getBoundingClientRect();
+        cursor.classList.add('show');
+        cursor.style.left = (r2.left + r2.width * 0.72) + 'px';
+        cursor.style.top = (r2.top + r2.height * 0.55) + 'px';
+      };
+      setTimeout(place, 320);
       spotlight.classList.add('on');
     }
 
@@ -875,16 +870,12 @@
       document.getElementById('coachTitle').textContent = step.title;
       document.getElementById('coachText').textContent = step.text;
       document.getElementById('coachProg').style.width = (((step.id) / (STEPS.length - 1)) * 100) + '%';
-      document.getElementById('btnNext').textContent = step.requireClick ? 'Espere o clique destacado…' : (step.id === STEPS.length - 1 ? 'Concluir' : 'Continuar ▶');
+      document.getElementById('btnNext').textContent = step.requireClick ? 'Toque no botão destacado ↓' : (step.id === STEPS.length - 1 ? 'Concluir' : 'Continuar ▶');
       document.getElementById('btnNext').disabled = !!step.requireClick;
-      // No mobile, recolhe quando precisa clicar — libera a tela
-      const mobile = window.matchMedia('(max-width: 900px)').matches;
-      if (mobile && step.requireClick) {
+      // Passos de clique: recolhe em PC e mobile — libera os botões da tela
+      if (step.requireClick) {
         coach.classList.add('minimized');
         document.getElementById('btnCoachToggle').textContent = 'Abrir ajuda';
-      } else if (mobile) {
-        coach.classList.remove('minimized');
-        document.getElementById('btnCoachToggle').textContent = 'Recolher';
       } else {
         coach.classList.remove('minimized');
         document.getElementById('btnCoachToggle').textContent = 'Recolher';
