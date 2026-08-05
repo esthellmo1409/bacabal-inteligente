@@ -365,9 +365,14 @@
           const ok = document.getElementById('sucesso');
           ok.style.display = 'block';
           ok.innerHTML = `
-            <strong>Chamado aberto</strong>
+            <strong>Obrigado pela sua colaboração!</strong>
+            <p style="margin:0.45rem 0 0.15rem;line-height:1.45">
+              Seu registro ajuda a Prefeitura de Bacabal a cuidar da cidade com mais agilidade.
+            </p>
             <div class="protocolo-big">${chamado.protocolo}</div>
-            <p class="muted" style="margin:0.35rem 0 0.75rem">Guarde este número. A secretaria já recebeu na fila.</p>
+            <p class="muted" style="margin:0.35rem 0 0.75rem">
+              Guarde este protocolo — é o seu comprovante. A secretaria já recebeu na fila e você pode acompanhar por aqui.
+            </p>
             <div class="actions">
               <button class="btn btn-sm btn-primary" type="button" onclick="copyText('${chamado.protocolo}')">Copiar protocolo</button>
               <a class="btn btn-sm" href="${cityLink('/cidadao.html')}&protocolo=${chamado.protocolo}">Link de acompanhamento</a>
