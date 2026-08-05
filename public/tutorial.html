@@ -392,7 +392,7 @@
             <h3 style="margin-bottom:0.85rem">Novo chamado</h3>
             <label>Tipo de problema</label>
             <div class="cats" id="cats">
-              <button type="button" class="cat" data-cat="buraco" id="catBuraco">🕳️<br />Problema</button>
+              <button type="button" class="cat" data-cat="buraco" id="catBuraco">🕳️<br />Viu o problema na rua</button>
               <button type="button" class="cat" data-cat="lampada" id="catLamp">💡<br />Lâmpada</button>
               <button type="button" class="cat" data-cat="lixo" id="catLixo">🗑️<br />Lixo</button>
               <button type="button" class="cat" data-cat="poda" id="catPoda">🌳<br />Poda</button>
@@ -400,7 +400,7 @@
             <div id="tipoEscolhido" class="tipo-escolhido" style="display:none"></div>
 
             <label>Descrição</label>
-            <textarea id="descricao" placeholder="Ex.: problema grande na frente do nº 120…" readonly></textarea>
+            <textarea id="descricao" placeholder="Ex.: vi o problema na rua, na frente do nº 120…" readonly></textarea>
 
             <label>Foto</label>
             <img id="preview" class="preview-tut" src="/assets/buraco-demo-antes.jpg" alt="Foto do problema" />
@@ -467,7 +467,7 @@
             <img src="/assets/buraco-demo-antes.jpg" alt="Foto do chamado" />
             <div>
               <div style="display:flex;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;align-items:center">
-                <strong id="ticketTitle">20261090 · Problema</strong>
+                <strong id="ticketTitle">20261090 · Problema na rua</strong>
                 <span class="badge badge-novo" id="ticketBadge">Novo</span>
               </div>
               <div class="meta" style="margin:0.35rem 0 0.65rem">Centro · Rua 11 · Prioridade alta · há 2 min</div>
@@ -502,7 +502,7 @@
             <img src="/assets/buraco-demo-antes.jpg" alt="Antes" id="campoFotoAntes" />
             <div>
               <div style="display:flex;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;align-items:center">
-                <strong>20261090 · Problema</strong>
+                <strong>20261090 · Problema na rua</strong>
                 <span class="badge badge-encaminhado" id="campoBadge">Encaminhado</span>
               </div>
               <div class="meta" style="margin:0.35rem 0 0.65rem">Centro · Rua 11 · OS da secretaria de Obras</div>
@@ -582,7 +582,7 @@
                 <strong>Protocolo 20261090</strong>
                 <span class="badge badge-concluido">Concluído</span>
               </div>
-              <p class="muted" style="margin:0.5rem 0">Problema · Centro · Rua 11</p>
+              <p class="muted" style="margin:0.5rem 0">Problema na rua · Centro · Rua 11</p>
               <div class="grid-2" style="gap:0.65rem">
                 <div>
                   <div class="muted" style="font-size:0.72rem;font-weight:800">ANTES</div>
@@ -663,8 +663,8 @@
       {
         id: 2,
         audio: '/assets/tutorial-audio/02.mp3',
-        title: '2 · Clique em Problema',
-        text: 'Agora sim: tela do cidadão. Escolha o tipo do problema. Clique no card Problema.',
+        title: '2 · Clique em Viu o problema na rua',
+        text: 'Agora sim: tela do cidadão. Escolha o tipo. Clique no card Viu o problema na rua.',
         view: 'viewCidadao',
         target: '#catBuraco',
         requireClick: '#catBuraco',
@@ -969,7 +969,7 @@
       document.querySelectorAll('.cat').forEach((c) => c.classList.toggle('selected', c.dataset.cat === id));
       const box = document.getElementById('tipoEscolhido');
       box.style.display = 'block';
-      box.innerHTML = '<strong>Selecionado:</strong> Problema → Secretaria de Obras';
+      box.innerHTML = '<strong>Selecionado:</strong> Viu o problema na rua → Secretaria de Obras';
       document.getElementById('stepChip1').style.outline = '2px solid #2163e8';
     }
 
@@ -977,7 +977,7 @@
       selectCat('buraco');
       document.getElementById('preview').classList.add('show');
       const ta = document.getElementById('descricao');
-      const text = 'Problema grande na Rua 11, Centro — risco para moto e carro.';
+      const text = 'Vi o problema na Rua 11, Centro — risco para moto e carro.';
       if (ta.value !== text) {
         ta.value = '';
         let k = 0;
