@@ -70,10 +70,11 @@
       if (t.primaria) {
         root.style.setProperty('--brand', t.primaria);
         root.style.setProperty('--royal-mid', t.primaria);
+        root.style.setProperty('--royal', t.primaria);
       }
-      if (t.secundaria) {
-        root.style.setProperty('--brand-dim', t.secundaria);
-        root.style.setProperty('--royal', t.secundaria);
+      if (t.homeAccentDeep || t.secundaria) {
+        // Hover do botão: tom mais escuro da primária (não vermelho no meio do botão)
+        root.style.setProperty('--brand-dim', t.homeAccentDeep || t.primaria || t.secundaria);
       }
       document.title = cfg.produto + ' — Prefeitura Municipal de ' + cfg.cidade;
       if (slug !== 'bacabal') {

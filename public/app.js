@@ -292,27 +292,29 @@ function fmtDate(iso) {
 function applyTheme(tema, slug) {
   if (!tema) return;
   const root = document.documentElement;
-  if (tema.primaria) {
-    root.style.setProperty('--brand', tema.primaria);
-    root.style.setProperty('--royal-mid', tema.primaria);
+  const primary = tema.primaria || tema.homeAccent;
+  const secondary = tema.secundaria || tema.homeAccentDeep;
+  if (primary) {
+    root.style.setProperty('--brand', primary);
+    root.style.setProperty('--royal-mid', primary);
+    // Botões / UI principal: uma cor só (não misturar com a secundária)
+    root.style.setProperty('--royal', primary);
   }
-  if (tema.secundaria) {
-    root.style.setProperty('--brand-dim', tema.secundaria);
-    root.style.setProperty('--royal', tema.secundaria);
+  if (tema.homeAccentDeep || secondary) {
+    root.style.setProperty('--brand-dim', tema.homeAccentDeep || primary || secondary);
   }
-  // Landing: Bacabal mantém laranja/verde do portal.
-  // Outras cidades (ou tema.homeAccent) usam as cores do brasão/config.
-  const accent = tema.homeAccent || (slug && slug !== 'bacabal' ? tema.primaria : null);
+  // Landing accents
+  const accent = tema.homeAccent || (slug && slug !== 'bacabal' ? primary : null);
   if (accent) {
     root.style.setProperty('--home-accent', accent);
-    root.style.setProperty('--home-accent-deep', tema.homeAccentDeep || tema.secundaria || accent);
+    root.style.setProperty('--home-accent-deep', tema.homeAccentDeep || secondary || accent);
   }
   if (tema.homeGreen) {
     root.style.setProperty('--home-green', tema.homeGreen);
     root.style.setProperty('--home-green-deep', tema.homeGreenDeep || tema.homeGreen);
-  } else if (slug && slug !== 'bacabal' && tema.secundaria) {
-    root.style.setProperty('--home-green', tema.secundaria);
-    root.style.setProperty('--home-green-deep', tema.secundaria);
+  } else if (slug && slug !== 'bacabal' && secondary) {
+    root.style.setProperty('--home-green', secondary);
+    root.style.setProperty('--home-green-deep', secondary);
   }
 }
 
