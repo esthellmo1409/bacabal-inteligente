@@ -200,7 +200,8 @@ try {
   }
 } catch (_) { /* ok */ }
 
-/** Garante chamado demo com foto de buraco (arquivo estático) — sobrevive a redeploy no Railway. */
+/** Garante chamado demo com foto de buraco (arquivo estático) — sobrevive a redeploy no Railway.
+ *  Usado como base de teste da IA (secretaria + campo). */
 function ensureDemoChamado(slug = 'bacabal') {
   const fotoFile = path.join(PUBLIC_DIR, 'assets', 'buraco-demo-antes.jpg');
   if (!fs.existsSync(fotoFile)) return;
@@ -214,16 +215,21 @@ function ensureDemoChamado(slug = 'bacabal') {
   if (!cat) return;
 
   const now = new Date().toISOString();
-  const idx = chamados.findIndex(x => x.demoFixo === 'buraco-foto' || x.id === 'BAC-DEMO-BURACO');
+  const prefix = String(slug || 'bac').slice(0, 3).toUpperCase();
+  const demoId = `${prefix}-DEMO-BURACO`;
+  const idx = chamados.findIndex(x => x.demoFixo === 'buraco-foto' || x.id === demoId || x.id === 'BAC-DEMO-BURACO');
+
   const base = {
-    id: 'BAC-DEMO-BURACO',
-    protocolo: '20261064',
+    id: idx >= 0 ? (chamados[idx].id || demoId) : demoId,
+    protocolo: idx >= 0 && chamados[idx].protocolo ? chamados[idx].protocolo : `${new Date().getFullYear()}${String(9000 + (slug === 'bomlugar' ? 64 : 64)).slice(-4)}`,
     categoria: cat.id,
     secretaria: 'obras',
     titulo: cat.label || 'Buraco / Tapa-buraco',
-    descricao: 'buraco na rua 11 — demo com foto para Secretaria de Obras e equipe de campo',
+    descricao:
+      'TESTE IA — buraco em via pública (asfalto). Use “Posso te ajudar com esse serviço?” ' +
+      'para ver material, quantidade, tempo e ferramentas sugeridos.',
     bairro: 'Centro',
-    endereco: 'Rua 11 — ponto de demonstração',
+    endereco: 'Rua 11 — ponto de demonstração IA',
     lat: (cfg.lat || -4.2917) + 0.003,
     lng: (cfg.lng || -44.7917) - 0.002,
     prioridade: 'alta',
@@ -237,44 +243,61 @@ function ensureDemoChamado(slug = 'bacabal') {
   };
 
   if (idx < 0) {
+    // Encaminhado: aparece na secretaria E na rota do campo
     chamados.unshift(normalizeChamado({
       ...base,
-      status: 'novo',
-      historico: [{ em: now, status: 'novo', nota: 'Chamado demo fixo com foto (não some no redeploy)' }],
+      status: 'encaminhado',
+      historico: [
+        { em: now, status: 'novo', nota: 'Chamado demo IA com foto de buraco' },
+        { em: now, status: 'encaminhado', nota: 'Encaminhado à equipe de campo — teste do assistente IA' },
+      ],
       criadoEm: now,
     }));
   } else {
     const prev = chamados[idx];
-    // Garante foto antes no demo
-    if (!prev.foto && !prev.fotoAntes) {
-      prev.foto = fotoUrl;
-      prev.fotoAntes = fotoUrl;
+    prev.foto = fotoUrl;
+    prev.fotoAntes = fotoUrl;
+    prev.anexos = [{ tipo: 'foto', url: fotoUrl, em: now }];
+    prev.secretaria = 'obras';
+    prev.categoria = cat.id;
+    prev.titulo = cat.label || prev.titulo || 'Buraco / Tapa-buraco';
+    prev.descricao = base.descricao;
+    prev.endereco = base.endereco;
+    prev.prioridade = 'alta';
+    prev.demoFixo = 'buraco-foto';
+    // Mantém vivo para demo: se concluído/cancelado, reabre encaminhado (sem foto depois)
+    if (prev.status === 'concluido' || prev.status === 'cancelado' || prev.status === 'aguardando_aprovacao') {
+      prev.status = 'encaminhado';
+      prev.fotoDepois = null;
+      prev.aprovacaoSecretaria = null;
+      prev.historico = prev.historico || [];
+      prev.historico.push({
+        em: now,
+        status: 'encaminhado',
+        nota: 'Demo IA restaurada — foto de buraco pronta para análise na secretaria e no campo',
+      });
+    } else if (prev.status === 'novo' || prev.status === 'aberto' || prev.status === 'em_analise') {
+      // Garante que o campo também veja
+      prev.status = 'encaminhado';
+      prev.historico = prev.historico || [];
+      prev.historico.push({
+        em: now,
+        status: 'encaminhado',
+        nota: 'Encaminhado para teste IA (secretaria + campo)',
+      });
     }
-    if (!prev.secretaria) prev.secretaria = 'obras';
-    if (!prev.demoFixo) prev.demoFixo = 'buraco-foto';
-    // Se já foi concluído no pitch, volta para aguardando aprovação (sempre tem botão Aprovar)
-    if (prev.status === 'concluido' || (!prev.fotoDepois && prev.status !== 'aguardando_aprovacao')) {
-      // só restaura fluxo de aprovação se estiver concluído (re-demo)
-      if (prev.status === 'concluido') {
-        prev.status = 'aguardando_aprovacao';
-        prev.fotoDepois = prev.fotoDepois || fotoUrl;
-        prev.aprovacaoSecretaria = null;
-        prev.historico = prev.historico || [];
-        prev.historico.push({
-          em: now,
-          status: 'aguardando_aprovacao',
-          nota: 'Demo restaurada — pronta para Aprovar e finalizar na Secretaria',
-        });
-        prev.atualizadoEm = now;
-      }
-    }
+    prev.atualizadoEm = now;
     chamados[idx] = normalizeChamado(prev);
+    // Sobe o demo para o topo
+    const [demo] = chamados.splice(idx, 1);
+    chamados.unshift(demo);
   }
   writeTenant(slug, 'chamados.json', chamados);
 }
 
 try {
   ensureDemoChamado('bacabal');
+  ensureDemoChamado('bomlugar');
 } catch (e) {
   console.warn('ensureDemoChamado:', e.message);
 }
@@ -1182,6 +1205,8 @@ async function handleAPI(req, res, pathname, url) {
       status: c.status,
       prioridade: c.prioridade,
       secretaria: c.secretaria,
+      categoria: c.categoria,
+      demoFixo: c.demoFixo || null,
       lat: c.lat,
       lng: c.lng,
       criadoEm: c.criadoEm,
@@ -1271,7 +1296,10 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  try { ensureDemoChamado('bacabal'); } catch (_) {}
+  try {
+    ensureDemoChamado('bacabal');
+    ensureDemoChamado('bomlugar');
+  } catch (_) {}
   console.log(`\n  Bacabal Conecta v3 → http://localhost:${PORT}`);
   console.log(`  Dados: ${DATA_DIR}${USING_VOLUME ? ' (volume Railway)' : ''}`);
   if (USING_VOLUME) console.log(`  Volume: ${process.env.RAILWAY_VOLUME_NAME || '?'} → ${process.env.RAILWAY_VOLUME_MOUNT_PATH || DATA_DIR}`);

@@ -663,7 +663,9 @@ function bindIaObraAssist(root, getChamado) {
       const id = btn.getAttribute('data-ia-sim');
       const c = typeof getChamado === 'function' ? await getChamado(id) : null;
       const foto = c ? (c.fotoAntes || c.foto) : null;
-      const texto = c ? [c.titulo, c.descricao].filter(Boolean).join(' — ') : '';
+      const texto = c
+        ? [c.categoria, c.titulo, c.descricao].filter(Boolean).join(' — ')
+        : 'buraco em via pública';
       await iaObraAnalisar(id, foto, texto);
     });
   });

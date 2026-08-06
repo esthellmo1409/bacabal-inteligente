@@ -241,10 +241,12 @@
               <div class="item-head">
                 <strong>${p.titulo} · ${p.protocolo}</strong>
                 ${badge(p.status)}
+                ${p.demoFixo === 'buraco-foto' || /TESTE IA|buraco/i.test(p.descricao || '') ? '<span class="badge badge-em_analise">Teste IA</span>' : ''}
                 ${p.status === 'encaminhado' ? '<span class="badge badge-em_analise">Nova OS</span>' : ''}
               </div>
               <div class="meta">${p.bairro || '—'} · ${tempoRelativo(p.atualizadoEm || p.criadoEm)}</div>
               <p class="muted" style="margin:0.35rem 0">${(p.descricao || '').slice(0, 120)}${(p.descricao || '').length > 120 ? '…' : ''}</p>
+              ${iaObraAssistHtml(p)}
               <div class="actions">
                 <button class="btn btn-sm btn-primary" data-open="${p.id}">Abrir OS</button>
                 <a class="btn btn-sm" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}">Navegar GPS</a>
@@ -362,6 +364,9 @@
       document.getElementById('concluidos').innerHTML = concluidos.length
         ? concluidos.map(cardConcluido).join('')
         : '<p class="muted">Nenhum serviço concluído ainda. Quando a Obras aprovar a foto, aparece aqui.</p>';
+
+      const byId = Object.fromEntries([...(data.rota || []), ...(data.recentes || [])].map(p => [p.id, p]));
+      bindIaObraAssist(document.getElementById('appView'), (id) => byId[id] || api('/api/chamados/' + id));
 
       document.querySelectorAll('[data-open]').forEach(el => {
         el.onclick = (e) => {
