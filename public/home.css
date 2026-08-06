@@ -1000,9 +1000,20 @@ body:not([data-cidade]) .footer-social a {
   padding: 2.75rem 0;
 }
 
-/* Spotlight do prefeito (Bacabal) */
-.prefeito-spotlight {
-  background: linear-gradient(135deg, #1a4fba 0%, #2163e8 45%, #2f8a28 100%);
+/* Spotlight do prefeito (Bacabal) — padrão laranja da marca */
+.prefeita-spotlight.prefeito-spotlight {
+  background: linear-gradient(135deg, #c45a00 0%, #ff8000 45%, #e8912a 100%);
+}
+
+.prefeito-spotlight .prefeita-photo {
+  background: #d6dfca;
+}
+
+.prefeito-spotlight .prefeita-photo img {
+  object-fit: cover;
+  object-position: center 42%;
+  transform: scale(0.86);
+  transform-origin: center 28%;
 }
 
 .prefeita-spotlight-inner {
