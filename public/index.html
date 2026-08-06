@@ -114,17 +114,14 @@
 </head>
 <body class="landing">
   <script>
-    /* Redes Bom Lugar: tenta abrir o app no celular; Instagram no PC abre na mesma aba (menos bloqueio) */
+    /* Redes Bom Lugar — abrem em nova aba (nao sai do site) */
     window.fillBomLugarSocial = function (el, redes) {
       if (!el) return;
       redes = redes || {};
       var fb = redes.facebook || 'https://www.facebook.com/prefeiturabomlugarofc/';
-      var ig = 'https://www.instagram.com/prefeiturabomlugar_ofc/';
+      var ig = redes.instagram || 'https://www.instagram.com/prefeiturabomlugar_ofc/';
       var x = redes.x || 'https://x.com/prefbomlugarofc';
       var mail = redes.email || 'https://webmail-seguro.com.br/bomlugar.ma.gov.br/';
-      var fbApp = 'fb://page/?id=prefeiturabomlugarofc';
-      var igApp = 'instagram://user?username=prefeiturabomlugar_ofc';
-      var xApp = 'twitter://user?screen_name=prefbomlugarofc';
       var ico = {
         facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg>',
         x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 3H21l-6.6 7.5L22 21h-5.6l-4.4-5.7L7 21H4.2l7-8L2.5 3H8l4 5.2L18.2 3zm-1 16.2h1.6L7 4.7H5.3l11.9 14.5z"/></svg>',
@@ -135,33 +132,9 @@
       el.removeAttribute('hidden');
       el.innerHTML =
         '<a href="' + mail + '" target="_blank" rel="noopener noreferrer" title="E-mail" aria-label="E-mail">' + ico.email + '</a>' +
-        '<a href="' + fb + '" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook" data-app="' + fbApp + '">' + ico.facebook + '</a>' +
-        '<a href="' + x + '" target="_blank" rel="noopener noreferrer" title="X" aria-label="X" data-app="' + xApp + '">' + ico.x + '</a>' +
-        '<a href="' + ig + '" rel="noopener noreferrer" title="Instagram" aria-label="Instagram" data-social="instagram" data-app="' + igApp + '">' + ico.instagram + '</a>';
-
-      el.querySelectorAll('a[data-app]').forEach(function (a) {
-        a.addEventListener('click', function (e) {
-          var app = a.getAttribute('data-app');
-          var web = a.getAttribute('href');
-          var isIg = a.getAttribute('data-social') === 'instagram';
-          if (!isIg || !app) return;
-
-          // Instagram: tenta o app primeiro (celular ou app da Microsoft Store no Windows).
-          // No navegador o Instagram exige login — isso é deles, nao do nosso site.
-          e.preventDefault();
-          var start = Date.now();
-          var left = false;
-          function onHide() { left = true; }
-          document.addEventListener('visibilitychange', onHide);
-          window.location.href = app;
-          setTimeout(function () {
-            document.removeEventListener('visibilitychange', onHide);
-            if (!left && Date.now() - start < 1800) {
-              window.location.href = web;
-            }
-          }, 700);
-        });
-      });
+        '<a href="' + fb + '" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook">' + ico.facebook + '</a>' +
+        '<a href="' + x + '" target="_blank" rel="noopener noreferrer" title="X" aria-label="X">' + ico.x + '</a>' +
+        '<a href="' + ig + '" target="_blank" rel="noopener noreferrer" title="Instagram" aria-label="Instagram">' + ico.instagram + '</a>';
     };
   </script>
   <script>
