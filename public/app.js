@@ -321,13 +321,28 @@ function brandText(text, cfg) {
   if (!text || !cfg) return text;
   const produto = cfg.produto || 'Cidade Conecta';
   const cidade = cfg.cidade || '';
-  return String(text)
+  let out = String(text)
     .replace(/Bacabal Conecta/g, produto)
     .replace(/Prefeitura Municipal de Bacabal/g, `Prefeitura Municipal de ${cidade}`)
     .replace(/Prefeitura de Bacabal/g, `Prefeitura de ${cidade}`)
     .replace(/Hospital Municipal de Bacabal/g, `Hospital Municipal de ${cidade}`)
     .replace(/gestor de Bacabal/g, `gestor de ${cidade}`)
     .replace(/\bBacabal\b/g, cidade);
+
+  // Bom Lugar: prefeita (Marlene Silva Miranda)
+  if ((cfg.slug || getCidade()) === 'bomlugar') {
+    out = out
+      .replace(/Gabinete do Prefeito/g, 'Gabinete da Prefeita')
+      .replace(/Entrar como prefeito/g, 'Entrar como prefeita')
+      .replace(/Logado: Prefeito/g, 'Logado: Prefeita')
+      .replace(/Observação do prefeito/g, 'Observação da prefeita')
+      .replace(/TV do prefeito/g, 'TV da prefeita')
+      .replace(/Cobrança do prefeito/g, 'Cobrança da prefeita')
+      .replace(/Carta ao prefeito/g, 'Carta à prefeita')
+      .replace(/Piloto · Prefeitura de Bom Lugar/g, 'Piloto · Prefeitura de Bom Lugar')
+      .replace(/Gabinete do Prefeito/gi, 'Gabinete da Prefeita');
+  }
+  return out;
 }
 
 function applyPageBrand(cfg) {

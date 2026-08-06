@@ -159,6 +159,15 @@
       document.getElementById('top').innerHTML = topbar('Gabinete', cfg);
       document.getElementById('linkSec').href = cityLink('/secretaria.html');
       document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
+      if (cfg.slug === 'bomlugar' || getCidade() === 'bomlugar') {
+        const h1 = document.querySelector('h1.display');
+        if (h1) h1.textContent = 'Gabinete da Prefeita';
+        const loginBtn = document.getElementById('loginPref');
+        if (loginBtn && !/Logado/.test(loginBtn.textContent)) {
+          loginBtn.textContent = 'Entrar como prefeita';
+        }
+        document.title = brandText(document.title, cfg);
+      }
       mapState = MapBI.create('map', { center: [cfg.lat, cfg.lng], zoom: 13 });
       document.querySelectorAll('.eixo-tab').forEach(btn => {
         btn.onclick = () => {
@@ -179,7 +188,8 @@
         localStorage.setItem('bi_token', r.token);
         if (typeof setSession === 'function') setSession(r.token, r.user);
         toast('Gabinete autenticado');
-        loginPref.textContent = 'Logado: Prefeito';
+        const isPrefeita = getCidade() === 'bomlugar';
+        loginPref.textContent = isPrefeita ? 'Logado: Prefeita' : 'Logado: Prefeito';
         const cfg = await loadCityBrand();
         document.getElementById('top').innerHTML = topbar('Gabinete', cfg);
       } catch (e) { toast(e.message); }
