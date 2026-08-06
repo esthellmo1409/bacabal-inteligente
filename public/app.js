@@ -621,9 +621,9 @@ function iaObraAssistHtml(c) {
     <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}">
       <div class="ia-obra-ask">
         <div class="ia-obra-avatar-row">
-          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png" alt="" />
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
           <div>
-            <strong>${iaObraEsc(iaSaudacaoCurta())}</strong>
+            <strong>Oi! Sou a ${iaObraEsc(iaAssistenteNome())}, sua assistente de IA.</strong>
             <p class="muted">Posso te ajudar com esse serviço? Analiso a foto e sugiro material, quantidade, tempo e ferramentas.</p>
           </div>
         </div>

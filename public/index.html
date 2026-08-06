@@ -614,20 +614,20 @@
 
         const iaTitle = document.getElementById('landingIaTitle');
         const iaText = document.getElementById('landingIaText');
-        if (iaTitle) iaTitle.textContent = `${produto}: sua assistente de IA`;
+        if (iaTitle) iaTitle.textContent = 'Apoio inteligente às equipes';
         if (iaText) {
           iaText.textContent =
-            `Oi! Sou a ${produto}, sua assistente de IA. Apoio as equipes para planejar melhor cada serviço.`;
+            'A plataforma também apoia as equipes com inteligência artificial para planejar melhor cada serviço.';
         }
       }
 
       // Sempre atualiza o bloco da IA (mesmo se o boot já pintou)
       const iaTextAlways = document.getElementById('landingIaText');
       const iaTitleAlways = document.getElementById('landingIaTitle');
-      if (cfg && iaTitleAlways) iaTitleAlways.textContent = `${produto}: sua assistente de IA`;
-      if (cfg && iaTextAlways) {
+      if (iaTitleAlways) iaTitleAlways.textContent = 'Apoio inteligente às equipes';
+      if (iaTextAlways) {
         iaTextAlways.textContent =
-          `Oi! Sou a ${produto}, sua assistente de IA. Apoio as equipes para planejar melhor cada serviço.`;
+          'A plataforma também apoia as equipes com inteligência artificial para planejar melhor cada serviço.';
       }
 
       // Bom Lugar: redes, logo oficial, spotlight e rodapé (sempre — mesmo após paintBoot)
