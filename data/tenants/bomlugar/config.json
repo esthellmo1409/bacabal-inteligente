@@ -27,11 +27,10 @@
   "fotoPrefeita": "/assets/foto-prefeita-bomlugar.jpg?v=2",
   "mensagemPrefeita": "Bom Lugar tem a cara de quem lidera na frente: a prefeita Marlene Silva Miranda. Presente, determinada e com o olhar firme no futuro da nossa gente — a cidade conectada começa na gestão que se mostra e entrega.",
   "redes": {
-    "facebook": "https://www.facebook.com/prefeiturabomlugarofc",
+    "facebook": "https://www.facebook.com/prefeiturabomlugarofc/",
     "instagram": "https://www.instagram.com/prefeiturabomlugar_ofc?igsh=MXR6bTN6bTRyM3J3ag==",
-    "x": "https://x.com/prefbomlugarofc",
-    "email": "https://webmail-seguro.com.br/bomlugar.ma.gov.br/",
-    "emailAlt": "mailto:municipiobomlugar@gmail.com"
+    "x": "https://x.com/intent/user?screen_name=prefbomlugarofc",
+    "email": "https://webmail-seguro.com.br/bomlugar.ma.gov.br/"
   },
   "bairros": [
     "Centro",
