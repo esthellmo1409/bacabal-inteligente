@@ -606,7 +606,7 @@ function iaObraAskShell(id, { empty } = {}) {
     <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}" data-ia-phase="ask">
       <div class="ia-obra-ask">
         <div class="ia-obra-avatar-row">
-          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=3" alt="" width="56" height="56" />
           <div class="ia-obra-copy">
             <strong class="ia-type-title" data-full="${iaObraEsc(saudacao)}">${empty ? '' : iaObraEsc(saudacao)}</strong>
             <p class="muted ia-type-sub" data-full="${iaObraEsc(sub)}">${empty ? '' : iaObraEsc(sub)}</p>
@@ -628,7 +628,7 @@ function iaAprovacaoAskShell(id, { empty } = {}) {
     <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}" data-ia-phase="aprovacao">
       <div class="ia-obra-ask">
         <div class="ia-obra-avatar-row">
-          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=3" alt="" width="56" height="56" />
           <div class="ia-obra-copy">
             <strong class="ia-type-title" data-full="${iaObraEsc(saudacao)}">${empty ? '' : iaObraEsc(saudacao)}</strong>
             <p class="muted ia-type-sub" data-full="${iaObraEsc(sub)}">${empty ? '' : iaObraEsc(sub)}</p>
@@ -652,7 +652,7 @@ function iaAprovacaoParecerShell(id, parecer, { empty } = {}) {
     <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}" data-ia-phase="aprovacao-resultado">
       <div class="ia-obra-plano">
         <div class="ia-obra-avatar-row">
-          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=3" alt="" width="56" height="56" />
           <div class="ia-obra-copy">
             <p class="ia-type-intro" data-full="${iaObraEsc(intro)}">${empty ? '' : iaObraEsc(intro)}</p>
           </div>
@@ -692,7 +692,7 @@ function iaObraPlanoShell(id, plano, { empty } = {}) {
     <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}" data-ia-phase="plano">
       <div class="ia-obra-plano">
         <div class="ia-obra-avatar-row">
-          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=3" alt="" width="56" height="56" />
           <div class="ia-obra-copy">
             <p class="ia-type-intro" data-full="${iaObraEsc(intro)}">${empty ? '' : iaObraEsc(intro)}</p>
           </div>
@@ -866,7 +866,7 @@ async function iaObraAnalisar(id, foto, texto) {
   if (box) {
     box.innerHTML = `
       <div class="ia-obra-avatar-row">
-        <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+        <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=3" alt="" width="56" height="56" />
         <div class="ia-obra-copy">
           <p class="muted ia-analisando">Analisando a foto<span class="ia-dots"></span></p>
         </div>
@@ -910,7 +910,7 @@ async function iaAprovacaoAnalisar(id, c) {
   if (box) {
     box.innerHTML = `
       <div class="ia-obra-avatar-row">
-        <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+        <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=3" alt="" width="56" height="56" />
         <div class="ia-obra-copy">
           <p class="muted ia-analisando">Comparando antes e depois<span class="ia-dots"></span></p>
         </div>
