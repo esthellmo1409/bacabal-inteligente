@@ -620,6 +620,60 @@ function iaObraAskShell(id, { empty } = {}) {
     </div>`;
 }
 
+/** Assistente na conferência da foto do depois (secretaria). */
+function iaAprovacaoAskShell(id, { empty } = {}) {
+  const saudacao = iaSaudacaoCurta();
+  const sub = 'Quer que eu analise com você esse serviço se ficou tudo certo?';
+  return `
+    <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}" data-ia-phase="aprovacao">
+      <div class="ia-obra-ask">
+        <div class="ia-obra-avatar-row">
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+          <div class="ia-obra-copy">
+            <strong class="ia-type-title" data-full="${iaObraEsc(saudacao)}">${empty ? '' : iaObraEsc(saudacao)}</strong>
+            <p class="muted ia-type-sub" data-full="${iaObraEsc(sub)}">${empty ? '' : iaObraEsc(sub)}</p>
+          </div>
+        </div>
+        <div class="actions ia-obra-actions" ${empty ? 'hidden' : ''}>
+          <button type="button" class="btn btn-sm btn-primary" data-ia-aprov-sim="${iaObraEsc(id)}">Sim</button>
+          <button type="button" class="btn btn-sm" data-ia-aprov-nao="${iaObraEsc(id)}">Não</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function iaAprovacaoParecerShell(id, parecer, { empty } = {}) {
+  const intro = `${iaSaudacaoCurta()} Compareci o antes e o depois. Veja o que encontrei:`;
+  const pontos = (parecer.pontos || []).map((p, i) =>
+    `<div class="ia-stream-line" data-full="${iaObraEsc(p)}"><span class="ia-stream-v">${empty ? '' : iaObraEsc(p)}</span></div>`
+  ).join('');
+  const ok = parecer.parecer === 'ok';
+  return `
+    <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}" data-ia-phase="aprovacao-resultado">
+      <div class="ia-obra-plano">
+        <div class="ia-obra-avatar-row">
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+          <div class="ia-obra-copy">
+            <p class="ia-type-intro" data-full="${iaObraEsc(intro)}">${empty ? '' : iaObraEsc(intro)}</p>
+          </div>
+        </div>
+        <div class="ia-obra-plano-head" ${empty ? 'hidden' : ''}>
+          <strong>${iaObraEsc(parecer.label || 'Parecer')}</strong>
+          <span class="muted">${parecer.confianca || '—'}% de confiança</span>
+        </div>
+        <div class="ia-obra-stream" ${empty ? 'hidden' : ''}>
+          ${pontos}
+          <div class="ia-stream-line ia-stream-obs" data-full="${iaObraEsc(parecer.recomendacao || '')}">
+            <span class="ia-stream-v">${empty ? '' : iaObraEsc(parecer.recomendacao || '')}</span>
+          </div>
+        </div>
+        <p class="muted ia-obra-foot" style="font-size:0.72rem;margin:0.5rem 0 0" ${empty ? 'hidden' : ''}>
+          ${ok ? 'Sugestão: pode usar Aprovar e finalizar abaixo.' : 'Sugestão: use Não aprovo — devolver se precisar de ajuste.'}
+        </p>
+      </div>
+    </div>`;
+}
+
 function iaObraPlanoShell(id, plano, { empty } = {}) {
   const conf = plano.confianca || '—';
   const lines = [
@@ -668,16 +722,25 @@ function iaObraPlanoHtml(plano) {
 
 /**
  * Bloco de cortesia + análise (só secretaria/campo).
- * @param {{ id: string, foto?: string, fotoAntes?: string, descricao?: string, titulo?: string }} c
+ * @param {{ id: string, status?: string, foto?: string, fotoAntes?: string, fotoDepois?: string, descricao?: string, titulo?: string }} c
  */
 function iaObraAssistHtml(c) {
   const id = c && c.id;
   if (!id) return '';
-  const foto = c.fotoAntes || c.foto;
-  if (!foto && !(c.descricao || c.titulo)) return '';
 
   const st = _iaObraState[id];
   if (st === 'dismissed') return '';
+
+  // Conferência da foto do campo (secretaria)
+  if (c.status === 'aguardando_aprovacao') {
+    if (st && st.aprovacaoParecer) {
+      return iaAprovacaoParecerShell(id, st.aprovacaoParecer, { empty: !st.aprovacaoTyped });
+    }
+    return iaAprovacaoAskShell(id, { empty: !(st && st.aprovacaoGreeted) });
+  }
+
+  const foto = c.fotoAntes || c.foto;
+  if (!foto && !(c.descricao || c.titulo)) return '';
 
   if (st && st.plano) {
     return iaObraPlanoShell(id, st.plano, { empty: !st.planoTyped });
@@ -689,13 +752,14 @@ function iaObraAssistHtml(c) {
 async function iaRunAskTyping(box, id) {
   if (!box || box.dataset.typing === '1') return;
   const st = _iaObraState[id];
-  if (st && st.greeted) return;
+  const phase = box.getAttribute('data-ia-phase');
+  const greetedKey = phase === 'aprovacao' ? 'aprovacaoGreeted' : 'greeted';
+  if (st && st[greetedKey]) return;
   box.dataset.typing = '1';
-  // Marca cedo para o auto-refresh não reiniciar a digitação do zero
   _iaObraState[id] = Object.assign(
     {},
     typeof st === 'object' && st ? st : {},
-    { greeted: true }
+    { [greetedKey]: true }
   );
   const title = box.querySelector('.ia-type-title');
   const sub = box.querySelector('.ia-type-sub');
@@ -707,6 +771,49 @@ async function iaRunAskTyping(box, id) {
     actions.hidden = false;
     actions.classList.add('ia-fade-in');
   }
+  box.dataset.typing = '0';
+}
+
+async function iaRunParecerTyping(box, id, parecer) {
+  if (!box || box.dataset.typing === '1') return;
+  box.dataset.typing = '1';
+  const intro = box.querySelector('.ia-type-intro');
+  const head = box.querySelector('.ia-obra-plano-head');
+  const stream = box.querySelector('.ia-obra-stream');
+  const foot = box.querySelector('.ia-obra-foot');
+  if (head) head.hidden = true;
+  if (stream) stream.hidden = true;
+  if (foot) foot.hidden = true;
+
+  await iaTypeInto(
+    intro,
+    intro?.getAttribute('data-full') || `${iaSaudacaoCurta()} Compareci o antes e o depois. Veja o que encontrei:`,
+    { speed: 14, id: id + '-ai' }
+  );
+
+  if (head) {
+    head.hidden = false;
+    head.classList.add('ia-fade-in');
+  }
+  if (stream) stream.hidden = false;
+
+  const lines = [...box.querySelectorAll('.ia-stream-line')];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const full = line.getAttribute('data-full') || '';
+    const v = line.querySelector('.ia-stream-v') || line;
+    await iaTypeInto(v, full, { speed: 10, id: id + '-ap' + i });
+  }
+
+  if (foot) {
+    foot.hidden = false;
+    foot.classList.add('ia-fade-in');
+  }
+  _iaObraState[id] = Object.assign({}, _iaObraState[id] || {}, {
+    aprovacaoParecer: parecer,
+    aprovacaoTyped: true,
+    aprovacaoGreeted: true,
+  });
   box.dataset.typing = '0';
 }
 
@@ -798,11 +905,63 @@ async function iaObraAnalisar(id, foto, texto) {
   }
 }
 
+async function iaAprovacaoAnalisar(id, c) {
+  const box = document.querySelector(`[data-ia-obra="${id}"]`);
+  if (box) {
+    box.innerHTML = `
+      <div class="ia-obra-avatar-row">
+        <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+        <div class="ia-obra-copy">
+          <p class="muted ia-analisando">Comparando antes e depois<span class="ia-dots"></span></p>
+        </div>
+      </div>`;
+  }
+  try {
+    const r = await api('/api/ia/aprovacao', {
+      method: 'POST',
+      body: JSON.stringify({
+        fotoAntes: c?.fotoAntes || c?.foto || null,
+        fotoDepois: c?.fotoDepois || null,
+        titulo: c?.titulo || '',
+        texto: c?.descricao || '',
+      }),
+    });
+    _iaObraState[id] = {
+      aprovacaoParecer: r,
+      aprovacaoTyped: false,
+      aprovacaoGreeted: true,
+    };
+    if (box) {
+      box.outerHTML = iaAprovacaoParecerShell(id, r, { empty: true });
+      const novo = document.querySelector(`[data-ia-obra="${id}"]`);
+      await iaRunParecerTyping(novo, id, r);
+    }
+    toast(r.parecer === 'ok' ? 'Parecer: serviço aparenta ok' : 'Parecer: revisar antes de aprovar');
+    return r;
+  } catch (e) {
+    if (box) {
+      box.innerHTML = `
+        <div class="ia-obra-ask">
+          <strong>Não consegui analisar agora</strong>
+          <p class="muted">${iaObraEsc(e.message || 'Erro')}</p>
+          <div class="actions">
+            <button type="button" class="btn btn-sm btn-primary" data-ia-aprov-sim="${iaObraEsc(id)}">Tentar de novo</button>
+            <button type="button" class="btn btn-sm" data-ia-aprov-nao="${iaObraEsc(id)}">Fechar</button>
+          </div>
+        </div>`;
+      bindIaObraAssist(box.parentElement || document, null);
+    }
+    toast(e.message || 'Falha na análise');
+    return null;
+  }
+}
+
 function iaObraDismiss(id) {
   iaStopTyping(id);
   iaStopTyping(id + '-t');
   iaStopTyping(id + '-s');
   iaStopTyping(id + '-i');
+  iaStopTyping(id + '-ai');
   _iaObraState[id] = 'dismissed';
   const box = document.querySelector(`[data-ia-obra="${id}"]`);
   if (box) box.remove();
@@ -839,10 +998,34 @@ function bindIaObraAssist(root, getChamado) {
     });
   });
 
-  el.querySelectorAll('[data-ia-obra][data-ia-phase="ask"]').forEach((box) => {
+  el.querySelectorAll('[data-ia-aprov-sim]').forEach((btn) => {
+    if (btn._iaBound) return;
+    btn._iaBound = true;
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.getAttribute('data-ia-aprov-sim');
+      const c = typeof getChamado === 'function' ? await getChamado(id) : null;
+      await iaAprovacaoAnalisar(id, c);
+      if (typeof getChamado === 'function') bindIaObraAssist(el, getChamado);
+    });
+  });
+  el.querySelectorAll('[data-ia-aprov-nao]').forEach((btn) => {
+    if (btn._iaBound) return;
+    btn._iaBound = true;
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      iaObraDismiss(btn.getAttribute('data-ia-aprov-nao'));
+    });
+  });
+
+  el.querySelectorAll('[data-ia-obra][data-ia-phase="ask"], [data-ia-obra][data-ia-phase="aprovacao"]').forEach((box) => {
     const id = box.getAttribute('data-ia-obra');
     const st = _iaObraState[id];
-    if (st && st.greeted) return;
+    const phase = box.getAttribute('data-ia-phase');
+    const greetedKey = phase === 'aprovacao' ? 'aprovacaoGreeted' : 'greeted';
+    if (st && st[greetedKey]) return;
     if (box.dataset.typing === '1') return;
     iaRunAskTyping(box, id).then(() => bindIaObraAssist(el, getChamado));
   });
@@ -851,7 +1034,6 @@ function bindIaObraAssist(root, getChamado) {
     const id = box.getAttribute('data-ia-obra');
     const st = _iaObraState[id];
     if (!st || !st.plano || st.planoTyped) {
-      // Preenche valores se já digitado e o HTML veio completo vazio por engano
       if (st && st.plano && st.planoTyped) {
         box.querySelectorAll('.ia-stream-line').forEach((line) => {
           const full = line.getAttribute('data-full') || '';
@@ -865,5 +1047,22 @@ function bindIaObraAssist(root, getChamado) {
     }
     if (box.dataset.typing === '1') return;
     iaRunPlanoTyping(box, id, st.plano);
+  });
+
+  el.querySelectorAll('[data-ia-obra][data-ia-phase="aprovacao-resultado"]').forEach((box) => {
+    const id = box.getAttribute('data-ia-obra');
+    const st = _iaObraState[id];
+    if (!st || !st.aprovacaoParecer || st.aprovacaoTyped) {
+      if (st && st.aprovacaoParecer && st.aprovacaoTyped) {
+        box.querySelectorAll('.ia-stream-line').forEach((line) => {
+          const full = line.getAttribute('data-full') || '';
+          const v = line.querySelector('.ia-stream-v');
+          if (v) v.textContent = full;
+        });
+      }
+      return;
+    }
+    if (box.dataset.typing === '1') return;
+    iaRunParecerTyping(box, id, st.aprovacaoParecer);
   });
 }

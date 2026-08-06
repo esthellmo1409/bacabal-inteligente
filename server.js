@@ -138,6 +138,7 @@ const {
 } = require('./scripts/seed.js');
 const {
   analisarFoto,
+  analisarAprovacao,
   roteirizar,
   assistenteSecretaria,
   gerarParecer,
@@ -294,9 +295,92 @@ function ensureDemoChamado(slug = 'bacabal') {
   writeTenant(slug, 'chamados.json', chamados);
 }
 
+/** Chamado demo aguardando aprovação (foto do depois) — secretaria testa a IA de conferência. */
+function ensureDemoAprovacao(slug = 'bacabal') {
+  const fotoAntesFile = path.join(PUBLIC_DIR, 'assets', 'buraco-demo-antes.jpg');
+  const fotoDepoisFile = path.join(PUBLIC_DIR, 'assets', 'buraco-demo-depois.png');
+  if (!fs.existsSync(fotoAntesFile) || !fs.existsSync(fotoDepoisFile)) return;
+  if (!getMunicipio(slug) && !fs.existsSync(tenantPath(slug, 'chamados.json'))) return;
+
+  const fotoAntes = FOTO_DEMO_BURACO;
+  const fotoDepois = '/assets/buraco-demo-depois.png';
+  const chamados = readTenant(slug, 'chamados.json', []);
+  const cfg = readTenant(slug, 'config.json', {});
+  const cats = readTenant(slug, 'categorias.json', []);
+  const cat = cats.find(c => c.id === 'buraco') || cats[0];
+  if (!cat) return;
+
+  const now = new Date().toISOString();
+  const prefix = String(slug || 'bac').slice(0, 3).toUpperCase();
+  const demoId = `${prefix}-DEMO-APROV`;
+  const idx = chamados.findIndex(x => x.demoFixo === 'buraco-aprov' || x.id === demoId);
+
+  const base = {
+    id: idx >= 0 ? (chamados[idx].id || demoId) : demoId,
+    protocolo: idx >= 0 && chamados[idx].protocolo
+      ? chamados[idx].protocolo
+      : `${new Date().getFullYear()}9${slug === 'bomlugar' ? '165' : '065'}`,
+    categoria: cat.id,
+    secretaria: 'obras',
+    titulo: cat.label || 'Buraco / Tapa-buraco',
+    descricao: 'Buraco na via pública — equipe de campo enviou a foto do depois para conferência.',
+    bairro: 'Centro',
+    endereco: 'Rua 11, próximo ao meio da quadra',
+    lat: (cfg.lat || -4.2917) + 0.004,
+    lng: (cfg.lng || -44.7917) - 0.003,
+    prioridade: 'alta',
+    cidadao: { nome: 'Maria Souza', telefone: '99981112233', email: '' },
+    foto: fotoAntes,
+    fotoAntes,
+    fotoDepois,
+    anexos: [
+      { tipo: 'foto', url: fotoAntes, em: now },
+      { tipo: 'foto_depois', url: fotoDepois, em: now },
+    ],
+    demoFixo: 'buraco-aprov',
+    aprovacaoSecretaria: null,
+    atualizadoEm: now,
+  };
+
+  if (idx < 0) {
+    chamados.unshift(normalizeChamado({
+      ...base,
+      status: 'aguardando_aprovacao',
+      historico: [
+        { em: now, status: 'novo', nota: 'Chamado aberto pelo cidadão com foto' },
+        { em: now, status: 'encaminhado', nota: 'Encaminhado à equipe de campo' },
+        { em: now, status: 'em_execucao', nota: 'Equipe aceitou o serviço' },
+        { em: now, status: 'aguardando_aprovacao', nota: 'Campo enviou foto do depois — aguardando secretaria' },
+      ],
+      criadoEm: now,
+    }));
+  } else {
+    const prev = chamados[idx];
+    Object.assign(prev, {
+      foto: fotoAntes,
+      fotoAntes,
+      fotoDepois,
+      descricao: base.descricao,
+      endereco: base.endereco,
+      prioridade: 'alta',
+      demoFixo: 'buraco-aprov',
+      status: 'aguardando_aprovacao',
+      aprovacaoSecretaria: null,
+      anexos: base.anexos,
+      atualizadoEm: now,
+    });
+    chamados[idx] = normalizeChamado(prev);
+    const [demo] = chamados.splice(idx, 1);
+    chamados.unshift(demo);
+  }
+  writeTenant(slug, 'chamados.json', chamados);
+}
+
 try {
   ensureDemoChamado('bacabal');
   ensureDemoChamado('bomlugar');
+  ensureDemoAprovacao('bacabal');
+  ensureDemoAprovacao('bomlugar');
 } catch (e) {
   console.warn('ensureDemoChamado:', e.message);
 }
@@ -1167,6 +1251,19 @@ async function handleAPI(req, res, pathname, url) {
     return sendJSON(res, 200, result);
   }
 
+  if (pathname === '/api/ia/aprovacao' && req.method === 'POST') {
+    const slug = requireTenant(req, url, res);
+    if (!slug) return;
+    const body = await readBody(req);
+    const result = analisarAprovacao({
+      fotoAntes: body.fotoAntes || body.foto || null,
+      fotoDepois: body.fotoDepois || null,
+      texto: body.texto || body.descricao || '',
+      titulo: body.titulo || '',
+    });
+    return sendJSON(res, 200, result);
+  }
+
   if (pathname === '/api/ia/secretaria' && req.method === 'POST') {
     const slug = requireTenant(req, url, res);
     if (!slug) return;
@@ -1303,6 +1400,8 @@ server.listen(PORT, () => {
   try {
     ensureDemoChamado('bacabal');
     ensureDemoChamado('bomlugar');
+    ensureDemoAprovacao('bacabal');
+    ensureDemoAprovacao('bomlugar');
   } catch (_) {}
   console.log(`\n  Bacabal Conecta v3 → http://localhost:${PORT}`);
   console.log(`  Dados: ${DATA_DIR}${USING_VOLUME ? ' (volume Railway)' : ''}`);
