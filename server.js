@@ -580,20 +580,43 @@ function brandHtmlForCity(html, slug, opts = {}) {
     ['Bacabal Conecta', 'Bom Lugar Conecta'],
     ['Prefeitura Municipal de Bacabal', 'Prefeitura Municipal de Bom Lugar'],
     ['Prefeitura de Bacabal', 'Prefeitura de Bom Lugar'],
+    ['Piloto · Prefeitura de Bacabal', 'Piloto · Prefeitura de Bom Lugar'],
     ['Brasão de Bacabal', 'Brasão de Bom Lugar'],
     ['href="/assets/logo-prefeitura.png"', 'href="/assets/logo-bomlugar.jpg"'],
     ['src="/assets/logo-prefeitura.png"', 'src="/assets/logo-bomlugar.jpg"'],
     ['cidade=bacabal', 'cidade=bomlugar'],
     ['Gabinete do Prefeito', 'Gabinete da Prefeita'],
+    ['Gabinete do prefeito', 'Gabinete da prefeita'],
+    ['Painel do prefeito', 'Painel da prefeita'],
     ['Entrar como prefeito', 'Entrar como prefeita'],
     ['Entrar como Prefeito', 'Entrar como prefeita'],
     ['TV do prefeito', 'TV da prefeita'],
     ['Observação do prefeito', 'Observação da prefeita'],
     ['Cobrança do prefeito', 'Cobrança da prefeita'],
     ['Carta ao prefeito', 'Carta à prefeita'],
+    ['Pronto para o prefeito', 'Pronto para a prefeita'],
+    ['com o prefeito', 'com a prefeita'],
+    ['para o prefeito', 'para a prefeita'],
+    ['do prefeito', 'da prefeita'],
+    ['ao prefeito', 'à prefeita'],
+    ['o prefeito', 'a prefeita'],
+    ['O prefeito', 'A prefeita'],
+    ['Prefeito,', 'Prefeita,'],
+    ['>Prefeito<', '>Prefeita<'],
+    ['o senhor já', 'a senhora já'],
+    ['o senhor só', 'a senhora só'],
+    ['o senhor não', 'a senhora não'],
+    ['o senhor usa', 'a senhora usa'],
+    ['o senhor já paga', 'a senhora já paga'],
+    ['o senhor acompanha', 'a senhora acompanha'],
+    ['para o senhor', 'para a senhora'],
     ['>Gabinete do Prefeito<', '>Gabinete da Prefeita<'],
     ['id="prefeitaSpotlight" hidden', 'id="prefeitaSpotlight"'],
     ['id="prefeitoSpotlight"', 'id="prefeitoSpotlight" hidden'],
+    // Clipe TV: Bom Lugar usa página própria (sem misturar Bacabal)
+    ['href="/tv.html?cidade=bomlugar"', 'href="/tv-bomlugar.html"'],
+    ['href="/tv.html"', 'href="/tv-bomlugar.html"'],
+    ['Clipe TV Bacabal', 'Clipe TV Bom Lugar'],
     // Fotos profissionais do fluxo (home + /fluxo.html)
     ['src="/assets/fluxo-abertura.jpg"', 'src="/assets/fluxo-bomlugar-abertura.jpg"'],
     ['src="/assets/fluxo-01-cidadao.jpg"', 'src="/assets/fluxo-bomlugar-cidadao.jpg"'],
@@ -664,7 +687,11 @@ function serveBrandedPage(req, res, url) {
   }
   let html = fs.readFileSync(filePath, 'utf8');
   const slug = (url.searchParams.get('cidade') || '').trim() || 'bacabal';
-  html = brandHtmlForCity(html, slug, { isHome: rel === '/index.html' || url.pathname === '/' });
+  // Páginas Anselmo Carvalho / uso interno Bacabal — nunca rebrandear para Bom Lugar
+  const keepBacabal = /ac-pitch|ac-script|data-keep-bacabal/i.test(rel + html.slice(0, 800));
+  if (!keepBacabal) {
+    html = brandHtmlForCity(html, slug, { isHome: rel === '/index.html' || url.pathname === '/' });
+  }
   res.writeHead(200, {
     'Content-Type': 'text/html; charset=utf-8',
     'Cache-Control': 'no-store, max-age=0',

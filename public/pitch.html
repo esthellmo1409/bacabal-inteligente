@@ -13,6 +13,10 @@
       color: #fff; border-radius: 24px; padding: 2rem 1.75rem; margin-bottom: 1.5rem;
       box-shadow: 0 20px 50px rgba(255,128,0,.25);
     }
+    html[data-cidade="bomlugar"] .pitch-hero {
+      background: linear-gradient(145deg, #03327A 0%, #022456 45%, #B71C1C 120%);
+      box-shadow: 0 20px 50px rgba(3,50,122,.28);
+    }
     .pitch-hero h1 { color:#fff; font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 0.35rem 0 0.5rem; letter-spacing:-0.04em; }
     .pitch-hero p { color: rgba(255,255,255,.92); margin:0; font-size:1.05rem; line-height:1.5; max-width:36rem; }
     .pitch-kicker { font-size:0.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.9; }
@@ -23,14 +27,19 @@
       box-shadow: var(--shadow);
     }
     .pitch-card h3 { margin:0 0 0.4rem; color: var(--pmb-green, #2f7319); font-size:1.05rem; }
+    html[data-cidade="bomlugar"] .pitch-card h3 { color: #03327A; }
     .pitch-card p, .pitch-card li { color: var(--muted); font-size:0.92rem; line-height:1.45; }
     .pitch-card ul { margin:0.4rem 0 0; padding-left:1.1rem; }
     .pitch-phrase {
       border-left: 4px solid #ff8000; padding: 0.85rem 1rem; background:#fff8f0;
       border-radius: 0 14px 14px 0; margin: 1.25rem 0; font-size:1.05rem; font-weight:600; color:#1a1a1a;
     }
+    html[data-cidade="bomlugar"] .pitch-phrase {
+      border-left-color: #03327A; background: #eef3fb;
+    }
     .pitch-cta { display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:1.25rem; }
     .pitch-cta .btn-hero-primary { background:#fff; color:#e67300; }
+    html[data-cidade="bomlugar"] .pitch-cta .btn-hero-primary { color:#03327A; }
     .pitch-cta .btn-hero-ghost { border-color:#fff; color:#fff; }
   </style>
 </head>
@@ -46,8 +55,8 @@
         O Gabinete decide. A secretaria executa. A cidade acompanha o protocolo.
       </p>
       <div class="pitch-cta">
-        <a class="btn-hero btn-hero-primary" href="/prefeito.html?cidade=bacabal">Abrir Gabinete</a>
-        <a class="btn-hero btn-hero-ghost" href="/demo.html?cidade=bacabal">Demo 5 min</a>
+        <a class="btn-hero btn-hero-primary" data-city-href="/prefeito.html">Abrir Gabinete</a>
+        <a class="btn-hero btn-hero-ghost" data-city-href="/demo.html">Demo 5 min</a>
       </div>
     </div>
 
@@ -106,13 +115,15 @@
     </div>
 
     <div class="cta-row">
-      <a class="btn btn-primary" href="/fluxo.html?cidade=bacabal">Demonstração em slides</a>
-      <a class="btn btn-primary" href="/tv.html?cidade=bacabal" target="_blank" rel="noopener">Clipe TV Bacabal</a>
-      <a class="btn btn-primary" href="/tv-bomlugar.html" target="_blank" rel="noopener">Clipe TV Bom Lugar</a>
-      <a class="btn" href="/manual.html?cidade=bacabal">Manual por setor</a>
-      <a class="btn" href="/reuniao.html?cidade=bacabal">Kit da reunião</a>
-      <a class="btn" href="/prefeito.html?cidade=bacabal">Ir ao Gabinete</a>
-      <a class="btn" href="/cidadao.html?cidade=bacabal">App do cidadão</a>
+      <a class="btn btn-primary" data-city-href="/fluxo.html">Demonstração em slides</a>
+      <a class="btn btn-primary" id="linkTv" href="/tv.html" target="_blank" rel="noopener">Clipe TV</a>
+      <a class="btn" data-city-href="/carta-prefeito.html">Carta ao prefeito</a>
+      <a class="btn" data-city-href="/manual.html">Manual por setor</a>
+      <a class="btn" data-city-href="/reuniao.html">Kit da reunião</a>
+      <a class="btn" data-city-href="/apresentacao.html">Hub da apresentação</a>
+      <a class="btn" data-city-href="/prefeito.html">Ir ao Gabinete</a>
+      <a class="btn" data-city-href="/cidadao.html">App do cidadão</a>
+      <a class="btn" data-city-href="/modulos.html">Módulos</a>
     </div>
 
     <p class="muted" style="margin-top:1.5rem;font-size:0.8rem">
@@ -123,8 +134,20 @@
   <script src="/app.js"></script>
   <script>
     initCidade();
-    loadCityBrand().then(cfg => {
-      document.getElementById('top').innerHTML = topbar('Demo', cfg);
+    loadCityBrand().then((cfg) => {
+      const slug = (cfg && cfg.slug) || getCidade();
+      document.getElementById('top').innerHTML = topbar('Pitch', cfg);
+      document.querySelectorAll('[data-city-href]').forEach((a) => {
+        a.href = cityLink(a.getAttribute('data-city-href'));
+      });
+      const tv = document.getElementById('linkTv');
+      if (slug === 'bomlugar') {
+        tv.href = '/tv-bomlugar.html';
+        tv.textContent = 'Clipe TV Bom Lugar';
+      } else {
+        tv.href = '/tv.html';
+        tv.textContent = 'Clipe TV Bacabal';
+      }
     });
   </script>
 </body>

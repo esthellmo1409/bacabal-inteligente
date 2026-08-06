@@ -13,6 +13,13 @@
       background: linear-gradient(145deg, #1a1a1a 0%, #2f7319 55%, #ff8000 120%);
       color: #fff; border-radius: 22px; padding: 1.75rem 1.5rem; margin-bottom: 1.25rem;
     }
+    html[data-cidade="bomlugar"] .kit-hero {
+      background: linear-gradient(145deg, #022456 0%, #03327A 55%, #B71C1C 120%);
+    }
+    html[data-cidade="bomlugar"] .kit-card h3 { color: #03327A; }
+    html[data-cidade="bomlugar"] .phrase {
+      border-left-color: #03327A; background: #eef3fb;
+    }
     .kit-hero h1 { color:#fff; margin: 0.25rem 0 0.4rem; font-size: clamp(1.6rem, 4vw, 2.1rem); letter-spacing:-0.03em; }
     .kit-hero p { margin:0; opacity:.92; max-width:38rem; line-height:1.45; }
     .kit-kicker { font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
@@ -59,7 +66,7 @@
         <button class="btn-hero btn-hero-primary" type="button" id="btnPrep" style="background:#fff;color:#1a1a1a;border:0;cursor:pointer">
           Preparar cenário agora
         </button>
-        <a class="btn-hero btn-hero-ghost" href="/prefeito.html?cidade=bacabal" style="border-color:#fff;color:#fff">Abrir Gabinete</a>
+        <a class="btn-hero btn-hero-ghost" data-city-href="/prefeito.html" style="border-color:#fff;color:#fff">Abrir Gabinete</a>
       </div>
       <p id="prepMsg"></p>
     </div>
@@ -104,14 +111,18 @@
       <div class="kit-card">
         <h3>Links essenciais</h3>
         <ul>
-          <li><a href="/manual.html?cidade=bacabal">Manual por setor (ensinar equipes)</a></li>
-          <li><a href="/fluxo.html?cidade=bacabal">Demonstração em slides</a></li>
-          <li><a href="/pitch.html?cidade=bacabal">Pitch (1 tela)</a></li>
-          <li><a href="/prefeito.html?cidade=bacabal">Gabinete do prefeito</a></li>
-          <li><a href="/secretaria.html?cidade=bacabal">Painel da secretaria</a></li>
-          <li><a href="/plantao.html?cidade=bacabal">Check-in de plantão</a></li>
-          <li><a href="/cidadao.html?cidade=bacabal">App do cidadão</a></li>
-          <li><a href="/demo.html?cidade=bacabal">Demo guiada</a></li>
+          <li><a data-city-href="/apresentacao.html">Hub da apresentação</a></li>
+          <li><a data-city-href="/pitch.html">Pitch (1 tela)</a></li>
+          <li><a data-city-href="/carta-prefeito.html">Carta ao prefeito</a></li>
+          <li><a data-city-href="/manual.html">Manual por setor (ensinar equipes)</a></li>
+          <li><a data-city-href="/fluxo.html">Demonstração em slides</a></li>
+          <li><a id="linkTvKit" href="/tv.html" target="_blank" rel="noopener">Clipe TV</a></li>
+          <li><a data-city-href="/prefeito.html">Gabinete do prefeito</a></li>
+          <li><a data-city-href="/secretaria.html">Painel da secretaria</a></li>
+          <li><a data-city-href="/plantao.html">Check-in de plantão</a></li>
+          <li><a data-city-href="/cidadao.html">App do cidadão</a></li>
+          <li><a data-city-href="/demo.html">Demo guiada</a></li>
+          <li><a data-city-href="/modulos.html">Módulos</a></li>
         </ul>
       </div>
 
@@ -143,7 +154,21 @@
   <script>
     initCidade();
     loadCityBrand().then(cfg => {
+      const slug = (cfg && cfg.slug) || getCidade();
       document.getElementById('top').innerHTML = topbar('Reunião', cfg);
+      document.querySelectorAll('[data-city-href]').forEach((a) => {
+        a.href = cityLink(a.getAttribute('data-city-href'));
+      });
+      const tv = document.getElementById('linkTvKit');
+      if (tv) {
+        if (slug === 'bomlugar') {
+          tv.href = '/tv-bomlugar.html';
+          tv.textContent = 'Clipe TV Bom Lugar';
+        } else {
+          tv.href = '/tv.html';
+          tv.textContent = 'Clipe TV Bacabal';
+        }
+      }
     });
 
     document.getElementById('btnPrep').onclick = async () => {

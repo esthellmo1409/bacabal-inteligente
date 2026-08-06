@@ -351,17 +351,28 @@ function brandText(text, cfg) {
     .replace(/gestor de Bacabal/g, `gestor de ${cidade}`)
     .replace(/\bBacabal\b/g, cidade);
 
-  // Bom Lugar: prefeita (Marlene Silva Miranda) — só textos visíveis
+  // Bom Lugar: prefeita (Marlene) — só textos visíveis (nunca Anselmo Carvalho)
   if ((cfg.slug || getCidade()) === 'bomlugar') {
     out = out
       .replace(/Gabinete do Prefeito/gi, 'Gabinete da Prefeita')
+      .replace(/Gabinete do prefeito/gi, 'Gabinete da prefeita')
+      .replace(/Painel do prefeito/gi, 'Painel da prefeita')
       .replace(/Entrar como prefeito/gi, 'Entrar como prefeita')
       .replace(/Logado: Prefeito/g, 'Logado: Prefeita')
       .replace(/Observação do prefeito/gi, 'Observação da prefeita')
       .replace(/TV do prefeito/gi, 'TV da prefeita')
       .replace(/Cobrança do prefeito/gi, 'Cobrança da prefeita')
       .replace(/Carta ao prefeito/gi, 'Carta à prefeita')
-      .replace(/painel do gabinete/gi, 'painel do gabinete')
+      .replace(/Pronto para o prefeito/gi, 'Pronto para a prefeita')
+      .replace(/com o prefeito/gi, 'com a prefeita')
+      .replace(/para o prefeito/gi, 'para a prefeita')
+      .replace(/Roteiro de 5 minutos com a prefeita/gi, 'Roteiro de 5 minutos com a prefeita')
+      .replace(/o senhor já/gi, 'a senhora já')
+      .replace(/o senhor só/gi, 'a senhora só')
+      .replace(/o senhor não/gi, 'a senhora não')
+      .replace(/o senhor usa/gi, 'a senhora usa')
+      .replace(/o senhor já paga/gi, 'a senhora já paga')
+      .replace(/para o senhor/gi, 'para a senhora')
       .replace(/\bPrefeito(a)?\b/g, (m) => (m.toLowerCase() === 'prefeita' ? m : 'Prefeita'))
       .replace(/\bprefeito\b/g, 'prefeita');
   }
@@ -384,33 +395,53 @@ function applyPageBrand(cfg) {
   const fav = document.querySelector('link[rel="icon"]');
   if (fav) fav.href = logo;
 
+  const needsBrand = (t) => {
+    if (!t) return false;
+    if (/Bacabal/i.test(t)) return true;
+    if (slug === 'bomlugar' && /prefeito|o senhor/i.test(t) && !/prefeita/i.test(t)) return true;
+    return false;
+  };
+
   const walk = (root) => {
     const nodes = root.querySelectorAll(
-      'h1,h2,h3,h4,p,span,strong,b,label,li,a,button,td,th,.page-kicker,.pitch-kicker,.carta-kicker,.eyebrow,.muted,.display'
+      'h1,h2,h3,h4,p,span,strong,b,label,li,a,button,td,th,div.carta-kicker,div.pitch-kicker,div.ap-kicker,div.kit-kicker,div.man-kicker,.page-kicker,.eyebrow,.muted,.display'
     );
     nodes.forEach((el) => {
       if (el.closest('script,style,code,pre,textarea,input,select')) return;
-      // Evita páginas internas de venda fixas em Bacabal
+      // Páginas internas Anselmo Carvalho / Bacabal-only — não rebrandear
       if (el.closest('[data-keep-bacabal]')) return;
-      if (!/Bacabal/i.test(el.textContent || '')) return;
+      if (!needsBrand(el.textContent || '')) return;
 
       if (el.childElementCount === 0) {
         el.textContent = brandText(el.textContent, cfg);
         return;
       }
       el.childNodes.forEach((n) => {
-        if (n.nodeType === 3 && /Bacabal/i.test(n.nodeValue || '')) {
+        if (n.nodeType === 3 && needsBrand(n.nodeValue || '')) {
           n.nodeValue = brandText(n.nodeValue, cfg);
         }
       });
       el.querySelectorAll('strong,b,span,em').forEach((c) => {
-        if (c.childElementCount === 0 && /Bacabal/i.test(c.textContent || '')) {
+        if (c.childElementCount === 0 && needsBrand(c.textContent || '')) {
           c.textContent = brandText(c.textContent, cfg);
         }
       });
     });
   };
   walk(document.body || document);
+
+  // Links e clipe TV: Bom Lugar não usa materiais do Anselmo nem TV de Bacabal
+  if (slug === 'bomlugar') {
+    document.querySelectorAll('a[href*="ac-pitch"], a[href*="ac-script"]').forEach((a) => {
+      a.remove();
+    });
+    document.querySelectorAll('a[href*="tv.html"]').forEach((a) => {
+      const href = a.getAttribute('href') || '';
+      if (href.includes('tv-bomlugar')) return;
+      a.href = '/tv-bomlugar.html';
+      if (/Bacabal|TV/i.test(a.textContent || '')) a.textContent = 'Clipe TV Bom Lugar';
+    });
+  }
 
   if (slug !== 'bacabal' && logo) {
     document.querySelectorAll('img').forEach((img) => {

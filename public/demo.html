@@ -69,7 +69,7 @@
       </p>
       <div class="cta-row">
         <button class="btn btn-primary" id="preparar" type="button">1. Preparar cenário de hoje</button>
-        <a class="btn" href="/modulos.html?cidade=bacabal">Ver todos os módulos</a>
+        <a class="btn" data-city-href="/modulos.html">Ver todos os módulos</a>
       </div>
       <div class="demo-result" id="resultado"></div>
     </div>
@@ -81,7 +81,7 @@
           <h3>Cidadão abre o chamado</h3>
           <p>Foto ou descrição + GPS no mapa híbrido. Guarde o protocolo.</p>
         </div>
-        <div class="cta"><a class="btn btn-sm btn-primary" id="linkCid" href="/cidadao.html?cidade=bacabal">Abrir app</a></div>
+        <div class="cta"><a class="btn btn-sm btn-primary" id="linkCid" data-city-href="/cidadao.html">Abrir app</a></div>
       </div>
       <div class="demo-step">
         <div class="num">2</div>
@@ -90,7 +90,7 @@
           <p>Login obras → Em análise → Execução → Concluir → WhatsApp.</p>
           <span class="demo-creds">obras / obras123</span>
         </div>
-        <div class="cta"><a class="btn btn-sm" id="linkSec" href="/secretaria.html?cidade=bacabal">Secretaria</a></div>
+        <div class="cta"><a class="btn btn-sm" id="linkSec" data-city-href="/secretaria.html">Secretaria</a></div>
       </div>
       <div class="demo-step">
         <div class="num">3</div>
@@ -99,7 +99,7 @@
           <p>Aceitar OS, navegar GPS, foto antes/depois, encerrar.</p>
           <span class="demo-creds">campo / campo123</span>
         </div>
-        <div class="cta"><a class="btn btn-sm" href="/equipes.html?cidade=bacabal">Equipes</a></div>
+        <div class="cta"><a class="btn btn-sm" data-city-href="/equipes.html">Equipes</a></div>
       </div>
       <div class="demo-step">
         <div class="num">4</div>
@@ -107,7 +107,7 @@
           <h3>Gabinete vê o resultado</h3>
           <p>KPIs, mapa satélite, bairros críticos — TV do prefeito.</p>
         </div>
-        <div class="cta"><a class="btn btn-sm" href="/prefeito.html?cidade=bacabal">Dashboard</a></div>
+        <div class="cta"><a class="btn btn-sm" data-city-href="/prefeito.html">Dashboard</a></div>
       </div>
       <div class="demo-step">
         <div class="num">5</div>
@@ -115,7 +115,7 @@
           <h3>Feche a venda modular</h3>
           <p>Núcleo = Cidadão + Chamados. Demais módulos sob demanda.</p>
         </div>
-        <div class="cta"><a class="btn btn-sm" href="/modulos.html?cidade=bacabal">Módulos</a></div>
+        <div class="cta"><a class="btn btn-sm" data-city-href="/modulos.html">Módulos</a></div>
       </div>
     </div>
 
@@ -138,7 +138,10 @@
     initCidade();
     (async () => {
       const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      document.getElementById('top').innerHTML = topbar('Demo', cfg);
+      document.querySelectorAll('[data-city-href]').forEach((a) => {
+        a.href = cityLink(a.getAttribute('data-city-href'));
+      });
     })();
 
     document.getElementById('preparar').onclick = async () => {

@@ -14,6 +14,14 @@
       background: linear-gradient(145deg, #1a1a1a 0%, #2f7319 55%, #ff8000 125%);
       color: #fff; border-radius: 22px; padding: 1.85rem 1.55rem; margin-bottom: 1.25rem;
     }
+    html[data-cidade="bomlugar"] .carta-hero {
+      background: linear-gradient(145deg, #022456 0%, #03327A 55%, #B71C1C 125%);
+    }
+    html[data-cidade="bomlugar"] .block h2 { color: #03327A; }
+    html[data-cidade="bomlugar"] .ask {
+      background: #eef3fb; border-left-color: #03327A;
+    }
+    html[data-cidade="bomlugar"] .obj h3 { color: #03327A; }
     .carta-hero h1 {
       color:#fff; margin:.35rem 0 .5rem;
       font-size: clamp(1.55rem, 4.2vw, 2.15rem); letter-spacing:-.03em; line-height:1.15;
@@ -154,10 +162,11 @@
     </div>
 
     <div class="cta">
-      <a class="btn btn-primary" href="/fluxo.html?cidade=bacabal">Ver como funciona</a>
-      <a class="btn" href="/prefeito.html?cidade=bacabal">Abrir Gabinete</a>
-      <a class="btn" href="/manual.html?cidade=bacabal">Manual por setor</a>
-      <a class="btn" href="/apresentacao.html">Voltar à apresentação</a>
+      <a class="btn btn-primary" data-city-href="/fluxo.html">Ver como funciona</a>
+      <a class="btn" data-city-href="/prefeito.html">Abrir Gabinete</a>
+      <a class="btn" data-city-href="/manual.html">Manual por setor</a>
+      <a class="btn" data-city-href="/pitch.html">Pitch</a>
+      <a class="btn" data-city-href="/apresentacao.html">Voltar à apresentação</a>
     </div>
   </div>
 
@@ -166,6 +175,9 @@
     initCidade();
     loadCityBrand().then(cfg => {
       document.getElementById('top').innerHTML = topbar('Carta', cfg);
+      document.querySelectorAll('[data-city-href]').forEach((a) => {
+        a.href = cityLink(a.getAttribute('data-city-href'));
+      });
     });
   </script>
 </body>

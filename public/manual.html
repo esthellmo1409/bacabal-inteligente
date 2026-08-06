@@ -13,6 +13,12 @@
       background: linear-gradient(145deg, #1a1a1a 0%, #2f7319 60%, #ff8000 130%);
       color: #fff; border-radius: 22px; padding: 1.75rem 1.5rem; margin-bottom: 1.25rem;
     }
+    html[data-cidade="bomlugar"] .man-hero {
+      background: linear-gradient(145deg, #022456 0%, #03327A 60%, #B71C1C 130%);
+    }
+    html[data-cidade="bomlugar"] .toc a { color: #03327A; }
+    html[data-cidade="bomlugar"] .toc a:hover { border-color:#03327A; color:#022456; }
+    html[data-cidade="bomlugar"] .tip { border-left-color:#03327A; background:#eef3fb; }
     .man-hero h1 { color:#fff; margin:.3rem 0 .4rem; font-size: clamp(1.55rem, 4vw, 2.1rem); letter-spacing:-.03em; }
     .man-hero p { margin:0; opacity:.92; max-width:40rem; line-height:1.45; }
     .man-kicker { font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
@@ -220,7 +226,7 @@
 
     <p class="print-note">
       Dica: use Ctrl+P para imprimir ou salvar em PDF e entregar a cada secretaria.
-      Demonstração rápida em slides: <a href="/fluxo.html?cidade=bacabal">/fluxo.html</a>
+      Demonstração rápida em slides: <a data-city-href="/fluxo.html">/fluxo.html</a>
     </p>
   </div>
 
@@ -229,6 +235,9 @@
     initCidade();
     loadCityBrand().then(cfg => {
       document.getElementById('top').innerHTML = topbar('Manual', cfg);
+      document.querySelectorAll('[data-city-href]').forEach((a) => {
+        a.href = cityLink(a.getAttribute('data-city-href'));
+      });
     });
   </script>
 </body>
