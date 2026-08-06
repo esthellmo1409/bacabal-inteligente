@@ -1006,14 +1006,13 @@ body:not([data-cidade]) .footer-social a {
 }
 
 .prefeito-spotlight .prefeita-photo {
-  background: #d6dfca;
+  background: transparent;
 }
 
 .prefeito-spotlight .prefeita-photo img {
   object-fit: cover;
-  object-position: center 42%;
-  transform: scale(0.86);
-  transform-origin: center 28%;
+  object-position: center center;
+  transform: none;
 }
 
 .prefeita-spotlight-inner {
