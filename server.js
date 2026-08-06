@@ -385,16 +385,16 @@ function ensureDemoAprovacao(slug = 'bacabal') {
   writeTenant(slug, 'chamados.json', chamados);
 }
 
-/** Remove chamados “poluídos” e deixa só os demos de IA (apresentação limpa). */
+/** Zera a fila uma vez (apresentação) e deixa o seedDemosIa recriar só os demos de IA. */
 function limparChamadosParaDemo(slug = 'bacabal') {
   if (!getMunicipio(slug) && !fs.existsSync(tenantPath(slug, 'chamados.json'))) return;
-  const chamados = readTenant(slug, 'chamados.json', []);
-  const demos = chamados.filter(
-    (c) => c.demoFixo === 'buraco-foto' || c.demoFixo === 'buraco-aprov'
-  );
-  if (demos.length === chamados.length) return;
-  writeTenant(slug, 'chamados.json', demos);
-  console.log(`  Chamados limpos (${slug}): ${chamados.length} → ${demos.length} (só demos IA)`);
+  const marker = path.join(DATA_DIR, `.limpar-chamados-${slug}-20260806b`);
+  if (fs.existsSync(marker)) return;
+  writeTenant(slug, 'chamados.json', []);
+  try {
+    fs.writeFileSync(marker, new Date().toISOString());
+  } catch (_) { /* ok */ }
+  console.log(`  Chamados zerados (${slug}) para apresentação`);
 }
 
 function seedDemosIa() {
