@@ -49,7 +49,8 @@
       filter: saturate(1.05) contrast(1.05);
     }
     .scene.on .bg {
-      animation: ken 9.5s ease-out forwards;
+      animation: ken linear forwards;
+      animation-duration: 12s;
     }
     @keyframes ken {
       from { transform: scale(1.12) translate3d(0, 1.5%, 0); }
@@ -369,13 +370,14 @@
   </div>
 
   <script>
-    const PAD = 1400; // pausa após cada locução
+    const BREATH_MS = 1800; // pausa após cada locução (respiração)
+    const MIN_SCENE_MS = 8000;
     const scenes = [...document.querySelectorAll('.scene')];
     const bar = document.getElementById('bar');
     const dots = document.getElementById('dots');
     const gate = document.getElementById('gate');
 
-    // Locução neural pt-BR (estúdio) — um MP3 por cena
+    // Locução neural pt-BR — um MP3 por cena
     const tracks = scenes.map((_, i) => {
       const a = new Audio('/assets/tv-narracao-' + i + '.mp3');
       a.preload = 'auto';
@@ -384,12 +386,14 @@
 
     let idx = 0;
     let t0 = performance.now();
-    let sceneDur = 9000;
+    let sceneDur = 10000;
     let paused = false;
     let voiceOn = true;
     let started = false;
     let hideTimer = null;
     let currentAudio = null;
+    let advanceTimer = null;
+    let pauseLeft = 0;
 
     scenes.forEach((_, i) => {
       const s = document.createElement('span');
@@ -397,46 +401,112 @@
       dots.appendChild(s);
     });
 
+    function clearAdvance() {
+      if (advanceTimer) {
+        clearTimeout(advanceTimer);
+        advanceTimer = null;
+      }
+    }
+
     function stopAudio() {
       tracks.forEach((a) => {
-        try { a.pause(); a.currentTime = 0; } catch (_) {}
+        try {
+          a.onended = null;
+          a.onerror = null;
+          a.pause();
+          a.currentTime = 0;
+        } catch (_) {}
       });
       currentAudio = null;
     }
 
     function playVoice(i) {
-      stopAudio();
-      if (!voiceOn || !started) return;
+      clearAdvance();
+      if (!voiceOn || !started) {
+        t0 = performance.now();
+        sceneDur = MIN_SCENE_MS;
+        const bg = scenes[i]?.querySelector('.bg');
+        if (bg) bg.style.animationDuration = (sceneDur / 1000) + 's';
+        advanceTimer = setTimeout(() => {
+          if (!started || paused) return;
+          show((idx + 1) % scenes.length);
+        }, sceneDur);
+        return;
+      }
+
       const a = tracks[i];
       currentAudio = a;
       a.volume = 1;
-      const p = a.play();
-      if (p && p.catch) p.catch(() => {});
-    }
 
-    function measureDur(i) {
-      const a = tracks[i];
-      const audioMs = (a && isFinite(a.duration) && a.duration > 0)
-        ? a.duration * 1000
-        : 7500;
-      return Math.max(6500, audioMs + PAD);
+      const afterAudio = () => {
+        if (!started || paused || currentAudio !== a) return;
+        clearAdvance();
+        // respiração após a fala — sem cortar a locução
+        t0 = performance.now();
+        sceneDur = BREATH_MS;
+        bar.style.width = '0%';
+        advanceTimer = setTimeout(() => {
+          if (!started || paused) return;
+          show((idx + 1) % scenes.length);
+        }, BREATH_MS);
+      };
+
+      a.onended = afterAudio;
+      a.onerror = () => {
+        if (currentAudio !== a) return;
+        afterAudio();
+      };
+
+      const begin = () => {
+        if (currentAudio !== a || !started || paused) return;
+        const audioMs = (isFinite(a.duration) && a.duration > 0) ? a.duration * 1000 : 10000;
+        sceneDur = Math.max(MIN_SCENE_MS, audioMs + BREATH_MS);
+        t0 = performance.now();
+        bar.style.width = '0%';
+        const bg = scenes[i]?.querySelector('.bg');
+        if (bg) bg.style.animationDuration = (sceneDur / 1000) + 's';
+        // Failsafe longo: só se o ended falhar (não corta a fala no meio)
+        clearAdvance();
+        advanceTimer = setTimeout(afterAudio, audioMs + BREATH_MS + 2500);
+        a.play().catch(() => {
+          // retry uma vez (comum após troca rápida de cena)
+          setTimeout(() => {
+            if (currentAudio !== a || !started || paused) return;
+            a.play().catch(afterAudio);
+          }, 200);
+        });
+      };
+
+      try { a.pause(); a.currentTime = 0; } catch (_) {}
+      if (a.readyState >= 1) begin();
+      else {
+        a.addEventListener('loadedmetadata', begin, { once: true });
+        try { a.load(); } catch (_) {}
+        setTimeout(() => {
+          if (currentAudio === a && a.readyState >= 1) begin();
+        }, 1500);
+      }
     }
 
     function show(i) {
+      clearAdvance();
+      stopAudio();
       scenes.forEach((el, n) => el.classList.toggle('on', n === i));
       dots.querySelectorAll('span').forEach((d, n) => d.classList.toggle('on', n === i));
       idx = i;
-      sceneDur = measureDur(i);
       t0 = performance.now();
       bar.style.width = '0%';
-      playVoice(i);
+      // folga visual antes da locução
+      setTimeout(() => {
+        if (idx !== i || !started || paused) return;
+        playVoice(i);
+      }, 320);
     }
 
     function tick(now) {
-      if (started && !paused) {
+      if (started && !paused && sceneDur > 0) {
         const p = Math.min(1, (now - t0) / sceneDur);
         bar.style.width = (p * 100) + '%';
-        if (p >= 1) show((idx + 1) % scenes.length);
       }
       requestAnimationFrame(tick);
     }
@@ -452,12 +522,12 @@
       started = true;
       gate.style.display = 'none';
       document.documentElement.requestFullscreen?.().catch(() => {});
-      // Garante metadados de duração
       Promise.all(tracks.map((a) => new Promise((resolve) => {
         if (a.readyState >= 1) return resolve();
         a.addEventListener('loadedmetadata', resolve, { once: true });
         a.addEventListener('error', resolve, { once: true });
-        setTimeout(resolve, 1500);
+        try { a.load(); } catch (_) {}
+        setTimeout(resolve, 2500);
       }))).then(() => show(0));
     }
 
@@ -476,21 +546,32 @@
       paused = !paused;
       e.currentTarget.textContent = paused ? 'Continuar' : 'Pausar';
       if (paused) {
+        pauseLeft = Math.max(0, sceneDur - (performance.now() - t0));
+        clearAdvance();
         if (currentAudio) currentAudio.pause();
       } else {
         t0 = performance.now();
-        // retoma do ponto ou reinicia cena
+        sceneDur = pauseLeft || MIN_SCENE_MS;
+        advanceTimer = setTimeout(() => {
+          if (!started || paused) return;
+          show((idx + 1) % scenes.length);
+        }, sceneDur);
         if (currentAudio && voiceOn) {
           currentAudio.play().catch(() => playVoice(idx));
-        } else playVoice(idx);
+        } else if (voiceOn) {
+          playVoice(idx);
+        }
       }
     };
 
     document.getElementById('btnVoice').onclick = (e) => {
       voiceOn = !voiceOn;
       e.currentTarget.textContent = 'Áudio: ' + (voiceOn ? 'on' : 'off');
-      if (!voiceOn) stopAudio();
-      else if (started && !paused) playVoice(idx);
+      if (!voiceOn) {
+        stopAudio();
+      } else if (started && !paused) {
+        playVoice(idx);
+      }
     };
 
     window.addEventListener('mousemove', showUi);
