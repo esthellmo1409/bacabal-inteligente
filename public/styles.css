@@ -1516,6 +1516,32 @@ input:focus, select:focus, textarea:focus {
   font-size: 0.8rem;
 }
 
+.ia-gabinete-box {
+  border-color: rgba(33, 99, 232, 0.28);
+  background: linear-gradient(180deg, rgba(33, 99, 232, 0.07), rgba(255, 255, 255, 0.55));
+}
+
+.ia-gabinete-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.ia-gabinete-opcoes .btn.ia-gab-active {
+  background: var(--brand, #2163e8);
+  color: #fff;
+  border-color: transparent;
+}
+
+.ia-gabinete-resposta {
+  margin-top: 0.9rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(33, 99, 232, 0.18);
+}
+
 @media (max-width: 640px) {
   .ia-obra-grid { grid-template-columns: 1fr; }
 }

@@ -141,6 +141,7 @@ const {
   analisarAprovacao,
   roteirizar,
   assistenteSecretaria,
+  assistenteGabinete,
   gerarParecer,
   mensagemWhatsApp,
 } = require('./lib/avancado.js');
@@ -1277,6 +1278,32 @@ async function handleAPI(req, res, pathname, url) {
       chamados,
       secretaria,
       cidade: cfg.cidade,
+    });
+    return sendJSON(res, 200, out);
+  }
+
+  if (pathname === '/api/ia/gabinete' && req.method === 'POST') {
+    const slug = requireTenant(req, url, res);
+    if (!slug) return;
+    const body = await readBody(req);
+    const cfg = readTenant(slug, 'config.json', {});
+    const chamados = readTenant(slug, 'chamados.json', []).map(normalizeChamado);
+    const obras = readTenant(slug, 'obras.json', []);
+    let metricas = {};
+    try {
+      // reutiliza lógica leve: taxa de resolução
+      const total = chamados.length || 1;
+      const ok = chamados.filter((c) => c.status === 'concluido').length;
+      metricas = { taxaResolucao: Math.round((ok / total) * 100) };
+    } catch (_) {}
+    const cargo = (cfg.prefeita || slug === 'bomlugar') ? 'prefeita' : 'prefeito';
+    const out = assistenteGabinete({
+      opcao: body.opcao || body.option || 'ajuda',
+      chamados,
+      obras,
+      metricas,
+      cidade: cfg.cidade || slug,
+      cargo,
     });
     return sendJSON(res, 200, out);
   }

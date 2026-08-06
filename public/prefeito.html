@@ -73,6 +73,27 @@
       </div>
     </div>
 
+    <div class="panel ia-gabinete-box" id="iaGabinete" style="margin-top:1rem">
+      <div class="ia-obra-avatar-row">
+        <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=3" alt="" width="56" height="56" />
+        <div class="ia-obra-copy" style="flex:1">
+          <strong id="iaGabTitle" class="ia-type-title"></strong>
+          <p id="iaGabSub" class="muted ia-type-sub" style="margin:0.25rem 0 0"></p>
+        </div>
+      </div>
+      <div class="ia-gabinete-opcoes" id="iaGabOpcoes" hidden>
+        <button type="button" class="btn btn-sm" data-ia-gab="cidade">Como está a cidade hoje?</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="projetos">Projetos e obras</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="reunioes">Reuniões e agenda</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="priorizar">O que priorizar agora?</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="saude">Saúde em resumo</button>
+      </div>
+      <div id="iaGabResposta" class="ia-gabinete-resposta" hidden>
+        <strong id="iaGabResTitulo" style="display:block;margin-bottom:0.35rem"></strong>
+        <p id="iaGabResTexto" class="ia-type-intro" style="margin:0;white-space:pre-wrap;line-height:1.5"></p>
+      </div>
+    </div>
+
     <div class="eixo-tabs" id="tabs">
       <button type="button" class="eixo-tab active" data-eixo="cidade">Cidade<small>Ruas, obras, limpeza</small></button>
       <button type="button" class="eixo-tab" data-eixo="saude">Saúde<small>Hospital, UBS, visita</small></button>
@@ -139,7 +160,7 @@
   <div id="visitaRoot"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=ia6"></script>
   <script src="/map.js"></script>
   <script>
     initCidade();
@@ -176,7 +197,77 @@
           load();
         };
       });
+      initIaGabinete(cfg);
       await load();
+    }
+
+    function iaGabineteCargo(cfg0) {
+      return (cfg0?.slug === 'bomlugar' || cfg0?.prefeita || getCidade() === 'bomlugar')
+        ? 'senhora prefeita'
+        : 'senhor prefeito';
+    }
+
+    async function initIaGabinete(cfg0) {
+      const produto = cfg0?.produto || window.__CITY_PRODUTO || 'Cidade Conecta';
+      const cargo = iaGabineteCargo(cfg0);
+      const titleEl = document.getElementById('iaGabTitle');
+      const subEl = document.getElementById('iaGabSub');
+      const ops = document.getElementById('iaGabOpcoes');
+      if (!titleEl || !subEl || !ops) return;
+
+      const title = `Oi! Sou a ${produto}, sua assistente de IA.`;
+      const sub = `Olá, ${cargo}. Como posso te ajudar hoje?`;
+      titleEl.textContent = '';
+      subEl.textContent = '';
+      ops.hidden = true;
+
+      if (typeof iaTypeInto === 'function') {
+        await iaTypeInto(titleEl, title, { speed: 42, id: 'gab-t' });
+        await iaTypeInto(subEl, sub, { speed: 34, id: 'gab-s' });
+      } else {
+        titleEl.textContent = title;
+        subEl.textContent = sub;
+      }
+      ops.hidden = false;
+      ops.classList.add('ia-fade-in');
+
+      ops.querySelectorAll('[data-ia-gab]').forEach((btn) => {
+        if (btn._iaBound) return;
+        btn._iaBound = true;
+        btn.addEventListener('click', () => perguntarIaGabinete(btn.getAttribute('data-ia-gab'), btn));
+      });
+    }
+
+    async function perguntarIaGabinete(opcao, btn) {
+      const box = document.getElementById('iaGabResposta');
+      const tit = document.getElementById('iaGabResTitulo');
+      const txt = document.getElementById('iaGabResTexto');
+      if (!box || !tit || !txt) return;
+      document.querySelectorAll('[data-ia-gab]').forEach((b) => b.classList.remove('ia-gab-active'));
+      if (btn) btn.classList.add('ia-gab-active');
+      box.hidden = false;
+      tit.textContent = '';
+      txt.textContent = '';
+      txt.classList.add('ia-analisando');
+      txt.textContent = 'Consultando os dados do gabinete';
+      try {
+        const r = await api('/api/ia/gabinete', {
+          method: 'POST',
+          body: JSON.stringify({ opcao }),
+        });
+        txt.classList.remove('ia-analisando');
+        tit.textContent = r.titulo || 'Resposta';
+        if (typeof iaTypeInto === 'function') {
+          await iaTypeInto(txt, r.reply || '', { speed: 28, id: 'gab-r' });
+        } else {
+          txt.textContent = r.reply || '';
+        }
+      } catch (e) {
+        txt.classList.remove('ia-analisando');
+        tit.textContent = 'Não consegui responder agora';
+        txt.textContent = e.message || 'Erro';
+        toast(e.message);
+      }
     }
 
     async function loginPrefeito() {
