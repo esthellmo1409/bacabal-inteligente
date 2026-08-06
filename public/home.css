@@ -801,79 +801,89 @@ html[data-cidade="bomlugar"] .btn-hero-ghost:hover {
 
 .landing-pillar a:hover { text-decoration: underline; }
 
-/* —— Bom Lugar: cores atrativas, três cards iguais —— */
+/* —— Bom Lugar: barras horizontais empilhadas —— */
 html[data-cidade="bomlugar"] .landing-pillars {
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.2rem;
-  align-items: stretch;
+  grid-template-columns: 1fr;
+  gap: 0.95rem;
   margin-bottom: 3.5rem;
 }
 
 html[data-cidade="bomlugar"] .landing-pillar {
   border: none;
-  border-radius: 18px;
-  background: #f0f5fb;
-  box-shadow: 0 10px 28px rgba(3, 50, 122, 0.1);
+  border-radius: 16px;
+  background: linear-gradient(90deg, #f5f8fd 0%, #e8eef8 100%);
+  box-shadow: 0 8px 24px rgba(3, 50, 122, 0.1);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 168px 1fr;
+  align-items: stretch;
+  border-left: 4px solid #03327A;
+  min-height: 148px;
 }
 
 html[data-cidade="bomlugar"] .landing-pillar:hover {
   border-color: transparent;
-  box-shadow: 0 16px 36px rgba(3, 50, 122, 0.16);
-  transform: translateY(-3px);
+  border-left-color: #B71C1C;
+  box-shadow: 0 12px 32px rgba(3, 50, 122, 0.16);
+  transform: translateY(-2px);
 }
 
 html[data-cidade="bomlugar"] .landing-pillar .pillar-media {
-  height: 180px;
+  height: 100%;
+  min-height: 148px;
+  width: 168px;
+}
+
+html[data-cidade="bomlugar"] .landing-pillar .pillar-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 html[data-cidade="bomlugar"] .landing-pillar .pillar-body {
-  padding: 1.2rem 1.25rem 1.4rem;
-  border-top: 3px solid #03327A;
-  background: linear-gradient(180deg, #f5f8fd 0%, #e8eef8 100%);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-html[data-cidade="bomlugar"] .landing-pillar .ico {
-  left: 0.9rem;
-  bottom: 0.9rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: #B71C1C;
-  color: #fff;
-  font-size: 0.78rem;
-  box-shadow: 0 6px 14px rgba(183, 28, 28, 0.3);
+  padding: 1.15rem 1.35rem;
+  border-top: none;
+  background: transparent;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr;
+  column-gap: 1.25rem;
+  row-gap: 0.35rem;
+  align-items: center;
 }
 
 html[data-cidade="bomlugar"] .landing-pillar h3 {
-  font-size: 1.1rem;
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 1.15rem;
   color: #022456;
-  margin-bottom: 0.4rem;
+  margin: 0;
 }
 
 html[data-cidade="bomlugar"] .landing-pillar p {
-  font-size: 0.9rem;
+  grid-column: 1;
+  grid-row: 2;
+  font-size: 0.92rem;
   color: #4a5568;
-  margin-bottom: 1.1rem;
-  flex: 1;
+  margin: 0;
+  max-width: 52ch;
 }
 
 html[data-cidade="bomlugar"] .landing-pillar a {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  justify-self: end;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  align-self: flex-start;
-  padding: 0.55rem 1.05rem;
+  white-space: nowrap;
+  padding: 0.65rem 1.2rem;
   border-radius: 999px;
   background: #03327A;
   color: #fff !important;
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 700;
   text-decoration: none !important;
   box-shadow: 0 4px 12px rgba(3, 50, 122, 0.28);
@@ -889,6 +899,18 @@ html[data-cidade="bomlugar"] .landing-pillar a:hover {
 
 html[data-cidade="bomlugar"] .landing-pillar a:active {
   transform: translateY(1px);
+}
+
+html[data-cidade="bomlugar"] .landing-pillar .ico {
+  left: 0.65rem;
+  bottom: 0.65rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #B71C1C;
+  color: #fff;
+  font-size: 0.72rem;
+  box-shadow: 0 4px 12px rgba(183, 28, 28, 0.35);
 }
 
 .landing-map-block .map-shell {
@@ -1166,14 +1188,42 @@ html[data-cidade="bomlugar"] .landing-footer-inner .footer-social a {
   .landing-pillar .pillar-media { height: 140px; }
 
   html[data-cidade="bomlugar"] .landing-pillars {
+    gap: 0.85rem;
+  }
+  html[data-cidade="bomlugar"] .landing-pillar {
     grid-template-columns: 1fr;
-    align-items: stretch;
-    gap: 1.1rem;
+    border-left: none;
+    border-top: 4px solid #03327A;
+    min-height: 0;
+  }
+  html[data-cidade="bomlugar"] .landing-pillar:hover {
+    border-left-color: transparent;
+    border-top-color: #B71C1C;
   }
   html[data-cidade="bomlugar"] .landing-pillar .pillar-media {
-    height: 170px;
+    width: 100%;
+    height: 160px;
+    min-height: 160px;
+  }
+  html[data-cidade="bomlugar"] .landing-pillar .pillar-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 1rem 1.1rem 1.15rem;
+  }
+  html[data-cidade="bomlugar"] .landing-pillar h3 {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  html[data-cidade="bomlugar"] .landing-pillar p {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: none;
+    margin-bottom: 0.75rem;
   }
   html[data-cidade="bomlugar"] .landing-pillar a {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: stretch;
     width: 100%;
   }
   .map-toolbar {
