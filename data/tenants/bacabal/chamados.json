@@ -5,13 +5,13 @@
     "categoria": "buraco",
     "secretaria": "obras",
     "titulo": "Buraco / Tapa-buraco",
-    "descricao": "Buraco na Rua 11, Centro — secretaria Encaminhar agora. Campo começa vazio.",
+    "descricao": "TESTE IA — buraco em via pública (asfalto). Use “Posso te ajudar com esse serviço?” para ver material, quantidade, tempo e ferramentas sugeridos.",
     "bairro": "Centro",
-    "endereco": "Rua 11 — ponto de teste",
+    "endereco": "Rua 11 — ponto de demonstração IA",
     "lat": -4.2887,
     "lng": -44.7937,
     "prioridade": "alta",
-    "status": "novo",
+    "status": "encaminhado",
     "equipeId": null,
     "cidadao": {
       "nome": "João Barbosa",
@@ -25,7 +25,7 @@
       {
         "tipo": "foto",
         "url": "/assets/buraco-demo-antes.jpg",
-        "em": "2026-08-04T22:11:04.316Z"
+        "em": "2026-08-06T14:20:18.711Z"
       }
     ],
     "historico": [
@@ -33,10 +33,15 @@
         "em": "2026-08-04T22:11:04.316Z",
         "status": "novo",
         "nota": "Pronto para Encaminhar — campo zerado"
+      },
+      {
+        "em": "2026-08-06T14:20:18.711Z",
+        "status": "encaminhado",
+        "nota": "Encaminhado para teste IA (secretaria + campo)"
       }
     ],
     "criadoEm": "2026-08-04T22:11:04.316Z",
-    "atualizadoEm": "2026-08-04T22:11:04.316Z",
+    "atualizadoEm": "2026-08-06T14:20:18.711Z",
     "demoFixo": "buraco-foto",
     "comentarios": [],
     "materiais": [],

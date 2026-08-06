@@ -200,14 +200,17 @@ try {
   }
 } catch (_) { /* ok */ }
 
+/** Foto padrão de buraco — usada no demo e quando o cidadão abre chamado sem anexar foto. */
+const FOTO_DEMO_BURACO = '/assets/buraco-demo-antes.jpg';
+
 /** Garante chamado demo com foto de buraco (arquivo estático) — sobrevive a redeploy no Railway.
- *  Usado como base de teste da IA (secretaria + campo). */
+ *  Serve de base para a secretaria/campo testarem o assistente de IA. */
 function ensureDemoChamado(slug = 'bacabal') {
   const fotoFile = path.join(PUBLIC_DIR, 'assets', 'buraco-demo-antes.jpg');
   if (!fs.existsSync(fotoFile)) return;
   if (!getMunicipio(slug) && !fs.existsSync(tenantPath(slug, 'chamados.json'))) return;
 
-  const fotoUrl = '/assets/buraco-demo-antes.jpg';
+  const fotoUrl = FOTO_DEMO_BURACO;
   const chamados = readTenant(slug, 'chamados.json', []);
   const cfg = readTenant(slug, 'config.json', {});
   const cats = readTenant(slug, 'categorias.json', []);
@@ -225,11 +228,9 @@ function ensureDemoChamado(slug = 'bacabal') {
     categoria: cat.id,
     secretaria: 'obras',
     titulo: cat.label || 'Buraco / Tapa-buraco',
-    descricao:
-      'TESTE IA — buraco em via pública (asfalto). Use “Posso te ajudar com esse serviço?” ' +
-      'para ver material, quantidade, tempo e ferramentas sugeridos.',
+    descricao: 'Buraco profundo na via pública, asfalto quebrado. Risco para veículos e pedestres.',
     bairro: 'Centro',
-    endereco: 'Rua 11 — ponto de demonstração IA',
+    endereco: 'Rua 11, próximo ao meio da quadra',
     lat: (cfg.lat || -4.2917) + 0.003,
     lng: (cfg.lng || -44.7917) - 0.002,
     prioridade: 'alta',
@@ -248,8 +249,8 @@ function ensureDemoChamado(slug = 'bacabal') {
       ...base,
       status: 'encaminhado',
       historico: [
-        { em: now, status: 'novo', nota: 'Chamado demo IA com foto de buraco' },
-        { em: now, status: 'encaminhado', nota: 'Encaminhado à equipe de campo — teste do assistente IA' },
+        { em: now, status: 'novo', nota: 'Chamado aberto pelo cidadão com foto' },
+        { em: now, status: 'encaminhado', nota: 'Encaminhado à equipe de campo' },
       ],
       criadoEm: now,
     }));
@@ -274,21 +275,19 @@ function ensureDemoChamado(slug = 'bacabal') {
       prev.historico.push({
         em: now,
         status: 'encaminhado',
-        nota: 'Demo IA restaurada — foto de buraco pronta para análise na secretaria e no campo',
+        nota: 'Chamado reaberto e encaminhado à equipe de campo',
       });
     } else if (prev.status === 'novo' || prev.status === 'aberto' || prev.status === 'em_analise') {
-      // Garante que o campo também veja
       prev.status = 'encaminhado';
       prev.historico = prev.historico || [];
       prev.historico.push({
         em: now,
         status: 'encaminhado',
-        nota: 'Encaminhado para teste IA (secretaria + campo)',
+        nota: 'Encaminhado à equipe de campo',
       });
     }
     prev.atualizadoEm = now;
     chamados[idx] = normalizeChamado(prev);
-    // Sobe o demo para o topo
     const [demo] = chamados.splice(idx, 1);
     chamados.unshift(demo);
   }
@@ -935,6 +934,11 @@ async function handleAPI(req, res, pathname, url) {
       return sendJSON(res, 400, { error: 'Informe descrição ou foto' });
     }
 
+    // Sem foto anexada: usa a foto padrão de buraco (base de teste do assistente)
+    const fotoFile = path.join(PUBLIC_DIR, 'assets', 'buraco-demo-antes.jpg');
+    const fotoPadrao = (!body.foto && fs.existsSync(fotoFile)) ? FOTO_DEMO_BURACO : null;
+    const fotoFinal = body.foto || fotoPadrao;
+
     const chamados = readTenant(slug, 'chamados.json', []);
     const dups = detectarDuplicidade(chamados, {
       categoria: cat.id,
@@ -965,15 +969,15 @@ async function handleAPI(req, res, pathname, url) {
       status: 'novo',
       prioridade,
       cidadao: { nome: body.nome || 'Cidadão', telefone: body.telefone || '', email: body.email || '' },
-      foto: body.foto || null,
-      fotoAntes: body.foto || null,
+      foto: fotoFinal,
+      fotoAntes: fotoFinal,
       fotoDepois: null,
-      anexos: body.foto ? [{ tipo: 'foto', url: body.foto, em: now }] : [],
+      anexos: fotoFinal ? [{ tipo: 'foto', url: fotoFinal, em: now }] : [],
       posteId: body.posteId || null,
       historico: [{
         em: now,
         status: 'novo',
-        nota: body.foto ? 'Chamado aberto pelo cidadão com foto' : 'Chamado aberto pelo cidadão',
+        nota: 'Chamado aberto pelo cidadão com foto',
       }],
       criadoEm: now,
       atualizadoEm: now,

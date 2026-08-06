@@ -1,1 +1,54 @@
-﻿[]
+[
+  {
+    "id": "BOM-DEMO-BURACO",
+    "protocolo": "20269064",
+    "categoria": "buraco",
+    "secretaria": "obras",
+    "titulo": "Buraco / Tapa-buraco",
+    "descricao": "TESTE IA — buraco em via pública (asfalto). Use “Posso te ajudar com esse serviço?” para ver material, quantidade, tempo e ferramentas sugeridos.",
+    "bairro": "Centro",
+    "endereco": "Rua 11 — ponto de demonstração IA",
+    "lat": -4.369,
+    "lng": -45.035000000000004,
+    "prioridade": "alta",
+    "cidadao": {
+      "nome": "João Barbosa",
+      "telefone": "99987878787",
+      "email": ""
+    },
+    "foto": "/assets/buraco-demo-antes.jpg",
+    "fotoAntes": "/assets/buraco-demo-antes.jpg",
+    "fotoDepois": null,
+    "anexos": [
+      {
+        "tipo": "foto",
+        "url": "/assets/buraco-demo-antes.jpg",
+        "em": "2026-08-06T14:20:18.730Z"
+      }
+    ],
+    "demoFixo": "buraco-foto",
+    "atualizadoEm": "2026-08-06T14:20:18.730Z",
+    "status": "encaminhado",
+    "historico": [
+      {
+        "em": "2026-08-06T14:20:18.730Z",
+        "status": "novo",
+        "nota": "Chamado demo IA com foto de buraco"
+      },
+      {
+        "em": "2026-08-06T14:20:18.730Z",
+        "status": "encaminhado",
+        "nota": "Encaminhado à equipe de campo — teste do assistente IA"
+      }
+    ],
+    "criadoEm": "2026-08-06T14:20:18.730Z",
+    "comentarios": [],
+    "assinatura": null,
+    "avaliacao": null,
+    "equipeId": null,
+    "ordemServico": null,
+    "custo": 0,
+    "materiais": [],
+    "horasTrabalhadas": 0
+  }
+]

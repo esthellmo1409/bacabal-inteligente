@@ -246,7 +246,6 @@
               <div class="item-head">
                 <strong>${p.titulo} · ${p.protocolo}</strong>
                 ${badge(p.status)}
-                ${p.demoFixo === 'buraco-foto' || /TESTE IA|buraco/i.test(p.descricao || '') ? '<span class="badge badge-em_analise">Teste IA</span>' : ''}
                 ${p.status === 'encaminhado' ? '<span class="badge badge-em_analise">Nova OS</span>' : ''}
               </div>
               <div class="meta">${p.bairro || '—'} · ${tempoRelativo(p.atualizadoEm || p.criadoEm)}</div>
