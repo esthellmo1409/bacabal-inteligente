@@ -460,8 +460,8 @@ function brandHtmlForCity(html, slug, opts = {}) {
   if (opts.isHome) {
     replacements.push(
       // Home: balão/logo oficial (admin continua com brasão acima)
-      ['src="/assets/logo-bomlugar.jpg"', 'src="/assets/logo-oficial-bomlugar.png?v=2"'],
-      ['href="/assets/logo-bomlugar.jpg"', 'href="/assets/logo-oficial-bomlugar.png?v=2"'],
+      ['src="/assets/logo-bomlugar.jpg"', 'src="/assets/logo-oficial-bomlugar.png?v=3"'],
+      ['href="/assets/logo-bomlugar.jpg"', 'href="/assets/logo-oficial-bomlugar.png?v=3"'],
       ['Brasão de Bom Lugar', 'Prefeitura Bom Lugar — início'],
       ['A cidade conectada de verdade', 'Construindo o presente e planejando o futuro'],
       ['https://www.bacabal.ma.gov.br/', 'https://www.bomlugar.ma.gov.br/'],

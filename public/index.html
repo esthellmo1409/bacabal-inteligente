@@ -34,7 +34,7 @@
           tagline: 'Construindo o presente e planejando o futuro',
           cidade: 'Bom Lugar',
           uf: 'MA',
-          logo: '/assets/logo-oficial-bomlugar.png?v=2',
+          logo: '/assets/logo-oficial-bomlugar.png?v=3',
           portal: 'https://www.bomlugar.ma.gov.br/',
           contatoBar: '(98) 9.9196-7607 · Centro · Bom Lugar/MA',
           endereco: 'Rua Manoel Severo, S/N - Centro · CEP 65.704-000',
@@ -612,11 +612,11 @@
         const brandImgBl = document.querySelector('.landing-brand img');
         if (brandImgBl) {
           // Home: só aqui usa o balão/logo oficial; admin e demais páginas usam brasão (cfg.logo)
-          brandImgBl.src = '/assets/logo-oficial-bomlugar.png?v=2';
+          brandImgBl.src = '/assets/logo-oficial-bomlugar.png?v=3';
           brandImgBl.alt = 'Prefeitura Bom Lugar — início';
         }
         const favHome = document.querySelector('link[rel="icon"]');
-        if (favHome) favHome.href = '/assets/logo-oficial-bomlugar.png?v=2';
+        if (favHome) favHome.href = '/assets/logo-oficial-bomlugar.png?v=3';
         const brandLink = document.getElementById('landingBrand');
         if (brandLink) brandLink.setAttribute('href', '/?cidade=bomlugar');
 
