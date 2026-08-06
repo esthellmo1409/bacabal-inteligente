@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clipe TV · Bom Lugar Conecta</title>
+  <meta name="description" content="Filme institucional — Bom Lugar Conecta: cidade, saúde, gabinete da prefeita e inteligência artificial." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="/assets/logo-oficial-bomlugar.png" />
+  <style>
+    :root {
+      --snow: #f4f7fb;
+      --ink: #061018;
+      --blue: #03327A;
+      --blue-bright: #1a5cb8;
+      --gold: #d4a84b;
+      --crimson: #b71c1c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: #040a12; color: var(--snow);
+      font-family: Manrope, system-ui, sans-serif;
+    }
+    body { cursor: none; }
+    body.show-ui { cursor: default; }
+
+    .film {
+      position: relative;
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      background: #040a12;
+    }
+
+    .scene {
+      position: absolute; inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.15s ease;
+    }
+    .scene.on { opacity: 1; pointer-events: auto; z-index: 2; }
+
+    .bg {
+      position: absolute; inset: -6%;
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.08);
+      filter: saturate(1.08) contrast(1.06);
+    }
+    .scene.on .bg {
+      animation: ken linear forwards;
+      animation-duration: 12s;
+    }
+    @keyframes ken {
+      from { transform: scale(1.14) translate3d(0, 1.2%, 0); }
+      to { transform: scale(1.02) translate3d(0, -1.2%, 0); }
+    }
+
+    .veil {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, rgba(4,10,18,.90) 0%, rgba(4,10,18,.58) 40%, rgba(4,10,18,.22) 70%, rgba(4,10,18,.40) 100%),
+        linear-gradient(0deg, rgba(4,10,18,.78) 0%, transparent 40%);
+    }
+    .scene.center .veil {
+      background:
+        linear-gradient(180deg, rgba(4,10,18,.50) 0%, rgba(3,50,122,.28) 42%, rgba(4,10,18,.88) 100%);
+    }
+    .scene.finale .veil {
+      background:
+        radial-gradient(ellipse at 50% 40%, rgba(3,50,122,.45) 0%, transparent 55%),
+        linear-gradient(180deg, rgba(4,10,18,.45) 0%, rgba(4,10,18,.88) 100%);
+    }
+
+    .copy {
+      position: absolute;
+      left: clamp(1.5rem, 6vw, 5rem);
+      right: clamp(1.5rem, 6vw, 5rem);
+      bottom: clamp(3.5rem, 10vh, 7rem);
+      max-width: min(860px, 92vw);
+      z-index: 3;
+    }
+    .scene.center .copy {
+      top: 50%; bottom: auto;
+      transform: translateY(-50%);
+      text-align: center;
+      margin: 0 auto;
+      left: 50%;
+      right: auto;
+      max-width: min(940px, 92vw);
+      translate: -50% 0;
+    }
+
+    .kicker {
+      display: inline-flex; align-items: center; gap: .55rem;
+      font-size: clamp(.72rem, 1.2vw, .95rem);
+      font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .85rem;
+      opacity: 0; transform: translateY(18px);
+    }
+    .kicker::before {
+      content: ''; width: 28px; height: 2px; background: var(--blue-bright);
+    }
+    .scene.center .kicker { justify-content: center; }
+    .scene.center .kicker::before { display: none; }
+
+    h1, .title {
+      font-family: 'Bricolage Grotesque', Manrope, sans-serif;
+      font-weight: 800;
+      letter-spacing: -.045em;
+      line-height: .98;
+      font-size: clamp(2.05rem, 5.6vw, 4.4rem);
+      text-shadow: 0 18px 50px rgba(0,0,0,.5);
+      opacity: 0; transform: translateY(26px);
+    }
+    .accent { color: #6eb0ff; }
+    .scene.finale .accent { color: var(--gold); }
+
+    .line {
+      margin-top: 1rem;
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-weight: 500;
+      line-height: 1.42;
+      max-width: 38ch;
+      color: rgba(244,247,251,.92);
+      opacity: 0; transform: translateY(20px);
+    }
+    .scene.center .line { margin-left: auto; margin-right: auto; max-width: 42ch; }
+
+    .scene.on .kicker { animation: rise .7s .2s both; }
+    .scene.on h1, .scene.on .title { animation: rise .85s .35s both; }
+    .scene.on .line { animation: rise .8s .55s both; }
+
+    @keyframes rise {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand-open {
+      display: flex; align-items: center; gap: 1.1rem;
+      margin-bottom: 1.1rem;
+      opacity: 0; transform: translateY(20px);
+    }
+    .scene.on .brand-open { animation: rise .8s .15s both; }
+    .brand-open img {
+      width: clamp(56px, 8vw, 96px); height: auto;
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,.45));
+      border-radius: 8px;
+    }
+    .brand-open strong {
+      display: block;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+      letter-spacing: -.03em;
+    }
+    .brand-open span {
+      font-size: clamp(.75rem, 1.2vw, .95rem);
+      color: rgba(244,247,251,.72);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .chip {
+      display: inline-block;
+      margin-top: 1.15rem;
+      padding: .55rem 1rem;
+      border-radius: 999px;
+      background: rgba(26,92,184,.28);
+      border: 1px solid rgba(110,176,255,.45);
+      color: #d6e9ff;
+      font-weight: 700;
+      font-size: clamp(.85rem, 1.4vw, 1.05rem);
+      opacity: 0; transform: translateY(16px);
+    }
+    .scene.on .chip { animation: rise .75s .75s both; }
+    .chip.ia {
+      background: rgba(212,168,75,.18);
+      border-color: rgba(212,168,75,.5);
+      color: #f5e6c0;
+    }
+
+    .topbar {
+      position: absolute; top: clamp(1rem, 3vw, 1.75rem);
+      left: clamp(1rem, 3vw, 2rem); right: clamp(1rem, 3vw, 2rem);
+      z-index: 8;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: clamp(.68rem, 1.1vw, .82rem);
+      font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+      color: rgba(244,247,251,.55);
+      pointer-events: none;
+    }
+
+    .progress {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+      background: rgba(255,255,255,.08); z-index: 20;
+    }
+    .progress > i {
+      display: block; height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--blue), var(--blue-bright), var(--gold));
+    }
+
+    .hud {
+      position: absolute; z-index: 30;
+      left: clamp(1rem, 3vw, 2rem); right: clamp(1rem, 3vw, 2rem);
+      bottom: clamp(1rem, 3vw, 1.6rem);
+      display: flex; justify-content: space-between; gap: .75rem; flex-wrap: wrap;
+      opacity: 0; transition: opacity .25s; pointer-events: none;
+    }
+    body.show-ui .hud { opacity: 1; pointer-events: auto; }
+    .hud button, .hud a {
+      font: 600 .78rem Manrope, sans-serif;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(0,0,0,.5); color: #fff;
+      border-radius: 999px; padding: .55rem .95rem;
+      cursor: pointer; text-decoration: none;
+      backdrop-filter: blur(8px);
+    }
+    .hud .row { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+    .dots { display: flex; gap: .35rem; margin-left: .35rem; }
+    .dots span {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,.25);
+    }
+    .dots span.on { background: var(--gold); }
+
+    .pulse-rec {
+      display: inline-flex; align-items: center; gap: .4rem;
+      color: #9ec5ff; font-weight: 700; letter-spacing: .08em;
+      font-size: .72rem; text-transform: uppercase;
+    }
+    .pulse-rec i {
+      width: 8px; height: 8px; border-radius: 50%; background: #3d8bfd;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink { 50% { opacity: .25; } }
+
+    @media (max-width: 720px) {
+      body { cursor: default; }
+      .hud { opacity: 1; pointer-events: auto; }
+      .copy { bottom: 5.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="film" id="film">
+    <div class="topbar">
+      <span>Prefeitura Municipal de Bom Lugar</span>
+      <span class="pulse-rec"><i></i> Institucional · IA</span>
+    </div>
+
+    <!-- 0 Abertura -->
+    <section class="scene center on" data-i="0">
+      <div class="bg" style="background-image:url('/assets/fluxo-bomlugar-abertura.jpg')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="brand-open" style="justify-content:center">
+          <img src="/assets/logo-oficial-bomlugar.png" alt="Brasão de Bom Lugar" />
+          <div>
+            <strong>Bom Lugar Conecta</strong>
+            <span>A cidade conectada de verdade</span>
+          </div>
+        </div>
+        <h1>A cidade<br />no <span class="accent">protocolo.</span></h1>
+        <p class="line">Do problema na rua até a mesa da prefeita — com prova, prazo e responsabilidade.</p>
+      </div>
+    </section>
+
+    <!-- 1 Cidadão -->
+    <section class="scene" data-i="1">
+      <div class="bg" style="background-image:url('/assets/fluxo-bomlugar-cidadao.jpg')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">Na rua · cidadão</div>
+        <h1>Viu o problema.<br /><span class="accent">Registrou.</span></h1>
+        <p class="line">Foto, local e pedido oficial na hora. Sem depender só do grupo de WhatsApp.</p>
+        <span class="chip">1 · Abrir ocorrência</span>
+      </div>
+    </section>
+
+    <!-- 2 Protocolo -->
+    <section class="scene" data-i="2">
+      <div class="bg" style="background-image:url('/assets/card-bomlugar-cidadao.jpg?v=5')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">No celular · protocolo</div>
+        <h1>Obrigado.<br /><span class="accent">Número na mão.</span></h1>
+        <p class="line">A colaboração vira protocolo oficial. Secretaria certa, rastreio até a conclusão.</p>
+        <span class="chip">2 · Protocolo gerado</span>
+      </div>
+    </section>
+
+    <!-- 3 Gabinete da Prefeita -->
+    <section class="scene" data-i="3">
+      <div class="bg" style="background-image:url('/assets/fluxo-bomlugar-gabinete.jpg')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">Gabinete da Prefeita</div>
+        <h1>Marlene<br /><span class="accent">enxerga tudo.</span></h1>
+        <p class="line">Cidade, Saúde e Eventos numa tela. Prioriza, cobra e acompanha com registro.</p>
+        <span class="chip">3 · Gabinete decide</span>
+      </div>
+    </section>
+
+    <!-- 4 IA Gabinete -->
+    <section class="scene" data-i="4">
+      <div class="bg" style="background-image:url('/assets/card-bomlugar-gabinete.jpg?v=5')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">Inteligência artificial · Gabinete</div>
+        <h1>A IA analisa.<br /><span class="accent">A prefeita decide.</span></h1>
+        <p class="line">Resumo da plataforma, filas, urgências e priorização — conversa clara no gabinete.</p>
+        <span class="chip ia">IA · Assistente do Gabinete</span>
+      </div>
+    </section>
+
+    <!-- 5 Secretaria + IA -->
+    <section class="scene" data-i="5">
+      <div class="bg" style="background-image:url('/assets/fluxo-bomlugar-secretaria.jpg')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">Secretarias · IA de serviço</div>
+        <h1>Foto do problema.<br /><span class="accent">Plano na hora.</span></h1>
+        <p class="line">A assistente sugere material, quantidade, tempo e ferramentas. A equipe confirma e executa.</p>
+        <span class="chip ia">IA · Plano de serviço</span>
+      </div>
+    </section>
+
+    <!-- 6 Campo -->
+    <section class="scene" data-i="6">
+      <div class="bg" style="background-image:url('/assets/fluxo-bomlugar-campo.jpg')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">Equipe de campo</div>
+        <h1>Na rua,<br /><span class="accent">resolvendo.</span></h1>
+        <p class="line">Ordem no celular, GPS e foto do serviço pronto. Sem desculpa sem prova.</p>
+        <span class="chip">4 · Campo faz</span>
+      </div>
+    </section>
+
+    <!-- 7 Saúde -->
+    <section class="scene" data-i="7">
+      <div class="bg" style="background-image:url('/assets/fluxo-bomlugar-saude.jpg')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">Saúde · plantão e filas</div>
+        <h1>Fila sob controle.<br /><span class="accent">Plantão com visão.</span></h1>
+        <p class="line">Demanda, espera e resposta na mesma plataforma. Menos surpresa. Mais dignidade.</p>
+        <span class="chip">5 · Saúde conectada</span>
+      </div>
+    </section>
+
+    <!-- 8 Resultado -->
+    <section class="scene" data-i="8">
+      <div class="bg" style="background-image:url('/assets/card-bomlugar-secretaria.jpg?v=5')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">Resultado com prova</div>
+        <h1>Antes e depois.<br /><span class="accent">Pra cidade ver.</span></h1>
+        <p class="line">Cidadão confere. Secretaria valida. Gabinete acompanha. Gestão com evidência.</p>
+        <span class="chip">6 · Concluído</span>
+      </div>
+    </section>
+
+    <!-- 9 Fechamento impactante -->
+    <section class="scene center finale" data-i="9">
+      <div class="bg" style="background-image:url('/assets/fluxo-bomlugar-fechamento.jpg')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="brand-open" style="justify-content:center">
+          <img src="/assets/logo-oficial-bomlugar.png" alt="" />
+          <div>
+            <strong>Bom Lugar Conecta</strong>
+            <span>Prefeita Marlene Silva Miranda</span>
+          </div>
+        </div>
+        <h1>Gabinete decide.<br />Secretaria executa.<br />Campo faz.<br /><span class="accent">A IA orienta.</span></h1>
+        <p class="line">Uma plataforma. Quatro eixos. Inteligência a serviço da gestão — e do povo de Bom Lugar.</p>
+      </div>
+    </section>
+
+    <div class="progress"><i id="bar"></i></div>
+
+    <div id="gate" style="position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(4,10,18,.78);backdrop-filter:blur(8px);cursor:pointer">
+      <div style="text-align:center;padding:2rem;max-width:30rem">
+        <img src="/assets/logo-oficial-bomlugar.png" alt="" style="width:78px;margin-bottom:1rem;filter:drop-shadow(0 8px 20px rgba(0,0,0,.45));border-radius:10px" />
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,4vw,2.25rem);font-weight:800;letter-spacing:-.04em;margin-bottom:.5rem">Bom Lugar Conecta</div>
+        <p style="color:rgba(244,247,251,.82);margin-bottom:1.25rem;line-height:1.45">Clipe institucional com IA, saúde e gabinete da prefeita — toque para iniciar</p>
+        <span style="display:inline-block;padding:.75rem 1.5rem;border-radius:999px;background:#03327A;color:#fff;font-weight:700;border:1px solid rgba(110,176,255,.45)">▶ Iniciar</span>
+      </div>
+    </div>
+
+    <div class="hud" id="hud">
+      <div class="row">
+        <button type="button" id="btnFs">Tela cheia</button>
+        <button type="button" id="btnVoice">Áudio: on</button>
+        <button type="button" id="btnPause">Pausar</button>
+        <div class="dots" id="dots"></div>
+      </div>
+      <div class="row">
+        <a href="/?cidade=bomlugar">Site</a>
+        <a href="/tv.html?cidade=bacabal">TV Bacabal</a>
+        <a href="/pitch.html?cidade=bomlugar">Pitch</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BREATH_MS = 1800;
+    const MIN_SCENE_MS = 8000;
+    const scenes = [...document.querySelectorAll('.scene')];
+    const bar = document.getElementById('bar');
+    const dots = document.getElementById('dots');
+    const gate = document.getElementById('gate');
+
+    const tracks = scenes.map((_, i) => {
+      const a = new Audio('/assets/tv-bl-narracao-' + i + '.mp3');
+      a.preload = 'auto';
+      return a;
+    });
+
+    let idx = 0;
+    let t0 = performance.now();
+    let sceneDur = 10000;
+    let paused = false;
+    let voiceOn = true;
+    let started = false;
+    let hideTimer = null;
+    let currentAudio = null;
+    let advanceTimer = null;
+
+    scenes.forEach((_, i) => {
+      const s = document.createElement('span');
+      if (i === 0) s.classList.add('on');
+      dots.appendChild(s);
+    });
+
+    function clearAdvance() {
+      if (advanceTimer) {
+        clearTimeout(advanceTimer);
+        advanceTimer = null;
+      }
+    }
+
+    function stopAudio() {
+      tracks.forEach((a) => {
+        try {
+          a.onended = null;
+          a.onerror = null;
+          a.pause();
+          a.currentTime = 0;
+        } catch (_) {}
+      });
+      currentAudio = null;
+    }
+
+    function playVoice(i) {
+      clearAdvance();
+      if (!voiceOn || !started) {
+        t0 = performance.now();
+        sceneDur = MIN_SCENE_MS;
+        const bg = scenes[i]?.querySelector('.bg');
+        if (bg) bg.style.animationDuration = (sceneDur / 1000) + 's';
+        advanceTimer = setTimeout(() => {
+          if (!started || paused) return;
+          show((idx + 1) % scenes.length);
+        }, sceneDur);
+        return;
+      }
+
+      const a = tracks[i];
+      currentAudio = a;
+      a.volume = 1;
+
+      const afterAudio = () => {
+        if (!started || paused || currentAudio !== a) return;
+        clearAdvance();
+        t0 = performance.now();
+        sceneDur = BREATH_MS;
+        bar.style.width = '0%';
+        advanceTimer = setTimeout(() => {
+          if (!started || paused) return;
+          show((idx + 1) % scenes.length);
+        }, BREATH_MS);
+      };
+
+      a.onended = afterAudio;
+      a.onerror = () => {
+        if (currentAudio !== a) return;
+        afterAudio();
+      };
+
+      const begin = () => {
+        if (currentAudio !== a || !started || paused) return;
+        const audioMs = (isFinite(a.duration) && a.duration > 0) ? a.duration * 1000 : 10000;
+        sceneDur = Math.max(MIN_SCENE_MS, audioMs + BREATH_MS);
+        t0 = performance.now();
+        bar.style.width = '0%';
+        const bg = scenes[i]?.querySelector('.bg');
+        if (bg) bg.style.animationDuration = (sceneDur / 1000) + 's';
+        clearAdvance();
+        advanceTimer = setTimeout(afterAudio, audioMs + BREATH_MS + 2500);
+        a.play().catch(() => {
+          setTimeout(() => {
+            if (currentAudio !== a || !started || paused) return;
+            a.play().catch(afterAudio);
+          }, 200);
+        });
+      };
+
+      try { a.pause(); a.currentTime = 0; } catch (_) {}
+      if (a.readyState >= 1) begin();
+      else {
+        a.addEventListener('loadedmetadata', begin, { once: true });
+        try { a.load(); } catch (_) {}
+        setTimeout(() => {
+          if (currentAudio === a && a.readyState >= 1) begin();
+        }, 1500);
+      }
+    }
+
+    function show(i) {
+      clearAdvance();
+      stopAudio();
+      scenes.forEach((el, n) => el.classList.toggle('on', n === i));
+      dots.querySelectorAll('span').forEach((d, n) => d.classList.toggle('on', n === i));
+      idx = i;
+      t0 = performance.now();
+      bar.style.width = '0%';
+      setTimeout(() => {
+        if (idx !== i || !started || paused) return;
+        playVoice(i);
+      }, 320);
+    }
+
+    function tick(now) {
+      if (started && !paused && sceneDur > 0) {
+        const p = Math.min(1, (now - t0) / sceneDur);
+        bar.style.width = (p * 100) + '%';
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function showUi() {
+      document.body.classList.add('show-ui');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => document.body.classList.remove('show-ui'), 4500);
+    }
+
+    function startFilm() {
+      if (started) return;
+      started = true;
+      gate.style.display = 'none';
+      document.documentElement.requestFullscreen?.().catch(() => {});
+      Promise.all(tracks.map((a) => new Promise((resolve) => {
+        if (a.readyState >= 1) return resolve();
+        a.addEventListener('loadedmetadata', resolve, { once: true });
+        a.addEventListener('error', resolve, { once: true });
+        try { a.load(); } catch (_) {}
+        setTimeout(resolve, 2000);
+      }))).finally(() => show(0));
+    }
+
+    gate.addEventListener('click', startFilm);
+    document.getElementById('btnFs').onclick = () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    };
+    document.getElementById('btnVoice').onclick = () => {
+      voiceOn = !voiceOn;
+      document.getElementById('btnVoice').textContent = 'Áudio: ' + (voiceOn ? 'on' : 'off');
+      if (!voiceOn) stopAudio();
+      else if (started && !paused) playVoice(idx);
+    };
+    document.getElementById('btnPause').onclick = () => {
+      paused = !paused;
+      document.getElementById('btnPause').textContent = paused ? 'Continuar' : 'Pausar';
+      if (paused) {
+        clearAdvance();
+        if (currentAudio) currentAudio.pause();
+      } else if (started) {
+        if (currentAudio && voiceOn) {
+          currentAudio.play().catch(() => playVoice(idx));
+        } else playVoice(idx);
+      }
+    };
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        if (!started) startFilm();
+        else document.getElementById('btnPause').click();
+      }
+      if (e.key === 'ArrowRight' && started) show((idx + 1) % scenes.length);
+      if (e.key === 'ArrowLeft' && started) show((idx - 1 + scenes.length) % scenes.length);
+      if (e.key === 'f' || e.key === 'F') document.getElementById('btnFs').click();
+      if (e.key === 'v' || e.key === 'V') document.getElementById('btnVoice').click();
+    });
+
+    ['mousemove', 'touchstart', 'click'].forEach((ev) => {
+      document.addEventListener(ev, showUi, { passive: true });
+    });
+
+    // Prefetch images
+    [
+      '/assets/fluxo-bomlugar-abertura.jpg',
+      '/assets/fluxo-bomlugar-cidadao.jpg',
+      '/assets/card-bomlugar-cidadao.jpg?v=5',
+      '/assets/fluxo-bomlugar-gabinete.jpg',
+      '/assets/card-bomlugar-gabinete.jpg?v=5',
+      '/assets/fluxo-bomlugar-secretaria.jpg',
+      '/assets/fluxo-bomlugar-campo.jpg',
+      '/assets/fluxo-bomlugar-saude.jpg',
+      '/assets/card-bomlugar-secretaria.jpg?v=5',
+      '/assets/fluxo-bomlugar-fechamento.jpg',
+    ].forEach((src) => { const im = new Image(); im.src = src; });
+
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>
