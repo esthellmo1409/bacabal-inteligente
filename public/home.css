@@ -141,36 +141,111 @@ html[data-cidade="bomlugar"] .landing-brand img {
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
-  /* anel claro: azul do logo não some no header */
-  filter: drop-shadow(0 0 1px rgba(255,255,255,.95))
-          drop-shadow(0 0 6px rgba(255,255,255,.55))
-          drop-shadow(0 3px 8px rgba(0,0,0,.35));
+  /* sombra escura — header branco */
+  filter: drop-shadow(0 2px 6px rgba(3, 50, 122, 0.22));
   transition: transform .22s cubic-bezier(.2,.8,.2,1), filter .22s ease;
 }
 
 html[data-cidade="bomlugar"] .landing-brand:hover img,
 html[data-cidade="bomlugar"] .landing-brand:focus-visible img {
   transform: translateY(-2px) scale(1.07);
-  filter: drop-shadow(0 0 2px #fff)
-          drop-shadow(0 0 10px rgba(255,255,255,.7))
-          drop-shadow(0 0 14px rgba(255,196,60,.5))
-          drop-shadow(0 6px 14px rgba(0,0,0,.35));
+  filter: drop-shadow(0 6px 14px rgba(3, 50, 122, 0.28))
+          drop-shadow(0 0 10px rgba(255, 180, 40, 0.4));
   box-shadow: none !important;
 }
 
 html[data-cidade="bomlugar"] .landing-brand:active img {
   transform: translateY(0) scale(0.98);
-  filter: drop-shadow(0 0 2px #fff)
-          drop-shadow(0 0 12px rgba(255,210,80,.65))
-          drop-shadow(0 2px 8px rgba(0,0,0,.3));
+  filter: drop-shadow(0 2px 8px rgba(3, 50, 122, 0.25))
+          drop-shadow(0 0 8px rgba(255, 196, 60, 0.45));
+}
+
+/* Faixas: ocre | branco | ocre | azul (como site oficial + ritmo do Bacabal) */
+html[data-cidade="bomlugar"] .pmb-topbar {
+  background: #965A00;
 }
 
 html[data-cidade="bomlugar"] .landing-header {
+  background: #ffffff;
+  box-shadow: none;
+  border-bottom: 4px solid #965A00;
+}
+
+html[data-cidade="bomlugar"] .landing-brand {
+  color: #03327A;
+}
+
+html[data-cidade="bomlugar"] .landing-brand strong {
+  color: #022456;
+}
+
+html[data-cidade="bomlugar"] .landing-brand span {
+  color: #5a6a7e;
+  opacity: 1;
+}
+
+html[data-cidade="bomlugar"] .landing-nav a {
+  color: #03327A;
+}
+
+html[data-cidade="bomlugar"] .landing-nav a:hover {
+  background: rgba(3, 50, 122, 0.08);
+  color: #022456;
+}
+
+html[data-cidade="bomlugar"] .landing-nav .nav-cidadao {
+  background: #03327A;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(3, 50, 122, 0.22);
+}
+
+html[data-cidade="bomlugar"] .landing-nav .nav-cidadao:hover,
+html[data-cidade="bomlugar"] .landing-nav .nav-cidadao[aria-expanded="true"] {
+  background: #022456;
+  color: #fff;
+}
+
+html[data-cidade="bomlugar"] .landing-nav .nav-admin {
+  background: #fff;
+  color: #B71C1C;
+  border: 2px solid #B71C1C;
+  box-shadow: none;
+}
+
+html[data-cidade="bomlugar"] .landing-nav .nav-admin:hover,
+html[data-cidade="bomlugar"] .landing-nav .nav-admin[aria-expanded="true"] {
+  background: #B71C1C;
+  color: #fff;
+}
+
+html[data-cidade="bomlugar"] .hero-carousel {
   background: #03327A;
 }
 
-html[data-cidade="bomlugar"] .pmb-topbar {
-  background: #965A00;
+html[data-cidade="bomlugar"] .hero-carousel::before {
+  background-image: none;
+  background: linear-gradient(135deg, rgba(2, 36, 86, 0.35) 0%, rgba(150, 90, 0, 0.18) 55%, rgba(183, 28, 28, 0.12) 100%);
+  opacity: 1;
+}
+
+html[data-cidade="bomlugar"] .btn-hero-primary {
+  background: #fff;
+  color: #03327A;
+}
+
+html[data-cidade="bomlugar"] .btn-hero-primary:hover {
+  background: #f4f7fc;
+  color: #022456;
+}
+
+html[data-cidade="bomlugar"] .btn-hero-ghost {
+  border-color: rgba(255,255,255,.55);
+  color: #fff;
+}
+
+html[data-cidade="bomlugar"] .btn-hero-ghost:hover {
+  background: rgba(255,255,255,.12);
+  color: #fff;
 }
 
 .landing-brand strong {
@@ -332,12 +407,7 @@ html[data-cidade="bomlugar"] .pmb-topbar {
   z-index: 1;
 }
 
-/* Bom Lugar: sem estrelinhas — fundo limpo em degradê */
-html[data-cidade="bomlugar"] .hero-carousel::before {
-  background-image: none;
-  background: linear-gradient(135deg, rgba(2, 36, 86, 0.22) 0%, rgba(183, 28, 28, 0.12) 100%);
-  opacity: 1;
-}
+/* Bom Lugar: padrão do ::before definido na faixa de cores do header */
 
 .carousel-track {
   position: relative;
