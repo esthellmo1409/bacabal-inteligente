@@ -385,11 +385,17 @@ function ensureDemoAprovacao(slug = 'bacabal') {
   writeTenant(slug, 'chamados.json', chamados);
 }
 
-/** Zera a fila uma vez (apresentação) e deixa o seedDemosIa recriar só os demos de IA. */
+/** Zera a fila uma vez (apresentação) e deixa o seedDemosIa recriar só o demo do problema. */
 function limparChamadosParaDemo(slug = 'bacabal') {
   if (!getMunicipio(slug) && !fs.existsSync(tenantPath(slug, 'chamados.json'))) return;
-  const marker = path.join(DATA_DIR, `.limpar-chamados-${slug}-20260806b`);
-  if (fs.existsSync(marker)) return;
+  const marker = path.join(DATA_DIR, `.limpar-chamados-${slug}-20260806c`);
+  if (fs.existsSync(marker)) {
+    // Remove demo de aprovação se ainda existir (alerta “Avaliar foto do campo”)
+    const list = readTenant(slug, 'chamados.json', []);
+    const limpa = list.filter((c) => c.demoFixo !== 'buraco-aprov' && !String(c.id || '').includes('DEMO-APROV'));
+    if (limpa.length !== list.length) writeTenant(slug, 'chamados.json', limpa);
+    return;
+  }
   writeTenant(slug, 'chamados.json', []);
   try {
     fs.writeFileSync(marker, new Date().toISOString());
@@ -400,9 +406,7 @@ function limparChamadosParaDemo(slug = 'bacabal') {
 function seedDemosIa() {
   limparChamadosParaDemo('bacabal');
   limparChamadosParaDemo('bomlugar');
-  // Material (só foto do problema) por último no topo; aprovação fica logo abaixo
-  ensureDemoAprovacao('bacabal');
-  ensureDemoAprovacao('bomlugar');
+  // Só o demo da foto do problema → IA sugere material (sem alerta de aprovação)
   ensureDemoChamado('bacabal');
   ensureDemoChamado('bomlugar');
 }
