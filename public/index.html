@@ -349,10 +349,13 @@
   <div class="landing-metrics" id="stats" aria-live="polite"></div>
 
   <main class="landing-main">
-    <div class="landing-section-head landing-ia-note">
+    <div class="landing-section-head landing-ia-note" id="landingIaNote">
+      <div class="landing-ia-visual">
+        <img src="/assets/ia-assistente-servico.png" alt="Assistente de IA analisando foto do serviço" width="640" height="360" decoding="async" />
+      </div>
       <p class="eyebrow">Tecnologia</p>
-      <h2>Apoio inteligente às equipes</h2>
-      <p>A plataforma também apoia as equipes com inteligência artificial para planejar melhor cada serviço.</p>
+      <h2 id="landingIaTitle">Apoio inteligente às equipes</h2>
+      <p id="landingIaText">A plataforma também apoia as equipes com inteligência artificial para planejar melhor cada serviço.</p>
     </div>
 
     <div class="landing-section-head">
@@ -611,6 +614,23 @@
         if (mapHead && /Bacabal|ocorrências/i.test(mapHead.textContent)) {
           mapHead.textContent = `Ocorrências registradas em ${cfg.cidade}. Filtre por status ou bairro.`;
         }
+
+        const iaTitle = document.getElementById('landingIaTitle');
+        const iaText = document.getElementById('landingIaText');
+        if (iaTitle) iaTitle.textContent = `${produto}: sua assistente de IA`;
+        if (iaText) {
+          iaText.textContent =
+            `Oi! Sou a ${produto}, sua assistente de IA. Apoio as equipes para planejar melhor cada serviço.`;
+        }
+      }
+
+      // Sempre atualiza o bloco da IA (mesmo se o boot já pintou)
+      const iaTextAlways = document.getElementById('landingIaText');
+      const iaTitleAlways = document.getElementById('landingIaTitle');
+      if (cfg && iaTitleAlways) iaTitleAlways.textContent = `${produto}: sua assistente de IA`;
+      if (cfg && iaTextAlways) {
+        iaTextAlways.textContent =
+          `Oi! Sou a ${produto}, sua assistente de IA. Apoio as equipes para planejar melhor cada serviço.`;
       }
 
       // Bom Lugar: redes, logo oficial, spotlight e rodapé (sempre — mesmo após paintBoot)

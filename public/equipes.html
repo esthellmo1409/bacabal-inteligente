@@ -26,7 +26,7 @@
         <p class="page-kicker" style="margin-bottom:0.25rem">Campo · operação</p>
         <h1 class="display" style="font-size:1.55rem;margin:0">Ordens de serviço</h1>
         <p class="muted" style="margin:0.3rem 0 0">Aceitar · navegar · foto do depois · enviar à secretaria</p>
-        <p class="ia-ops-note">A plataforma apoia as equipes com inteligência artificial para planejar melhor cada serviço.</p>
+        <p class="ia-ops-note" id="iaOpsNote">A plataforma apoia as equipes com inteligência artificial para planejar melhor cada serviço.</p>
       </div>
       <div id="alertaCampo" class="alerta-gabinete" style="display:none">
         <div class="alerta-gabinete-pulse"></div>
@@ -196,6 +196,11 @@
       document.getElementById('top').innerHTML = topbar('Campo', cfg);
       loginView.style.display = 'none';
       appView.style.display = 'block';
+      const iaNote = document.getElementById('iaOpsNote');
+      if (iaNote) {
+        const nome = (cfg && cfg.produto) || window.__CITY_PRODUTO || 'Cidade Conecta';
+        iaNote.textContent = `Oi! Sou a ${nome}, sua assistente de IA — ajudo a planejar melhor cada serviço.`;
+      }
       syncSomToggle();
       if (!map) {
         map = L.map('map').setView([cfg.lat, cfg.lng], 15);

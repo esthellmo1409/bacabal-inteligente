@@ -547,6 +547,17 @@ function statusOptions(selected) {
   ).join('');
 }
 
+/** Nome da assistente de IA conforme a cidade (Bacabal Conecta / Bom Lugar Conecta). */
+function iaAssistenteNome() {
+  const cfg = window.__CITY_CFG || {};
+  const produto = cfg.produto || window.__CITY_PRODUTO || 'Cidade Conecta';
+  return produto;
+}
+
+function iaSaudacaoCurta() {
+  return `Oi! Sou a ${iaAssistenteNome()}, sua assistente de IA.`;
+}
+
 /** Estado do assistente de serviço (secretaria/campo) — demo como se a IA já estivesse integrada. */
 const _iaObraState = Object.create(null);
 
@@ -564,8 +575,15 @@ function iaObraPlanoHtml(plano) {
     .join('');
   return `
     <div class="ia-obra-plano">
+      <div class="ia-obra-avatar-row">
+        <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png" alt="" />
+        <div>
+          <strong>${iaObraEsc(iaSaudacaoCurta())}</strong>
+          <p class="muted" style="margin:0.2rem 0 0;font-size:0.8rem">Aqui está o que sugiro para este serviço:</p>
+        </div>
+      </div>
       <div class="ia-obra-plano-head">
-        <strong>Plano de serviço sugerido pela IA</strong>
+        <strong>Plano de serviço sugerido</strong>
         <span class="muted">${plano.confianca || '—'}% de confiança</span>
       </div>
       <dl class="ia-obra-grid">
@@ -602,8 +620,13 @@ function iaObraAssistHtml(c) {
   return `
     <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}">
       <div class="ia-obra-ask">
-        <strong>Posso te ajudar com esse serviço?</strong>
-        <p class="muted">Analiso a foto e sugiro material, quantidade, tempo e ferramentas.</p>
+        <div class="ia-obra-avatar-row">
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png" alt="" />
+          <div>
+            <strong>${iaObraEsc(iaSaudacaoCurta())}</strong>
+            <p class="muted">Posso te ajudar com esse serviço? Analiso a foto e sugiro material, quantidade, tempo e ferramentas.</p>
+          </div>
+        </div>
         <div class="actions">
           <button type="button" class="btn btn-sm btn-primary" data-ia-sim="${iaObraEsc(id)}">Sim, analisar</button>
           <button type="button" class="btn btn-sm" data-ia-nao="${iaObraEsc(id)}">Agora não</button>

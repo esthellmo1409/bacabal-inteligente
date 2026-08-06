@@ -1356,6 +1356,23 @@ input:focus, select:focus, textarea:focus {
   background: linear-gradient(180deg, rgba(33, 99, 232, 0.07), rgba(255, 255, 255, 0.5));
 }
 
+.ia-obra-avatar-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.55rem;
+}
+
+.ia-obra-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(33, 99, 232, 0.2);
+  background: #eef4ff;
+}
+
 .ia-obra-ask strong {
   display: block;
   font-size: 0.95rem;
@@ -1365,6 +1382,10 @@ input:focus, select:focus, textarea:focus {
 .ia-obra-ask p {
   margin: 0 0 0.55rem;
   font-size: 0.82rem;
+}
+
+.ia-obra-avatar-row + .actions {
+  margin-top: 0.15rem;
 }
 
 .ia-obra-plano-head {
