@@ -385,12 +385,30 @@ function ensureDemoAprovacao(slug = 'bacabal') {
   writeTenant(slug, 'chamados.json', chamados);
 }
 
-try {
+/** Remove chamados “poluídos” e deixa só os demos de IA (apresentação limpa). */
+function limparChamadosParaDemo(slug = 'bacabal') {
+  if (!getMunicipio(slug) && !fs.existsSync(tenantPath(slug, 'chamados.json'))) return;
+  const chamados = readTenant(slug, 'chamados.json', []);
+  const demos = chamados.filter(
+    (c) => c.demoFixo === 'buraco-foto' || c.demoFixo === 'buraco-aprov'
+  );
+  if (demos.length === chamados.length) return;
+  writeTenant(slug, 'chamados.json', demos);
+  console.log(`  Chamados limpos (${slug}): ${chamados.length} → ${demos.length} (só demos IA)`);
+}
+
+function seedDemosIa() {
+  limparChamadosParaDemo('bacabal');
+  limparChamadosParaDemo('bomlugar');
   // Material (só foto do problema) por último no topo; aprovação fica logo abaixo
   ensureDemoAprovacao('bacabal');
   ensureDemoAprovacao('bomlugar');
   ensureDemoChamado('bacabal');
   ensureDemoChamado('bomlugar');
+}
+
+try {
+  seedDemosIa();
 } catch (e) {
   console.warn('ensureDemoChamado:', e.message);
 }
@@ -1435,10 +1453,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   try {
-    ensureDemoAprovacao('bacabal');
-    ensureDemoAprovacao('bomlugar');
-    ensureDemoChamado('bacabal');
-    ensureDemoChamado('bomlugar');
+    seedDemosIa();
   } catch (_) {}
   console.log(`\n  Bacabal Conecta v3 → http://localhost:${PORT}`);
   console.log(`  Dados: ${DATA_DIR}${USING_VOLUME ? ' (volume Railway)' : ''}`);
