@@ -1005,14 +1005,8 @@ body:not([data-cidade]) .footer-social a {
   background: linear-gradient(135deg, #c45a00 0%, #ff8000 45%, #e8912a 100%);
 }
 
-.prefeito-spotlight .prefeita-photo {
-  background: transparent;
-}
-
 .prefeito-spotlight .prefeita-photo img {
-  object-fit: cover;
   object-position: center center;
-  transform: none;
 }
 
 .prefeita-spotlight-inner {
@@ -1045,7 +1039,7 @@ body:not([data-cidade]) .footer-social a {
   object-fit: cover;
   object-position: center 18%;
   display: block;
-  border-radius: 0;
+  border-radius: 50%;
   border: none;
   box-shadow: none;
   transform: none;
