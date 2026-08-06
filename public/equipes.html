@@ -80,7 +80,7 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ia8"></script>
+  <script src="/app.js?v=ia9"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_AUTH_SLOT = 'campo';
@@ -346,12 +346,15 @@
       document.getElementById('recentesHint').textContent = recentes.length
         ? 'Últimas ' + recentes.length + ' · mais nova primeiro'
         : '';
-      document.getElementById('recentes').innerHTML = recentes.length
-        ? recentes.map(cardRecente).join('')
-        : '<p class="muted">Nenhuma OS recente. Aguarde a secretaria encaminhar.</p>';
       document.getElementById('campoHint').textContent = 'Atualiza a cada 12s · som ao encaminhar OS';
 
-      document.getElementById('lista').innerHTML = data.rota.map(p => `
+      const iaFalando = !!document.querySelector('[data-ia-obra][data-typing="1"]');
+      if (!iaFalando) {
+        document.getElementById('recentes').innerHTML = recentes.length
+          ? recentes.map(cardRecente).join('')
+          : '<p class="muted">Nenhuma OS recente. Aguarde a secretaria encaminhar.</p>';
+
+        document.getElementById('lista').innerHTML = data.rota.map(p => `
         <div class="item" style="cursor:pointer" data-open="${p.id}">
           <div class="item-head"><strong>${p.ordem}. ${p.titulo}</strong>${badge(p.status)}</div>
           <div class="meta">${p.protocolo} · ${p.bairro} · ~${p.etaMin} min</div>
@@ -361,17 +364,22 @@
           </div>
         </div>`).join('') || '<p class="muted">Sem OS pendentes</p>';
 
-      const concluidos = data.concluidos || [];
-      document.getElementById('concluidosHint').textContent = concluidos.length
-        ? concluidos.length + ' recentes · com antes e depois'
-        : '';
-      document.getElementById('concluidos').innerHTML = concluidos.length
-        ? concluidos.map(cardConcluido).join('')
-        : '<p class="muted">Nenhum serviço concluído ainda. Quando a Obras aprovar a foto, aparece aqui.</p>';
+        const concluidos = data.concluidos || [];
+        document.getElementById('concluidosHint').textContent = concluidos.length
+          ? concluidos.length + ' recentes · com antes e depois'
+          : '';
+        document.getElementById('concluidos').innerHTML = concluidos.length
+          ? concluidos.map(cardConcluido).join('')
+          : '<p class="muted">Nenhum serviço concluído ainda. Quando a Obras aprovar a foto, aparece aqui.</p>';
 
-      const byId = Object.fromEntries([...(data.rota || []), ...(data.recentes || [])].map(p => [p.id, p]));
-      bindIaObraAssist(document.getElementById('appView'), (id) => byId[id] || api('/api/chamados/' + id));
-
+        const byId = Object.fromEntries([...(data.rota || []), ...(data.recentes || [])].map(p => [p.id, p]));
+        bindIaObraAssist(document.getElementById('appView'), (id) => byId[id] || api('/api/chamados/' + id));
+      } else {
+        const concluidos = data.concluidos || [];
+        document.getElementById('concluidosHint').textContent = concluidos.length
+          ? concluidos.length + ' recentes · com antes e depois'
+          : '';
+      }
       document.querySelectorAll('[data-open]').forEach(el => {
         el.onclick = (e) => {
           if (e.target.tagName === 'A' || e.target.classList.contains('foto-zoom') || e.target.closest('.antes-depois')) return;

@@ -590,32 +590,81 @@ function iaObraEsc(s) {
 }
 
 function iaStopTyping(id) {
-  if (_iaTypeTimers[id]) {
+  if (id && _iaTypeTimers[id]) {
     clearTimeout(_iaTypeTimers[id]);
     delete _iaTypeTimers[id];
   }
 }
 
-/** Digita texto em um elemento (efeito máquina de escrever). */
-function iaTypeInto(el, text, { speed = 38, id } = {}) {
+function iaStopAllTypingFor(chamadoId) {
+  const prefix = String(chamadoId || '');
+  Object.keys(_iaTypeTimers).forEach((k) => {
+    if (!prefix || k === prefix || k.startsWith(prefix + '-')) iaStopTyping(k);
+  });
+}
+
+/** Digita texto em um elemento (efeito máquina de escrever). Para se o nó sumir do DOM. */
+function iaTypeInto(el, text, { speed = 28, id } = {}) {
   return new Promise((resolve) => {
     if (!el) return resolve();
+    const full = String(text || '');
     iaStopTyping(id);
     el.textContent = '';
     el.classList.add('ia-typing');
     let i = 0;
+    const finish = () => {
+      el.classList.remove('ia-typing');
+      if (id) delete _iaTypeTimers[id];
+      resolve();
+    };
     const step = () => {
-      if (i >= text.length) {
-        el.classList.remove('ia-typing');
-        if (id) delete _iaTypeTimers[id];
-        resolve();
+      // Lista da secretaria/campo re-renderiza e remove o nó — não continua “fantasma”
+      if (!el.isConnected) {
+        finish();
         return;
       }
-      el.textContent += text.charAt(i++);
+      if (i >= full.length) {
+        finish();
+        return;
+      }
+      el.textContent += full.charAt(i++);
       _iaTypeTimers[id || 'x'] = setTimeout(step, speed);
     };
     step();
   });
+}
+
+/** Preenche o plano/parecer de uma vez (sem travar no meio). */
+function iaRevealStream(box) {
+  if (!box) return;
+  const intro = box.querySelector('.ia-type-intro');
+  if (intro) {
+    intro.textContent = intro.getAttribute('data-full') || intro.textContent || '';
+    intro.classList.remove('ia-typing');
+  }
+  box.querySelectorAll('.ia-stream-line').forEach((line) => {
+    const full = line.getAttribute('data-full') || '';
+    const v = line.querySelector('.ia-stream-v') || line;
+    const hasKey = !!line.querySelector('.ia-stream-k');
+    const colon = full.indexOf(': ');
+    if (hasKey && colon >= 0) v.textContent = full.slice(colon + 2);
+    else v.textContent = full;
+  });
+  const head = box.querySelector('.ia-obra-plano-head');
+  const stream = box.querySelector('.ia-obra-stream');
+  const foot = box.querySelector('.ia-obra-foot');
+  if (head) {
+    head.hidden = false;
+    head.classList.add('ia-fade-in');
+  }
+  if (stream) {
+    stream.hidden = false;
+    stream.classList.add('ia-fade-in');
+  }
+  if (foot) {
+    foot.hidden = false;
+    foot.classList.add('ia-fade-in');
+  }
 }
 
 function iaObraAskShell(id, { empty } = {}) {
@@ -785,9 +834,13 @@ async function iaRunAskTyping(box, id) {
   const sub = box.querySelector('.ia-type-sub');
   const actions = box.querySelector('.ia-obra-actions');
   if (actions) actions.hidden = true;
-  await iaTypeInto(title, title?.getAttribute('data-full') || iaSaudacaoCurta(), { speed: 42, id: id + '-t' });
-  await iaTypeInto(sub, sub?.getAttribute('data-full') || '', { speed: 34, id: id + '-s' });
-  if (actions) {
+  await iaTypeInto(title, title?.getAttribute('data-full') || iaSaudacaoCurta(), { speed: 22, id: id + '-t' });
+  if (!box.isConnected) {
+    box.dataset.typing = '0';
+    return;
+  }
+  await iaTypeInto(sub, sub?.getAttribute('data-full') || '', { speed: 18, id: id + '-s' });
+  if (actions && box.isConnected) {
     actions.hidden = false;
     actions.classList.add('ia-fade-in');
   }
@@ -796,7 +849,13 @@ async function iaRunAskTyping(box, id) {
 
 async function iaRunParecerTyping(box, id, parecer) {
   if (!box || box.dataset.typing === '1') return;
+  if (_iaObraState[id] && _iaObraState[id].aprovacaoTyped) {
+    iaRevealStream(box);
+    return;
+  }
   box.dataset.typing = '1';
+  iaStopAllTypingFor(id);
+  // Intro rápida + plano completo de uma vez (evita “travadinha” no refresh da lista)
   const intro = box.querySelector('.ia-type-intro');
   const head = box.querySelector('.ia-obra-plano-head');
   const stream = box.querySelector('.ia-obra-stream');
@@ -804,31 +863,12 @@ async function iaRunParecerTyping(box, id, parecer) {
   if (head) head.hidden = true;
   if (stream) stream.hidden = true;
   if (foot) foot.hidden = true;
-
   await iaTypeInto(
     intro,
     intro?.getAttribute('data-full') || `${iaSaudacaoCurta()} Compareci o antes e o depois. Veja o que encontrei:`,
-    { speed: 38, id: id + '-ai' }
+    { speed: 16, id: id + '-ai' }
   );
-
-  if (head) {
-    head.hidden = false;
-    head.classList.add('ia-fade-in');
-  }
-  if (stream) stream.hidden = false;
-
-  const lines = [...box.querySelectorAll('.ia-stream-line')];
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const full = line.getAttribute('data-full') || '';
-    const v = line.querySelector('.ia-stream-v') || line;
-    await iaTypeInto(v, full, { speed: 30, id: id + '-ap' + i });
-  }
-
-  if (foot) {
-    foot.hidden = false;
-    foot.classList.add('ia-fade-in');
-  }
+  if (box.isConnected) iaRevealStream(box);
   _iaObraState[id] = Object.assign({}, _iaObraState[id] || {}, {
     aprovacaoParecer: parecer,
     aprovacaoTyped: true,
@@ -839,7 +879,12 @@ async function iaRunParecerTyping(box, id, parecer) {
 
 async function iaRunPlanoTyping(box, id, plano) {
   if (!box || box.dataset.typing === '1') return;
+  if (_iaObraState[id] && _iaObraState[id].planoTyped) {
+    iaRevealStream(box);
+    return;
+  }
   box.dataset.typing = '1';
+  iaStopAllTypingFor(id);
   const intro = box.querySelector('.ia-type-intro');
   const head = box.querySelector('.ia-obra-plano-head');
   const stream = box.querySelector('.ia-obra-stream');
@@ -851,32 +896,9 @@ async function iaRunPlanoTyping(box, id, plano) {
   await iaTypeInto(
     intro,
     intro?.getAttribute('data-full') || `${iaSaudacaoCurta()} Aqui está o que sugiro para este serviço:`,
-    { speed: 38, id: id + '-i' }
+    { speed: 16, id: id + '-i' }
   );
-
-  if (head) {
-    head.hidden = false;
-    head.classList.add('ia-fade-in');
-  }
-  if (stream) stream.hidden = false;
-
-  const lines = [...box.querySelectorAll('.ia-stream-line')];
-  for (const line of lines) {
-    const full = line.getAttribute('data-full') || '';
-    const v = line.querySelector('.ia-stream-v') || line;
-    const colon = full.indexOf(': ');
-    const value = colon >= 0 ? full.slice(colon + 2) : full;
-    if (line.querySelector('.ia-stream-k') && colon >= 0) {
-      await iaTypeInto(v, value, { speed: 30, id: id + '-l' + lines.indexOf(line) });
-    } else {
-      await iaTypeInto(v, full, { speed: 30, id: id + '-l' + lines.indexOf(line) });
-    }
-  }
-
-  if (foot) {
-    foot.hidden = false;
-    foot.classList.add('ia-fade-in');
-  }
+  if (box.isConnected) iaRevealStream(box);
   _iaObraState[id] = { plano, planoTyped: true, greeted: true };
   box.dataset.typing = '0';
 }
