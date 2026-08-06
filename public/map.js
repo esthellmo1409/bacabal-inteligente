@@ -161,6 +161,8 @@ const MapBI = (() => {
       markersById: {}, onSelect: opts.onSelect || null,
     };
 
+    const cidadeNome = (typeof window !== 'undefined' && window.__CITY_NOME) || 'Cidade';
+    const produtoNome = (typeof window !== 'undefined' && window.__CITY_PRODUTO) || 'Cidade Conecta';
     L.marker(center, {
       icon: L.divIcon({
         className: 'bi-pin-city',
@@ -168,7 +170,7 @@ const MapBI = (() => {
         iconSize: [28, 28],
         iconAnchor: [14, 14],
       }),
-    }).addTo(map).bindPopup('<strong>Bacabal · MA</strong><br>Bacabal Conecta');
+    }).addTo(map).bindPopup(`<strong>${cidadeNome} · MA</strong><br>${produtoNome}`);
 
     return state;
   }

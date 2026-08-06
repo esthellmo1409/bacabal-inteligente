@@ -316,12 +316,95 @@ function applyTheme(tema, slug) {
   }
 }
 
+/** Troca textos/logo "Bacabal" pela cidade ativa (cidadão, login, gabinete, etc.). */
+function brandText(text, cfg) {
+  if (!text || !cfg) return text;
+  const produto = cfg.produto || 'Cidade Conecta';
+  const cidade = cfg.cidade || '';
+  return String(text)
+    .replace(/Bacabal Conecta/g, produto)
+    .replace(/Prefeitura Municipal de Bacabal/g, `Prefeitura Municipal de ${cidade}`)
+    .replace(/Prefeitura de Bacabal/g, `Prefeitura de ${cidade}`)
+    .replace(/Hospital Municipal de Bacabal/g, `Hospital Municipal de ${cidade}`)
+    .replace(/gestor de Bacabal/g, `gestor de ${cidade}`)
+    .replace(/\bBacabal\b/g, cidade);
+}
+
+function applyPageBrand(cfg) {
+  if (!cfg) return cfg;
+  const slug = cfg.slug || getCidade();
+  const logo = cfg.logo || '/assets/logo-prefeitura.png';
+  const produto = cfg.produto || 'Cidade Conecta';
+  const cidade = cfg.cidade || '';
+
+  document.documentElement.dataset.cidade = slug;
+  document.title = brandText(document.title, cfg);
+
+  const meta = document.querySelector('meta[name="description"]');
+  if (meta) meta.setAttribute('content', brandText(meta.getAttribute('content') || '', cfg));
+
+  const fav = document.querySelector('link[rel="icon"]');
+  if (fav) fav.href = logo;
+
+  const walk = (root) => {
+    const nodes = root.querySelectorAll(
+      'h1,h2,h3,h4,p,span,strong,b,label,li,a,button,td,th,.page-kicker,.pitch-kicker,.carta-kicker,.eyebrow,.muted,.display'
+    );
+    nodes.forEach((el) => {
+      if (el.closest('script,style,code,pre,textarea,input,select')) return;
+      // Evita páginas internas de venda fixas em Bacabal
+      if (el.closest('[data-keep-bacabal]')) return;
+      if (!/Bacabal/i.test(el.textContent || '')) return;
+
+      if (el.childElementCount === 0) {
+        el.textContent = brandText(el.textContent, cfg);
+        return;
+      }
+      el.childNodes.forEach((n) => {
+        if (n.nodeType === 3 && /Bacabal/i.test(n.nodeValue || '')) {
+          n.nodeValue = brandText(n.nodeValue, cfg);
+        }
+      });
+      el.querySelectorAll('strong,b,span,em').forEach((c) => {
+        if (c.childElementCount === 0 && /Bacabal/i.test(c.textContent || '')) {
+          c.textContent = brandText(c.textContent, cfg);
+        }
+      });
+    });
+  };
+  walk(document.body || document);
+
+  if (slug !== 'bacabal' && logo) {
+    document.querySelectorAll('img').forEach((img) => {
+      const src = img.getAttribute('src') || '';
+      const alt = img.getAttribute('alt') || '';
+      if (/logo-prefeitura|Brasão de Bacabal|Brasao de Bacabal/i.test(src + alt)) {
+        img.src = logo;
+        img.alt = brandText(alt || `Brasão de ${cidade}`, cfg);
+      }
+    });
+  }
+
+  // Login / headers comuns
+  const loginLogo = document.querySelector('.login-box img');
+  if (loginLogo && slug !== 'bacabal' && logo) {
+    loginLogo.src = logo;
+    loginLogo.alt = `Brasão de ${cidade}`;
+  }
+
+  window.__CITY_CFG = cfg;
+  window.__CITY_PRODUTO = produto;
+  window.__CITY_NOME = cidade;
+  return cfg;
+}
+
 async function loadCityBrand() {
   const slug = getCidade();
   if (!slug) return null;
   try {
     const cfg = await api('/api/config');
     applyTheme(cfg.tema, slug);
+    applyPageBrand(cfg);
     return cfg;
   } catch {
     return null;
@@ -365,9 +448,9 @@ function logout() {
 }
 
 function topbar(active, cfg) {
-  const nome = cfg?.produto || 'Bacabal Conecta';
+  const nome = cfg?.produto || window.__CITY_PRODUTO || 'Cidade Conecta';
   const sub = cfg?.tagline
-    || `${cfg?.cidade || 'Bacabal'} · ${cfg?.uf || 'MA'}`;
+    || `${cfg?.cidade || window.__CITY_NOME || ''} · ${cfg?.uf || 'MA'}`;
   const user = getSessionUser();
 
   // Público: só o essencial. Áreas internas só após login.
@@ -407,7 +490,7 @@ function topbar(active, cfg) {
   return `
   <div class="topbar">
     <a class="brand" href="${cityLink('/')}">
-      <div class="brand-mark"><img src="${cfg?.logo || '/assets/logo-prefeitura.png'}" alt="Brasão de ${cfg?.cidade || 'Bacabal'}" /></div>
+      <div class="brand-mark"><img src="${cfg?.logo || '/assets/logo-prefeitura.png'}" alt="Brasão de ${cfg?.cidade || ''}" /></div>
       <div>
         <strong>${nome}</strong>
         <span>${sub}</span>
