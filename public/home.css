@@ -1062,15 +1062,46 @@ body:not([data-cidade]) .footer-social a {
 }
 
 @media (max-width: 720px) {
+  .prefeita-spotlight {
+    padding: 1.6rem 0 1.85rem;
+  }
   .prefeita-spotlight-inner {
     grid-template-columns: 1fr;
     text-align: center;
+    justify-items: center;
+    gap: 1rem;
+    width: min(1180px, calc(100% - 1.5rem));
   }
-  .prefeita-photo img { margin: 0 auto; }
+  .prefeita-photo {
+    width: 132px;
+    height: 132px;
+    margin: 0 auto;
+    border-width: 3px;
+  }
+  .prefeita-photo img {
+    margin: 0 auto;
+  }
+  .prefeita-copy {
+    width: 100%;
+  }
+  .prefeita-copy .eyebrow {
+    margin-bottom: 0.3rem;
+  }
+  .prefeita-copy h2,
+  #prefeitaNome {
+    font-size: 1.22rem;
+    line-height: 1.25;
+  }
+  .prefeita-cargo {
+    font-size: 0.88rem;
+    margin-bottom: 0.65rem;
+  }
   .prefeita-copy blockquote {
     border-left: none;
     padding-left: 0;
     text-align: left;
+    font-size: 0.9rem;
+    line-height: 1.5;
   }
 }
 
@@ -1093,9 +1124,11 @@ html[data-cidade="bomlugar"] .landing-footer-inner .footer-social a {
   }
   .landing-header-inner {
     gap: 0.55rem;
-    padding: 0.55rem 0;
+    padding: 0.55rem 0.75rem;
     flex-wrap: wrap;
-    width: min(1180px, calc(100% - 1rem));
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   .landing-brand {
     flex: 1 1 auto;
@@ -1104,33 +1137,43 @@ html[data-cidade="bomlugar"] .landing-footer-inner .footer-social a {
   .landing-brand span { display: none; }
   .landing-brand img { width: 36px; height: 36px; }
   html[data-cidade="bomlugar"] .landing-brand img {
-    width: 72px !important;
-    height: 72px !important;
+    width: 56px !important;
+    height: 56px !important;
     max-width: none !important;
   }
   .landing-brand strong { font-size: 0.8rem; }
   .landing-nav {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.45rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     flex-wrap: nowrap;
   }
   .landing-nav a:not(.nav-cta) { display: none; }
   .landing-nav .nav-drop {
     display: block;
     width: 100%;
+    min-width: 0;
     position: relative;
   }
   .landing-nav .nav-cidadao,
   .landing-nav .nav-admin {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     font-size: 0.8rem;
-    padding: 0.65rem 0.55rem;
+    padding: 0.65rem 0.45rem;
     white-space: nowrap;
     margin-left: 0;
     text-align: center;
     justify-content: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  html[data-cidade="bomlugar"] .landing-nav .nav-admin {
+    border-width: 1.5px;
   }
   .landing-nav .label-full { display: none; }
   .landing-nav .label-short { display: inline; }
@@ -1252,5 +1295,23 @@ html[data-cidade="bomlugar"] .landing-footer-inner .footer-social a {
     width: calc(100% - 1rem);
   }
   .pmb-topbar a { margin-right: 0.45rem; }
+  .pmb-topbar-right {
+    justify-content: center;
+    width: 100%;
+  }
+  html[data-cidade="bomlugar"] .pmb-social {
+    justify-content: center;
+  }
   .landing-main { width: calc(100% - 1rem); }
+  .landing-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+    width: calc(100% - 1.5rem);
+  }
+  .footer-social {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
 }
