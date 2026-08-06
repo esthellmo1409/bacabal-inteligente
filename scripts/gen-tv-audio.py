@@ -9,8 +9,8 @@ RATE = "-3%"  # mais calmo que o +8% antigo (parecia acelerado)
 
 SCRIPTS = [
     "Imagine Bacabal com cada problema da rua virando protocolo. Este é o Bacabal Conecta — a plataforma da Prefeitura pra cidade, saúde e eventos.",
-    "Olha só: a dona Maria sai de casa, encontra o problema na rua, aponta a câmera… e registra. Simples assim. Foto, lugar e reclamação oficial, na hora.",
-    "Ela manda pra plataforma e já recebe o número do protocolo. Obrigado pela colaboração. Agora tem rastreio de verdade — sem depender do WhatsApp.",
+    "Olha só: o seu João sai de casa, encontra o problema na rua, aponta a câmera… e registra. Simples assim. Foto, lugar e reclamação oficial, na hora.",
+    "Ele manda pra plataforma e já recebe o número do protocolo. Obrigado pela colaboração. Agora tem rastreio de verdade — sem depender do WhatsApp.",
     "No Gabinete, o prefeito enxerga o que está aberto, o que está atrasado e o que precisa de prioridade. Cobra a secretaria com registro — não no achismo.",
     "A Secretaria de Obras recebe, organiza a fila e encaminha pra equipe. Quando o Gabinete cobra, tem alerta e prazo.",
     "No campo, a equipe chega com a ordem no celular, marca presença e registra a foto do serviço pronto. Sem desculpa sem prova.",
