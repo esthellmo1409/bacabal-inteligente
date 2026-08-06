@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tutorial com IA · Bacabal Conecta</title>
+  <meta name="description" content="Tutorial narrado com inteligência artificial: plano de serviço na secretaria e assistente no gabinete." />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/home.css" />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <style>
+    .tia { max-width: 920px; margin: 0 auto; padding: 1rem 1rem 6.5rem; }
+    .tia-top {
+      display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;
+      margin-bottom:1rem;
+    }
+    .tia-brand { display:flex; align-items:center; gap:.65rem; }
+    .tia-brand img { width:42px; height:auto; }
+    .tia-brand strong { display:block; font-size:1rem; }
+    .tia-brand span { display:block; font-size:.75rem; color:var(--muted); }
+    .coach {
+      position: sticky; top: .65rem; z-index: 30;
+      background:#fff; border:1px solid var(--line); border-radius:16px;
+      padding:1rem 1.1rem; margin-bottom:1rem;
+      box-shadow: 0 12px 32px rgba(0,0,0,.08);
+    }
+    .coach-prog { height:4px; background:#eef1f4; border-radius:99px; overflow:hidden; margin-bottom:.75rem; }
+    .coach-prog > i { display:block; height:100%; width:0; background:linear-gradient(90deg,#ff8000,#398a21); transition:width .35s; }
+    html[data-cidade="bomlugar"] .coach-prog > i { background:linear-gradient(90deg,#03327A,#B71C1C); }
+    .coach-step { font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+    .coach h2 { margin:.2rem 0 .35rem; font-size:1.15rem; }
+    .coach p { margin:0; color:#44505c; line-height:1.45; font-size:.94rem; }
+    .coach-actions { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.85rem; align-items:center; }
+    .view { display:none; }
+    .view.on { display:block; animation: fade .3s ease; }
+    @keyframes fade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+    .ticket {
+      display:grid; grid-template-columns:140px 1fr; gap:1rem; align-items:start;
+      background:#fff; border:1px solid var(--line); border-radius:16px; padding:1rem;
+    }
+    @media(max-width:640px){ .ticket { grid-template-columns:1fr; } }
+    .ticket img { width:100%; height:120px; object-fit:cover; border-radius:12px; }
+    .ia-box {
+      margin-top:1rem; background:#fff; border:1px solid rgba(255,128,0,.28);
+      border-radius:16px; padding:1rem 1.1rem;
+      box-shadow: 0 8px 22px rgba(255,128,0,.08);
+    }
+    html[data-cidade="bomlugar"] .ia-box {
+      border-color: rgba(3,50,122,.28);
+      box-shadow: 0 8px 22px rgba(3,50,122,.08);
+    }
+    .ia-row { display:flex; gap:.85rem; align-items:flex-start; }
+    .ia-row img { width:52px; height:52px; border-radius:14px; object-fit:cover; }
+    .ia-plan {
+      margin-top:.85rem; background:#f7f8f9; border-radius:12px; padding:.85rem 1rem;
+      font-size:.9rem; line-height:1.5; color:#333;
+    }
+    .ia-plan div { margin:.25rem 0; }
+    .ia-plan strong { color:#1a1a1a; min-width:7rem; display:inline-block; }
+    .tut-target {
+      box-shadow: 0 0 0 4px rgba(33,99,232,.4), 0 10px 24px rgba(33,99,232,.2) !important;
+      animation: pulse 1.2s ease infinite;
+    }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(33,99,232,.18), 0 10px 24px rgba(33,99,232,.15); } }
+    .gate {
+      text-align:center; padding:2.5rem 1.25rem; background:#fff; border-radius:20px;
+      border:1px solid var(--line); box-shadow: var(--shadow);
+    }
+    .gate img { width:72px; margin-bottom:1rem; }
+    .gab-opts { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.85rem; }
+    .gab-res {
+      margin-top:.9rem; padding:.9rem 1rem; border-radius:12px;
+      background:#fff8f0; border-left:4px solid #ff8000;
+      font-size:.92rem; line-height:1.5; color:#333; white-space:pre-wrap;
+    }
+    html[data-cidade="bomlugar"] .gab-res {
+      background:#eef3fb; border-left-color:#03327A;
+    }
+    .muted-btn { opacity:.55; pointer-events:none; }
+  </style>
+</head>
+<body class="landing" style="background:#f7f8f9">
+  <div class="tia">
+    <div class="tia-top">
+      <div class="tia-brand">
+        <img id="logo" src="/assets/logo-prefeitura.png" alt="" />
+        <div>
+          <strong id="produtoNome">Bacabal Conecta</strong>
+          <span>Tutorial com IA · não altera dados reais</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button type="button" class="btn btn-sm" id="btnMute">🔊 Áudio</button>
+        <a class="btn btn-sm" data-city-href="/tutorial.html">Tutorial clássico</a>
+        <a class="btn btn-sm" data-city-href="/">Início</a>
+      </div>
+    </div>
+
+    <div class="gate" id="gate">
+      <img id="logoGate" src="/assets/logo-prefeitura.png" alt="" />
+      <p class="page-kicker">Novo · com inteligência artificial</p>
+      <h1 class="display" style="font-size:clamp(1.5rem,4vw,2rem);margin-bottom:.5rem">Tutorial com IA</h1>
+      <p class="muted" style="max-width:34rem;margin:0 auto 1.25rem;line-height:1.45">
+        Secretaria analisa a foto com a assistente (material, tempo, ferramentas)
+        e o Gabinete usa a IA para priorizar a cidade.
+      </p>
+      <button class="btn btn-primary" type="button" id="btnStart">▶ Iniciar com áudio</button>
+      <p class="muted" style="margin-top:.85rem;font-size:.78rem">
+        Fluxo clássico sem IA: <a data-city-href="/tutorial.html">abrir tutorial de Obras</a>
+      </p>
+    </div>
+
+    <div id="app" hidden>
+      <aside class="coach" id="coach">
+        <div class="coach-prog"><i id="prog"></i></div>
+        <div class="coach-step" id="stepLabel">Passo 1</div>
+        <h2 id="title">Título</h2>
+        <p id="text">Texto</p>
+        <div class="coach-actions">
+          <button class="btn btn-sm" type="button" id="btnPrev">◀ Voltar</button>
+          <button class="btn btn-sm btn-primary" type="button" id="btnNext">Continuar ▶</button>
+        </div>
+      </aside>
+
+      <!-- 0 intro -->
+      <section class="view" id="v0">
+        <div class="panel" style="padding:1.5rem">
+          <p class="page-kicker">Visão geral</p>
+          <h1 class="display" style="font-size:1.6rem;margin-bottom:.4rem">Do protocolo à decisão — com IA</h1>
+          <p class="muted" style="margin:0;max-width:40rem;line-height:1.5">
+            Cidadão já registrou com foto. Agora a secretaria usa a assistente de serviço
+            e o gabinete usa a assistente de gestão. Quem executa e quem decide continua sendo gente.
+          </p>
+        </div>
+      </section>
+
+      <!-- 1 secretaria chamado -->
+      <section class="view" id="v1">
+        <p class="page-kicker">Secretaria · Obras</p>
+        <h1 class="display" style="font-size:1.55rem;margin-bottom:1rem">Chamado na fila</h1>
+        <div class="ticket">
+          <img src="/assets/buraco-demo-antes.jpg" alt="Foto do problema" />
+          <div>
+            <div style="display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap">
+              <strong>20261090 · Problema na rua</strong>
+              <span class="badge badge-novo">Novo</span>
+            </div>
+            <p class="muted" style="margin:.4rem 0 .75rem">Centro · Rua 11 · Foto do problema anexada</p>
+            <p style="margin:0;font-size:.9rem;color:#44505c">A assistente detecta o chamado e oferece ajuda.</p>
+          </div>
+        </div>
+        <div class="ia-box" id="iaAsk">
+          <div class="ia-row">
+            <img src="/assets/ia-assistente-servico.png?v=3" alt="" />
+            <div>
+              <strong id="iaSaudacao">Oi! Sou a Bacabal Conecta, sua assistente de IA.</strong>
+              <p class="muted" style="margin:.3rem 0 0">Posso analisar a foto e sugerir material, quantidade, tempo e ferramentas?</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 click sim analisar -->
+      <section class="view" id="v2">
+        <p class="page-kicker">Secretaria · IA de serviço</p>
+        <h1 class="display" style="font-size:1.55rem;margin-bottom:1rem">Aceitar a análise</h1>
+        <div class="ia-box">
+          <div class="ia-row">
+            <img src="/assets/ia-assistente-servico.png?v=3" alt="" />
+            <div style="flex:1">
+              <strong id="iaSaudacao2">Oi! Sou a Bacabal Conecta, sua assistente de IA.</strong>
+              <p class="muted" style="margin:.3rem 0 .85rem">Posso te ajudar com esse serviço?</p>
+              <div class="cta-row">
+                <button type="button" class="btn btn-sm btn-primary" id="btnIaSim">Sim, analisar</button>
+                <button type="button" class="btn btn-sm muted-btn">Agora não</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 plano -->
+      <section class="view" id="v3">
+        <p class="page-kicker">Secretaria · plano de serviço</p>
+        <h1 class="display" style="font-size:1.55rem;margin-bottom:1rem">Plano sugerido pela IA</h1>
+        <div class="ticket">
+          <img src="/assets/buraco-demo-antes.jpg" alt="" />
+          <div>
+            <strong>20261090 · Problema na rua</strong>
+            <p class="muted" style="margin:.35rem 0 0">Foto do problema · análise concluída</p>
+          </div>
+        </div>
+        <div class="ia-box">
+          <div class="ia-row">
+            <img src="/assets/ia-assistente-servico.png?v=3" alt="" />
+            <div>
+              <strong>Plano de serviço</strong>
+              <p class="muted" style="margin:.25rem 0 0">Sugestão da assistente — a equipe confirma antes de executar.</p>
+            </div>
+          </div>
+          <div class="ia-plan">
+            <div><strong>Material</strong> Massa asfáltica a frio</div>
+            <div><strong>Quantidade</strong> ~4 sacos (80 kg)</div>
+            <div><strong>Tempo</strong> 1h30 a 2h</div>
+            <div><strong>Ferramentas</strong> Pá, vassoura de aço, soquete / compactador</div>
+            <div><strong>Equipe</strong> 2 a 3 pessoas</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 encaminhar -->
+      <section class="view" id="v4">
+        <p class="page-kicker">Secretaria · encaminhar</p>
+        <h1 class="display" style="font-size:1.55rem;margin-bottom:1rem">Mandar para o campo</h1>
+        <div class="ticket">
+          <img src="/assets/buraco-demo-antes.jpg" alt="" />
+          <div>
+            <strong>20261090 · Com plano de IA</strong>
+            <p class="muted" style="margin:.35rem 0 .85rem">Material e tempo já sugeridos. Agora a OS vai para a equipe.</p>
+            <button type="button" class="btn btn-sm btn-primary" id="btnEnc">Encaminhar ao campo</button>
+            <p class="muted" id="encDone" style="display:none;margin-top:.75rem;color:#0a966c;font-weight:700">✓ Encaminhado · equipe notificada</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5 gabinete -->
+      <section class="view" id="v5">
+        <p class="page-kicker">Gabinete · assistente</p>
+        <h1 class="display" style="font-size:1.55rem;margin-bottom:1rem">IA no gabinete</h1>
+        <div class="panel ia-box" style="margin:0">
+          <div class="ia-row">
+            <img src="/assets/ia-assistente-servico.png?v=3" alt="" />
+            <div style="flex:1">
+              <strong id="iaGabHello">Assistente do Gabinete</strong>
+              <p class="muted" style="margin:.3rem 0 0">Posso analisar a plataforma, filas e urgências para apoiar a decisão.</p>
+              <div class="gab-opts">
+                <button type="button" class="btn btn-sm btn-primary" id="btnGabAnalisar">Analisar a cidade na plataforma</button>
+                <button type="button" class="btn btn-sm muted-btn">Como está a cidade hoje?</button>
+                <button type="button" class="btn btn-sm muted-btn">O que priorizar agora?</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 resposta gabinete -->
+      <section class="view" id="v6">
+        <p class="page-kicker">Gabinete · resumo</p>
+        <h1 class="display" style="font-size:1.55rem;margin-bottom:1rem">Visão para decidir</h1>
+        <div class="panel ia-box" style="margin:0">
+          <div class="ia-row">
+            <img src="/assets/ia-assistente-servico.png?v=3" alt="" />
+            <div>
+              <strong>Análise da plataforma</strong>
+              <div class="gab-res" id="gabResumo">Carregando…</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7 fim -->
+      <section class="view" id="v7">
+        <div class="panel" style="text-align:center;padding:2rem 1.25rem">
+          <p class="page-kicker">Concluído</p>
+          <h1 class="display" style="font-size:1.7rem;margin-bottom:.5rem">A IA orienta. A gestão decide.</h1>
+          <p class="muted" style="max-width:36rem;margin:0 auto 1.25rem;line-height:1.5">
+            Protocolo do cidadão · plano na secretaria · prova no campo · visão no gabinete.
+            Inteligência a serviço da operação — sem substituir quem governa.
+          </p>
+          <div class="cta-row" style="justify-content:center">
+            <a class="btn btn-primary" data-city-href="/secretaria.html">Abrir secretaria</a>
+            <a class="btn btn-primary" data-city-href="/prefeito.html">Abrir gabinete</a>
+            <a class="btn" data-city-href="/tutorial.html">Tutorial clássico</a>
+            <a class="btn" data-city-href="/apresentacao.html">Hub apresentação</a>
+            <button class="btn" type="button" id="btnReplay">▶ Ver de novo</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <audio id="narrator" preload="auto"></audio>
+
+  <script src="/app.js"></script>
+  <script>
+    initCidade();
+    const audio = document.getElementById('narrator');
+    let muted = false;
+    let i = 0;
+    let waiting = null;
+    let cfg = null;
+
+    const STEPS = [
+      { id: 0, view: 'v0', audio: '/assets/tutorial-ia-audio/00.mp3', title: 'Tutorial com IA', text: 'Do protocolo na rua ao gabinete — com a assistente na secretaria e no gabinete.', target: null },
+      { id: 1, view: 'v1', audio: '/assets/tutorial-ia-audio/01.mp3', title: 'Chamado na secretaria', text: 'O protocolo chegou com foto. A assistente de serviço aparece para ajudar.', target: null },
+      { id: 2, view: 'v2', audio: '/assets/tutorial-ia-audio/02.mp3', title: 'Sim, analisar', text: 'Clique em Sim, analisar para a IA sugerir material, tempo e ferramentas.', target: '#btnIaSim', requireClick: '#btnIaSim' },
+      { id: 3, view: 'v3', audio: '/assets/tutorial-ia-audio/03.mp3', title: 'Plano de serviço', text: 'Material, quantidade, tempo e ferramentas sugeridos. A equipe confirma e executa.', target: null },
+      { id: 4, view: 'v4', audio: '/assets/tutorial-ia-audio/04.mp3', title: 'Encaminhar ao campo', text: 'Com o plano na mão, clique em Encaminhar ao campo.', target: '#btnEnc', requireClick: '#btnEnc' },
+      { id: 5, view: 'v5', audio: '/assets/tutorial-ia-audio/05.mp3', title: 'IA no gabinete', text: 'Clique em Analisar a cidade na plataforma.', target: '#btnGabAnalisar', requireClick: '#btnGabAnalisar' },
+      { id: 6, view: 'v6', audio: '/assets/tutorial-ia-audio/06.mp3', title: 'Resumo para decidir', text: 'Filas, urgências e priorização. Quem decide é o gestor.', target: null },
+      { id: 7, view: 'v7', audio: '/assets/tutorial-ia-audio/07.mp3', title: 'Tutorial concluído', text: 'A IA orienta. A gestão decide. Use a secretaria e o gabinete reais para apresentar.', target: null },
+    ];
+
+    function cityName() {
+      return (cfg && cfg.cidade) || 'Bacabal';
+    }
+    function produto() {
+      return (cfg && cfg.produto) || 'Bacabal Conecta';
+    }
+    function isPrefeita() {
+      return (cfg && cfg.slug) === 'bomlugar';
+    }
+
+    function fillBrand() {
+      const p = produto();
+      document.getElementById('produtoNome').textContent = p;
+      document.getElementById('iaSaudacao').textContent = 'Oi! Sou a ' + p + ', sua assistente de IA.';
+      document.getElementById('iaSaudacao2').textContent = 'Oi! Sou a ' + p + ', sua assistente de IA.';
+      document.getElementById('iaGabHello').textContent = 'Assistente do Gabinete · ' + p;
+      const logo = (cfg && cfg.logo) || '/assets/logo-prefeitura.png';
+      document.getElementById('logo').src = logo;
+      document.getElementById('logoGate').src = logo;
+      document.getElementById('gabResumo').textContent =
+        'Cidade: 1 chamado novo em Obras (Centro) e 3 em andamento.\n' +
+        'Saúde: fila estável; plantão do dia confirmado.\n' +
+        'Prioridade sugerida: concluir o buraco da Rua 11 (protocolo 20261090) — já tem plano de material.\n' +
+        (isPrefeita()
+          ? 'A prefeita decide e cobra. A assistente só organiza a visão.'
+          : 'O prefeito decide e cobra. A assistente só organiza a visão.');
+    }
+
+    function clearTargets() {
+      document.querySelectorAll('.tut-target').forEach((el) => el.classList.remove('tut-target'));
+    }
+
+    function show(n) {
+      i = Math.max(0, Math.min(STEPS.length - 1, n));
+      const step = STEPS[i];
+      waiting = step.requireClick || null;
+      document.querySelectorAll('.view').forEach((v) => v.classList.toggle('on', v.id === step.view));
+      clearTargets();
+      if (step.target) {
+        const el = document.querySelector(step.target);
+        if (el) el.classList.add('tut-target');
+      }
+      document.getElementById('stepLabel').textContent = 'Passo ' + (i + 1) + ' de ' + STEPS.length;
+      document.getElementById('title').textContent = step.title;
+      document.getElementById('text').textContent = step.text;
+      document.getElementById('prog').style.width = ((i / (STEPS.length - 1)) * 100) + '%';
+      const next = document.getElementById('btnNext');
+      next.disabled = !!waiting;
+      next.textContent = waiting ? 'Toque no botão destacado ↓' : (i === STEPS.length - 1 ? 'Concluído' : 'Continuar ▶');
+      if (step.id === 4) {
+        document.getElementById('encDone').style.display = 'none';
+        document.getElementById('btnEnc').style.display = '';
+      }
+      play(step.audio);
+    }
+
+    function play(src) {
+      if (muted) { audio.pause(); return; }
+      audio.src = src;
+      audio.play().catch(() => {});
+    }
+
+    function onClick(sel) {
+      if (!waiting || waiting !== sel) return;
+      if (sel === '#btnEnc') {
+        document.getElementById('encDone').style.display = 'block';
+        document.getElementById('btnEnc').style.display = 'none';
+      }
+      waiting = null;
+      document.getElementById('btnNext').disabled = false;
+      document.getElementById('btnNext').textContent = 'Continuar ▶';
+      setTimeout(() => show(i + 1), 550);
+    }
+
+    document.getElementById('btnStart').onclick = () => {
+      document.getElementById('gate').hidden = true;
+      document.getElementById('app').hidden = false;
+      show(0);
+    };
+    document.getElementById('btnNext').onclick = () => {
+      if (waiting || i >= STEPS.length - 1) return;
+      show(i + 1);
+    };
+    document.getElementById('btnPrev').onclick = () => show(i - 1);
+    document.getElementById('btnReplay').onclick = () => show(0);
+    document.getElementById('btnMute').onclick = () => {
+      muted = !muted;
+      document.getElementById('btnMute').textContent = muted ? '🔇 Mudo' : '🔊 Áudio';
+      if (muted) audio.pause();
+      else play(STEPS[i].audio);
+    };
+    document.getElementById('btnIaSim').onclick = () => onClick('#btnIaSim');
+    document.getElementById('btnEnc').onclick = () => onClick('#btnEnc');
+    document.getElementById('btnGabAnalisar').onclick = () => onClick('#btnGabAnalisar');
+
+    loadCityBrand().then((c) => {
+      cfg = c || { produto: 'Bacabal Conecta', cidade: 'Bacabal', slug: getCidade() };
+      fillBrand();
+      document.querySelectorAll('[data-city-href]').forEach((a) => {
+        a.href = cityLink(a.getAttribute('data-city-href'));
+      });
+      applyPageBrand(cfg);
+    });
+  </script>
+</body>
+</html>

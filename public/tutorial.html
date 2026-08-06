@@ -620,12 +620,13 @@
           <h1 class="display" style="font-size:1.8rem;margin-bottom:0.5rem">Fluxo completo de Obras</h1>
           <p class="muted" style="max-width:36rem;margin:0 auto 1.25rem">
             Home → cidadão registra → secretaria encaminha → campo executa → secretaria aprova → cidadão consulta o protocolo.
-            Depois fazemos o mesmo para Saúde e outras instituições.
+            Para ver a inteligência artificial (plano de serviço + gabinete), abra o tutorial com IA.
           </p>
           <div class="cta-row" style="justify-content:center">
-            <a class="btn btn-primary" href="/cidadao.html?cidade=bacabal">App cidadão</a>
-            <a class="btn" href="/equipes.html?cidade=bacabal">Equipe de campo</a>
-            <a class="btn" href="/secretaria.html?cidade=bacabal">Secretaria</a>
+            <a class="btn btn-primary" data-city-href="/tutorial-ia.html">Tutorial com IA</a>
+            <a class="btn btn-primary" href="/cidadao.html?cidade=bacabal" data-city-href="/cidadao.html">App cidadão</a>
+            <a class="btn" href="/equipes.html?cidade=bacabal" data-city-href="/equipes.html">Equipe de campo</a>
+            <a class="btn" href="/secretaria.html?cidade=bacabal" data-city-href="/secretaria.html">Secretaria</a>
             <button class="btn" type="button" id="btnReplay">▶ Ver de novo</button>
           </div>
         </div>
@@ -640,6 +641,7 @@
 
   <audio id="narrator" preload="auto"></audio>
 
+  <script src="/app.js"></script>
   <script>
     const STEPS = [
       {
@@ -1190,6 +1192,17 @@
 
     audio.addEventListener('ended', () => document.getElementById('wave').classList.add('off'));
     audio.addEventListener('play', () => document.getElementById('wave').classList.remove('off'));
+
+    // Marca da cidade nos links finais (Bacabal / Bom Lugar)
+    if (typeof initCidade === 'function') {
+      initCidade();
+      loadCityBrand?.().then((cfg) => {
+        document.querySelectorAll('[data-city-href]').forEach((a) => {
+          a.href = cityLink(a.getAttribute('data-city-href'));
+        });
+        if (cfg) applyPageBrand?.(cfg);
+      });
+    }
   </script>
 </body>
 </html>
