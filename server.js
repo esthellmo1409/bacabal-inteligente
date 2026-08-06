@@ -260,6 +260,8 @@ function ensureDemoChamado(slug = 'bacabal') {
     const prev = chamados[idx];
     prev.foto = fotoUrl;
     prev.fotoAntes = fotoUrl;
+    prev.fotoDepois = null;
+    prev.aprovacaoSecretaria = null;
     prev.anexos = [{ tipo: 'foto', url: fotoUrl, em: now }];
     prev.secretaria = 'obras';
     prev.categoria = cat.id;
@@ -268,11 +270,9 @@ function ensureDemoChamado(slug = 'bacabal') {
     prev.endereco = base.endereco;
     prev.prioridade = 'alta';
     prev.demoFixo = 'buraco-foto';
-    // Mantém vivo para demo: se concluído/cancelado, reabre encaminhado (sem foto depois)
+    // Mantém vivo para demo: se concluído/cancelado/aprovação, reabre encaminhado (só foto do problema)
     if (prev.status === 'concluido' || prev.status === 'cancelado' || prev.status === 'aguardando_aprovacao') {
       prev.status = 'encaminhado';
-      prev.fotoDepois = null;
-      prev.aprovacaoSecretaria = null;
       prev.historico = prev.historico || [];
       prev.historico.push({
         em: now,
@@ -287,6 +287,8 @@ function ensureDemoChamado(slug = 'bacabal') {
         status: 'encaminhado',
         nota: 'Encaminhado à equipe de campo',
       });
+    } else if (prev.status !== 'encaminhado' && prev.status !== 'em_execucao') {
+      prev.status = 'encaminhado';
     }
     prev.atualizadoEm = now;
     chamados[idx] = normalizeChamado(prev);
@@ -344,7 +346,7 @@ function ensureDemoAprovacao(slug = 'bacabal') {
   };
 
   if (idx < 0) {
-    chamados.unshift(normalizeChamado({
+    const novo = normalizeChamado({
       ...base,
       status: 'aguardando_aprovacao',
       historico: [
@@ -354,7 +356,10 @@ function ensureDemoAprovacao(slug = 'bacabal') {
         { em: now, status: 'aguardando_aprovacao', nota: 'Campo enviou foto do depois — aguardando secretaria' },
       ],
       criadoEm: now,
-    }));
+    });
+    const fotoIdx = chamados.findIndex((x) => x.demoFixo === 'buraco-foto');
+    const insertAt = fotoIdx >= 0 ? fotoIdx + 1 : 0;
+    chamados.splice(insertAt, 0, novo);
   } else {
     const prev = chamados[idx];
     Object.assign(prev, {
@@ -372,16 +377,20 @@ function ensureDemoAprovacao(slug = 'bacabal') {
     });
     chamados[idx] = normalizeChamado(prev);
     const [demo] = chamados.splice(idx, 1);
-    chamados.unshift(demo);
+    // Fica logo abaixo do demo de material (foto do problema), não no topo
+    const fotoIdx = chamados.findIndex((x) => x.demoFixo === 'buraco-foto');
+    const insertAt = fotoIdx >= 0 ? fotoIdx + 1 : 0;
+    chamados.splice(insertAt, 0, demo);
   }
   writeTenant(slug, 'chamados.json', chamados);
 }
 
 try {
-  ensureDemoChamado('bacabal');
-  ensureDemoChamado('bomlugar');
+  // Material (só foto do problema) por último no topo; aprovação fica logo abaixo
   ensureDemoAprovacao('bacabal');
   ensureDemoAprovacao('bomlugar');
+  ensureDemoChamado('bacabal');
+  ensureDemoChamado('bomlugar');
 } catch (e) {
   console.warn('ensureDemoChamado:', e.message);
 }
@@ -1426,10 +1435,10 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   try {
-    ensureDemoChamado('bacabal');
-    ensureDemoChamado('bomlugar');
     ensureDemoAprovacao('bacabal');
     ensureDemoAprovacao('bomlugar');
+    ensureDemoChamado('bacabal');
+    ensureDemoChamado('bomlugar');
   } catch (_) {}
   console.log(`\n  Bacabal Conecta v3 → http://localhost:${PORT}`);
   console.log(`  Dados: ${DATA_DIR}${USING_VOLUME ? ' (volume Railway)' : ''}`);

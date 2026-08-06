@@ -187,11 +187,31 @@ function badge(status) {
   return `<span class="badge badge-${s}">${statusLabel(status)}</span>`;
 }
 
-/** Antes (cidadão) x Depois (campo) — visível para cidadão, secretaria e gabinete */
+/** Foto do problema (cidadão) — ou Antes/Depois quando o campo já enviou a prova. */
 function antesDepoisHtml(c) {
   const antes = c.fotoAntes || c.foto;
   const depois = c.fotoDepois;
   if (!antes && !depois) return '';
+
+  const faseProva =
+    !!depois ||
+    c.status === 'aguardando_aprovacao' ||
+    c.status === 'concluido';
+
+  // Planejamento / execução: só a foto do problema (IA sugere material)
+  if (!faseProva) {
+    return `
+    <div class="antes-depois antes-depois-problema">
+      <div class="antes-depois-item antes-depois-item-full">
+        <div class="antes-depois-label">Foto do problema</div>
+        ${antes
+          ? `<img class="preview show foto-zoom" src="${antes}" alt="Foto do problema" onclick="openFotoLightbox(this.src)" />`
+          : `<div class="antes-depois-empty">Sem foto</div>`}
+      </div>
+    </div>
+  `;
+  }
+
   return `
     <div class="antes-depois">
       <div class="antes-depois-item">
