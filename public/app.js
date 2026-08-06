@@ -788,7 +788,7 @@ async function iaRunParecerTyping(box, id, parecer) {
   await iaTypeInto(
     intro,
     intro?.getAttribute('data-full') || `${iaSaudacaoCurta()} Compareci o antes e o depois. Veja o que encontrei:`,
-    { speed: 14, id: id + '-ai' }
+    { speed: 38, id: id + '-ai' }
   );
 
   if (head) {
@@ -802,7 +802,7 @@ async function iaRunParecerTyping(box, id, parecer) {
     const line = lines[i];
     const full = line.getAttribute('data-full') || '';
     const v = line.querySelector('.ia-stream-v') || line;
-    await iaTypeInto(v, full, { speed: 10, id: id + '-ap' + i });
+    await iaTypeInto(v, full, { speed: 30, id: id + '-ap' + i });
   }
 
   if (foot) {
@@ -831,7 +831,7 @@ async function iaRunPlanoTyping(box, id, plano) {
   await iaTypeInto(
     intro,
     intro?.getAttribute('data-full') || `${iaSaudacaoCurta()} Aqui está o que sugiro para este serviço:`,
-    { speed: 14, id: id + '-i' }
+    { speed: 38, id: id + '-i' }
   );
 
   if (head) {
@@ -847,9 +847,9 @@ async function iaRunPlanoTyping(box, id, plano) {
     const colon = full.indexOf(': ');
     const value = colon >= 0 ? full.slice(colon + 2) : full;
     if (line.querySelector('.ia-stream-k') && colon >= 0) {
-      await iaTypeInto(v, value, { speed: 10, id: id + '-l' + lines.indexOf(line) });
+      await iaTypeInto(v, value, { speed: 30, id: id + '-l' + lines.indexOf(line) });
     } else {
-      await iaTypeInto(v, full, { speed: 10, id: id + '-l' + lines.indexOf(line) });
+      await iaTypeInto(v, full, { speed: 30, id: id + '-l' + lines.indexOf(line) });
     }
   }
 
