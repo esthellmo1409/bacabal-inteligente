@@ -144,30 +144,22 @@
           var app = a.getAttribute('data-app');
           var web = a.getAttribute('href');
           var isIg = a.getAttribute('data-social') === 'instagram';
-          var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+          if (!isIg || !app) return;
 
-          // Instagram no celular: abre o app no perfil
-          if (isIg && isMobile && app) {
-            e.preventDefault();
-            var start = Date.now();
-            var left = false;
-            function onHide() { left = true; }
-            document.addEventListener('visibilitychange', onHide);
-            window.location.href = app;
-            setTimeout(function () {
-              document.removeEventListener('visibilitychange', onHide);
-              if (!left && Date.now() - start < 1600) {
-                window.location.href = web;
-              }
-            }, 650);
-            return;
-          }
-
-          // Instagram no PC: mesma aba, URL limpa do perfil (sem target=_blank)
-          if (isIg && !isMobile) {
-            e.preventDefault();
-            window.location.assign(web);
-          }
+          // Instagram: tenta o app primeiro (celular ou app da Microsoft Store no Windows).
+          // No navegador o Instagram exige login — isso é deles, nao do nosso site.
+          e.preventDefault();
+          var start = Date.now();
+          var left = false;
+          function onHide() { left = true; }
+          document.addEventListener('visibilitychange', onHide);
+          window.location.href = app;
+          setTimeout(function () {
+            document.removeEventListener('visibilitychange', onHide);
+            if (!left && Date.now() - start < 1800) {
+              window.location.href = web;
+            }
+          }, 700);
         });
       });
     };
