@@ -1000,6 +1000,11 @@ body:not([data-cidade]) .footer-social a {
   padding: 2.75rem 0;
 }
 
+/* Spotlight do prefeito (Bacabal) */
+.prefeito-spotlight {
+  background: linear-gradient(135deg, #1a4fba 0%, #2163e8 45%, #2f8a28 100%);
+}
+
 .prefeita-spotlight-inner {
   width: min(1180px, calc(100% - 2rem));
   margin: 0 auto;
@@ -1048,7 +1053,8 @@ body:not([data-cidade]) .footer-social a {
 }
 
 .prefeita-copy h2,
-#prefeitaNome {
+#prefeitaNome,
+#prefeitoNome {
   font-size: clamp(1.45rem, 3vw, 2rem);
   font-weight: 800;
   letter-spacing: -0.03em;

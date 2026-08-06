@@ -205,6 +205,8 @@
           '<strong style="color:' + accent + '">' + cfg.produto + '</strong> · ' + cfg.endereco);
         var spot = document.getElementById('prefeitaSpotlight');
         if (spot) spot.hidden = false;
+        var spotPref = document.getElementById('prefeitoSpotlight');
+        if (spotPref) spotPref.hidden = true;
         var footSocial = document.getElementById('footerSocial');
         if (footSocial) {
           footSocial.innerHTML =
@@ -423,6 +425,25 @@
       </div>
     </div>
   </main>
+
+  <!-- Destaque do prefeito — Bacabal (oculto em Bom Lugar) -->
+  <section class="prefeita-spotlight prefeito-spotlight" id="prefeitoSpotlight">
+    <div class="prefeita-spotlight-inner">
+      <div class="prefeita-photo">
+        <img id="prefeitoFoto" src="/assets/foto-prefeito-bacabal.jpg?v=1" alt="Prefeito Roberto Costa" width="220" height="220" decoding="async" />
+      </div>
+      <div class="prefeita-copy">
+        <p class="eyebrow" id="prefeitoEyebrow">Gabinete do Prefeito</p>
+        <h2 id="prefeitoNome">Roberto Costa</h2>
+        <p class="prefeita-cargo" id="prefeitoCargo">Prefeito Municipal de Bacabal · MA</p>
+        <blockquote id="prefeitoMsg">
+          Bacabal avança com uma gestão presente e conectada: o prefeito Roberto Costa
+          lidera a construção de uma Nova Bacabal — com mais serviço na rua,
+          mais transparência e a cidade acompanhando cada protocolo em tempo real.
+        </blockquote>
+      </div>
+    </div>
+  </section>
 
   <!-- Destaque da prefeita — visível só em Bom Lugar -->
   <section class="prefeita-spotlight" id="prefeitaSpotlight" hidden>
@@ -679,6 +700,8 @@
         }
 
         const spot = document.getElementById('prefeitaSpotlight');
+        const spotPref = document.getElementById('prefeitoSpotlight');
+        if (spotPref) spotPref.hidden = true;
         if (spot) {
           spot.hidden = false;
           const foto = document.getElementById('prefeitaFoto');

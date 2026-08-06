@@ -562,6 +562,7 @@ function brandHtmlForCity(html, slug, opts = {}) {
     ['Carta ao prefeito', 'Carta à prefeita'],
     ['>Gabinete do Prefeito<', '>Gabinete da Prefeita<'],
     ['id="prefeitaSpotlight" hidden', 'id="prefeitaSpotlight"'],
+    ['id="prefeitoSpotlight"', 'id="prefeitoSpotlight" hidden'],
     // Fotos profissionais do fluxo (home + /fluxo.html)
     ['src="/assets/fluxo-abertura.jpg"', 'src="/assets/fluxo-bomlugar-abertura.jpg"'],
     ['src="/assets/fluxo-01-cidadao.jpg"', 'src="/assets/fluxo-bomlugar-cidadao.jpg"'],
