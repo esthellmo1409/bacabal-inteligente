@@ -723,6 +723,19 @@ html[data-cidade="bomlugar"] .btn-hero-ghost:hover {
   line-height: 1.5;
 }
 
+.landing-ia-note {
+  max-width: 36rem;
+  margin: 0 0 2.5rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(33, 99, 232, 0.16);
+  background: linear-gradient(180deg, rgba(33, 99, 232, 0.05), transparent);
+}
+
+.landing-ia-note h2 {
+  font-size: 1.35rem;
+}
+
 .landing-pillars {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

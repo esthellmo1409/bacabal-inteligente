@@ -546,3 +546,134 @@ function statusOptions(selected) {
     `<option value="${v}" ${selected === v ? 'selected' : ''}>${l}</option>`
   ).join('');
 }
+
+/** Estado do assistente de obra (secretaria/campo) — demo como se a IA já estivesse integrada. */
+const _iaObraState = Object.create(null);
+
+function iaObraEsc(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/"/g, '&quot;');
+}
+
+function iaObraPlanoHtml(plano) {
+  if (!plano) return '';
+  const tools = (plano.ferramentas || [])
+    .map((f) => `<li>${iaObraEsc(f)}</li>`)
+    .join('');
+  return `
+    <div class="ia-obra-plano">
+      <div class="ia-obra-plano-head">
+        <strong>Plano sugerido pela IA</strong>
+        <span class="muted">${plano.confianca || '—'}% de confiança</span>
+      </div>
+      <dl class="ia-obra-grid">
+        <div><dt>Tipo</dt><dd>${iaObraEsc(plano.tipo)}</dd></div>
+        <div><dt>Material</dt><dd>${iaObraEsc(plano.material)}</dd></div>
+        <div><dt>Quantidade</dt><dd>${iaObraEsc(plano.quantidade)}</dd></div>
+        <div><dt>Tempo médio</dt><dd>${iaObraEsc(plano.tempoMedio)}</dd></div>
+        <div><dt>Equipe</dt><dd>${iaObraEsc(plano.equipe)}</dd></div>
+      </dl>
+      <p class="ia-obra-label">Ferramentas</p>
+      <ul class="ia-obra-tools">${tools}</ul>
+      ${plano.observacao ? `<p class="muted ia-obra-note">${iaObraEsc(plano.observacao)}</p>` : ''}
+      <p class="muted" style="font-size:0.72rem;margin:0.5rem 0 0">Sugestão — confirme no local antes de executar.</p>
+    </div>`;
+}
+
+/**
+ * Bloco de cortesia + análise (só secretaria/campo).
+ * @param {{ id: string, foto?: string, fotoAntes?: string, descricao?: string, titulo?: string }} c
+ */
+function iaObraAssistHtml(c) {
+  const id = c && c.id;
+  if (!id) return '';
+  const foto = c.fotoAntes || c.foto;
+  if (!foto && !(c.descricao || c.titulo)) return '';
+
+  const st = _iaObraState[id];
+  if (st === 'dismissed') return '';
+
+  if (st && st.plano) {
+    return `<div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}">${iaObraPlanoHtml(st.plano)}</div>`;
+  }
+
+  return `
+    <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}">
+      <div class="ia-obra-ask">
+        <strong>Posso te ajudar com essa obra?</strong>
+        <p class="muted">Analiso a foto e sugiro material, quantidade, tempo e ferramentas.</p>
+        <div class="actions">
+          <button type="button" class="btn btn-sm btn-primary" data-ia-sim="${iaObraEsc(id)}">Sim, analisar</button>
+          <button type="button" class="btn btn-sm" data-ia-nao="${iaObraEsc(id)}">Agora não</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function iaObraAnalisar(id, foto, texto) {
+  const box = document.querySelector(`[data-ia-obra="${id}"]`);
+  if (box) {
+    box.innerHTML = '<p class="muted" style="margin:0">Analisando foto…</p>';
+  }
+  try {
+    const r = await api('/api/ia/foto', {
+      method: 'POST',
+      body: JSON.stringify({ foto: foto || null, texto: texto || '' }),
+    });
+    const plano = r.planoObra || null;
+    if (!plano) throw new Error('Sem plano de obra na resposta');
+    _iaObraState[id] = { plano };
+    if (box) box.innerHTML = iaObraPlanoHtml(plano);
+    toast('Plano de obra sugerido');
+    return plano;
+  } catch (e) {
+    if (box) {
+      box.innerHTML = `
+        <div class="ia-obra-ask">
+          <strong>Não consegui analisar agora</strong>
+          <p class="muted">${iaObraEsc(e.message || 'Erro')}</p>
+          <div class="actions">
+            <button type="button" class="btn btn-sm btn-primary" data-ia-sim="${iaObraEsc(id)}">Tentar de novo</button>
+            <button type="button" class="btn btn-sm" data-ia-nao="${iaObraEsc(id)}">Fechar</button>
+          </div>
+        </div>`;
+    }
+    toast(e.message || 'Falha na análise');
+    return null;
+  }
+}
+
+function iaObraDismiss(id) {
+  _iaObraState[id] = 'dismissed';
+  const box = document.querySelector(`[data-ia-obra="${id}"]`);
+  if (box) box.remove();
+}
+
+/** Liga botões Sim / Agora não (chame após renderizar lista ou OS). */
+function bindIaObraAssist(root, getChamado) {
+  const el = root || document;
+  el.querySelectorAll('[data-ia-sim]').forEach((btn) => {
+    if (btn._iaBound) return;
+    btn._iaBound = true;
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.getAttribute('data-ia-sim');
+      const c = typeof getChamado === 'function' ? await getChamado(id) : null;
+      const foto = c ? (c.fotoAntes || c.foto) : null;
+      const texto = c ? [c.titulo, c.descricao].filter(Boolean).join(' — ') : '';
+      await iaObraAnalisar(id, foto, texto);
+    });
+  });
+  el.querySelectorAll('[data-ia-nao]').forEach((btn) => {
+    if (btn._iaBound) return;
+    btn._iaBound = true;
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      iaObraDismiss(btn.getAttribute('data-ia-nao'));
+    });
+  });
+}

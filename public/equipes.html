@@ -26,6 +26,7 @@
         <p class="page-kicker" style="margin-bottom:0.25rem">Campo · operação</p>
         <h1 class="display" style="font-size:1.55rem;margin:0">Ordens de serviço</h1>
         <p class="muted" style="margin:0.3rem 0 0">Aceitar · navegar · foto do depois · enviar à secretaria</p>
+        <p class="ia-ops-note">A plataforma apoia as equipes com inteligência artificial para planejar melhor cada obra.</p>
       </div>
       <div id="alertaCampo" class="alerta-gabinete" style="display:none">
         <div class="alerta-gabinete-pulse"></div>
@@ -384,6 +385,7 @@
         <p class="muted">${c.descricao || ''}</p>
         <p class="meta" style="margin:0.35rem 0 0.75rem">Toque na foto para ampliar. Ao enviar o <strong>depois</strong>, a Secretaria de Obras avalia e só ela finaliza.</p>
         ${antesDepoisHtml(c)}
+        ${iaObraAssistHtml(c)}
         <div class="actions" style="margin:0.85rem 0">
           <button class="btn btn-sm btn-primary" id="aceitar">Aceitar serviço</button>
           <button class="btn btn-sm" id="antes">Tirar foto ANTES</button>
@@ -410,6 +412,10 @@
         }
       `;
       document.getElementById('osBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      bindIaObraAssist(document.getElementById('osBox'), async (id) => {
+        if (selected && selected.id === id) return selected;
+        return api('/api/chamados/' + id);
+      });
       const aceitarBtn = document.getElementById('aceitar');
       if (aceitarBtn) aceitarBtn.onclick = async () => {
         await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'aceitar', equipeId: user.equipeId }) });

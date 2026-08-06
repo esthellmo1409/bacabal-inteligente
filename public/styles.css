@@ -1340,6 +1340,87 @@ input:focus, select:focus, textarea:focus {
   border: 1px solid var(--line);
 }
 
+.ia-ops-note {
+  margin: 0.55rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--muted, #5a6570);
+  max-width: 36rem;
+}
+
+.ia-obra-box {
+  margin: 0.75rem 0 0.35rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgba(33, 99, 232, 0.28);
+  background: linear-gradient(180deg, rgba(33, 99, 232, 0.07), rgba(255, 255, 255, 0.5));
+}
+
+.ia-obra-ask strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.ia-obra-ask p {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+}
+
+.ia-obra-plano-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.65rem;
+}
+
+.ia-obra-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem 0.85rem;
+  margin: 0;
+}
+
+.ia-obra-grid dt {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted, #5a6570);
+  margin: 0 0 0.15rem;
+}
+
+.ia-obra-grid dd {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.ia-obra-label {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.ia-obra-tools {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.ia-obra-note {
+  margin: 0.55rem 0 0;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .ia-obra-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 980px) {
   .map-ops { grid-template-columns: 1fr; min-height: 0; }
   .map-ops-side { max-height: 380px; }
