@@ -577,7 +577,7 @@ function iaStopTyping(id) {
 }
 
 /** Digita texto em um elemento (efeito máquina de escrever). */
-function iaTypeInto(el, text, { speed = 16, id } = {}) {
+function iaTypeInto(el, text, { speed = 38, id } = {}) {
   return new Promise((resolve) => {
     if (!el) return resolve();
     iaStopTyping(id);
@@ -765,8 +765,8 @@ async function iaRunAskTyping(box, id) {
   const sub = box.querySelector('.ia-type-sub');
   const actions = box.querySelector('.ia-obra-actions');
   if (actions) actions.hidden = true;
-  await iaTypeInto(title, title?.getAttribute('data-full') || iaSaudacaoCurta(), { speed: 18, id: id + '-t' });
-  await iaTypeInto(sub, sub?.getAttribute('data-full') || '', { speed: 12, id: id + '-s' });
+  await iaTypeInto(title, title?.getAttribute('data-full') || iaSaudacaoCurta(), { speed: 42, id: id + '-t' });
+  await iaTypeInto(sub, sub?.getAttribute('data-full') || '', { speed: 34, id: id + '-s' });
   if (actions) {
     actions.hidden = false;
     actions.classList.add('ia-fade-in');
