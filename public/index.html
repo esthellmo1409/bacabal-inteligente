@@ -5,12 +5,177 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bacabal Conecta — Prefeitura Municipal de Bacabal</title>
   <meta name="description" content="Plataforma da Prefeitura de Bacabal para ocorrências urbanas, secretarias e painel do gabinete." />
+  <script>
+    /* Marca imediata — evita “piscar” Bacabal no refresh de outra cidade */
+    (function () {
+      var BOOT = {
+        bacabal: {
+          produto: 'Bacabal Conecta',
+          tagline: 'A cidade conectada de verdade',
+          cidade: 'Bacabal',
+          uf: 'MA',
+          logo: '/assets/logo-prefeitura.png',
+          portal: 'https://www.bacabal.ma.gov.br/',
+          contatoBar: '(99) 3621-0533 · Centro · Bacabal/MA',
+          endereco: 'Travessa 15 de Novembro, 229, Centro · CEP 65700-000',
+          portalLabel: 'bacabal.ma.gov.br',
+          tema: {
+            homeAccent: '#ff8000',
+            homeAccentDeep: '#e67300',
+            homeGreen: '#398a21',
+            homeGreenDeep: '#2f7319',
+            primaria: '#2163e8',
+            secundaria: '#1a4fba'
+          },
+          media: null
+        },
+        bomlugar: {
+          produto: 'Bom Lugar Conecta',
+          tagline: 'Construindo o presente e planejando o futuro',
+          cidade: 'Bom Lugar',
+          uf: 'MA',
+          logo: '/assets/logo-bomlugar.jpg',
+          portal: 'https://www.bomlugar.ma.gov.br/',
+          contatoBar: '(98) 9.9196-7607 · Centro · Bom Lugar/MA',
+          endereco: 'Rua Manoel Severo, S/N - Centro · CEP 65.704-000',
+          portalLabel: 'bomlugar.ma.gov.br',
+          tema: {
+            homeAccent: '#03327A',
+            homeAccentDeep: '#022456',
+            homeGreen: '#B71C1C',
+            homeGreenDeep: '#8E1515',
+            primaria: '#03327A',
+            secundaria: '#B71C1C'
+          },
+          media: {
+            hero: '/assets/card-bomlugar-hero.jpg',
+            cidadao: '/assets/card-bomlugar-cidadao.jpg',
+            secretaria: '/assets/card-bomlugar-secretaria.jpg',
+            gabinete: '/assets/card-bomlugar-gabinete.jpg'
+          }
+        }
+      };
+      var params = new URLSearchParams(location.search);
+      var slug = params.get('cidade') || localStorage.getItem('ch_cidade') || 'bacabal';
+      if (params.get('cidade')) localStorage.setItem('ch_cidade', slug);
+      if (!BOOT[slug]) slug = 'bacabal';
+      var cfg = BOOT[slug];
+      var root = document.documentElement;
+      root.dataset.cidade = slug;
+      var t = cfg.tema || {};
+      if (t.homeAccent) root.style.setProperty('--home-accent', t.homeAccent);
+      if (t.homeAccentDeep) root.style.setProperty('--home-accent-deep', t.homeAccentDeep);
+      if (t.homeGreen) root.style.setProperty('--home-green', t.homeGreen);
+      if (t.homeGreenDeep) root.style.setProperty('--home-green-deep', t.homeGreenDeep);
+      if (t.primaria) {
+        root.style.setProperty('--brand', t.primaria);
+        root.style.setProperty('--royal-mid', t.primaria);
+      }
+      if (t.secundaria) {
+        root.style.setProperty('--brand-dim', t.secundaria);
+        root.style.setProperty('--royal', t.secundaria);
+      }
+      document.title = cfg.produto + ' — Prefeitura Municipal de ' + cfg.cidade;
+      if (slug !== 'bacabal') root.classList.add('brand-pending');
+      window.__CITY_BOOT = { slug: slug, cfg: cfg };
+    })();
+  </script>
+  <style>
+    /* Esconde home de outras cidades até pintar a marca (sem flash de Bacabal) */
+    html.brand-pending body.landing { visibility: hidden; }
+    html.brand-ready body.landing { visibility: visible; }
+  </style>
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/home.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <script>
+    /* Atualiza favicon depois do link existir */
+    (function () {
+      var boot = window.__CITY_BOOT;
+      if (!boot) return;
+      var fav = document.querySelector('link[rel="icon"]');
+      if (fav && boot.cfg && boot.cfg.logo) fav.href = boot.cfg.logo;
+    })();
+  </script>
 </head>
 <body class="landing">
+  <script>
+    /* Pinta textos/logo assim que o DOM mínimo existir — ainda no parse do body */
+    (function paintBoot() {
+      var boot = window.__CITY_BOOT;
+      if (!boot || boot.slug === 'bacabal') {
+        document.documentElement.classList.remove('brand-pending');
+        document.documentElement.classList.add('brand-ready');
+        return;
+      }
+      function apply() {
+        var cfg = boot.cfg;
+        var slug = boot.slug;
+        function setText(sel, text) {
+          var el = document.querySelector(sel);
+          if (el && text != null) el.textContent = text;
+        }
+        function setHtml(sel, html) {
+          var el = document.querySelector(sel);
+          if (el && html != null) el.innerHTML = html;
+        }
+        function setSrc(sel, src, alt) {
+          var el = document.querySelector(sel);
+          if (el && src) { el.src = src; if (alt) el.alt = alt; }
+        }
+        setSrc('.landing-brand img', cfg.logo, 'Brasão de ' + cfg.cidade);
+        setText('.landing-brand strong', cfg.produto);
+        setText('.landing-brand span', cfg.tagline);
+        var brand = document.getElementById('landingBrand');
+        if (brand) brand.setAttribute('href', '/?cidade=' + encodeURIComponent(slug));
+
+        document.querySelectorAll('.pmb-topbar a').forEach(function (a) {
+          a.href = cfg.portal;
+        });
+        setText('.pmb-topbar-inner > div:last-child', cfg.contatoBar);
+
+        setText('.carousel-slide[data-index="0"] .kicker', 'Prefeitura Municipal de ' + cfg.cidade + ' · ' + (cfg.uf || 'MA'));
+        setText('.carousel-slide[data-index="0"] h1', cfg.produto);
+        setText('.carousel-slide[data-index="0"] .lead',
+          cfg.tagline + ' — do chamado na rua ao painel do gabinete, com mapa, protocolo e acompanhamento em tempo real.');
+
+        if (cfg.media) {
+          setSrc('.carousel-slide[data-index="0"] .carousel-visual img', cfg.media.hero, cfg.produto);
+          setSrc('.carousel-slide[data-index="1"] .carousel-visual img', cfg.media.cidadao, 'Cidadão');
+          setSrc('.carousel-slide[data-index="2"] .carousel-visual img', cfg.media.gabinete, 'Gabinete');
+          setSrc('.landing-pillar:nth-child(1) .pillar-media img', cfg.media.cidadao, 'Cidadão');
+          setSrc('.landing-pillar:nth-child(2) .pillar-media img', cfg.media.secretaria, 'Secretarias');
+          setSrc('.landing-pillar:nth-child(3) .pillar-media img', cfg.media.gabinete, 'Gabinete');
+        }
+
+        var mapP = Array.prototype.find.call(document.querySelectorAll('.landing-section-head p'), function (p) {
+          return /ocorrências|Bacabal|mapa/i.test(p.textContent || '');
+        });
+        if (mapP) mapP.textContent = 'Ocorrências registradas em ' + cfg.cidade + '. Filtre por status ou bairro.';
+
+        var accent = (cfg.tema && cfg.tema.homeAccent) || '#03327A';
+        setHtml('.landing-footer-inner > div:first-child',
+          '<strong style="color:' + accent + '">' + cfg.produto + '</strong> · ' + cfg.endereco);
+        setHtml('.landing-footer-inner > div:last-child',
+          '<a href="' + cfg.portal + '" target="_blank" rel="noopener">' + cfg.portalLabel + '</a> · ' + (cfg.contatoBar || '').split('·')[0].trim());
+
+        document.querySelectorAll('a[href*="cidade="]').forEach(function (a) {
+          try {
+            var u = new URL(a.getAttribute('href'), location.origin);
+            u.searchParams.set('cidade', slug);
+            a.setAttribute('href', u.pathname + u.search + u.hash);
+          } catch (e) { /* ok */ }
+        });
+
+        document.documentElement.classList.remove('brand-pending');
+        document.documentElement.classList.add('brand-ready');
+        window.__CITY_BOOT_PAINTED = true;
+      }
+      if (document.body && document.querySelector('.landing-brand')) apply();
+      else document.addEventListener('DOMContentLoaded', apply);
+    })();
+  </script>
   <div class="pmb-topbar">
     <div class="pmb-topbar-inner">
       <div>
@@ -324,9 +489,10 @@
     (async () => {
       const cfg = await loadCityBrand();
       const slug = getCidade();
+      const alreadyPainted = !!window.__CITY_BOOT_PAINTED;
 
-      // Aplica marca da cidade (Bacabal fica igual; Bom Lugar muda cores/logo/textos)
-      if (cfg) {
+      // Se o boot já pintou Bom Lugar, não reaplica (evita segundo flash)
+      if (cfg && !alreadyPainted) {
         const produto = cfg.produto || 'Cidade Conecta';
         const tagline = cfg.tagline || `${cfg.cidade || ''} · ${cfg.uf || 'MA'}`;
         const logo = cfg.logo || '/assets/logo-prefeitura.png';
@@ -352,8 +518,7 @@
           lead0.textContent = `${tagline} — do chamado na rua ao painel do gabinete, com mapa, protocolo e acompanhamento em tempo real.`;
         }
 
-        const mapHead = document.querySelector('.landing-section-head:nth-of-type(2) p:last-child')
-          || [...document.querySelectorAll('.landing-section-head p')].find(p => /ocorrências|Bacabal|mapa/i.test(p.textContent));
+        const mapHead = [...document.querySelectorAll('.landing-section-head p')].find(p => /ocorrências|Bacabal|mapa/i.test(p.textContent));
         if (mapHead && /Bacabal|ocorrências/i.test(mapHead.textContent)) {
           mapHead.textContent = `Ocorrências registradas em ${cfg.cidade}. Filtre por status ou bairro.`;
         }
@@ -368,7 +533,6 @@
           if (topRight) {
             topRight.textContent = `${cfg.contato || '(98) 9.9196-7607'} · Centro · Bom Lugar/MA`;
           }
-          // Banners/cards próprios — não reutiliza prints de Bacabal
           const media = [
             ['.carousel-slide[data-index="0"] .carousel-visual img', '/assets/card-bomlugar-hero.jpg', 'Bom Lugar Conecta'],
             ['.carousel-slide[data-index="1"] .carousel-visual img', '/assets/card-bomlugar-cidadao.jpg', 'Cidadão em Bom Lugar'],
@@ -392,6 +556,9 @@
           rewriteCityLinks();
         }
       }
+
+      document.documentElement.classList.remove('brand-pending');
+      document.documentElement.classList.add('brand-ready');
 
       document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
 
