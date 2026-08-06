@@ -60,6 +60,15 @@
   gap: 0.35rem;
 }
 
+html[data-cidade="bomlugar"] .pmb-social {
+  display: inline-flex !important;
+}
+
+html[data-cidade="bomlugar"] .pmb-social a {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 .pmb-social a {
   margin: 0;
   width: 28px;

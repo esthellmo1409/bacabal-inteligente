@@ -52,6 +52,12 @@
             cidadao: '/assets/card-bomlugar-cidadao.jpg?v=4',
             secretaria: '/assets/card-bomlugar-secretaria.jpg?v=4',
             gabinete: '/assets/card-bomlugar-gabinete.jpg?v=4'
+          },
+          redes: {
+            facebook: 'https://www.facebook.com/prefeiturabomlugarofc',
+            instagram: 'https://www.instagram.com/prefeiturabomlugar_ofc',
+            x: 'https://x.com/prefbomlugarofc',
+            email: 'https://webmail-seguro.com.br/bomlugar.ma.gov.br/'
           }
         }
       };
@@ -140,14 +146,22 @@
         setText('#pmbTopContact', cfg.contatoBar);
 
         if (slug === 'bomlugar') {
+          var redesBoot = cfg.redes || {
+            facebook: 'https://www.facebook.com/prefeiturabomlugarofc',
+            instagram: 'https://www.instagram.com/prefeiturabomlugar_ofc',
+            x: 'https://x.com/prefbomlugarofc',
+            email: 'https://webmail-seguro.com.br/bomlugar.ma.gov.br/'
+          };
           var socialBoot = document.getElementById('pmbSocial');
           if (socialBoot) {
             socialBoot.hidden = false;
+            socialBoot.removeAttribute('hidden');
+            // Ordem do portal oficial: E-mail, Facebook, X, Instagram
             socialBoot.innerHTML =
-              '<a href="https://www.facebook.com/prefeiturabomlugarofc" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>' +
-              '<a href="https://x.com/prefbomlugarofc" target="_blank" rel="noopener" title="X" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 3H21l-6.6 7.5L22 21h-5.6l-4.4-5.7L7 21H4.2l7-8L2.5 3H8l4 5.2L18.2 3zm-1 16.2h1.6L7 4.7H5.3l11.9 14.5z"/></svg></a>' +
-              '<a href="https://www.instagram.com/prefeiturabomlugar_ofc" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm10 2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 3.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2zm0 2A1.8 1.8 0 1 0 13.8 12 1.8 1.8 0 0 0 12 10.2zM17.4 7.1a.9.9 0 1 1-.9.9.9.9 0 0 1 .9-.9z"/></svg></a>' +
-              '<a href="mailto:municipiobomlugar@gmail.com" title="E-mail" aria-label="E-mail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 6.5L20 8H4l8 4.5zm0 2L4 10.2V17h16v-6.8L12 14.5z"/></svg></a>';
+              '<a href="' + redesBoot.email + '" target="_blank" rel="noopener" title="E-mail" aria-label="E-mail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 6.5L20 8H4l8 4.5zm0 2L4 10.2V17h16v-6.8L12 14.5z"/></svg></a>' +
+              '<a href="' + redesBoot.facebook + '" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>' +
+              '<a href="' + redesBoot.x + '" target="_blank" rel="noopener" title="X" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 3H21l-6.6 7.5L22 21h-5.6l-4.4-5.7L7 21H4.2l7-8L2.5 3H8l4 5.2L18.2 3zm-1 16.2h1.6L7 4.7H5.3l11.9 14.5z"/></svg></a>' +
+              '<a href="' + redesBoot.instagram + '" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm10 2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 3.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2zm0 2A1.8 1.8 0 1 0 13.8 12 1.8 1.8 0 0 0 12 10.2zM17.4 7.1a.9.9 0 1 1-.9.9.9.9 0 0 1 .9-.9z"/></svg></a>';
           }
           var nomeBoot = document.getElementById('prefeitaNome');
           if (nomeBoot) nomeBoot.style.color = '#fff';
@@ -184,7 +198,7 @@
             '<a href="https://www.facebook.com/prefeiturabomlugarofc" target="_blank" rel="noopener">Facebook</a>' +
             '<a href="https://www.instagram.com/prefeiturabomlugar_ofc" target="_blank" rel="noopener">Instagram</a>' +
             '<a href="https://x.com/prefbomlugarofc" target="_blank" rel="noopener">X</a>' +
-            '<a href="mailto:municipiobomlugar@gmail.com">E-mail</a>' +
+            '<a href="https://webmail-seguro.com.br/bomlugar.ma.gov.br/" target="_blank" rel="noopener">E-mail</a>' +
             '<span>' + (cfg.contatoBar || '').split('·')[0].trim() + '</span>';
         }
 
@@ -214,7 +228,9 @@
       </div>
       <div class="pmb-topbar-right">
         <span id="pmbTopContact">(99) 3621-0533 · Centro · Bacabal/MA</span>
-        <div class="pmb-social" id="pmbSocial" hidden aria-label="Redes sociais"></div>
+        <div class="pmb-social" id="pmbSocial" hidden aria-label="Redes sociais">
+          <!-- Preenchido no Bom Lugar com links oficiais (mesmo destino do portal) -->
+        </div>
       </div>
     </div>
   </div>
@@ -580,12 +596,12 @@
       // Bom Lugar: redes, logo oficial, spotlight e rodapé (sempre — mesmo após paintBoot)
       if (cfg && slug === 'bomlugar') {
         const portal = cfg.portalOficial || 'https://www.bomlugar.ma.gov.br/';
-        const redes = cfg.redes || {
+        const redes = Object.assign({
           facebook: 'https://www.facebook.com/prefeiturabomlugarofc',
           instagram: 'https://www.instagram.com/prefeiturabomlugar_ofc',
           x: 'https://x.com/prefbomlugarofc',
-          email: 'mailto:municipiobomlugar@gmail.com',
-        };
+          email: 'https://webmail-seguro.com.br/bomlugar.ma.gov.br/',
+        }, cfg.redes || {});
         document.querySelectorAll('#pmbTopLinks a').forEach((a) => {
           a.href = portal;
         });
@@ -596,17 +612,19 @@
         const social = document.getElementById('pmbSocial');
         if (social) {
           social.hidden = false;
+          social.removeAttribute('hidden');
           const ico = {
             facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg>',
             x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 3H21l-6.6 7.5L22 21h-5.6l-4.4-5.7L7 21H4.2l7-8L2.5 3H8l4 5.2L18.2 3zm-1 16.2h1.6L7 4.7H5.3l11.9 14.5z"/></svg>',
             instagram: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm10 2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 3.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2zm0 2A1.8 1.8 0 1 0 13.8 12 1.8 1.8 0 0 0 12 10.2zM17.4 7.1a.9.9 0 1 1-.9.9.9.9 0 0 1 .9-.9z"/></svg>',
             email: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 6.5L20 8H4l8 4.5zm0 2L4 10.2V17h16v-6.8L12 14.5z"/></svg>',
           };
+          // Ordem do portal oficial: E-mail, Facebook, X, Instagram
           social.innerHTML = [
-            redes.facebook ? `<a href="${redes.facebook}" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook">${ico.facebook}</a>` : '',
-            redes.x ? `<a href="${redes.x}" target="_blank" rel="noopener" title="X" aria-label="X">${ico.x}</a>` : '',
-            redes.instagram ? `<a href="${redes.instagram}" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram">${ico.instagram}</a>` : '',
-            redes.email ? `<a href="${redes.email}" title="E-mail" aria-label="E-mail">${ico.email}</a>` : '',
+            `<a href="${redes.email}" target="_blank" rel="noopener" title="E-mail" aria-label="E-mail">${ico.email}</a>`,
+            `<a href="${redes.facebook}" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook">${ico.facebook}</a>`,
+            `<a href="${redes.x}" target="_blank" rel="noopener" title="X" aria-label="X">${ico.x}</a>`,
+            `<a href="${redes.instagram}" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram">${ico.instagram}</a>`,
           ].join('');
         }
         const brandImgBl = document.querySelector('.landing-brand img');
@@ -662,7 +680,7 @@
             redes.facebook ? `<a href="${redes.facebook}" target="_blank" rel="noopener">Facebook</a>` : '',
             redes.instagram ? `<a href="${redes.instagram}" target="_blank" rel="noopener">Instagram</a>` : '',
             redes.x ? `<a href="${redes.x}" target="_blank" rel="noopener">X</a>` : '',
-            (redes.email || cfg.email) ? `<a href="${redes.email || ('mailto:' + cfg.email)}">E-mail</a>` : '',
+            redes.email ? `<a href="${redes.email}" target="_blank" rel="noopener">E-mail</a>` : '',
             `<span>${cfg.contato || '(98) 9.9196-7607'}</span>`,
           ].filter(Boolean).join('');
         }
