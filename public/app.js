@@ -547,7 +547,7 @@ function statusOptions(selected) {
   ).join('');
 }
 
-/** Estado do assistente de obra (secretaria/campo) — demo como se a IA já estivesse integrada. */
+/** Estado do assistente de serviço (secretaria/campo) — demo como se a IA já estivesse integrada. */
 const _iaObraState = Object.create(null);
 
 function iaObraEsc(s) {
@@ -565,7 +565,7 @@ function iaObraPlanoHtml(plano) {
   return `
     <div class="ia-obra-plano">
       <div class="ia-obra-plano-head">
-        <strong>Plano sugerido pela IA</strong>
+        <strong>Plano de serviço sugerido pela IA</strong>
         <span class="muted">${plano.confianca || '—'}% de confiança</span>
       </div>
       <dl class="ia-obra-grid">
@@ -602,7 +602,7 @@ function iaObraAssistHtml(c) {
   return `
     <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}">
       <div class="ia-obra-ask">
-        <strong>Posso te ajudar com essa obra?</strong>
+        <strong>Posso te ajudar com esse serviço?</strong>
         <p class="muted">Analiso a foto e sugiro material, quantidade, tempo e ferramentas.</p>
         <div class="actions">
           <button type="button" class="btn btn-sm btn-primary" data-ia-sim="${iaObraEsc(id)}">Sim, analisar</button>
@@ -623,10 +623,10 @@ async function iaObraAnalisar(id, foto, texto) {
       body: JSON.stringify({ foto: foto || null, texto: texto || '' }),
     });
     const plano = r.planoObra || null;
-    if (!plano) throw new Error('Sem plano de obra na resposta');
+    if (!plano) throw new Error('Sem plano de serviço na resposta');
     _iaObraState[id] = { plano };
     if (box) box.innerHTML = iaObraPlanoHtml(plano);
-    toast('Plano de obra sugerido');
+    toast('Plano de serviço sugerido');
     return plano;
   } catch (e) {
     if (box) {
