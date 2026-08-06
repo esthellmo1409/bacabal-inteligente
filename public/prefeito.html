@@ -82,6 +82,7 @@
         </div>
       </div>
       <div class="ia-gabinete-opcoes" id="iaGabOpcoes" hidden>
+        <button type="button" class="btn btn-sm btn-primary" data-ia-gab="plataforma">Analisar a cidade na plataforma</button>
         <button type="button" class="btn btn-sm" data-ia-gab="cidade">Como está a cidade hoje?</button>
         <button type="button" class="btn btn-sm" data-ia-gab="projetos">Projetos e obras</button>
         <button type="button" class="btn btn-sm" data-ia-gab="reunioes">Reuniões e agenda</button>
@@ -160,7 +161,7 @@
   <div id="visitaRoot"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ia6"></script>
+  <script src="/app.js?v=ia7"></script>
   <script src="/map.js"></script>
   <script>
     initCidade();
@@ -216,7 +217,7 @@
       if (!titleEl || !subEl || !ops) return;
 
       const title = `Oi! Sou a ${produto}, sua assistente de IA.`;
-      const sub = `Olá, ${cargo}. Como posso te ajudar hoje?`;
+      const sub = `Olá, ${cargo}. Como posso te ajudar hoje? Quer que eu analise como está a cidade de modo geral na sua plataforma?`;
       titleEl.textContent = '';
       subEl.textContent = '';
       ops.hidden = true;
