@@ -15,7 +15,7 @@ SCRIPTS = [
     # 2 Protocolo
     "Em segundos, nasce o protocolo. Obrigado pela colaboração. Agora tem número, rastreio e secretaria responsável — do início ao fim.",
     # 3 Gabinete da Prefeita
-    "No Gabinete da Prefeita, Marlene Silva Miranda enxerga a cidade inteira: o que está aberto, o que atrasa e o que precisa de prioridade. Cobra com registro — não no achismo.",
+    "No Gabinete da Prefeita, Marlene Miranda enxerga a cidade inteira: o que está aberto, o que atrasa e o que precisa de prioridade. Cobra com registro — não no achismo.",
     # 4 IA no Gabinete
     "E tem mais: a assistente de inteligência artificial do Bom Lugar Conecta. No gabinete, ela analisa a plataforma, resume filas, aponta urgências e ajuda a prefeita a decidir com clareza.",
     # 5 Secretaria + IA
