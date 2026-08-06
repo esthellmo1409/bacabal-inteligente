@@ -30,10 +30,7 @@
     "facebook": "https://www.facebook.com/prefeiturabomlugarofc/",
     "instagram": "https://www.instagram.com/prefeiturabomlugar_ofc/",
     "x": "https://x.com/prefbomlugarofc",
-    "email": "https://webmail-seguro.com.br/bomlugar.ma.gov.br/",
-    "instagramApp": "instagram://user?username=prefeiturabomlugar_ofc",
-    "facebookApp": "fb://facewebmodal/f?href=https%3A%2F%2Fwww.facebook.com%2Fprefeiturabomlugarofc",
-    "xApp": "twitter://user?screen_name=prefbomlugarofc"
+    "email": "https://webmail-seguro.com.br/bomlugar.ma.gov.br/"
   },
   "bairros": [
     "Centro",
