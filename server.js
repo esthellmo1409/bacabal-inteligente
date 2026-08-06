@@ -58,7 +58,55 @@ function bootstrapDataDir() {
   return { ok: true, bootstrapped: true, reason: 'needs-runSeed' };
 }
 
+/**
+ * Volume Railway já populado: adiciona municípios novos do seed
+ * sem sobrescrever tenants existentes (ex.: bacabal).
+ */
+function syncMissingTenantsFromSeed() {
+  if (SEED_DIR === DATA_DIR) return { added: [] };
+  const seedFile = path.join(SEED_DIR, 'municipios.json');
+  if (!fs.existsSync(seedFile)) return { added: [] };
+
+  let seedList = [];
+  let liveList = [];
+  try {
+    seedList = JSON.parse(fs.readFileSync(seedFile, 'utf8'));
+    liveList = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'municipios.json'), 'utf8'));
+  } catch {
+    return { added: [] };
+  }
+  if (!Array.isArray(seedList) || !Array.isArray(liveList)) return { added: [] };
+
+  const liveSlugs = new Set(liveList.map((m) => m.slug));
+  const added = [];
+
+  for (const m of seedList) {
+    if (!m?.slug || liveSlugs.has(m.slug)) continue;
+    const from = path.join(SEED_DIR, 'tenants', m.slug);
+    const to = path.join(TENANTS_DIR, m.slug);
+    if (fs.existsSync(from) && !fs.existsSync(to)) {
+      copyDirSync(from, to);
+    } else if (fs.existsSync(from) && fs.existsSync(to)) {
+      // pasta existe mas município sumiu da lista — só registra
+    } else if (!fs.existsSync(from)) {
+      continue;
+    }
+    liveList.push(m);
+    liveSlugs.add(m.slug);
+    added.push(m.slug);
+  }
+
+  if (added.length) {
+    fs.writeFileSync(path.join(DATA_DIR, 'municipios.json'), JSON.stringify(liveList, null, 2));
+  }
+  return { added };
+}
+
 const bootInfo = bootstrapDataDir();
+const syncInfo = syncMissingTenantsFromSeed();
+if (syncInfo.added.length) {
+  console.log(`  Tenants novos do seed → volume: ${syncInfo.added.join(', ')}`);
+}
 
 const {
   runSeed, slugify, DEFAULT_CATEGORIAS, DEFAULT_SECRETARIAS, criarTenant,
