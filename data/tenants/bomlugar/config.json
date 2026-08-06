@@ -1,0 +1,33 @@
+{
+  "slug": "bomlugar",
+  "cidade": "Bom Lugar",
+  "uf": "MA",
+  "produto": "Bom Lugar Conecta",
+  "tagline": "Construindo o presente e planejando o futuro",
+  "versao": "2.0.0",
+  "lat": -4.372,
+  "lng": -45.033,
+  "zoom": 13,
+  "tema": {
+    "primaria": "#B76500",
+    "secundaria": "#03327A",
+    "fundo": "#f7f4ef"
+  },
+  "logo": "/assets/logo-bomlugar.jpg",
+  "portalOficial": "https://www.bomlugar.ma.gov.br/",
+  "contato": "(98) 9.9196-7607",
+  "endereco": "Rua Manoel Severo, S/N - Centro · CEP 65.704-000",
+  "prefeita": "Marlene Silva Miranda",
+  "bairros": [
+    "Centro",
+    "Bairro Novo",
+    "Zona Rural",
+    "Povoado Matinha",
+    "Povoado Salgadinho",
+    "Povoado Poção Comprido",
+    "Povoado Alto Bonito",
+    "Povoado Livramento",
+    "Povoado Vertente",
+    "Povoado Santa Luzia"
+  ]
+}

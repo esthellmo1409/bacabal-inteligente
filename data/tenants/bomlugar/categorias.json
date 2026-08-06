@@ -1,0 +1,92 @@
+[
+  {
+    "id": "buraco",
+    "label": "Buraco / Tapa-buraco",
+    "secretaria": "obras",
+    "icon": "🕳️"
+  },
+  {
+    "id": "lampada",
+    "label": "Lâmpada apagada",
+    "secretaria": "iluminacao",
+    "icon": "💡"
+  },
+  {
+    "id": "lixo",
+    "label": "Lixo / Entulho",
+    "secretaria": "limpeza",
+    "icon": "🗑️"
+  },
+  {
+    "id": "poda",
+    "label": "Poda de árvore",
+    "secretaria": "meio_ambiente",
+    "icon": "🌳"
+  },
+  {
+    "id": "calcada",
+    "label": "Calçada danificada",
+    "secretaria": "obras",
+    "icon": "🧱"
+  },
+  {
+    "id": "sinalizacao",
+    "label": "Sinalização",
+    "secretaria": "transito",
+    "icon": "🚦"
+  },
+  {
+    "id": "esgoto",
+    "label": "Esgoto / Alagamento",
+    "secretaria": "defesa_civil",
+    "icon": "💧"
+  },
+  {
+    "id": "outros",
+    "label": "Outros",
+    "secretaria": "ouvidoria",
+    "icon": "📋"
+  },
+  {
+    "id": "pavimentacao",
+    "label": "Pavimentação",
+    "secretaria": "obras",
+    "icon": "🛣️"
+  },
+  {
+    "id": "meio_fio",
+    "label": "Meio-fio",
+    "secretaria": "obras",
+    "icon": "🧱"
+  },
+  {
+    "id": "galerias",
+    "label": "Galerias / drenagem",
+    "secretaria": "obras",
+    "icon": "🕳️"
+  },
+  {
+    "id": "poste_apagado",
+    "label": "Poste apagado",
+    "secretaria": "iluminacao",
+    "icon": "💡"
+  },
+  {
+    "id": "curto_circuito",
+    "label": "Curto circuito",
+    "secretaria": "iluminacao",
+    "icon": "⚡"
+  },
+  {
+    "id": "arvore_caida",
+    "label": "Árvore caída",
+    "secretaria": "meio_ambiente",
+    "icon": "🌳"
+  },
+  {
+    "id": "limpeza_verde",
+    "label": "Limpeza de área verde",
+    "secretaria": "meio_ambiente",
+    "icon": "🌿"
+  }
+]

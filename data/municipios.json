@@ -52,5 +52,33 @@
     ],
     "ativo": true,
     "criadoEm": "2026-08-04T01:48:24.909Z"
+  },
+  {
+    "slug": "bomlugar",
+    "nome": "Bom Lugar",
+    "uf": "MA",
+    "produto": "Bom Lugar Conecta",
+    "lat": -4.372,
+    "lng": -45.033,
+    "tema": {
+      "primaria": "#B76500",
+      "secundaria": "#03327A",
+      "fundo": "#f7f4ef"
+    },
+    "logo": "/assets/logo-bomlugar.jpg",
+    "bairros": [
+      "Centro",
+      "Bairro Novo",
+      "Zona Rural",
+      "Povoado Matinha",
+      "Povoado Salgadinho",
+      "Povoado Poção Comprido",
+      "Povoado Alto Bonito",
+      "Povoado Livramento",
+      "Povoado Vertente",
+      "Povoado Santa Luzia"
+    ],
+    "ativo": true,
+    "criadoEm": "2026-08-06T03:22:00.000Z"
   }
 ]

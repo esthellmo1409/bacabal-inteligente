@@ -209,7 +209,18 @@
   <script src="/app.js"></script>
   <script src="/map.js"></script>
   <script>
-    setCidade('bacabal');
+    // Multi-cidade: ?cidade=bomlugar (padrão continua Bacabal)
+    (function () {
+      const slug = new URLSearchParams(location.search).get('cidade') || 'bacabal';
+      setCidade(slug);
+      document.querySelectorAll('a[href*="cidade="]').forEach((a) => {
+        try {
+          const u = new URL(a.getAttribute('href'), location.origin);
+          u.searchParams.set('cidade', slug);
+          a.setAttribute('href', u.pathname + u.search + u.hash);
+        } catch (_) { /* ok */ }
+      });
+    })();
 
     (function () {
       function pulseCta(el, pulseClass) {
@@ -318,6 +329,72 @@
 
     (async () => {
       const cfg = await loadCityBrand();
+      const slug = getCidade();
+
+      // Aplica marca da cidade (Bacabal fica igual; Bom Lugar muda cores/logo/textos)
+      if (cfg) {
+        const produto = cfg.produto || 'Cidade Conecta';
+        const tagline = cfg.tagline || `${cfg.cidade || ''} · ${cfg.uf || 'MA'}`;
+        const logo = cfg.logo || '/assets/logo-prefeitura.png';
+        document.title = `${produto} — Prefeitura Municipal de ${cfg.cidade || ''}`;
+        const brandImg = document.querySelector('.landing-brand img');
+        const brandStrong = document.querySelector('.landing-brand strong');
+        const brandSpan = document.querySelector('.landing-brand span');
+        if (brandImg) {
+          brandImg.src = logo;
+          brandImg.alt = `Brasão de ${cfg.cidade || ''}`;
+        }
+        if (brandStrong) brandStrong.textContent = produto;
+        if (brandSpan) brandSpan.textContent = tagline;
+        const fav = document.querySelector('link[rel="icon"]');
+        if (fav) fav.href = logo;
+
+        const kicker0 = document.querySelector('.carousel-slide[data-index="0"] .kicker');
+        const h1_0 = document.querySelector('.carousel-slide[data-index="0"] h1');
+        const lead0 = document.querySelector('.carousel-slide[data-index="0"] .lead');
+        if (kicker0) kicker0.textContent = `Prefeitura Municipal de ${cfg.cidade} · ${cfg.uf || 'MA'}`;
+        if (h1_0) h1_0.textContent = produto;
+        if (lead0) {
+          lead0.textContent = `${tagline} — do chamado na rua ao painel do gabinete, com mapa, protocolo e acompanhamento em tempo real.`;
+        }
+
+        const mapHead = document.querySelector('.landing-section-head:nth-of-type(2) p:last-child')
+          || [...document.querySelectorAll('.landing-section-head p')].find(p => /ocorrências|Bacabal|mapa/i.test(p.textContent));
+        if (mapHead && /Bacabal|ocorrências/i.test(mapHead.textContent)) {
+          mapHead.textContent = `Ocorrências registradas em ${cfg.cidade}. Filtre por status ou bairro.`;
+        }
+
+        if (slug === 'bomlugar') {
+          const portal = cfg.portalOficial || 'https://www.bomlugar.ma.gov.br/';
+          document.querySelectorAll('.pmb-topbar a, .landing-footer a').forEach((a) => {
+            a.href = portal;
+            if (/bacabal\.ma\.gov\.br/i.test(a.textContent)) a.textContent = 'bomlugar.ma.gov.br';
+          });
+          const topRight = document.querySelector('.pmb-topbar-inner > div:last-child');
+          if (topRight) {
+            topRight.textContent = `${cfg.contato || '(98) 9.9196-7607'} · Centro · Bom Lugar/MA`;
+          }
+          const heroImg = document.querySelector('.carousel-slide[data-index="0"] .carousel-visual img');
+          if (heroImg) {
+            heroImg.src = '/assets/hero-bomlugar.jpg';
+            heroImg.alt = 'Portal oficial — Prefeitura de Bom Lugar';
+          }
+          const slide2 = document.querySelector('.carousel-slide[data-index="2"] .carousel-visual img');
+          if (slide2) {
+            slide2.src = '/assets/bandeira-bomlugar.jpg';
+            slide2.alt = 'Bandeira de Bom Lugar';
+          }
+          const footLeft = document.querySelector('.landing-footer-inner > div:first-child');
+          if (footLeft) {
+            footLeft.innerHTML = `<strong style="color:#B76500">${produto}</strong> · ${cfg.endereco || 'Rua Manoel Severo, S/N - Centro · CEP 65.704-000'}`;
+          }
+          const footRight = document.querySelector('.landing-footer-inner > div:last-child');
+          if (footRight) {
+            footRight.innerHTML = `<a href="${portal}" target="_blank" rel="noopener">bomlugar.ma.gov.br</a> · ${cfg.contato || '(98) 9.9196-7607'}`;
+          }
+        }
+      }
+
       document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
 
       const m = await api('/api/metricas');
