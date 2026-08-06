@@ -48,7 +48,7 @@
             secundaria: '#B71C1C'
           },
           media: {
-            hero: '/assets/card-bomlugar-hero.jpg',
+            hero: '/assets/slide-bomlugar-hero.jpg',
             cidadao: '/assets/card-bomlugar-cidadao.jpg',
             secretaria: '/assets/card-bomlugar-secretaria.jpg',
             gabinete: '/assets/card-bomlugar-gabinete.jpg'
@@ -76,7 +76,10 @@
         root.style.setProperty('--royal', t.secundaria);
       }
       document.title = cfg.produto + ' — Prefeitura Municipal de ' + cfg.cidade;
-      if (slug !== 'bacabal') root.classList.add('brand-pending');
+      if (slug !== 'bacabal') {
+        // Se o servidor já mandou data-cidade + brand-ready, não esconde de novo
+        if (!root.classList.contains('brand-ready')) root.classList.add('brand-pending');
+      }
       window.__CITY_BOOT = { slug: slug, cfg: cfg };
     })();
   </script>
@@ -534,7 +537,7 @@
             topRight.textContent = `${cfg.contato || '(98) 9.9196-7607'} · Centro · Bom Lugar/MA`;
           }
           const media = [
-            ['.carousel-slide[data-index="0"] .carousel-visual img', '/assets/card-bomlugar-hero.jpg', 'Bom Lugar Conecta'],
+            ['.carousel-slide[data-index="0"] .carousel-visual img', '/assets/slide-bomlugar-hero.jpg', 'Bom Lugar Conecta'],
             ['.carousel-slide[data-index="1"] .carousel-visual img', '/assets/card-bomlugar-cidadao.jpg', 'Cidadão em Bom Lugar'],
             ['.carousel-slide[data-index="2"] .carousel-visual img', '/assets/card-bomlugar-gabinete.jpg', 'Gabinete Bom Lugar'],
             ['.landing-pillar:nth-child(1) .pillar-media img', '/assets/card-bomlugar-cidadao.jpg', 'Cidadão'],

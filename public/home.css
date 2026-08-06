@@ -242,6 +242,13 @@
   z-index: 1;
 }
 
+/* Bom Lugar: sem estrelinhas — fundo limpo em degradê */
+html[data-cidade="bomlugar"] .hero-carousel::before {
+  background-image: none;
+  background: linear-gradient(135deg, rgba(2, 36, 86, 0.22) 0%, rgba(183, 28, 28, 0.12) 100%);
+  opacity: 1;
+}
+
 .carousel-track {
   position: relative;
   z-index: 2;

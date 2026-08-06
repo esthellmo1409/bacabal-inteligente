@@ -423,6 +423,70 @@ function serveStatic(req, res, urlPath) {
   fs.createReadStream(filePath).pipe(res);
 }
 
+/** Home já com marca da cidade — elimina flash de Bacabal no refresh. */
+function brandHomeHtml(html, slug) {
+  if (slug !== 'bomlugar') {
+    // Garante data-cidade no HTML de Bacabal também
+    return html.replace('<html lang="pt-BR">', '<html lang="pt-BR" data-cidade="bacabal">');
+  }
+
+  const replacements = [
+    ['<html lang="pt-BR">', '<html lang="pt-BR" data-cidade="bomlugar" class="brand-ready">'],
+    ['Bacabal Conecta — Prefeitura Municipal de Bacabal', 'Bom Lugar Conecta — Prefeitura Municipal de Bom Lugar'],
+    ['Plataforma da Prefeitura de Bacabal para ocorrências urbanas, secretarias e painel do gabinete.', 'Plataforma da Prefeitura de Bom Lugar para ocorrências urbanas, secretarias e painel do gabinete.'],
+    ['href="/assets/logo-prefeitura.png"', 'href="/assets/logo-bomlugar.jpg"'],
+    ['src="/assets/logo-prefeitura.png"', 'src="/assets/logo-bomlugar.jpg"'],
+    ['alt="Brasão de Bacabal"', 'alt="Brasão de Bom Lugar"'],
+    ['>Bacabal Conecta</strong>', '>Bom Lugar Conecta</strong>'],
+    ['A cidade conectada de verdade', 'Construindo o presente e planejando o futuro'],
+    ['https://www.bacabal.ma.gov.br/', 'https://www.bomlugar.ma.gov.br/'],
+    ['(99) 3621-0533 · Centro · Bacabal/MA', '(98) 9.9196-7607 · Centro · Bom Lugar/MA'],
+    ['cidade=bacabal', 'cidade=bomlugar'],
+    ['Destaques Bacabal Conecta', 'Destaques Bom Lugar Conecta'],
+    ['Prefeitura Municipal de Bacabal · MA', 'Prefeitura Municipal de Bom Lugar · MA'],
+    ['>Bacabal Conecta</h1>', '>Bom Lugar Conecta</h1>'],
+    ['A cidade conectada de verdade — do chamado na rua ao painel do gabinete,', 'Construindo o presente e planejando o futuro — do chamado na rua ao painel do gabinete,'],
+    ['src="/assets/slide-nova.png"', 'src="/assets/slide-bomlugar-hero.jpg"'],
+    ['alt="Nova Bacabal — identidade do portal oficial"', 'alt="Bom Lugar — praça e prefeitura"'],
+    ['src="/assets/fluxo-01-cidadao.jpg"', 'src="/assets/card-bomlugar-cidadao.jpg"'],
+    ['src="/assets/fluxo-02-secretaria.jpg"', 'src="/assets/card-bomlugar-secretaria.jpg"'],
+    ['src="/assets/fluxo-04-gabinete.jpg"', 'src="/assets/card-bomlugar-gabinete.jpg"'],
+    ['src="/assets/slide-gabinete.png"', 'src="/assets/card-bomlugar-gabinete.jpg"'],
+    ['Ocorrências registradas em Bacabal.', 'Ocorrências registradas em Bom Lugar.'],
+    ['color:#2f7319">Bacabal Conecta</strong>', 'color:#03327A">Bom Lugar Conecta</strong>'],
+    ['Travessa 15 de Novembro, 229, Centro · CEP 65700-000', 'Rua Manoel Severo, S/N - Centro · CEP 65.704-000'],
+    ['bacabal.ma.gov.br', 'bomlugar.ma.gov.br'],
+    ['(99) 3621-0533', '(98) 9.9196-7607'],
+  ];
+
+  let out = html;
+  for (const [from, to] of replacements) {
+    out = out.split(from).join(to);
+  }
+
+  // Cores no <html> sem esperar JS
+  const styleBoot = `<style id="bl-server-brand">:root{--home-accent:#03327A;--home-accent-deep:#022456;--home-green:#B71C1C;--home-green-deep:#8E1515;--brand:#03327A;--brand-dim:#B71C1C;--royal-mid:#03327A;--royal:#B71C1C}</style>`;
+  out = out.replace('</head>', `${styleBoot}</head>`);
+
+  // Não esconder página (já veio pintada)
+  out = out.replace('root.classList.add(\'brand-pending\');', '/* server-branded */');
+  out = out.replace('root.classList.add("brand-pending");', '/* server-branded */');
+
+  return out;
+}
+
+function serveHome(req, res, url) {
+  const filePath = path.join(PUBLIC_DIR, 'index.html');
+  let html = fs.readFileSync(filePath, 'utf8');
+  const slug = (url.searchParams.get('cidade') || '').trim() || 'bacabal';
+  html = brandHomeHtml(html, slug);
+  res.writeHead(200, {
+    'Content-Type': 'text/html; charset=utf-8',
+    'Cache-Control': 'no-store, max-age=0',
+  });
+  res.end(html);
+}
+
 function metrics(slug) {
   const chamados = readTenant(slug, 'chamados.json', []);
   const obras = readTenant(slug, 'obras.json', []);
@@ -1149,6 +1213,8 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     if (url.pathname.startsWith('/api/')) {
       await handleAPI(req, res, url.pathname, url);
+    } else if (url.pathname === '/' || url.pathname === '/index.html') {
+      serveHome(req, res, url);
     } else {
       serveStatic(req, res, url.pathname);
     }
