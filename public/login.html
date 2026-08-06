@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -43,13 +43,13 @@
 
     <div class="footer">
       <span>Protótipo · sem integração real de SSO</span>
-      <a href="/cidadao.html?cidade=bacabal">Sou cidadão — abrir chamado</a>
+      <a href="/cidadao.html">Sou cidadão — abrir chamado</a>
     </div>
   </div>
 
   <script src="/app.js"></script>
   <script>
-    setCidade('bacabal');
+    initCidade();
     const senhas = {
       prefeito: 'prefeito123',
       obras: 'obras123',
@@ -64,6 +64,7 @@
     (async () => {
       const cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Login', cfg);
+      rewriteCityLinks();
     })();
 
     document.getElementById('perfil').onchange = () => {
@@ -76,12 +77,13 @@
       const btn = document.getElementById('entrar');
       await withBusy(btn, 'Entrando…', async () => {
         try {
+          const cidade = getCidade();
           const r = await api('/api/login', {
             method: 'POST',
             body: JSON.stringify({
               usuario: document.getElementById('usuario').value.trim(),
               senha: document.getElementById('senha').value,
-              cidade: 'bacabal',
+              cidade,
             }),
           });
           localStorage.setItem('bi_token', r.token);
@@ -89,11 +91,11 @@
           else localStorage.setItem('bi_user', JSON.stringify(r.user));
           toast('Bem-vindo, ' + r.user.nome);
           if (r.user.papel === 'prefeito' || r.user.papel === 'admin') {
-            location.href = '/prefeito.html?cidade=bacabal';
+            location.href = cityLink('/prefeito.html');
           } else if (r.user.papel === 'campo') {
-            location.href = '/equipes.html?cidade=bacabal';
+            location.href = cityLink('/equipes.html');
           } else {
-            location.href = '/secretaria.html?cidade=bacabal';
+            location.href = cityLink('/secretaria.html');
           }
         } catch (e) {
           toast(e.message);

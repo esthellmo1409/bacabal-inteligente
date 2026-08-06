@@ -2,9 +2,12 @@ const CIDADE_PADRAO = 'bacabal';
 
 function getCidade() {
   const params = new URLSearchParams(location.search);
-  const slug = params.get('cidade') || localStorage.getItem('ch_cidade') || CIDADE_PADRAO;
-  if (!localStorage.getItem('ch_cidade')) localStorage.setItem('ch_cidade', slug);
-  return slug;
+  const fromUrl = params.get('cidade');
+  if (fromUrl) {
+    localStorage.setItem('ch_cidade', fromUrl);
+    return fromUrl;
+  }
+  return localStorage.getItem('ch_cidade') || CIDADE_PADRAO;
 }
 
 function setCidade(slug) {
@@ -12,17 +15,65 @@ function setCidade(slug) {
 }
 
 function withCidade(path) {
-  const slug = getCidade();
-  if (!slug) return path;
-  const sep = path.includes('?') ? '&' : '?';
-  return path + sep + 'cidade=' + encodeURIComponent(slug);
+  return cityLink(path);
 }
 
 function cityLink(href) {
   const slug = getCidade();
-  if (!slug) return href;
-  if (href.includes('?')) return href + '&cidade=' + encodeURIComponent(slug);
-  return href + '?cidade=' + encodeURIComponent(slug);
+  if (!slug || !href) return href;
+  try {
+    const u = new URL(href, location.origin);
+    // Só paths do app (não mailto/http externo)
+    if (u.protocol === 'mailto:' || u.protocol === 'tel:') return href;
+    if (u.origin !== location.origin && href.startsWith('http')) return href;
+    u.searchParams.set('cidade', slug);
+    if (href.startsWith('http')) return u.toString();
+    return u.pathname + u.search + u.hash;
+  } catch {
+    const sep = href.includes('?') ? '&' : '?';
+    if (/[?&]cidade=/.test(href)) {
+      return href.replace(/([?&]cidade=)[^&]*/, `$1${encodeURIComponent(slug)}`);
+    }
+    return href + sep + 'cidade=' + encodeURIComponent(slug);
+  }
+}
+
+/** Mantém a cidade atual em todos os links internos da página. */
+function rewriteCityLinks(root) {
+  const scope = root || document;
+  const slug = getCidade();
+  scope.querySelectorAll('a[href]').forEach((a) => {
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    if (href.startsWith('http') && !href.includes(location.host)) return;
+    try {
+      const u = new URL(href, location.origin);
+      const path = u.pathname || '/';
+      const isApp =
+        path === '/' ||
+        path.endsWith('.html') ||
+        path.startsWith('/api/');
+      if (!isApp) return;
+      u.searchParams.set('cidade', slug);
+      a.setAttribute('href', u.pathname + u.search + u.hash);
+    } catch (_) { /* ok */ }
+  });
+}
+
+/** Lê ?cidade=, grava no storage e reescreve links. Chamar em toda página do app. */
+function initCidade() {
+  const slug = getCidade();
+  setCidade(slug);
+  rewriteCityLinks();
+  return slug;
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initCidade());
+  } else {
+    initCidade();
+  }
 }
 
 async function api(path, opts = {}) {
@@ -321,7 +372,7 @@ function topbar(active, cfg) {
 
   // Público: só o essencial. Áreas internas só após login.
   let links = [
-    ['/', 'Início'],
+    [cityLink('/'), 'Início'],
     [cityLink('/fluxo.html'), 'Como funciona'],
     [cityLink('/cidadao.html'), 'Cidadão'],
     [cityLink('/mapa.html'), 'Mapa'],
@@ -355,8 +406,8 @@ function topbar(active, cfg) {
 
   return `
   <div class="topbar">
-    <a class="brand" href="/">
-      <div class="brand-mark"><img src="/assets/logo-prefeitura.png" alt="Brasão de Bacabal" /></div>
+    <a class="brand" href="${cityLink('/')}">
+      <div class="brand-mark"><img src="${cfg?.logo || '/assets/logo-prefeitura.png'}" alt="Brasão de ${cfg?.cidade || 'Bacabal'}" /></div>
       <div>
         <strong>${nome}</strong>
         <span>${sub}</span>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -135,7 +135,7 @@
 
   <script src="/app.js"></script>
   <script>
-    setCidade('bacabal');
+    initCidade();
     (async () => {
       const cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Módulos', cfg);

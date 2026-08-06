@@ -267,7 +267,7 @@
         </div>
       </div>
       <div class="brand-right">
-        <a class="brand-home" href="/?cidade=bacabal">Início</a>
+        <a class="brand-home" href="/">Início</a>
         <div class="progress" id="progress">1 / 7</div>
       </div>
     </header>
@@ -398,7 +398,22 @@
     </div>
   </div>
 
+  <script src="/app.js"></script>
   <script>
+    initCidade();
+    (async () => {
+      const cfg = await loadCityBrand();
+      if (!cfg) return;
+      const img = document.querySelector('.brand-left img');
+      const strong = document.querySelector('.brand-left strong');
+      if (img && cfg.logo) {
+        img.src = cfg.logo;
+        img.alt = cfg.cidade || '';
+      }
+      if (strong) strong.textContent = cfg.produto || strong.textContent;
+      rewriteCityLinks();
+    })();
+
     const slides = [...document.querySelectorAll('.slide')];
     const dotsEl = document.getElementById('dots');
     const prev = document.getElementById('prev');

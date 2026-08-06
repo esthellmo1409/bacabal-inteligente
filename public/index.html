@@ -25,7 +25,7 @@
 
   <header class="landing-header">
     <div class="landing-header-inner">
-      <a class="landing-brand" href="/">
+      <a class="landing-brand" href="/" id="landingBrand">
         <img src="/assets/logo-prefeitura.png" alt="Brasão de Bacabal" />
         <div>
           <strong>Bacabal Conecta</strong>
@@ -211,15 +211,9 @@
   <script>
     // Multi-cidade: ?cidade=bomlugar (padrão continua Bacabal)
     (function () {
-      const slug = new URLSearchParams(location.search).get('cidade') || 'bacabal';
-      setCidade(slug);
-      document.querySelectorAll('a[href*="cidade="]').forEach((a) => {
-        try {
-          const u = new URL(a.getAttribute('href'), location.origin);
-          u.searchParams.set('cidade', slug);
-          a.setAttribute('href', u.pathname + u.search + u.hash);
-        } catch (_) { /* ok */ }
-      });
+      initCidade();
+      const brand = document.getElementById('landingBrand');
+      if (brand) brand.setAttribute('href', cityLink('/'));
     })();
 
     (function () {
@@ -374,16 +368,19 @@
           if (topRight) {
             topRight.textContent = `${cfg.contato || '(98) 9.9196-7607'} · Centro · Bom Lugar/MA`;
           }
-          const heroImg = document.querySelector('.carousel-slide[data-index="0"] .carousel-visual img');
-          if (heroImg) {
-            heroImg.src = '/assets/hero-bomlugar.jpg';
-            heroImg.alt = 'Portal oficial — Prefeitura de Bom Lugar';
-          }
-          const slide2 = document.querySelector('.carousel-slide[data-index="2"] .carousel-visual img');
-          if (slide2) {
-            slide2.src = '/assets/bandeira-bomlugar.jpg';
-            slide2.alt = 'Bandeira de Bom Lugar';
-          }
+          // Banners/cards próprios — não reutiliza prints de Bacabal
+          const media = [
+            ['.carousel-slide[data-index="0"] .carousel-visual img', '/assets/card-bomlugar-hero.jpg', 'Bom Lugar Conecta'],
+            ['.carousel-slide[data-index="1"] .carousel-visual img', '/assets/card-bomlugar-cidadao.jpg', 'Cidadão em Bom Lugar'],
+            ['.carousel-slide[data-index="2"] .carousel-visual img', '/assets/card-bomlugar-gabinete.jpg', 'Gabinete Bom Lugar'],
+            ['.landing-pillar:nth-child(1) .pillar-media img', '/assets/card-bomlugar-cidadao.jpg', 'Cidadão'],
+            ['.landing-pillar:nth-child(2) .pillar-media img', '/assets/card-bomlugar-secretaria.jpg', 'Secretarias'],
+            ['.landing-pillar:nth-child(3) .pillar-media img', '/assets/card-bomlugar-gabinete.jpg', 'Gabinete'],
+          ];
+          media.forEach(([sel, src, alt]) => {
+            const el = document.querySelector(sel);
+            if (el) { el.src = src; el.alt = alt; }
+          });
           const footLeft = document.querySelector('.landing-footer-inner > div:first-child');
           if (footLeft) {
             footLeft.innerHTML = `<strong style="color:#03327A">${produto}</strong> · ${cfg.endereco || 'Rua Manoel Severo, S/N - Centro · CEP 65.704-000'}`;
@@ -392,6 +389,7 @@
           if (footRight) {
             footRight.innerHTML = `<a href="${portal}" target="_blank" rel="noopener">bomlugar.ma.gov.br</a> · ${cfg.contato || '(98) 9.9196-7607'}`;
           }
+          rewriteCityLinks();
         }
       }
 
