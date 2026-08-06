@@ -1388,6 +1388,84 @@ input:focus, select:focus, textarea:focus {
   margin-top: 0.15rem;
 }
 
+.ia-obra-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.ia-type-title,
+.ia-type-sub,
+.ia-type-intro,
+.ia-stream-v {
+  min-height: 1.1em;
+}
+
+.ia-typing::after {
+  content: '▋';
+  display: inline-block;
+  margin-left: 1px;
+  animation: iaBlink 0.7s step-end infinite;
+  color: var(--brand, #2163e8);
+  font-weight: 400;
+}
+
+@keyframes iaBlink {
+  50% { opacity: 0; }
+}
+
+.ia-analisando .ia-dots::after {
+  content: '';
+  animation: iaDots 1.2s steps(4, end) infinite;
+}
+
+@keyframes iaDots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+.ia-obra-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.ia-stream-line {
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.ia-stream-k {
+  display: inline-block;
+  min-width: 6.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted, #5a6570);
+}
+
+.ia-stream-v {
+  font-weight: 600;
+}
+
+.ia-stream-obs .ia-stream-v {
+  font-weight: 500;
+  color: var(--muted, #5a6570);
+  font-size: 0.82rem;
+}
+
+.ia-fade-in {
+  animation: iaFadeIn 0.35s ease;
+}
+
+@keyframes iaFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
 .ia-obra-plano-head {
   display: flex;
   justify-content: space-between;

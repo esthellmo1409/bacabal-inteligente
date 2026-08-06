@@ -560,6 +560,7 @@ function iaSaudacaoCurta() {
 
 /** Estado do assistente de serviço (secretaria/campo) — demo como se a IA já estivesse integrada. */
 const _iaObraState = Object.create(null);
+const _iaTypeTimers = Object.create(null);
 
 function iaObraEsc(s) {
   return String(s || '')
@@ -568,36 +569,101 @@ function iaObraEsc(s) {
     .replace(/"/g, '&quot;');
 }
 
-function iaObraPlanoHtml(plano) {
-  if (!plano) return '';
-  const tools = (plano.ferramentas || [])
-    .map((f) => `<li>${iaObraEsc(f)}</li>`)
-    .join('');
+function iaStopTyping(id) {
+  if (_iaTypeTimers[id]) {
+    clearTimeout(_iaTypeTimers[id]);
+    delete _iaTypeTimers[id];
+  }
+}
+
+/** Digita texto em um elemento (efeito máquina de escrever). */
+function iaTypeInto(el, text, { speed = 16, id } = {}) {
+  return new Promise((resolve) => {
+    if (!el) return resolve();
+    iaStopTyping(id);
+    el.textContent = '';
+    el.classList.add('ia-typing');
+    let i = 0;
+    const step = () => {
+      if (i >= text.length) {
+        el.classList.remove('ia-typing');
+        if (id) delete _iaTypeTimers[id];
+        resolve();
+        return;
+      }
+      el.textContent += text.charAt(i++);
+      _iaTypeTimers[id || 'x'] = setTimeout(step, speed);
+    };
+    step();
+  });
+}
+
+function iaObraAskShell(id, { empty } = {}) {
+  const saudacao = iaSaudacaoCurta();
+  const sub =
+    'Posso te ajudar com esse serviço? Analiso a foto e sugiro material, quantidade, tempo e ferramentas.';
   return `
-    <div class="ia-obra-plano">
-      <div class="ia-obra-avatar-row">
-        <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png" alt="" />
-        <div>
-          <strong>${iaObraEsc(iaSaudacaoCurta())}</strong>
-          <p class="muted" style="margin:0.2rem 0 0;font-size:0.8rem">Aqui está o que sugiro para este serviço:</p>
+    <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}" data-ia-phase="ask">
+      <div class="ia-obra-ask">
+        <div class="ia-obra-avatar-row">
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+          <div class="ia-obra-copy">
+            <strong class="ia-type-title" data-full="${iaObraEsc(saudacao)}">${empty ? '' : iaObraEsc(saudacao)}</strong>
+            <p class="muted ia-type-sub" data-full="${iaObraEsc(sub)}">${empty ? '' : iaObraEsc(sub)}</p>
+          </div>
+        </div>
+        <div class="actions ia-obra-actions" ${empty ? 'hidden' : ''}>
+          <button type="button" class="btn btn-sm btn-primary" data-ia-sim="${iaObraEsc(id)}">Sim, analisar</button>
+          <button type="button" class="btn btn-sm" data-ia-nao="${iaObraEsc(id)}">Agora não</button>
         </div>
       </div>
-      <div class="ia-obra-plano-head">
-        <strong>Plano de serviço sugerido</strong>
-        <span class="muted">${plano.confianca || '—'}% de confiança</span>
-      </div>
-      <dl class="ia-obra-grid">
-        <div><dt>Tipo</dt><dd>${iaObraEsc(plano.tipo)}</dd></div>
-        <div><dt>Material</dt><dd>${iaObraEsc(plano.material)}</dd></div>
-        <div><dt>Quantidade</dt><dd>${iaObraEsc(plano.quantidade)}</dd></div>
-        <div><dt>Tempo médio</dt><dd>${iaObraEsc(plano.tempoMedio)}</dd></div>
-        <div><dt>Equipe</dt><dd>${iaObraEsc(plano.equipe)}</dd></div>
-      </dl>
-      <p class="ia-obra-label">Ferramentas</p>
-      <ul class="ia-obra-tools">${tools}</ul>
-      ${plano.observacao ? `<p class="muted ia-obra-note">${iaObraEsc(plano.observacao)}</p>` : ''}
-      <p class="muted" style="font-size:0.72rem;margin:0.5rem 0 0">Sugestão — confirme no local antes de executar.</p>
     </div>`;
+}
+
+function iaObraPlanoShell(id, plano, { empty } = {}) {
+  const conf = plano.confianca || '—';
+  const lines = [
+    { k: 'Tipo', v: plano.tipo },
+    { k: 'Material', v: plano.material },
+    { k: 'Quantidade', v: plano.quantidade },
+    { k: 'Tempo médio', v: plano.tempoMedio },
+    { k: 'Equipe', v: plano.equipe },
+  ];
+  const tools = (plano.ferramentas || []).join(', ');
+  const intro = `${iaSaudacaoCurta()} Aqui está o que sugiro para este serviço:`;
+  const rows = lines.map((l, i) =>
+    `<div class="ia-stream-line" data-i="${i}" data-full="${iaObraEsc(l.k + ': ' + l.v)}"><span class="ia-stream-k">${iaObraEsc(l.k)}</span> <span class="ia-stream-v">${empty ? '' : iaObraEsc(l.v)}</span></div>`
+  ).join('');
+  return `
+    <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}" data-ia-phase="plano">
+      <div class="ia-obra-plano">
+        <div class="ia-obra-avatar-row">
+          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+          <div class="ia-obra-copy">
+            <p class="ia-type-intro" data-full="${iaObraEsc(intro)}">${empty ? '' : iaObraEsc(intro)}</p>
+          </div>
+        </div>
+        <div class="ia-obra-plano-head" ${empty ? 'hidden' : ''}>
+          <strong>Plano de serviço sugerido</strong>
+          <span class="muted">${conf}% de confiança</span>
+        </div>
+        <div class="ia-obra-stream" ${empty ? 'hidden' : ''}>
+          ${rows}
+          <div class="ia-stream-line ia-stream-tools" data-full="${iaObraEsc('Ferramentas: ' + tools)}">
+            <span class="ia-stream-k">Ferramentas</span>
+            <span class="ia-stream-v">${empty ? '' : iaObraEsc(tools)}</span>
+          </div>
+          ${plano.observacao
+            ? `<div class="ia-stream-line ia-stream-obs" data-full="${iaObraEsc(plano.observacao)}"><span class="ia-stream-v">${empty ? '' : iaObraEsc(plano.observacao)}</span></div>`
+            : ''}
+        </div>
+        <p class="muted ia-obra-foot" style="font-size:0.72rem;margin:0.5rem 0 0" ${empty ? 'hidden' : ''}>Sugestão — confirme no local antes de executar.</p>
+      </div>
+    </div>`;
+}
+
+function iaObraPlanoHtml(plano) {
+  return iaObraPlanoShell('x', plano, { empty: false }).replace('data-ia-obra="x"', '');
 }
 
 /**
@@ -614,31 +680,90 @@ function iaObraAssistHtml(c) {
   if (st === 'dismissed') return '';
 
   if (st && st.plano) {
-    return `<div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}">${iaObraPlanoHtml(st.plano)}</div>`;
+    return iaObraPlanoShell(id, st.plano, { empty: !st.planoTyped });
   }
 
-  return `
-    <div class="ia-obra-box" data-ia-obra="${iaObraEsc(id)}">
-      <div class="ia-obra-ask">
-        <div class="ia-obra-avatar-row">
-          <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
-          <div>
-            <strong>Oi! Sou a ${iaObraEsc(iaAssistenteNome())}, sua assistente de IA.</strong>
-            <p class="muted">Posso te ajudar com esse serviço? Analiso a foto e sugiro material, quantidade, tempo e ferramentas.</p>
-          </div>
-        </div>
-        <div class="actions">
-          <button type="button" class="btn btn-sm btn-primary" data-ia-sim="${iaObraEsc(id)}">Sim, analisar</button>
-          <button type="button" class="btn btn-sm" data-ia-nao="${iaObraEsc(id)}">Agora não</button>
-        </div>
-      </div>
-    </div>`;
+  return iaObraAskShell(id, { empty: !(st && st.greeted) });
+}
+
+async function iaRunAskTyping(box, id) {
+  if (!box || box.dataset.typing === '1') return;
+  const st = _iaObraState[id];
+  if (st && st.greeted) return;
+  box.dataset.typing = '1';
+  // Marca cedo para o auto-refresh não reiniciar a digitação do zero
+  _iaObraState[id] = Object.assign(
+    {},
+    typeof st === 'object' && st ? st : {},
+    { greeted: true }
+  );
+  const title = box.querySelector('.ia-type-title');
+  const sub = box.querySelector('.ia-type-sub');
+  const actions = box.querySelector('.ia-obra-actions');
+  if (actions) actions.hidden = true;
+  await iaTypeInto(title, title?.getAttribute('data-full') || iaSaudacaoCurta(), { speed: 18, id: id + '-t' });
+  await iaTypeInto(sub, sub?.getAttribute('data-full') || '', { speed: 12, id: id + '-s' });
+  if (actions) {
+    actions.hidden = false;
+    actions.classList.add('ia-fade-in');
+  }
+  box.dataset.typing = '0';
+}
+
+async function iaRunPlanoTyping(box, id, plano) {
+  if (!box || box.dataset.typing === '1') return;
+  box.dataset.typing = '1';
+  const intro = box.querySelector('.ia-type-intro');
+  const head = box.querySelector('.ia-obra-plano-head');
+  const stream = box.querySelector('.ia-obra-stream');
+  const foot = box.querySelector('.ia-obra-foot');
+  if (head) head.hidden = true;
+  if (stream) stream.hidden = true;
+  if (foot) foot.hidden = true;
+
+  await iaTypeInto(
+    intro,
+    intro?.getAttribute('data-full') || `${iaSaudacaoCurta()} Aqui está o que sugiro para este serviço:`,
+    { speed: 14, id: id + '-i' }
+  );
+
+  if (head) {
+    head.hidden = false;
+    head.classList.add('ia-fade-in');
+  }
+  if (stream) stream.hidden = false;
+
+  const lines = [...box.querySelectorAll('.ia-stream-line')];
+  for (const line of lines) {
+    const full = line.getAttribute('data-full') || '';
+    const v = line.querySelector('.ia-stream-v') || line;
+    const colon = full.indexOf(': ');
+    const value = colon >= 0 ? full.slice(colon + 2) : full;
+    if (line.querySelector('.ia-stream-k') && colon >= 0) {
+      await iaTypeInto(v, value, { speed: 10, id: id + '-l' + lines.indexOf(line) });
+    } else {
+      await iaTypeInto(v, full, { speed: 10, id: id + '-l' + lines.indexOf(line) });
+    }
+  }
+
+  if (foot) {
+    foot.hidden = false;
+    foot.classList.add('ia-fade-in');
+  }
+  _iaObraState[id] = { plano, planoTyped: true, greeted: true };
+  box.dataset.typing = '0';
 }
 
 async function iaObraAnalisar(id, foto, texto) {
   const box = document.querySelector(`[data-ia-obra="${id}"]`);
   if (box) {
-    box.innerHTML = '<p class="muted" style="margin:0">Analisando foto…</p>';
+    box.innerHTML = `
+      <div class="ia-obra-avatar-row">
+        <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=2" alt="" width="56" height="56" />
+        <div class="ia-obra-copy">
+          <p class="muted ia-analisando">Analisando a foto<span class="ia-dots"></span></p>
+        </div>
+      </div>`;
   }
   try {
     const r = await api('/api/ia/foto', {
@@ -647,8 +772,12 @@ async function iaObraAnalisar(id, foto, texto) {
     });
     const plano = r.planoObra || null;
     if (!plano) throw new Error('Sem plano de serviço na resposta');
-    _iaObraState[id] = { plano };
-    if (box) box.innerHTML = iaObraPlanoHtml(plano);
+    _iaObraState[id] = { plano, planoTyped: false, greeted: true };
+    if (box) {
+      box.outerHTML = iaObraPlanoShell(id, plano, { empty: true });
+      const novo = document.querySelector(`[data-ia-obra="${id}"]`);
+      await iaRunPlanoTyping(novo, id, plano);
+    }
     toast('Plano de serviço sugerido');
     return plano;
   } catch (e) {
@@ -662,6 +791,7 @@ async function iaObraAnalisar(id, foto, texto) {
             <button type="button" class="btn btn-sm" data-ia-nao="${iaObraEsc(id)}">Fechar</button>
           </div>
         </div>`;
+      bindIaObraAssist(box.parentElement || document, null);
     }
     toast(e.message || 'Falha na análise');
     return null;
@@ -669,12 +799,16 @@ async function iaObraAnalisar(id, foto, texto) {
 }
 
 function iaObraDismiss(id) {
+  iaStopTyping(id);
+  iaStopTyping(id + '-t');
+  iaStopTyping(id + '-s');
+  iaStopTyping(id + '-i');
   _iaObraState[id] = 'dismissed';
   const box = document.querySelector(`[data-ia-obra="${id}"]`);
   if (box) box.remove();
 }
 
-/** Liga botões Sim / Agora não (chame após renderizar lista ou OS). */
+/** Liga botões e dispara digitação das caixas visíveis. */
 function bindIaObraAssist(root, getChamado) {
   const el = root || document;
   el.querySelectorAll('[data-ia-sim]').forEach((btn) => {
@@ -690,6 +824,9 @@ function bindIaObraAssist(root, getChamado) {
         ? [c.categoria, c.titulo, c.descricao].filter(Boolean).join(' — ')
         : 'buraco em via pública';
       await iaObraAnalisar(id, foto, texto);
+      if (typeof getChamado === 'function') {
+        bindIaObraAssist(el, getChamado);
+      }
     });
   });
   el.querySelectorAll('[data-ia-nao]').forEach((btn) => {
@@ -700,5 +837,33 @@ function bindIaObraAssist(root, getChamado) {
       e.stopPropagation();
       iaObraDismiss(btn.getAttribute('data-ia-nao'));
     });
+  });
+
+  el.querySelectorAll('[data-ia-obra][data-ia-phase="ask"]').forEach((box) => {
+    const id = box.getAttribute('data-ia-obra');
+    const st = _iaObraState[id];
+    if (st && st.greeted) return;
+    if (box.dataset.typing === '1') return;
+    iaRunAskTyping(box, id).then(() => bindIaObraAssist(el, getChamado));
+  });
+
+  el.querySelectorAll('[data-ia-obra][data-ia-phase="plano"]').forEach((box) => {
+    const id = box.getAttribute('data-ia-obra');
+    const st = _iaObraState[id];
+    if (!st || !st.plano || st.planoTyped) {
+      // Preenche valores se já digitado e o HTML veio completo vazio por engano
+      if (st && st.plano && st.planoTyped) {
+        box.querySelectorAll('.ia-stream-line').forEach((line) => {
+          const full = line.getAttribute('data-full') || '';
+          const v = line.querySelector('.ia-stream-v');
+          if (!v) return;
+          const colon = full.indexOf(': ');
+          v.textContent = colon >= 0 ? full.slice(colon + 2) : full;
+        });
+      }
+      return;
+    }
+    if (box.dataset.typing === '1') return;
+    iaRunPlanoTyping(box, id, st.plano);
   });
 }
