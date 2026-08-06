@@ -1,12 +1,12 @@
-/* Landing — identidade visual alinhada a bacabal.ma.gov.br
- * Laranja #FF8000 · Verde #398A21 (portal Nova Bacabal)
+/* Landing — padrão Bacabal (laranja/verde do portal).
+ * Outras cidades sobrescrevem via --home-accent (applyTheme).
  */
 
 .landing {
-  --pmb-orange: #ff8000;
-  --pmb-orange-deep: #e67300;
-  --pmb-green: #398a21;
-  --pmb-green-deep: #2f7319;
+  --pmb-orange: var(--home-accent, #ff8000);
+  --pmb-orange-deep: var(--home-accent-deep, #e67300);
+  --pmb-green: var(--home-green, #398a21);
+  --pmb-green-deep: var(--home-green-deep, #2f7319);
   --pmb-ink: #1a1a1a;
   --pmb-muted: #5c6570;
   --pmb-bg: #f7f8f9;

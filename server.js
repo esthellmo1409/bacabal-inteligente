@@ -61,11 +61,12 @@ function bootstrapDataDir() {
 /**
  * Volume Railway já populado: adiciona municípios novos do seed
  * sem sobrescrever tenants existentes (ex.: bacabal).
+ * Também atualiza config.json de tenants ≠ bacabal (cores/logo).
  */
 function syncMissingTenantsFromSeed() {
-  if (SEED_DIR === DATA_DIR) return { added: [] };
+  if (SEED_DIR === DATA_DIR) return { added: [], updated: [] };
   const seedFile = path.join(SEED_DIR, 'municipios.json');
-  if (!fs.existsSync(seedFile)) return { added: [] };
+  if (!fs.existsSync(seedFile)) return { added: [], updated: [] };
 
   let seedList = [];
   let liveList = [];
@@ -73,39 +74,63 @@ function syncMissingTenantsFromSeed() {
     seedList = JSON.parse(fs.readFileSync(seedFile, 'utf8'));
     liveList = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'municipios.json'), 'utf8'));
   } catch {
-    return { added: [] };
+    return { added: [], updated: [] };
   }
-  if (!Array.isArray(seedList) || !Array.isArray(liveList)) return { added: [] };
+  if (!Array.isArray(seedList) || !Array.isArray(liveList)) return { added: [], updated: [] };
 
   const liveSlugs = new Set(liveList.map((m) => m.slug));
   const added = [];
+  const updated = [];
 
   for (const m of seedList) {
-    if (!m?.slug || liveSlugs.has(m.slug)) continue;
+    if (!m?.slug) continue;
     const from = path.join(SEED_DIR, 'tenants', m.slug);
     const to = path.join(TENANTS_DIR, m.slug);
-    if (fs.existsSync(from) && !fs.existsSync(to)) {
-      copyDirSync(from, to);
-    } else if (fs.existsSync(from) && fs.existsSync(to)) {
-      // pasta existe mas município sumiu da lista — só registra
-    } else if (!fs.existsSync(from)) {
+
+    if (!liveSlugs.has(m.slug)) {
+      if (!fs.existsSync(from)) continue;
+      if (!fs.existsSync(to)) copyDirSync(from, to);
+      liveList.push(m);
+      liveSlugs.add(m.slug);
+      added.push(m.slug);
       continue;
     }
-    liveList.push(m);
-    liveSlugs.add(m.slug);
-    added.push(m.slug);
+
+    // Não mexe em Bacabal. Outras cidades: refresca branding do seed.
+    if (m.slug === 'bacabal') continue;
+    const fromCfg = path.join(from, 'config.json');
+    const toCfg = path.join(to, 'config.json');
+    if (fs.existsSync(fromCfg) && fs.existsSync(to)) {
+      fs.copyFileSync(fromCfg, toCfg);
+      const idx = liveList.findIndex((x) => x.slug === m.slug);
+      if (idx >= 0) {
+        liveList[idx] = {
+          ...liveList[idx],
+          produto: m.produto || liveList[idx].produto,
+          tema: m.tema || liveList[idx].tema,
+          logo: m.logo !== undefined ? m.logo : liveList[idx].logo,
+          bairros: m.bairros || liveList[idx].bairros,
+          lat: m.lat ?? liveList[idx].lat,
+          lng: m.lng ?? liveList[idx].lng,
+        };
+      }
+      updated.push(m.slug);
+    }
   }
 
-  if (added.length) {
+  if (added.length || updated.length) {
     fs.writeFileSync(path.join(DATA_DIR, 'municipios.json'), JSON.stringify(liveList, null, 2));
   }
-  return { added };
+  return { added, updated };
 }
 
 const bootInfo = bootstrapDataDir();
 const syncInfo = syncMissingTenantsFromSeed();
 if (syncInfo.added.length) {
   console.log(`  Tenants novos do seed → volume: ${syncInfo.added.join(', ')}`);
+}
+if (syncInfo.updated.length) {
+  console.log(`  Branding atualizado do seed: ${syncInfo.updated.join(', ')}`);
 }
 
 const {

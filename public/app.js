@@ -238,7 +238,7 @@ function fmtDate(iso) {
   });
 }
 
-function applyTheme(tema) {
+function applyTheme(tema, slug) {
   if (!tema) return;
   const root = document.documentElement;
   if (tema.primaria) {
@@ -249,6 +249,20 @@ function applyTheme(tema) {
     root.style.setProperty('--brand-dim', tema.secundaria);
     root.style.setProperty('--royal', tema.secundaria);
   }
+  // Landing: Bacabal mantém laranja/verde do portal.
+  // Outras cidades (ou tema.homeAccent) usam as cores do brasão/config.
+  const accent = tema.homeAccent || (slug && slug !== 'bacabal' ? tema.primaria : null);
+  if (accent) {
+    root.style.setProperty('--home-accent', accent);
+    root.style.setProperty('--home-accent-deep', tema.homeAccentDeep || tema.secundaria || accent);
+  }
+  if (tema.homeGreen) {
+    root.style.setProperty('--home-green', tema.homeGreen);
+    root.style.setProperty('--home-green-deep', tema.homeGreenDeep || tema.homeGreen);
+  } else if (slug && slug !== 'bacabal' && tema.secundaria) {
+    root.style.setProperty('--home-green', tema.secundaria);
+    root.style.setProperty('--home-green-deep', tema.secundaria);
+  }
 }
 
 async function loadCityBrand() {
@@ -256,7 +270,7 @@ async function loadCityBrand() {
   if (!slug) return null;
   try {
     const cfg = await api('/api/config');
-    applyTheme(cfg.tema);
+    applyTheme(cfg.tema, slug);
     return cfg;
   } catch {
     return null;

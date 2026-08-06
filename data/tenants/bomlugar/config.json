@@ -9,9 +9,13 @@
   "lng": -45.033,
   "zoom": 13,
   "tema": {
-    "primaria": "#B76500",
-    "secundaria": "#03327A",
-    "fundo": "#f7f4ef"
+    "primaria": "#03327A",
+    "secundaria": "#B71C1C",
+    "fundo": "#f4f6fa",
+    "homeAccent": "#03327A",
+    "homeAccentDeep": "#022456",
+    "homeGreen": "#B71C1C",
+    "homeGreenDeep": "#8E1515"
   },
   "logo": "/assets/logo-bomlugar.jpg",
   "portalOficial": "https://www.bomlugar.ma.gov.br/",
