@@ -736,17 +736,6 @@ html[data-cidade="bomlugar"] .btn-hero-ghost:hover {
   font-size: 1.35rem;
 }
 
-.landing-ia-inline {
-  margin-top: 0.65rem !important;
-  padding: 0.7rem 0.85rem;
-  border-radius: 12px;
-  border: 1px solid rgba(33, 99, 232, 0.18);
-  background: linear-gradient(180deg, rgba(33, 99, 232, 0.06), transparent);
-  font-size: 0.95rem !important;
-  color: var(--pmb-ink, #1a2332) !important;
-  font-weight: 600 !important;
-}
-
 .landing-pillars {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
