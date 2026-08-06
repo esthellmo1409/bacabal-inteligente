@@ -161,8 +161,18 @@
         var accent = (cfg.tema && cfg.tema.homeAccent) || '#03327A';
         setHtml('.landing-footer-inner > div:first-child',
           '<strong style="color:' + accent + '">' + cfg.produto + '</strong> · ' + cfg.endereco);
-        setHtml('.landing-footer-inner > div:last-child',
-          '<a href="' + cfg.portal + '" target="_blank" rel="noopener">' + cfg.portalLabel + '</a> · ' + (cfg.contatoBar || '').split('·')[0].trim());
+        var spot = document.getElementById('prefeitaSpotlight');
+        if (spot) spot.hidden = false;
+        var footSocial = document.getElementById('footerSocial');
+        if (footSocial) {
+          footSocial.innerHTML =
+            '<a href="' + cfg.portal + '" target="_blank" rel="noopener">' + cfg.portalLabel + '</a>' +
+            '<a href="https://www.facebook.com/prefeiturabomlugarofc" target="_blank" rel="noopener">Facebook</a>' +
+            '<a href="https://www.instagram.com/prefeiturabomlugar_ofc" target="_blank" rel="noopener">Instagram</a>' +
+            '<a href="https://x.com/prefbomlugarofc" target="_blank" rel="noopener">X</a>' +
+            '<a href="mailto:municipiobomlugar@gmail.com">E-mail</a>' +
+            '<span>' + (cfg.contatoBar || '').split('·')[0].trim() + '</span>';
+        }
 
         document.querySelectorAll('a[href*="cidade="]').forEach(function (a) {
           try {
@@ -361,13 +371,32 @@
     </div>
   </main>
 
+  <!-- Destaque da prefeita — visível só em Bom Lugar -->
+  <section class="prefeita-spotlight" id="prefeitaSpotlight" hidden>
+    <div class="prefeita-spotlight-inner">
+      <div class="prefeita-photo">
+        <img id="prefeitaFoto" src="/assets/foto-prefeita-bomlugar.jpg" alt="Prefeita Marlene Silva Miranda" />
+      </div>
+      <div class="prefeita-copy">
+        <p class="eyebrow">Gabinete da Prefeita</p>
+        <h2 id="prefeitaNome">Marlene Silva Miranda</h2>
+        <p class="prefeita-cargo" id="prefeitaCargo">Prefeita Municipal de Bom Lugar · MA</p>
+        <blockquote id="prefeitaMsg">
+          Bom Lugar tem a cara de quem lidera na frente: a prefeita Marlene Silva Miranda.
+          Presente, determinada e com o olhar firme no futuro da nossa gente —
+          a cidade conectada começa na gestão que se mostra e entrega.
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
   <footer class="landing-footer">
     <div class="landing-footer-inner">
       <div>
         <strong style="color:#2f7319">Bacabal Conecta</strong>
         · Travessa 15 de Novembro, 229, Centro · CEP 65700-000
       </div>
-      <div>
+      <div class="footer-social" id="footerSocial">
         <a href="https://www.bacabal.ma.gov.br/" target="_blank" rel="noopener">bacabal.ma.gov.br</a>
         · (99) 3621-0533
       </div>
@@ -529,9 +558,8 @@
 
         if (slug === 'bomlugar') {
           const portal = cfg.portalOficial || 'https://www.bomlugar.ma.gov.br/';
-          document.querySelectorAll('.pmb-topbar a, .landing-footer a').forEach((a) => {
+          document.querySelectorAll('.pmb-topbar a').forEach((a) => {
             a.href = portal;
-            if (/bacabal\.ma\.gov\.br/i.test(a.textContent)) a.textContent = 'bomlugar.ma.gov.br';
           });
           const topRight = document.querySelector('.pmb-topbar-inner > div:last-child');
           if (topRight) {
@@ -549,13 +577,36 @@
             const el = document.querySelector(sel);
             if (el) { el.src = src; el.alt = alt; }
           });
+
+          // Spotlight da prefeita
+          const spot = document.getElementById('prefeitaSpotlight');
+          if (spot) {
+            spot.hidden = false;
+            const foto = document.getElementById('prefeitaFoto');
+            const nome = document.getElementById('prefeitaNome');
+            const cargo = document.getElementById('prefeitaCargo');
+            const msg = document.getElementById('prefeitaMsg');
+            if (foto && cfg.fotoPrefeita) foto.src = cfg.fotoPrefeita;
+            if (nome) nome.textContent = cfg.prefeita || 'Marlene Silva Miranda';
+            if (cargo) cargo.textContent = (cfg.cargoChefe || 'Prefeita Municipal') + ' de Bom Lugar · MA';
+            if (msg && cfg.mensagemPrefeita) msg.textContent = cfg.mensagemPrefeita;
+          }
+
           const footLeft = document.querySelector('.landing-footer-inner > div:first-child');
           if (footLeft) {
             footLeft.innerHTML = `<strong style="color:#03327A">${produto}</strong> · ${cfg.endereco || 'Rua Manoel Severo, S/N - Centro · CEP 65.704-000'}`;
           }
-          const footRight = document.querySelector('.landing-footer-inner > div:last-child');
-          if (footRight) {
-            footRight.innerHTML = `<a href="${portal}" target="_blank" rel="noopener">bomlugar.ma.gov.br</a> · ${cfg.contato || '(98) 9.9196-7607'}`;
+          const redes = cfg.redes || {};
+          const footSocial = document.getElementById('footerSocial');
+          if (footSocial) {
+            footSocial.innerHTML = [
+              `<a href="${portal}" target="_blank" rel="noopener">bomlugar.ma.gov.br</a>`,
+              redes.facebook ? `<a href="${redes.facebook}" target="_blank" rel="noopener">Facebook</a>` : '',
+              redes.instagram ? `<a href="${redes.instagram}" target="_blank" rel="noopener">Instagram</a>` : '',
+              redes.x ? `<a href="${redes.x}" target="_blank" rel="noopener">X</a>` : '',
+              (redes.email || cfg.email) ? `<a href="${redes.email || ('mailto:' + cfg.email)}">E-mail</a>` : '',
+              `<span>${cfg.contato || '(98) 9.9196-7607'}</span>`,
+            ].filter(Boolean).join('');
           }
           rewriteCityLinks();
         }

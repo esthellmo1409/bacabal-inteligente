@@ -331,18 +331,19 @@ function brandText(text, cfg) {
     .replace(/gestor de Bacabal/g, `gestor de ${cidade}`)
     .replace(/\bBacabal\b/g, cidade);
 
-  // Bom Lugar: prefeita (Marlene Silva Miranda)
+  // Bom Lugar: prefeita (Marlene Silva Miranda) — só textos visíveis
   if ((cfg.slug || getCidade()) === 'bomlugar') {
     out = out
-      .replace(/Gabinete do Prefeito/g, 'Gabinete da Prefeita')
-      .replace(/Entrar como prefeito/g, 'Entrar como prefeita')
+      .replace(/Gabinete do Prefeito/gi, 'Gabinete da Prefeita')
+      .replace(/Entrar como prefeito/gi, 'Entrar como prefeita')
       .replace(/Logado: Prefeito/g, 'Logado: Prefeita')
-      .replace(/Observação do prefeito/g, 'Observação da prefeita')
-      .replace(/TV do prefeito/g, 'TV da prefeita')
-      .replace(/Cobrança do prefeito/g, 'Cobrança da prefeita')
-      .replace(/Carta ao prefeito/g, 'Carta à prefeita')
-      .replace(/Piloto · Prefeitura de Bom Lugar/g, 'Piloto · Prefeitura de Bom Lugar')
-      .replace(/Gabinete do Prefeito/gi, 'Gabinete da Prefeita');
+      .replace(/Observação do prefeito/gi, 'Observação da prefeita')
+      .replace(/TV do prefeito/gi, 'TV da prefeita')
+      .replace(/Cobrança do prefeito/gi, 'Cobrança da prefeita')
+      .replace(/Carta ao prefeito/gi, 'Carta à prefeita')
+      .replace(/painel do gabinete/gi, 'painel do gabinete')
+      .replace(/\bPrefeito(a)?\b/g, (m) => (m.toLowerCase() === 'prefeita' ? m : 'Prefeita'))
+      .replace(/\bprefeito\b/g, 'prefeita');
   }
   return out;
 }

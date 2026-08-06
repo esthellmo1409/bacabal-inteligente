@@ -448,7 +448,13 @@ function brandHtmlForCity(html, slug, opts = {}) {
     ['cidade=bacabal', 'cidade=bomlugar'],
     ['Gabinete do Prefeito', 'Gabinete da Prefeita'],
     ['Entrar como prefeito', 'Entrar como prefeita'],
-    ['Gabinete do Prefeito', 'Gabinete da Prefeita'],
+    ['Entrar como Prefeito', 'Entrar como prefeita'],
+    ['TV do prefeito', 'TV da prefeita'],
+    ['Observação do prefeito', 'Observação da prefeita'],
+    ['Cobrança do prefeito', 'Cobrança da prefeita'],
+    ['Carta ao prefeito', 'Carta à prefeita'],
+    ['>Gabinete do Prefeito<', '>Gabinete da Prefeita<'],
+    ['id="prefeitaSpotlight" hidden', 'id="prefeitaSpotlight"'],
   ];
 
   if (opts.isHome) {
