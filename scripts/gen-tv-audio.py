@@ -1,31 +1,47 @@
-# Regenera locução do clipe TV — ritmo calmo e textos alinhados às cenas
+# Locução do clipe TV — Bacabal Conecta (cenas com IA + saúde)
 import asyncio
 import edge_tts
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[1] / "public" / "assets"
 VOICE = "pt-BR-FranciscaNeural"
-RATE = "-3%"  # mais calmo que o +8% antigo (parecia acelerado)
+RATE = "-2%"
 
 SCRIPTS = [
-    "Imagine Bacabal com cada problema da rua virando protocolo. Este é o Bacabal Conecta — a plataforma da Prefeitura pra cidade, saúde e eventos.",
-    "Olha só: o seu João sai de casa, encontra o problema na rua, aponta a câmera… e registra. Simples assim. Foto, lugar e reclamação oficial, na hora.",
-    "Ele manda pra plataforma e já recebe o número do protocolo. Obrigado pela colaboração. Agora tem rastreio de verdade — sem depender do WhatsApp.",
-    "No Gabinete, o prefeito enxerga o que está aberto, o que está atrasado e o que precisa de prioridade. Cobra a secretaria com registro — não no achismo.",
-    "A Secretaria de Obras recebe, organiza a fila e encaminha pra equipe. Quando o Gabinete cobra, tem alerta e prazo.",
-    "No campo, a equipe chega com a ordem no celular, marca presença e registra a foto do serviço pronto. Sem desculpa sem prova.",
-    "Antes e depois, na mesma tela. O cidadão confere, o Gabinete valida, a secretaria fecha o protocolo com evidência.",
-    "Gabinete decide. Secretaria executa. Campo faz. Bacabal Conecta — a cidade conectada de verdade.",
+    # 0 Abertura
+    "Bacabal. Uma cidade que quer ser vista pelo que entrega. Este é o Bacabal Conecta — a plataforma da Prefeitura pra cidade, saúde e eventos, com o prefeito no comando e a população no protocolo.",
+    # 1 Cidadão
+    "Na rua, o cidadão encontra o problema, aponta a câmera e registra. Foto, local e pedido oficial. Simples. Direto. Sem depender só do WhatsApp.",
+    # 2 Protocolo
+    "Em segundos, nasce o protocolo. Obrigado pela colaboração. Agora tem número, rastreio e secretaria responsável — do início ao fim.",
+    # 3 Gabinete do Prefeito
+    "No Gabinete do Prefeito, Roberto Costa enxerga a cidade inteira: o que está aberto, o que atrasa e o que precisa de prioridade. Cobra com registro — não no achismo.",
+    # 4 IA no Gabinete
+    "E tem mais: a assistente de inteligência artificial do Bacabal Conecta. No gabinete, ela analisa a plataforma, resume filas, aponta urgências e ajuda o prefeito a decidir com clareza.",
+    # 5 Secretaria + IA
+    "Na secretaria, a mesma inteligência apoia a equipe. Olha a foto do problema e sugere material, quantidade, tempo e ferramentas. Planejamento mais rápido. Execução mais segura.",
+    # 6 Campo
+    "No campo, a ordem chega no celular. A equipe aceita, navega, resolve e manda a foto do serviço pronto. Prova na mão. Sem desculpa sem registro.",
+    # 7 Saúde
+    "Na Saúde, o Conecta organiza o que o povo mais sente: fila, plantão, demanda e tempo de resposta. Menos surpresa. Mais controle. Mais dignidade no atendimento.",
+    # 8 Resultado
+    "Antes e depois, na mesma tela. O cidadão confere. A secretaria valida. O gabinete acompanha. Gestão com evidência — do protocolo ao resultado.",
+    # 9 Fechamento impactante
+    "Gabinete decide. Secretaria executa. Campo faz. Saúde cuida. Inteligência artificial orienta. Bacabal Conecta — a cidade conectada de verdade. Sob o olhar do prefeito. Com a cara do povo.",
 ]
 
 
 async def main():
     OUT.mkdir(parents=True, exist_ok=True)
+    paths = []
     for i, text in enumerate(SCRIPTS):
         path = OUT / f"tv-narracao-{i}.mp3"
         print(f"Gerando {path.name}…")
         await edge_tts.Communicate(text, VOICE, rate=RATE).save(str(path))
         print(f"  ok -> {path.stat().st_size} bytes")
+        paths.append(path)
+
+    print(f"\n{len(paths)} faixas prontas em {OUT}")
 
 
 if __name__ == "__main__":

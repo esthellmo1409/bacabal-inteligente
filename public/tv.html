@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clipe TV · Bacabal Conecta</title>
-  <meta name="description" content="Filme institucional em loop — Bacabal Conecta, Prefeitura de Bacabal." />
+  <meta name="description" content="Filme institucional — Bacabal Conecta: cidade, saúde, gabinete do prefeito e inteligência artificial." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -37,7 +37,7 @@
       position: absolute; inset: 0;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 1.1s ease;
+      transition: opacity 1.15s ease;
     }
     .scene.on { opacity: 1; pointer-events: auto; z-index: 2; }
 
@@ -46,26 +46,31 @@
       background-size: cover;
       background-position: center;
       transform: scale(1.08);
-      filter: saturate(1.05) contrast(1.05);
+      filter: saturate(1.08) contrast(1.06);
     }
     .scene.on .bg {
       animation: ken linear forwards;
       animation-duration: 12s;
     }
     @keyframes ken {
-      from { transform: scale(1.12) translate3d(0, 1.5%, 0); }
-      to { transform: scale(1.02) translate3d(0, -1%, 0); }
+      from { transform: scale(1.14) translate3d(0, 1.2%, 0); }
+      to { transform: scale(1.02) translate3d(0, -1.2%, 0); }
     }
 
     .veil {
       position: absolute; inset: 0;
       background:
-        linear-gradient(90deg, rgba(4,10,7,.88) 0%, rgba(4,10,7,.55) 42%, rgba(4,10,7,.18) 72%, rgba(4,10,7,.35) 100%),
-        linear-gradient(0deg, rgba(4,10,7,.75) 0%, transparent 38%);
+        linear-gradient(90deg, rgba(4,10,7,.90) 0%, rgba(4,10,7,.58) 40%, rgba(4,10,7,.22) 70%, rgba(4,10,7,.40) 100%),
+        linear-gradient(0deg, rgba(4,10,7,.78) 0%, transparent 40%);
     }
     .scene.center .veil {
       background:
-        linear-gradient(180deg, rgba(4,10,7,.55) 0%, rgba(4,10,7,.35) 40%, rgba(4,10,7,.82) 100%);
+        linear-gradient(180deg, rgba(4,10,7,.50) 0%, rgba(47,138,40,.22) 42%, rgba(4,10,7,.88) 100%);
+    }
+    .scene.finale .veil {
+      background:
+        radial-gradient(ellipse at 50% 40%, rgba(255,122,0,.32) 0%, transparent 55%),
+        linear-gradient(180deg, rgba(4,10,7,.45) 0%, rgba(4,10,7,.88) 100%);
     }
 
     .copy {
@@ -73,7 +78,7 @@
       left: clamp(1.5rem, 6vw, 5rem);
       right: clamp(1.5rem, 6vw, 5rem);
       bottom: clamp(3.5rem, 10vh, 7rem);
-      max-width: min(820px, 92vw);
+      max-width: min(860px, 92vw);
       z-index: 3;
     }
     .scene.center .copy {
@@ -83,7 +88,7 @@
       margin: 0 auto;
       left: 50%;
       right: auto;
-      max-width: min(900px, 92vw);
+      max-width: min(940px, 92vw);
       translate: -50% 0;
     }
 
@@ -106,22 +111,23 @@
       font-weight: 800;
       letter-spacing: -.045em;
       line-height: .98;
-      font-size: clamp(2.1rem, 5.8vw, 4.6rem);
-      text-shadow: 0 18px 50px rgba(0,0,0,.45);
+      font-size: clamp(2.05rem, 5.6vw, 4.4rem);
+      text-shadow: 0 18px 50px rgba(0,0,0,.5);
       opacity: 0; transform: translateY(26px);
     }
     .accent { color: var(--orange); }
+    .scene.finale .accent { color: var(--gold); }
 
     .line {
       margin-top: 1rem;
-      font-size: clamp(1rem, 2vw, 1.45rem);
+      font-size: clamp(1rem, 2vw, 1.4rem);
       font-weight: 500;
-      line-height: 1.4;
-      max-width: 34ch;
+      line-height: 1.42;
+      max-width: 38ch;
       color: rgba(247,244,238,.92);
       opacity: 0; transform: translateY(20px);
     }
-    .scene.center .line { margin-left: auto; margin-right: auto; }
+    .scene.center .line { margin-left: auto; margin-right: auto; max-width: 42ch; }
 
     .scene.on .kicker { animation: rise .7s .2s both; }
     .scene.on h1, .scene.on .title { animation: rise .85s .35s both; }
@@ -139,7 +145,7 @@
     .scene.on .brand-open { animation: rise .8s .15s both; }
     .brand-open img {
       width: clamp(56px, 8vw, 96px); height: auto;
-      filter: drop-shadow(0 10px 24px rgba(0,0,0,.4));
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,.45));
     }
     .brand-open strong {
       display: block;
@@ -149,7 +155,7 @@
     }
     .brand-open span {
       font-size: clamp(.75rem, 1.2vw, .95rem);
-      color: rgba(247,244,238,.7);
+      color: rgba(247,244,238,.72);
       letter-spacing: .06em;
       text-transform: uppercase;
       font-weight: 700;
@@ -168,6 +174,11 @@
       opacity: 0; transform: translateY(16px);
     }
     .scene.on .chip { animation: rise .75s .75s both; }
+    .chip.ia {
+      background: rgba(240,197,109,.18);
+      border-color: rgba(240,197,109,.5);
+      color: #f5e6c0;
+    }
 
     .topbar {
       position: absolute; top: clamp(1rem, 3vw, 1.75rem);
@@ -235,7 +246,7 @@
   <div class="film" id="film">
     <div class="topbar">
       <span>Prefeitura Municipal de Bacabal</span>
-      <span class="pulse-rec"><i></i> Institucional</span>
+      <span class="pulse-rec"><i></i> Institucional · IA</span>
     </div>
 
     <!-- 0 Abertura -->
@@ -251,107 +262,131 @@
           </div>
         </div>
         <h1>A cidade<br />no <span class="accent">protocolo.</span></h1>
-        <p class="line">Do problema na rua até a mesa do prefeito — com prova, prazo e gente responsável.</p>
+        <p class="line">Do problema na rua até a mesa do prefeito — com prova, prazo e responsabilidade.</p>
       </div>
     </section>
 
-    <!-- 1 Cidadão encontra o problema -->
+    <!-- 1 Cidadão -->
     <section class="scene" data-i="1">
       <div class="bg" style="background-image:url('/assets/tv-cidadao-foto.jpg')"></div>
       <div class="veil"></div>
       <div class="copy">
         <div class="kicker">Na rua · cidadão</div>
-        <h1>Seu João viu o problema.<br /><span class="accent">E registrou.</span></h1>
-        <p class="line">Não é mais “manda no grupo”. É foto, local e pedido oficial — na hora.</p>
+        <h1>Viu o problema.<br /><span class="accent">Registrou.</span></h1>
+        <p class="line">Foto, local e pedido oficial na hora. Sem depender só do grupo de WhatsApp.</p>
         <span class="chip">1 · Abrir ocorrência</span>
       </div>
     </section>
 
-    <!-- 2 Envio no app -->
+    <!-- 2 Protocolo -->
     <section class="scene" data-i="2">
       <div class="bg" style="background-image:url('/assets/tv-app-envio.jpg')"></div>
       <div class="veil"></div>
       <div class="copy">
         <div class="kicker">No celular · protocolo</div>
-        <h1>Obrigado.<br /><span class="accent">Protocolo na mão.</span></h1>
-        <p class="line">A colaboração do cidadão vira número oficial. A secretaria certa recebe — com rastreio até a conclusão.</p>
+        <h1>Obrigado.<br /><span class="accent">Número na mão.</span></h1>
+        <p class="line">A colaboração vira protocolo oficial. Secretaria certa, rastreio até a conclusão.</p>
         <span class="chip">2 · Protocolo gerado</span>
       </div>
     </section>
 
-    <!-- 3 Gabinete -->
+    <!-- 3 Gabinete do Prefeito -->
     <section class="scene" data-i="3">
-      <div class="bg" style="background-image:url('/assets/tv-gabinete.jpg')"></div>
+      <div class="bg" style="background-image:url('/assets/fluxo-04-gabinete.jpg')"></div>
       <div class="veil"></div>
       <div class="copy">
-        <div class="kicker">Gabinete do prefeito</div>
-        <h1>O prefeito<br /><span class="accent">enxerga tudo.</span></h1>
-        <p class="line">Cidade, Saúde e Eventos numa tela. Prioriza, cobra e acompanha se foi feito de verdade.</p>
+        <div class="kicker">Gabinete do Prefeito</div>
+        <h1>Roberto<br /><span class="accent">enxerga tudo.</span></h1>
+        <p class="line">Cidade, Saúde e Eventos numa tela. Prioriza, cobra e acompanha com registro.</p>
         <span class="chip">3 · Gabinete decide</span>
       </div>
     </section>
 
-    <!-- 4 Secretaria -->
+    <!-- 4 IA Gabinete -->
     <section class="scene" data-i="4">
-      <div class="bg" style="background-image:url('/assets/tv-secretaria.jpg')"></div>
+      <div class="bg" style="background-image:url('/assets/slide-gabinete.png')"></div>
       <div class="veil"></div>
       <div class="copy">
-        <div class="kicker">Secretaria de Obras</div>
-        <h1>A equipe<br /><span class="accent">executa.</span></h1>
-        <p class="line">Fila clara, alerta quando o Gabinete cobra, e aprovação com foto do depois.</p>
-        <span class="chip">4 · Secretaria executa</span>
+        <div class="kicker">Inteligência artificial · Gabinete</div>
+        <h1>A IA analisa.<br /><span class="accent">O prefeito decide.</span></h1>
+        <p class="line">Resumo da plataforma, filas, urgências e priorização — conversa clara no gabinete.</p>
+        <span class="chip ia">IA · Assistente do Gabinete</span>
       </div>
     </section>
 
-    <!-- 5 Campo -->
+    <!-- 5 Secretaria + IA -->
     <section class="scene" data-i="5">
+      <div class="bg" style="background-image:url('/assets/fluxo-02-secretaria.jpg')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">Secretarias · IA de serviço</div>
+        <h1>Foto do problema.<br /><span class="accent">Plano na hora.</span></h1>
+        <p class="line">A assistente sugere material, quantidade, tempo e ferramentas. A equipe confirma e executa.</p>
+        <span class="chip ia">IA · Plano de serviço</span>
+      </div>
+    </section>
+
+    <!-- 6 Campo -->
+    <section class="scene" data-i="6">
       <div class="bg" style="background-image:url('/assets/tv-equipe-campo.jpg')"></div>
       <div class="veil"></div>
       <div class="copy">
         <div class="kicker">Equipe de campo</div>
-        <h1>No asfalto,<br /><span class="accent">resolvendo.</span></h1>
-        <p class="line">Ordem de serviço no celular, GPS e foto do serviço pronto — sem desculpa sem registro.</p>
-        <span class="chip">5 · Campo faz</span>
+        <h1>Na rua,<br /><span class="accent">resolvendo.</span></h1>
+        <p class="line">Ordem no celular, GPS e foto do serviço pronto. Sem desculpa sem prova.</p>
+        <span class="chip">4 · Campo faz</span>
       </div>
     </section>
 
-    <!-- 6 Antes / depois -->
-    <section class="scene" data-i="6">
+    <!-- 7 Saúde -->
+    <section class="scene" data-i="7">
+      <div class="bg" style="background-image:url('/assets/fluxo-05-saude.jpg')"></div>
+      <div class="veil"></div>
+      <div class="copy">
+        <div class="kicker">Saúde · plantão e filas</div>
+        <h1>Fila sob controle.<br /><span class="accent">Plantão com visão.</span></h1>
+        <p class="line">Demanda, espera e resposta na mesma plataforma. Menos surpresa. Mais dignidade.</p>
+        <span class="chip">5 · Saúde conectada</span>
+      </div>
+    </section>
+
+    <!-- 8 Resultado -->
+    <section class="scene" data-i="8">
       <div class="bg" style="background-image:url('/assets/tv-antes-depois.jpg')"></div>
       <div class="veil"></div>
       <div class="copy">
         <div class="kicker">Resultado com prova</div>
         <h1>Antes e depois.<br /><span class="accent">Pra cidade ver.</span></h1>
-        <p class="line">Gestão com evidência: o cidadão acompanha, o Gabinete confere, a secretaria fecha.</p>
+        <p class="line">Cidadão confere. Secretaria valida. Gabinete acompanha. Gestão com evidência.</p>
         <span class="chip">6 · Concluído</span>
       </div>
     </section>
 
-    <!-- 7 Fechamento -->
-    <section class="scene center" data-i="7">
-      <div class="bg" style="background-image:url('/assets/tv-cidade-dusk.jpg')"></div>
+    <!-- 9 Fechamento impactante -->
+    <section class="scene center finale" data-i="9">
+      <div class="bg" style="background-image:url('/assets/fluxo-fechamento.jpg')"></div>
       <div class="veil"></div>
       <div class="copy">
         <div class="brand-open" style="justify-content:center">
           <img src="/assets/logo-prefeitura.png" alt="" />
           <div>
             <strong>Bacabal Conecta</strong>
-            <span>A cidade conectada de verdade</span>
+            <span>Prefeito Roberto Costa</span>
           </div>
         </div>
-        <h1>Gabinete decide.<br />Secretaria executa.<br /><span class="accent">Campo faz.</span></h1>
-        <p class="line">Uma plataforma. Três eixos. Resultado que o prefeito — e o povo — conseguem ver.</p>
+        <h1>Gabinete decide.<br />Secretaria executa.<br />Campo faz.<br /><span class="accent">A IA orienta.</span></h1>
+        <p class="line">Uma plataforma. Quatro eixos. Inteligência a serviço da gestão — e do povo de Bacabal.</p>
       </div>
     </section>
 
     <div class="progress"><i id="bar"></i></div>
 
-    <div id="gate" style="position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(4,10,7,.72);backdrop-filter:blur(6px);cursor:pointer">
-      <div style="text-align:center;padding:2rem;max-width:28rem">
-        <img src="/assets/logo-prefeitura.png" alt="" style="width:72px;margin-bottom:1rem;filter:drop-shadow(0 8px 20px rgba(0,0,0,.4))" />
-        <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;letter-spacing:-.04em;margin-bottom:.5rem">Bacabal Conecta</div>
-        <p style="color:rgba(247,244,238,.8);margin-bottom:1.25rem;line-height:1.4">Toque para iniciar o clipe com locução profissional</p>
-        <span style="display:inline-block;padding:.7rem 1.4rem;border-radius:999px;background:#ff7a00;color:#fff;font-weight:700">▶ Iniciar</span>
+    <div id="gate" style="position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(4,10,7,.78);backdrop-filter:blur(8px);cursor:pointer">
+      <div style="text-align:center;padding:2rem;max-width:30rem">
+        <img src="/assets/logo-prefeitura.png" alt="" style="width:78px;margin-bottom:1rem;filter:drop-shadow(0 8px 20px rgba(0,0,0,.45))" />
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,4vw,2.25rem);font-weight:800;letter-spacing:-.04em;margin-bottom:.5rem">Bacabal Conecta</div>
+        <p style="color:rgba(247,244,238,.82);margin-bottom:1.25rem;line-height:1.45">Clipe institucional com IA, saúde e gabinete do prefeito — toque para iniciar</p>
+        <span style="display:inline-block;padding:.75rem 1.5rem;border-radius:999px;background:#ff7a00;color:#fff;font-weight:700">▶ Iniciar</span>
       </div>
     </div>
 
@@ -370,16 +405,15 @@
   </div>
 
   <script>
-    const BREATH_MS = 1800; // pausa após cada locução (respiração)
+    const BREATH_MS = 1800;
     const MIN_SCENE_MS = 8000;
     const scenes = [...document.querySelectorAll('.scene')];
     const bar = document.getElementById('bar');
     const dots = document.getElementById('dots');
     const gate = document.getElementById('gate');
 
-    // Locução neural pt-BR — um MP3 por cena
     const tracks = scenes.map((_, i) => {
-      const a = new Audio('/assets/tv-narracao-' + i + '.mp3');
+      const a = new Audio('/assets/tv-narracao-' + i + '.mp3?v=2');
       a.preload = 'auto';
       return a;
     });
@@ -393,7 +427,6 @@
     let hideTimer = null;
     let currentAudio = null;
     let advanceTimer = null;
-    let pauseLeft = 0;
 
     scenes.forEach((_, i) => {
       const s = document.createElement('span');
@@ -441,7 +474,6 @@
       const afterAudio = () => {
         if (!started || paused || currentAudio !== a) return;
         clearAdvance();
-        // respiração após a fala — sem cortar a locução
         t0 = performance.now();
         sceneDur = BREATH_MS;
         bar.style.width = '0%';
@@ -465,11 +497,9 @@
         bar.style.width = '0%';
         const bg = scenes[i]?.querySelector('.bg');
         if (bg) bg.style.animationDuration = (sceneDur / 1000) + 's';
-        // Failsafe longo: só se o ended falhar (não corta a fala no meio)
         clearAdvance();
         advanceTimer = setTimeout(afterAudio, audioMs + BREATH_MS + 2500);
         a.play().catch(() => {
-          // retry uma vez (comum após troca rápida de cena)
           setTimeout(() => {
             if (currentAudio !== a || !started || paused) return;
             a.play().catch(afterAudio);
@@ -496,7 +526,6 @@
       idx = i;
       t0 = performance.now();
       bar.style.width = '0%';
-      // folga visual antes da locução
       setTimeout(() => {
         if (idx !== i || !started || paused) return;
         playVoice(i);
@@ -527,77 +556,64 @@
         a.addEventListener('loadedmetadata', resolve, { once: true });
         a.addEventListener('error', resolve, { once: true });
         try { a.load(); } catch (_) {}
-        setTimeout(resolve, 2500);
-      }))).then(() => show(0));
+        setTimeout(resolve, 2000);
+      }))).finally(() => show(0));
     }
 
     gate.addEventListener('click', startFilm);
-    gate.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') startFilm();
-    });
-
     document.getElementById('btnFs').onclick = () => {
       if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
       else document.exitFullscreen?.();
     };
-
-    document.getElementById('btnPause').onclick = (e) => {
-      if (!started) return startFilm();
+    document.getElementById('btnVoice').onclick = () => {
+      voiceOn = !voiceOn;
+      document.getElementById('btnVoice').textContent = 'Áudio: ' + (voiceOn ? 'on' : 'off');
+      if (!voiceOn) stopAudio();
+      else if (started && !paused) playVoice(idx);
+    };
+    document.getElementById('btnPause').onclick = () => {
       paused = !paused;
-      e.currentTarget.textContent = paused ? 'Continuar' : 'Pausar';
+      document.getElementById('btnPause').textContent = paused ? 'Continuar' : 'Pausar';
       if (paused) {
-        pauseLeft = Math.max(0, sceneDur - (performance.now() - t0));
         clearAdvance();
         if (currentAudio) currentAudio.pause();
-      } else {
-        t0 = performance.now();
-        sceneDur = pauseLeft || MIN_SCENE_MS;
-        advanceTimer = setTimeout(() => {
-          if (!started || paused) return;
-          show((idx + 1) % scenes.length);
-        }, sceneDur);
+      } else if (started) {
         if (currentAudio && voiceOn) {
           currentAudio.play().catch(() => playVoice(idx));
-        } else if (voiceOn) {
-          playVoice(idx);
-        }
+        } else playVoice(idx);
       }
     };
 
-    document.getElementById('btnVoice').onclick = (e) => {
-      voiceOn = !voiceOn;
-      e.currentTarget.textContent = 'Áudio: ' + (voiceOn ? 'on' : 'off');
-      if (!voiceOn) {
-        stopAudio();
-      } else if (started && !paused) {
-        playVoice(idx);
-      }
-    };
-
-    window.addEventListener('mousemove', showUi);
-    window.addEventListener('touchstart', showUi, { passive: true });
     window.addEventListener('keydown', (e) => {
-      showUi();
-      if (e.key === 'Enter' && !started) startFilm();
-      if (e.key === 'f' || e.key === 'F') document.getElementById('btnFs').click();
-      if (e.key === ' ') { e.preventDefault(); document.getElementById('btnPause').click(); }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        if (!started) startFilm();
+        else document.getElementById('btnPause').click();
+      }
       if (e.key === 'ArrowRight' && started) show((idx + 1) % scenes.length);
       if (e.key === 'ArrowLeft' && started) show((idx - 1 + scenes.length) % scenes.length);
+      if (e.key === 'f' || e.key === 'F') document.getElementById('btnFs').click();
       if (e.key === 'v' || e.key === 'V') document.getElementById('btnVoice').click();
+    });
+
+    ['mousemove', 'touchstart', 'click'].forEach((ev) => {
+      document.addEventListener(ev, showUi, { passive: true });
     });
 
     [
       '/assets/tv-cidade-dusk.jpg',
       '/assets/tv-cidadao-foto.jpg',
       '/assets/tv-app-envio.jpg',
-      '/assets/tv-gabinete.jpg',
-      '/assets/tv-secretaria.jpg',
+      '/assets/fluxo-04-gabinete.jpg',
+      '/assets/slide-gabinete.png',
+      '/assets/fluxo-02-secretaria.jpg',
       '/assets/tv-equipe-campo.jpg',
+      '/assets/fluxo-05-saude.jpg',
       '/assets/tv-antes-depois.jpg',
-    ].forEach((src) => { const i = new Image(); i.src = src; });
+      '/assets/fluxo-fechamento.jpg',
+    ].forEach((src) => { const im = new Image(); im.src = src; });
 
     requestAnimationFrame(tick);
-    showUi();
   </script>
 </body>
 </html>
