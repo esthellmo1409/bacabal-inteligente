@@ -611,9 +611,12 @@
         }
         const brandImgBl = document.querySelector('.landing-brand img');
         if (brandImgBl) {
-          brandImgBl.src = cfg.logo || '/assets/logo-oficial-bomlugar.png';
+          // Home: só aqui usa o balão/logo oficial; admin e demais páginas usam brasão (cfg.logo)
+          brandImgBl.src = '/assets/logo-oficial-bomlugar.png?v=2';
           brandImgBl.alt = 'Prefeitura Bom Lugar — início';
         }
+        const favHome = document.querySelector('link[rel="icon"]');
+        if (favHome) favHome.href = '/assets/logo-oficial-bomlugar.png?v=2';
         const brandLink = document.getElementById('landingBrand');
         if (brandLink) brandLink.setAttribute('href', '/?cidade=bomlugar');
 

@@ -442,11 +442,9 @@ function brandHtmlForCity(html, slug, opts = {}) {
     ['Bacabal Conecta', 'Bom Lugar Conecta'],
     ['Prefeitura Municipal de Bacabal', 'Prefeitura Municipal de Bom Lugar'],
     ['Prefeitura de Bacabal', 'Prefeitura de Bom Lugar'],
-    ['Brasão de Bacabal', 'Logo da Prefeitura de Bom Lugar'],
-    ['href="/assets/logo-prefeitura.png"', 'href="/assets/logo-oficial-bomlugar.png"'],
-    ['src="/assets/logo-prefeitura.png"', 'src="/assets/logo-oficial-bomlugar.png"'],
-    ['src="/assets/logo-bomlugar.jpg"', 'src="/assets/logo-oficial-bomlugar.png"'],
-    ['href="/assets/logo-bomlugar.jpg"', 'href="/assets/logo-oficial-bomlugar.png"'],
+    ['Brasão de Bacabal', 'Brasão de Bom Lugar'],
+    ['href="/assets/logo-prefeitura.png"', 'href="/assets/logo-bomlugar.jpg"'],
+    ['src="/assets/logo-prefeitura.png"', 'src="/assets/logo-bomlugar.jpg"'],
     ['cidade=bacabal', 'cidade=bomlugar'],
     ['Gabinete do Prefeito', 'Gabinete da Prefeita'],
     ['Entrar como prefeito', 'Entrar como prefeita'],
@@ -461,6 +459,10 @@ function brandHtmlForCity(html, slug, opts = {}) {
 
   if (opts.isHome) {
     replacements.push(
+      // Home: balão/logo oficial (admin continua com brasão acima)
+      ['src="/assets/logo-bomlugar.jpg"', 'src="/assets/logo-oficial-bomlugar.png?v=2"'],
+      ['href="/assets/logo-bomlugar.jpg"', 'href="/assets/logo-oficial-bomlugar.png?v=2"'],
+      ['Brasão de Bom Lugar', 'Prefeitura Bom Lugar — início'],
       ['A cidade conectada de verdade', 'Construindo o presente e planejando o futuro'],
       ['https://www.bacabal.ma.gov.br/', 'https://www.bomlugar.ma.gov.br/'],
       ['(99) 3621-0533 · Centro · Bacabal/MA', '(98) 9.9196-7607 · Centro · Bom Lugar/MA'],
