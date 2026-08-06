@@ -49,9 +49,9 @@
           },
           media: {
             hero: '/assets/slide-bomlugar-hero.jpg',
-            cidadao: '/assets/card-bomlugar-cidadao.jpg',
-            secretaria: '/assets/card-bomlugar-secretaria.jpg',
-            gabinete: '/assets/card-bomlugar-gabinete.jpg'
+            cidadao: '/assets/card-bomlugar-cidadao.jpg?v=4',
+            secretaria: '/assets/card-bomlugar-secretaria.jpg?v=4',
+            gabinete: '/assets/card-bomlugar-gabinete.jpg?v=4'
           }
         }
       };
@@ -623,11 +623,11 @@
         if (!alreadyPainted) {
           const media = [
             ['.carousel-slide[data-index="0"] .carousel-visual img', '/assets/slide-bomlugar-hero.jpg', 'Bom Lugar Conecta'],
-            ['.carousel-slide[data-index="1"] .carousel-visual img', '/assets/card-bomlugar-cidadao.jpg', 'Cidadão em Bom Lugar'],
-            ['.carousel-slide[data-index="2"] .carousel-visual img', '/assets/card-bomlugar-gabinete.jpg', 'Gabinete Bom Lugar'],
-            ['.landing-pillar:nth-child(1) .pillar-media img', '/assets/card-bomlugar-cidadao.jpg', 'Cidadão'],
-            ['.landing-pillar:nth-child(2) .pillar-media img', '/assets/card-bomlugar-secretaria.jpg', 'Secretarias'],
-            ['.landing-pillar:nth-child(3) .pillar-media img', '/assets/card-bomlugar-gabinete.jpg', 'Gabinete'],
+            ['.carousel-slide[data-index="1"] .carousel-visual img', '/assets/card-bomlugar-cidadao.jpg?v=4', 'Cidadão em Bom Lugar'],
+            ['.carousel-slide[data-index="2"] .carousel-visual img', '/assets/card-bomlugar-gabinete.jpg?v=4', 'Gabinete Bom Lugar'],
+            ['.landing-pillar:nth-child(1) .pillar-media img', '/assets/card-bomlugar-cidadao.jpg?v=4', 'Cidadão'],
+            ['.landing-pillar:nth-child(2) .pillar-media img', '/assets/card-bomlugar-secretaria.jpg?v=4', 'Secretarias'],
+            ['.landing-pillar:nth-child(3) .pillar-media img', '/assets/card-bomlugar-gabinete.jpg?v=4', 'Gabinete'],
           ];
           media.forEach(([sel, src, alt]) => {
             const el = document.querySelector(sel);

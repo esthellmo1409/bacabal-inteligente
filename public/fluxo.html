@@ -411,6 +411,32 @@
         img.alt = cfg.cidade || '';
       }
       if (strong) strong.textContent = cfg.produto || strong.textContent;
+
+      // Bom Lugar: fotos profissionais do fluxo (mensagem alinhada)
+      if (getCidade() === 'bomlugar') {
+        const map = {
+          '/assets/fluxo-abertura.jpg': '/assets/fluxo-bomlugar-abertura.jpg',
+          '/assets/fluxo-01-cidadao.jpg': '/assets/fluxo-bomlugar-cidadao.jpg',
+          '/assets/fluxo-02-secretaria.jpg': '/assets/fluxo-bomlugar-secretaria.jpg',
+          '/assets/fluxo-03-campo.jpg': '/assets/fluxo-bomlugar-campo.jpg',
+          '/assets/fluxo-05-saude.jpg': '/assets/fluxo-bomlugar-saude.jpg',
+          '/assets/fluxo-04-gabinete.jpg': '/assets/fluxo-bomlugar-gabinete.jpg',
+          '/assets/fluxo-fechamento.jpg': '/assets/fluxo-bomlugar-fechamento.jpg',
+        };
+        document.querySelectorAll('.slide-visual img').forEach((el) => {
+          const src = el.getAttribute('src') || '';
+          if (map[src]) {
+            el.src = map[src];
+            el.alt = cfg.produto || 'Bom Lugar Conecta';
+          }
+        });
+        document.querySelectorAll('.slide-copy .role').forEach((el) => {
+          el.textContent = (el.textContent || '')
+            .replace(/prefeito/gi, 'prefeita')
+            .replace(/Gabinete decide/g, 'Gabinete decide');
+        });
+      }
+
       rewriteCityLinks();
     })();
 

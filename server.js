@@ -455,6 +455,14 @@ function brandHtmlForCity(html, slug, opts = {}) {
     ['Carta ao prefeito', 'Carta à prefeita'],
     ['>Gabinete do Prefeito<', '>Gabinete da Prefeita<'],
     ['id="prefeitaSpotlight" hidden', 'id="prefeitaSpotlight"'],
+    // Fotos profissionais do fluxo (home + /fluxo.html)
+    ['src="/assets/fluxo-abertura.jpg"', 'src="/assets/fluxo-bomlugar-abertura.jpg"'],
+    ['src="/assets/fluxo-01-cidadao.jpg"', 'src="/assets/fluxo-bomlugar-cidadao.jpg"'],
+    ['src="/assets/fluxo-02-secretaria.jpg"', 'src="/assets/fluxo-bomlugar-secretaria.jpg"'],
+    ['src="/assets/fluxo-03-campo.jpg"', 'src="/assets/fluxo-bomlugar-campo.jpg"'],
+    ['src="/assets/fluxo-05-saude.jpg"', 'src="/assets/fluxo-bomlugar-saude.jpg"'],
+    ['src="/assets/fluxo-04-gabinete.jpg"', 'src="/assets/fluxo-bomlugar-gabinete.jpg"'],
+    ['src="/assets/fluxo-fechamento.jpg"', 'src="/assets/fluxo-bomlugar-fechamento.jpg"'],
   ];
 
   if (opts.isHome) {
@@ -467,10 +475,10 @@ function brandHtmlForCity(html, slug, opts = {}) {
       ['https://www.bacabal.ma.gov.br/', 'https://www.bomlugar.ma.gov.br/'],
       ['(99) 3621-0533 · Centro · Bacabal/MA', '(98) 9.9196-7607 · Centro · Bom Lugar/MA'],
       ['src="/assets/slide-nova.png"', 'src="/assets/slide-bomlugar-hero.jpg"'],
-      ['src="/assets/fluxo-01-cidadao.jpg"', 'src="/assets/card-bomlugar-cidadao.jpg"'],
-      ['src="/assets/fluxo-02-secretaria.jpg"', 'src="/assets/card-bomlugar-secretaria.jpg"'],
-      ['src="/assets/fluxo-04-gabinete.jpg"', 'src="/assets/card-bomlugar-gabinete.jpg"'],
-      ['src="/assets/slide-gabinete.png"', 'src="/assets/card-bomlugar-gabinete.jpg"'],
+      ['src="/assets/slide-gabinete.png"', 'src="/assets/card-bomlugar-gabinete.jpg?v=4"'],
+      ['src="/assets/fluxo-bomlugar-cidadao.jpg"', 'src="/assets/card-bomlugar-cidadao.jpg?v=4"'],
+      ['src="/assets/fluxo-bomlugar-secretaria.jpg"', 'src="/assets/card-bomlugar-secretaria.jpg?v=4"'],
+      ['src="/assets/fluxo-bomlugar-gabinete.jpg"', 'src="/assets/card-bomlugar-gabinete.jpg?v=4"'],
       ['Ocorrências registradas em Bom Lugar.', 'Ocorrências registradas em Bom Lugar.'],
       ['Ocorrências registradas em Bacabal.', 'Ocorrências registradas em Bom Lugar.'],
       ['color:#2f7319">Bom Lugar Conecta</strong>', 'color:#03327A">Bom Lugar Conecta</strong>'],
