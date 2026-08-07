@@ -625,6 +625,14 @@ function brandHtmlForCity(html, slug, opts = {}) {
     ['src="/assets/fluxo-05-saude.jpg"', 'src="/assets/fluxo-bomlugar-saude.jpg"'],
     ['src="/assets/fluxo-04-gabinete.jpg"', 'src="/assets/fluxo-bomlugar-gabinete.jpg"'],
     ['src="/assets/fluxo-fechamento.jpg"', 'src="/assets/fluxo-bomlugar-fechamento.jpg"'],
+    // Tutoriais / páginas com mock da home
+    ['src="/assets/slide-nova.png"', 'src="/assets/slide-bomlugar-hero.jpg"'],
+    ['(99) 3621-0533 · Centro · Bacabal/MA', '(98) 9.9196-7607 · Centro · Bom Lugar/MA'],
+    ['Centro, Bacabal/MA', 'Centro, Bom Lugar/MA'],
+    ['Bacabal/MA', 'Bom Lugar/MA'],
+    ['Nova Bacabal', 'Bom Lugar'],
+    ['src="/assets/logo-bomlugar.jpg"', 'src="/assets/logo-oficial-bomlugar.png?v=3"'],
+    ['href="/assets/logo-bomlugar.jpg"', 'href="/assets/logo-oficial-bomlugar.png?v=3"'],
   ];
 
   if (opts.isHome) {

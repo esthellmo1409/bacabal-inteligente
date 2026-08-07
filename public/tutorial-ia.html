@@ -281,7 +281,7 @@
 
   <audio id="narrator" preload="auto"></audio>
 
-  <script src="/app.js"></script>
+  <script src="/app.js?v=tut-bl1"></script>
   <script>
     initCidade();
     const audio = document.getElementById('narrator');
@@ -312,19 +312,30 @@
     }
 
     function fillBrand() {
-      const p = produto();
+      const slug = (cfg && cfg.slug) || getCidade();
+      const p = (cfg && cfg.produto) || (slug === 'bomlugar' ? 'Bom Lugar Conecta' : 'Bacabal Conecta');
+      const cidade = (cfg && cfg.cidade) || (slug === 'bomlugar' ? 'Bom Lugar' : 'Bacabal');
+      const logo = slug === 'bomlugar'
+        ? '/assets/logo-oficial-bomlugar.png?v=3'
+        : ((cfg && cfg.logo) || '/assets/logo-prefeitura.png');
+
       document.getElementById('produtoNome').textContent = p;
       document.getElementById('iaSaudacao').textContent = 'Oi! Sou a ' + p + ', sua assistente de IA.';
       document.getElementById('iaSaudacao2').textContent = 'Oi! Sou a ' + p + ', sua assistente de IA.';
       document.getElementById('iaGabHello').textContent = 'Assistente do Gabinete · ' + p;
-      const logo = (cfg && cfg.logo) || '/assets/logo-prefeitura.png';
       document.getElementById('logo').src = logo;
       document.getElementById('logoGate').src = logo;
+      document.getElementById('logo').alt = 'Brasão de ' + cidade;
+      document.getElementById('logoGate').alt = 'Brasão de ' + cidade;
+      document.title = 'Tutorial com IA · ' + p;
+      const fav = document.querySelector('link[rel="icon"]');
+      if (fav) fav.href = logo;
+
       document.getElementById('gabResumo').textContent =
         'Cidade: 1 chamado novo em Obras (Centro) e 3 em andamento.\n' +
         'Saúde: fila estável; plantão do dia confirmado.\n' +
         'Prioridade sugerida: concluir o buraco da Rua 11 (protocolo 20261090) — já tem plano de material.\n' +
-        (isPrefeita()
+        (slug === 'bomlugar'
           ? 'A prefeita decide e cobra. A assistente só organiza a visão.'
           : 'O prefeito decide e cobra. A assistente só organiza a visão.');
     }
@@ -397,12 +408,28 @@
     document.getElementById('btnGabAnalisar').onclick = () => onClick('#btnGabAnalisar');
 
     loadCityBrand().then((c) => {
-      cfg = c || { produto: 'Bacabal Conecta', cidade: 'Bacabal', slug: getCidade() };
+      const slug = getCidade();
+      cfg = c || {
+        slug,
+        cidade: slug === 'bomlugar' ? 'Bom Lugar' : 'Bacabal',
+        produto: slug === 'bomlugar' ? 'Bom Lugar Conecta' : 'Bacabal Conecta',
+        logo: slug === 'bomlugar'
+          ? '/assets/logo-oficial-bomlugar.png?v=3'
+          : '/assets/logo-prefeitura.png',
+        tema: slug === 'bomlugar'
+          ? { primaria: '#03327A', secundaria: '#B71C1C', homeAccent: '#03327A', homeGreen: '#B71C1C' }
+          : null,
+      };
+      if (typeof applyTutorialBrand === 'function') applyTutorialBrand(cfg, STEPS);
+      else {
+        applyTheme?.(cfg.tema, cfg.slug);
+        applyPageBrand?.(cfg);
+        fillBrand();
+      }
       fillBrand();
       document.querySelectorAll('[data-city-href]').forEach((a) => {
         a.href = cityLink(a.getAttribute('data-city-href'));
       });
-      applyPageBrand(cfg);
     });
   </script>
 </body>

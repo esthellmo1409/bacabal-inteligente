@@ -641,7 +641,7 @@
 
   <audio id="narrator" preload="auto"></audio>
 
-  <script src="/app.js"></script>
+  <script src="/app.js?v=tut-bl1"></script>
   <script>
     const STEPS = [
       {
@@ -1070,15 +1070,18 @@
 
     function fillEndereco(instant) {
       fillNome(true);
-      const end = 'Rua 11, nº 120 — Centro, Bacabal/MA';
+      const cidade = (window.__CITY_NOME || 'Bacabal');
+      const end = 'Rua 11, nº 120 — Centro, ' + cidade + '/MA';
       typeInto(document.getElementById('endereco'), end, instant);
       document.getElementById('descricao').value = 'Vi o problema na Rua 11, Centro — risco para moto e carro.';
     }
 
     function fillTelefoneOpcional(instant) {
       fillEndereco(true);
-      // Exemplo preenchido, mas a narracao deixa claro que e opcional
-      typeInto(document.getElementById('telefone'), '(99) 98787-8787', instant);
+      const tel = (window.__CITY_CFG && window.__CITY_CFG.slug === 'bomlugar')
+        ? '(98) 99196-7607'
+        : '(99) 98787-8787';
+      typeInto(document.getElementById('telefone'), tel, instant);
     }
 
     function fillForm() {
@@ -1193,14 +1196,26 @@
     audio.addEventListener('ended', () => document.getElementById('wave').classList.add('off'));
     audio.addEventListener('play', () => document.getElementById('wave').classList.remove('off'));
 
-    // Marca da cidade nos links finais (Bacabal / Bom Lugar)
+    // Marca da cidade (logos, nomes, hero — Bacabal / Bom Lugar)
     if (typeof initCidade === 'function') {
       initCidade();
       loadCityBrand?.().then((cfg) => {
-        document.querySelectorAll('[data-city-href]').forEach((a) => {
-          a.href = cityLink(a.getAttribute('data-city-href'));
-        });
-        if (cfg) applyPageBrand?.(cfg);
+        if (!cfg) {
+          cfg = {
+            slug: getCidade(),
+            cidade: getCidade() === 'bomlugar' ? 'Bom Lugar' : 'Bacabal',
+            produto: getCidade() === 'bomlugar' ? 'Bom Lugar Conecta' : 'Bacabal Conecta',
+            logo: getCidade() === 'bomlugar'
+              ? '/assets/logo-oficial-bomlugar.png?v=3'
+              : '/assets/logo-prefeitura.png',
+          };
+        }
+        applyTutorialBrand?.(cfg, STEPS);
+        // GPS hint template
+        const gps = document.getElementById('gpsHint');
+        if (gps) {
+          gps.textContent = '📍 GPS capturado: Rua 11, Centro · ' + (cfg.cidade || 'Bacabal') + '/MA';
+        }
       });
     }
   </script>

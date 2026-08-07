@@ -393,7 +393,7 @@ function applyPageBrand(cfg) {
   if (meta) meta.setAttribute('content', brandText(meta.getAttribute('content') || '', cfg));
 
   const fav = document.querySelector('link[rel="icon"]');
-  if (fav) fav.href = logo;
+  if (fav) fav.href = (slug === 'bomlugar' ? '/assets/logo-oficial-bomlugar.png?v=3' : logo);
 
   const needsBrand = (t) => {
     if (!t) return false;
@@ -447,8 +447,8 @@ function applyPageBrand(cfg) {
     document.querySelectorAll('img').forEach((img) => {
       const src = img.getAttribute('src') || '';
       const alt = img.getAttribute('alt') || '';
-      if (/logo-prefeitura|Brasão de Bacabal|Brasao de Bacabal/i.test(src + alt)) {
-        img.src = logo;
+      if (/logo-prefeitura|logo-bomlugar|logo-oficial-bomlugar|Brasão de Bacabal|Brasao de Bacabal/i.test(src + alt)) {
+        img.src = slug === 'bomlugar' ? '/assets/logo-oficial-bomlugar.png?v=3' : logo;
         img.alt = brandText(alt || `Brasão de ${cidade}`, cfg);
       }
     });
@@ -457,13 +457,73 @@ function applyPageBrand(cfg) {
   // Login / headers comuns
   const loginLogo = document.querySelector('.login-box img');
   if (loginLogo && slug !== 'bacabal' && logo) {
-    loginLogo.src = logo;
+    loginLogo.src = slug === 'bomlugar' ? '/assets/logo-oficial-bomlugar.png?v=3' : logo;
     loginLogo.alt = `Brasão de ${cidade}`;
   }
 
   window.__CITY_CFG = cfg;
   window.__CITY_PRODUTO = produto;
   window.__CITY_NOME = cidade;
+  return cfg;
+}
+
+/** Marca completa para tutoriais (logos, hero, textos e STEPS). */
+function applyTutorialBrand(cfg, steps) {
+  if (!cfg) return cfg;
+  applyTheme(cfg.tema, cfg.slug || getCidade());
+  applyPageBrand(cfg);
+  const slug = cfg.slug || getCidade();
+  const produto = cfg.produto || 'Cidade Conecta';
+  const cidade = cfg.cidade || '';
+  const logo = slug === 'bomlugar'
+    ? '/assets/logo-oficial-bomlugar.png?v=3'
+    : (cfg.logo || '/assets/logo-prefeitura.png');
+  const hero = slug === 'bomlugar'
+    ? '/assets/slide-bomlugar-hero.jpg'
+    : '/assets/slide-nova.png';
+
+  document.querySelectorAll(
+    '#introGate img, .tut-brand img, .landing-brand img, #logo, #logoGate, link[rel="icon"]'
+  ).forEach((el) => {
+    if (el.tagName === 'LINK') el.href = logo;
+    else {
+      el.src = logo;
+      if (el.alt != null) el.alt = `Brasão de ${cidade}`;
+    }
+  });
+
+  document.querySelectorAll('.tut-brand strong, .landing-brand strong, #produtoNome').forEach((el) => {
+    el.textContent = produto;
+  });
+
+  document.querySelectorAll('.carousel-visual img, img[src*="slide-nova"], img[src*="slide-bomlugar-hero"]').forEach((img) => {
+    img.src = hero;
+    img.alt = produto;
+  });
+
+  // Contato / GPS de exemplo no mock
+  document.querySelectorAll('.pmb-topbar-inner, #gpsHint').forEach((el) => {
+    if (!el) return;
+    el.innerHTML = brandText(el.innerHTML, cfg);
+    if (slug === 'bomlugar') {
+      el.innerHTML = el.innerHTML
+        .replace(/\(99\)\s*3621-0533/g, '(98) 9.9196-7607')
+        .replace(/Bacabal\/MA/gi, 'Bom Lugar/MA')
+        .replace(/bacabal\.ma\.gov\.br/gi, 'bomlugar.ma.gov.br');
+    }
+  });
+
+  if (Array.isArray(steps)) {
+    steps.forEach((s) => {
+      if (s.title) s.title = brandText(s.title, cfg);
+      if (s.text) s.text = brandText(s.text, cfg);
+    });
+  }
+
+  document.querySelectorAll('[data-city-href]').forEach((a) => {
+    a.href = cityLink(a.getAttribute('data-city-href'));
+  });
+  rewriteCityLinks();
   return cfg;
 }
 
