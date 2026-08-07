@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-keep-bacabal="1">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proposta comercial · Plataforma Cidade Conecta</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="description" content="Proposta comercial para o município — implantação e mensalidade." />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <style>
+    :root {
+      --ink: #121812;
+      --muted: #5a645c;
+      --line: #dde3db;
+      --bg: #f2f5f1;
+      --paper: #fff;
+      --green: #2f7319;
+      --green-deep: #1f4f10;
+      --orange: #e67300;
+      --soft: #fff8f0;
+      --green-soft: #eef6ea;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 1.1rem 1rem 3rem; }
+    .bar {
+      position: sticky; top: 0; z-index: 5;
+      display: flex; justify-content: flex-end; gap: 0.5rem;
+      padding: 0.5rem 0;
+      background: linear-gradient(180deg, var(--bg) 70%, transparent);
+    }
+    .bar button {
+      border: 1px solid var(--line); background: #fff; border-radius: 999px;
+      padding: 0.45rem 0.95rem; font-weight: 700; font-size: 0.82rem; cursor: pointer;
+    }
+    .doc {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(18, 24, 18, 0.06);
+    }
+    .header {
+      padding: 1.4rem 1.35rem 1.2rem;
+      background: linear-gradient(135deg, #0f1a12 0%, #2f7319 55%, #3d8a22 100%);
+      color: #fff;
+    }
+    .header .eyebrow {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; opacity: 0.85; margin-bottom: 0.45rem;
+    }
+    .header h1 {
+      margin: 0 0 0.4rem; font-size: clamp(1.45rem, 4vw, 1.9rem);
+      letter-spacing: -0.03em; line-height: 1.15;
+    }
+    .header p { margin: 0; opacity: 0.92; max-width: 36rem; font-size: 0.95rem; }
+    .body { padding: 1.2rem 1.35rem 1.5rem; }
+    .totals {
+      display: grid; gap: 0.7rem; margin: 0 0 1.15rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 560px) { .totals { grid-template-columns: 1fr 1fr; } }
+    .total {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
+      background: var(--green-soft);
+    }
+    .total.alt { background: var(--soft); }
+    .total span {
+      display: block; font-size: 0.72rem; font-weight: 800;
+      letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted);
+    }
+    .total strong {
+      display: block; font-size: 1.7rem; letter-spacing: -0.03em;
+      margin-top: 0.2rem; color: var(--green-deep);
+    }
+    .total.alt strong { color: #9a4d00; }
+    .total em {
+      display: block; font-style: normal; font-size: 0.84rem;
+      color: var(--muted); margin-top: 0.2rem;
+    }
+    h2 {
+      margin: 1.15rem 0 0.45rem;
+      font-size: 1.05rem;
+      color: var(--green);
+      letter-spacing: -0.02em;
+    }
+    p { margin: 0 0 0.55rem; color: #2a322c; font-size: 0.94rem; }
+    ul { margin: 0.2rem 0 0.6rem; padding-left: 1.15rem; }
+    li { margin: 0.3rem 0; color: var(--muted); font-size: 0.92rem; }
+    li strong { color: var(--ink); }
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.88rem; margin: 0.4rem 0 0.7rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f0f4ef;
+      color: var(--green);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    td.val {
+      white-space: nowrap;
+      font-weight: 800;
+      text-align: right;
+      color: var(--ink);
+    }
+    tr.total-row td { background: var(--green-soft); font-weight: 800; }
+    .note {
+      border-left: 4px solid var(--orange);
+      background: var(--soft);
+      border-radius: 0 12px 12px 0;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 0.85rem 0 0;
+    }
+    .footer {
+      margin-top: 1.2rem;
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+    .footer strong { color: var(--ink); }
+    @media print {
+      .bar { display: none; }
+      body { background: #fff; }
+      .wrap { max-width: none; padding: 0; }
+      .doc { border: none; border-radius: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar">
+      <button type="button" onclick="window.print()">Imprimir / salvar PDF</button>
+    </div>
+
+    <article class="doc">
+      <header class="header">
+        <div class="eyebrow">Proposta comercial · Município</div>
+        <h1>Plataforma Cidade Conecta</h1>
+        <p>
+          Sistema de atendimento ao cidadão com protocolo, secretarias, equipes de campo,
+          gabinete e mapa — em operação unificada para a prefeitura.
+        </p>
+      </header>
+
+      <div class="body">
+        <div class="totals">
+          <div class="total">
+            <span>Implantação (única)</span>
+            <strong>R$ 22.000</strong>
+            <em>Setup, identidade, treinamento e go-live</em>
+          </div>
+          <div class="total alt">
+            <span>Mensalidade</span>
+            <strong>R$ 13.000</strong>
+            <em>Pacote completo · operação + suporte</em>
+          </div>
+        </div>
+
+        <h2>O que a prefeitura recebe</h2>
+        <ul>
+          <li><strong>Cidadão:</strong> registra ocorrência com foto e localização, recebe protocolo e consulta o andamento.</li>
+          <li><strong>Secretaria:</strong> organiza a fila, encaminha ordem de serviço e aprova a conclusão.</li>
+          <li><strong>Campo:</strong> aceita a OS, registra chegada e envia foto do depois.</li>
+          <li><strong>Gabinete:</strong> acompanha a cidade, saúde e eventos com indicadores e cobrança por número.</li>
+          <li><strong>Mapa:</strong> visão das ocorrências por bairro e status.</li>
+        </ul>
+
+        <h2>Implantação — R$ 22.000</h2>
+        <p>Pagamento único para colocar o município em operação.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Entrega</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ambiente do município</strong></td>
+              <td>Sistema exclusivo, usuários, secretarias e mapa da cidade</td>
+              <td class="val">R$ 4.000</td>
+            </tr>
+            <tr>
+              <td><strong>Identidade visual</strong></td>
+              <td>Brasão/logo, cores oficiais e nome do produto da cidade</td>
+              <td class="val">R$ 3.000</td>
+            </tr>
+            <tr>
+              <td><strong>Parametrização</strong></td>
+              <td>Fluxo cidadão → secretaria → campo → aprovação</td>
+              <td class="val">R$ 4.500</td>
+            </tr>
+            <tr>
+              <td><strong>Treinamento</strong></td>
+              <td>Gabinete, secretarias e equipes de campo</td>
+              <td class="val">R$ 5.000</td>
+            </tr>
+            <tr>
+              <td><strong>Acompanhamento inicial</strong></td>
+              <td>15 a 30 dias de suporte intensivo no go-live</td>
+              <td class="val">R$ 3.500</td>
+            </tr>
+            <tr>
+              <td><strong>Material de apoio</strong></td>
+              <td>Roteiros de uso e apoio à comunicação interna</td>
+              <td class="val">R$ 2.000</td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="2">Total implantação</td>
+              <td class="val">R$ 22.000</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Mensalidade — R$ 13.000</h2>
+        <p>Pacote completo com todos os módulos abaixo.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Módulo</th>
+              <th>Inclui</th>
+              <th>Valor/mês</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cidadão + Protocolo</strong></td>
+              <td>Abertura de chamado, protocolo, consulta de status</td>
+              <td class="val">R$ 2.200</td>
+            </tr>
+            <tr>
+              <td><strong>Obras + Campo</strong></td>
+              <td>Fila, OS, foto do depois, aprovação</td>
+              <td class="val">R$ 2.400</td>
+            </tr>
+            <tr>
+              <td><strong>Gabinete</strong></td>
+              <td>Visão da cidade, priorização e cobrança</td>
+              <td class="val">R$ 2.000</td>
+            </tr>
+            <tr>
+              <td><strong>Mapa</strong></td>
+              <td>Ocorrências no mapa por bairro/status</td>
+              <td class="val">R$ 1.200</td>
+            </tr>
+            <tr>
+              <td><strong>Saúde</strong></td>
+              <td>Indicadores, plantão e visita surpresa</td>
+              <td class="val">R$ 1.500</td>
+            </tr>
+            <tr>
+              <td><strong>Eventos</strong></td>
+              <td>Agenda e pendências virando protocolo</td>
+              <td class="val">R$ 1.000</td>
+            </tr>
+            <tr>
+              <td><strong>Equipes</strong></td>
+              <td>Presença no local e vínculo com a OS</td>
+              <td class="val">R$ 900</td>
+            </tr>
+            <tr>
+              <td><strong>Infraestrutura</strong></td>
+              <td>Hospedagem, segurança e backups</td>
+              <td class="val">R$ 900</td>
+            </tr>
+            <tr>
+              <td><strong>Suporte</strong></td>
+              <td>Atendimento e evolução contínua</td>
+              <td class="val">R$ 900</td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="2">Total mensalidade</td>
+              <td class="val">R$ 13.000</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Condições sugeridas</h2>
+        <ul>
+          <li><strong>Implantação:</strong> 50% na assinatura e 50% na liberação oficial (ou 100% na assinatura).</li>
+          <li><strong>Mensalidade:</strong> a partir do mês de liberação oficial.</li>
+          <li><strong>Prazo:</strong> contrato sugerido de 12 meses, com renovação.</li>
+          <li><strong>Piloto:</strong> 15 a 30 dias com acompanhamento e indicadores de uso.</li>
+        </ul>
+
+        <div class="note">
+          Expansões futuras (WhatsApp oficial, câmeras, chat institucional, mapa 3D ou novas secretarias)
+          podem ser contratadas à parte, conforme necessidade do município.
+        </div>
+
+        <div class="footer">
+          <strong>Anselmo Carvalho</strong> · proposta comercial<br />
+          Valores sujeitos a formalização em contrato. Página sem publicação no portal da prefeitura.
+        </div>
+      </div>
+    </article>
+  </div>
+</body>
+</html>
