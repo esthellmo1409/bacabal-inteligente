@@ -130,6 +130,38 @@
       color: var(--ink);
     }
     tr.total-row td { background: var(--soft-green); font-weight: 800; }
+    .ia-block {
+      margin: 0 0 1.15rem;
+      border: 1px solid #c8ddb8;
+      border-radius: 14px;
+      padding: 0.95rem 1.05rem;
+      background: linear-gradient(135deg, #f3faf0 0%, #e8f4e2 100%);
+    }
+    .ia-block .ia-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #1f4f10;
+      background: #fff;
+      border: 1px solid #c8ddb8;
+      border-radius: 999px;
+      padding: 0.25rem 0.6rem;
+      margin-bottom: 0.4rem;
+    }
+    .ia-block strong.title {
+      display: block;
+      font-size: 1.12rem;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+    }
+    .ia-block p {
+      margin: 0;
+      color: #2a322c;
+      font-size: 0.92rem;
+    }
     .note {
       border-left: 4px solid var(--warm);
       background: var(--soft);
@@ -166,9 +198,9 @@
         <div class="eyebrow">Proposta comercial · Município</div>
         <h1>Plataforma Cidade Conecta</h1>
         <p>
-          Solução digital para a prefeitura atender o cidadão com protocolo,
-          organizar secretarias e equipes de campo, e dar visão ao gabinete —
-          com a identidade do município.
+          Protocolo, secretarias, campo, gabinete e mapa — com
+          <strong style="color:#fff">inteligência artificial implantada</strong>
+          na operação do município.
         </p>
       </header>
 
@@ -177,17 +209,28 @@
           <div class="total">
             <span>Implantação (única)</span>
             <strong>R$ 22.000</strong>
-            <em>Setup, identidade, treinamento e go-live</em>
+            <em>Setup, IA, identidade, treinamento e go-live</em>
           </div>
           <div class="total alt">
             <span>Mensalidade</span>
             <strong>R$ 13.000</strong>
-            <em>Pacote completo · operação + suporte</em>
+            <em>Pacote completo · IA + operação + suporte</em>
           </div>
+        </div>
+
+        <div class="ia-block">
+          <span class="ia-tag">Destaque</span>
+          <strong class="title">Inteligência Artificial implantada</strong>
+          <p>
+            Assistente na secretaria (analisa a foto e sugere material, tempo e ferramentas)
+            e assistente no gabinete (prioriza a cidade e organiza a visão para decisão).
+            A IA orienta. A gestão decide.
+          </p>
         </div>
 
         <h2>O que o município recebe</h2>
         <ul>
+          <li><strong>Inteligência Artificial:</strong> assistente de serviço e assistente de gabinete, já inclusas no pacote.</li>
           <li><strong>Cidadão:</strong> registra ocorrência com foto e localização, recebe protocolo e consulta o andamento.</li>
           <li><strong>Secretaria:</strong> organiza a fila, encaminha ordem de serviço e aprova a conclusão.</li>
           <li><strong>Campo:</strong> aceita a OS, registra chegada e envia foto do depois.</li>
@@ -209,32 +252,37 @@
             <tr>
               <td><strong>Ambiente do município</strong></td>
               <td>Sistema exclusivo, usuários, secretarias e mapa da cidade</td>
-              <td class="val">R$ 4.000</td>
+              <td class="val">R$ 3.500</td>
+            </tr>
+            <tr>
+              <td><strong>Inteligência Artificial implantada</strong></td>
+              <td>Ativação da assistente na secretaria e no gabinete</td>
+              <td class="val">R$ 3.500</td>
             </tr>
             <tr>
               <td><strong>Identidade visual</strong></td>
               <td>Brasão/logo, cores oficiais e nome do produto da cidade</td>
-              <td class="val">R$ 3.000</td>
+              <td class="val">R$ 2.500</td>
             </tr>
             <tr>
               <td><strong>Parametrização</strong></td>
               <td>Fluxo cidadão → secretaria → campo → aprovação</td>
-              <td class="val">R$ 4.500</td>
+              <td class="val">R$ 4.000</td>
             </tr>
             <tr>
               <td><strong>Treinamento</strong></td>
-              <td>Gabinete, secretarias e equipes de campo</td>
-              <td class="val">R$ 5.000</td>
+              <td>Gabinete, secretarias, campo e uso da IA</td>
+              <td class="val">R$ 4.500</td>
             </tr>
             <tr>
               <td><strong>Acompanhamento inicial</strong></td>
               <td>15 a 30 dias de suporte intensivo no go-live</td>
-              <td class="val">R$ 3.500</td>
+              <td class="val">R$ 2.500</td>
             </tr>
             <tr>
               <td><strong>Material de apoio</strong></td>
-              <td>Roteiros de uso e apoio à comunicação interna</td>
-              <td class="val">R$ 2.000</td>
+              <td>Roteiros de uso (incluindo tutorial com IA)</td>
+              <td class="val">R$ 1.500</td>
             </tr>
             <tr class="total-row">
               <td colspan="2">Total implantação</td>
@@ -255,49 +303,54 @@
           </thead>
           <tbody>
             <tr>
+              <td><strong>Inteligência Artificial</strong></td>
+              <td>Assistente na secretaria e no gabinete (análise de foto, plano de serviço e priorização)</td>
+              <td class="val">R$ 1.800</td>
+            </tr>
+            <tr>
               <td><strong>Cidadão + Protocolo</strong></td>
               <td>Abertura de chamado, protocolo, consulta de status</td>
-              <td class="val">R$ 2.200</td>
+              <td class="val">R$ 2.000</td>
             </tr>
             <tr>
               <td><strong>Obras + Campo</strong></td>
               <td>Fila, OS, foto do depois, aprovação</td>
-              <td class="val">R$ 2.400</td>
+              <td class="val">R$ 2.100</td>
             </tr>
             <tr>
               <td><strong>Gabinete</strong></td>
               <td>Visão da cidade, priorização e cobrança</td>
-              <td class="val">R$ 2.000</td>
+              <td class="val">R$ 1.700</td>
             </tr>
             <tr>
               <td><strong>Mapa</strong></td>
               <td>Ocorrências no mapa por bairro/status</td>
-              <td class="val">R$ 1.200</td>
+              <td class="val">R$ 1.000</td>
             </tr>
             <tr>
               <td><strong>Saúde</strong></td>
               <td>Indicadores, plantão e visita surpresa</td>
-              <td class="val">R$ 1.500</td>
+              <td class="val">R$ 1.200</td>
             </tr>
             <tr>
               <td><strong>Eventos</strong></td>
               <td>Agenda e pendências virando protocolo</td>
-              <td class="val">R$ 1.000</td>
+              <td class="val">R$ 900</td>
             </tr>
             <tr>
               <td><strong>Equipes</strong></td>
               <td>Presença no local e vínculo com a OS</td>
-              <td class="val">R$ 900</td>
+              <td class="val">R$ 800</td>
             </tr>
             <tr>
               <td><strong>Infraestrutura</strong></td>
               <td>Hospedagem, segurança e backups</td>
-              <td class="val">R$ 900</td>
+              <td class="val">R$ 800</td>
             </tr>
             <tr>
               <td><strong>Suporte</strong></td>
               <td>Atendimento e evolução contínua</td>
-              <td class="val">R$ 900</td>
+              <td class="val">R$ 700</td>
             </tr>
             <tr class="total-row">
               <td colspan="2">Total mensalidade</td>
