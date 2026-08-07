@@ -563,6 +563,16 @@ function clearSession() {
   }
 }
 
+/** Encerra todas as áreas (gabinete / secretaria / campo) — evita misturar sessões. */
+function clearAllSessions() {
+  [
+    'bi_token', 'bi_user',
+    'bi_token_secretaria', 'bi_token_secretaria_user',
+    'bi_token_campo', 'bi_token_campo_user',
+    'bi_token_gabinete', 'bi_token_gabinete_user',
+  ].forEach((k) => localStorage.removeItem(k));
+}
+
 function getSessionUser() {
   try {
     return JSON.parse(localStorage.getItem(authTokenKey() + '_user') || localStorage.getItem('bi_user') || 'null');
@@ -572,17 +582,48 @@ function getSessionUser() {
 }
 
 function logout() {
-  clearSession();
+  clearAllSessions();
   location.href = cityLink('/login.html');
 }
 
-function topbar(active, cfg) {
+/** Sair da área administrativa (obrigatório antes de ir a outra tela). */
+function logoutOps(dest) {
+  clearAllSessions();
+  location.href = cityLink(dest || '/login.html');
+}
+
+/**
+ * Topbar.
+ * opts.lock / BI_OPS_LOCK / BI_AUTH_SLOT: área administrativa travada —
+ * logado só vê Sair (não pula para Início/Campo/Gabinete misturando sessão).
+ */
+function topbar(active, cfg, opts = {}) {
   const nome = cfg?.produto || window.__CITY_PRODUTO || 'Cidade Conecta';
   const sub = cfg?.tagline
     || `${cfg?.cidade || window.__CITY_NOME || ''} · ${cfg?.uf || 'MA'}`;
   const user = getSessionUser();
+  const opsLock = !!(opts.lock || window.BI_OPS_LOCK || window.BI_AUTH_SLOT);
 
-  // Público: só o essencial. Áreas internas só após login.
+  // Área administrativa logada: sem atalhos — só Sair
+  if (opsLock && user) {
+    const area = active || 'Área administrativa';
+    return `
+  <div class="topbar topbar-ops">
+    <div class="brand" title="Para trocar de área, clique em Sair">
+      <div class="brand-mark"><img src="${cfg?.logo || '/assets/logo-prefeitura.png'}" alt="Brasão de ${cfg?.cidade || ''}" /></div>
+      <div>
+        <strong>${nome}</strong>
+        <span>${area} · sessão ativa</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <span class="nav-user">${user.nome || user.id}</span>
+      <button type="button" class="nav-logout" onclick="logoutOps('/')">Sair</button>
+    </nav>
+  </div>`;
+  }
+
+  // Público / login sem sessão
   let links = [
     [cityLink('/'), 'Início'],
     [cityLink('/fluxo.html'), 'Como funciona'],
@@ -592,33 +633,36 @@ function topbar(active, cfg) {
 
   if (!user) {
     links.push([cityLink('/login.html'), 'Área administrativa']);
-  } else {
+  } else if (!opsLock) {
+    // Logado em página pública: ainda assim não misturar — só Sair para trocar de área
     const papel = user.papel;
     if (papel === 'prefeito' || papel === 'admin') {
-      links.push([cityLink('/prefeito.html'), 'Gabinete']);
-    }
-    if (papel === 'secretaria' || papel === 'admin') {
-      links.push([cityLink('/secretaria.html'), 'Minha secretaria']);
-    }
-    if (papel === 'campo' || papel === 'admin' || papel === 'secretaria') {
-      links.push([cityLink('/equipes.html'), 'Campo']);
-    }
-    if (papel === 'prefeito' || papel === 'admin') {
-      links.push([cityLink('/acessos.html'), 'Acessos']);
+      links = [[cityLink('/prefeito.html'), 'Gabinete']];
+    } else if (papel === 'secretaria') {
+      links = [[cityLink('/secretaria.html'), 'Minha secretaria']];
+    } else if (papel === 'campo') {
+      links = [[cityLink('/equipes.html'), 'Campo']];
+    } else {
+      links = [];
     }
     if (papel === 'admin') {
-      links.push([cityLink('/admin-sistema.html'), 'Sistema']);
+      links.push([cityLink('/acessos.html'), 'Acessos']);
     }
   }
 
   const userBit = user
     ? `<span class="nav-user">${user.nome || user.id}</span>
-       <button type="button" class="nav-logout" onclick="logout()">Sair</button>`
+       <button type="button" class="nav-logout" onclick="logoutOps('/')">Sair</button>`
+    : '';
+
+  const brandHref = user ? '#' : cityLink('/');
+  const brandClick = user
+    ? `onclick="event.preventDefault();if(confirm('Sair da área administrativa para ir ao início?'))logoutOps('/');"`
     : '';
 
   return `
   <div class="topbar">
-    <a class="brand" href="${cityLink('/')}">
+    <a class="brand" href="${brandHref}" ${brandClick}>
       <div class="brand-mark"><img src="${cfg?.logo || '/assets/logo-prefeitura.png'}" alt="Brasão de ${cfg?.cidade || ''}" /></div>
       <div>
         <strong>${nome}</strong>
@@ -626,7 +670,9 @@ function topbar(active, cfg) {
       </div>
     </a>
     <nav class="nav">
-      ${links.map(([href, label]) =>
+      ${!user ? links.map(([href, label]) =>
+        `<a href="${href}" class="${active === label ? 'active' : ''}">${label}</a>`
+      ).join('') : links.map(([href, label]) =>
         `<a href="${href}" class="${active === label ? 'active' : ''}">${label}</a>`
       ).join('')}
       ${userBit}

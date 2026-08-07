@@ -38,12 +38,13 @@
       <p class="muted" style="margin-top:1rem">Super plataforma: <a href="/admin.html">admin.html</a> (tenants)</p>
     </div>
   </div>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=ops-lock1"></script>
   <script>
+    window.BI_OPS_LOCK = true;
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     async function bootBrand() {
       const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Módulos', cfg);
+      document.getElementById('top').innerHTML = topbar('Administração', cfg, { lock: true });
     }
     bootBrand();
 

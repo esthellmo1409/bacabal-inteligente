@@ -161,9 +161,10 @@
   <div id="visitaRoot"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ia7"></script>
+  <script src="/app.js?v=ops-lock1"></script>
   <script src="/map.js"></script>
   <script>
+    window.BI_OPS_LOCK = true;
     initCidade();
     let cfg, mapState, eixo = 'cidade';
     let chartStatus, chartSec;
@@ -178,8 +179,13 @@
 
     async function boot() {
       cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Gabinete', cfg);
-      document.getElementById('linkSec').href = cityLink('/secretaria.html');
+      document.getElementById('top').innerHTML = topbar('Gabinete', cfg, { lock: true });
+      document.getElementById('linkSec').href = cityLink('/login.html');
+      document.getElementById('linkSec').textContent = 'Trocar de área (Sair → login)';
+      document.getElementById('linkSec').onclick = (e) => {
+        e.preventDefault();
+        if (confirm('Sair do Gabinete para entrar em outra área?')) logoutOps('/login.html');
+      };
       document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
       if (cfg.slug === 'bomlugar' || getCidade() === 'bomlugar') {
         const h1 = document.querySelector('h1.display');
@@ -283,7 +289,7 @@
         const isPrefeita = getCidade() === 'bomlugar';
         loginPref.textContent = isPrefeita ? 'Logado: Prefeita' : 'Logado: Prefeito';
         const cfg = await loadCityBrand();
-        document.getElementById('top').innerHTML = topbar('Gabinete', cfg);
+        document.getElementById('top').innerHTML = topbar('Gabinete', cfg, { lock: true });
       } catch (e) { toast(e.message); }
     }
 

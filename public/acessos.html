@@ -81,14 +81,15 @@
     </div>
   </div>
 
-  <script src="/app.js"></script>
+  <script src="/app.js?v=ops-lock1"></script>
   <script>
+    window.BI_OPS_LOCK = true;
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     let editing = null;
 
     async function boot() {
       const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Acessos', cfg);
+      document.getElementById('top').innerHTML = topbar('Acessos', cfg, { lock: true });
       const u = getSessionUser();
       if (u && (u.papel === 'prefeito' || u.papel === 'admin') && localStorage.getItem('bi_token')) {
         await openApp();
@@ -146,7 +147,7 @@
           return;
         }
         setSession(r.token, r.user);
-        document.getElementById('top').innerHTML = topbar('Acessos', await loadCityBrand());
+        document.getElementById('top').innerHTML = topbar('Acessos', await loadCityBrand(), { lock: true });
         await openApp();
       } catch (e) { toast(e.message); }
     };

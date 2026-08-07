@@ -80,10 +80,11 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ia9"></script>
+  <script src="/app.js?v=ops-lock1"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_AUTH_SLOT = 'campo';
+    window.BI_OPS_LOCK = true;
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     let user, cfg, map, layer, selected;
     let timer = null;
@@ -193,7 +194,7 @@
 
     async function showApp() {
       cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Campo', cfg);
+      document.getElementById('top').innerHTML = topbar('Campo', cfg, { lock: true });
       loginView.style.display = 'none';
       appView.style.display = 'block';
       const iaNote = document.getElementById('iaOpsNote');
@@ -500,7 +501,7 @@
 
     (async () => {
       const cfg0 = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Campo', cfg0);
+      document.getElementById('top').innerHTML = topbar('Campo', cfg0, { lock: true });
       trySession();
     })();
   </script>

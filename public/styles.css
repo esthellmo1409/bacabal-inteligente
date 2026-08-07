@@ -565,6 +565,17 @@ a:hover { text-decoration: underline; }
 }
 .nav-logout:hover { border-color: #ff8000; color: #e67300; }
 
+.topbar-ops .brand {
+  cursor: default;
+  text-decoration: none;
+  pointer-events: none;
+}
+.topbar-ops .nav {
+  gap: 0.65rem;
+  align-items: center;
+}
+html[data-cidade="bomlugar"] .nav-logout:hover { border-color: #03327A; color: #03327A; }
+
 h1, h2, .display {
   font-family: var(--display);
   font-weight: 800;

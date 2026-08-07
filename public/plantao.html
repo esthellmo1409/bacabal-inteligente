@@ -38,15 +38,21 @@
       <a class="btn btn-sm" style="margin-top:0.75rem" id="linkGab" href="/prefeito.html">Ver no Gabinete</a>
     </div>
   </div>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=ops-lock1"></script>
   <script>
+    window.BI_OPS_LOCK = true;
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     let painel;
 
     async function boot() {
       const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Gabinete', cfg);
-      document.getElementById('linkGab').href = cityLink('/prefeito.html');
+      document.getElementById('top').innerHTML = topbar('Plantão', cfg, { lock: true });
+      document.getElementById('linkGab').href = cityLink('/login.html');
+      document.getElementById('linkGab').textContent = 'Trocar para Gabinete (Sair)';
+      document.getElementById('linkGab').onclick = (e) => {
+        e.preventDefault();
+        if (confirm('Sair do plantão para o Gabinete?')) logoutOps('/prefeito.html');
+      };
       await refresh();
     }
 
