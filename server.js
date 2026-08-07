@@ -385,22 +385,24 @@ function ensureDemoAprovacao(slug = 'bacabal') {
   writeTenant(slug, 'chamados.json', chamados);
 }
 
-/** Zera a fila uma vez (apresentação) e deixa o seedDemosIa recriar só o demo do problema. */
+/** Zera fila + notificações + WhatsApp (apresentação) e deixa o seed recriar só o demo de IA. */
 function limparChamadosParaDemo(slug = 'bacabal') {
   if (!getMunicipio(slug) && !fs.existsSync(tenantPath(slug, 'chamados.json'))) return;
-  const marker = path.join(DATA_DIR, `.limpar-chamados-${slug}-20260806c`);
+  const marker = path.join(DATA_DIR, `.limpar-chamados-${slug}-20260807a`);
   if (fs.existsSync(marker)) {
-    // Remove demo de aprovação se ainda existir (alerta “Avaliar foto do campo”)
+    // Mantém só o demo da foto do problema (IA de material) — remove aprovação e o resto
     const list = readTenant(slug, 'chamados.json', []);
-    const limpa = list.filter((c) => c.demoFixo !== 'buraco-aprov' && !String(c.id || '').includes('DEMO-APROV'));
+    const limpa = list.filter((c) => c.demoFixo === 'buraco-foto');
     if (limpa.length !== list.length) writeTenant(slug, 'chamados.json', limpa);
     return;
   }
   writeTenant(slug, 'chamados.json', []);
+  writeTenant(slug, 'notificacoes.json', []);
+  writeTenant(slug, 'whatsapp-log.json', []);
   try {
     fs.writeFileSync(marker, new Date().toISOString());
   } catch (_) { /* ok */ }
-  console.log(`  Chamados zerados (${slug}) para apresentação`);
+  console.log(`  Chamados/notificações zerados (${slug}) — só demo IA após seed`);
 }
 
 function seedDemosIa() {
