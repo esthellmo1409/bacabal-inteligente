@@ -80,7 +80,7 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-lock1"></script>
+  <script src="/app.js?v=fotos5"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_AUTH_SLOT = 'campo';
@@ -406,12 +406,12 @@
         ${iaObraAssistHtml(c)}
         <div class="actions" style="margin:0.85rem 0">
           <button class="btn btn-sm btn-primary" id="aceitar">Aceitar serviço</button>
-          <button class="btn btn-sm" id="antes">Tirar foto ANTES</button>
-          <button class="btn btn-sm" id="depois">Tirar foto DEPOIS</button>
+          <button class="btn btn-sm" id="antes">+ Foto ANTES (até 5)</button>
+          <button class="btn btn-sm" id="depois">+ Foto DEPOIS (até 5)</button>
         </div>
-        <input type="file" id="fAntes" accept="image/*" capture="environment" style="display:none" />
-        <input type="file" id="fDepois" accept="image/*" capture="environment" style="display:none" />
-        <label>Material usado</label>
+        <input type="file" id="fAntes" accept="image/*" capture="environment" multiple style="display:none" />
+        <input type="file" id="fDepois" accept="image/*" capture="environment" multiple style="display:none" />
+        <p class="muted" style="font-size:0.8rem;margin:0 0 0.75rem">Pode adicionar várias fotos em cada fase. A primeira vira capa.</p>        <label>Material usado</label>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
           <input id="matNome" placeholder="Ex.: asfalto frio" style="margin:0;flex:1" />
           <input id="matQtd" type="number" value="1" style="margin:0;max-width:80px" />
@@ -430,6 +430,7 @@
         }
       `;
       document.getElementById('osBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (typeof bindFotoThumbs === 'function') bindFotoThumbs(document.getElementById('osBox'));
       bindIaObraAssist(document.getElementById('osBox'), async (id) => {
         if (selected && selected.id === id) return selected;
         return api('/api/chamados/' + id);
@@ -458,13 +459,17 @@
         await withBusy(encerrarBtn, 'Enviando…', async () => {
           try {
             const atual = await api('/api/chamados/' + c.id);
-            if (!atual.fotoDepois) {
-              toast('Tire a foto DEPOIS antes de enviar');
+            if (!(atual.fotosDepois && atual.fotosDepois.length) && !atual.fotoDepois) {
+              toast('Adicione ao menos 1 foto DEPOIS antes de enviar');
               return;
             }
             await api('/api/chamados/' + c.id + '/os', {
               method: 'POST',
-              body: JSON.stringify({ acao: 'encerrar', custo: Number(custo.value), fotoDepois: atual.fotoDepois }),
+              body: JSON.stringify({
+                acao: 'encerrar',
+                custo: Number(custo.value),
+                fotoDepois: atual.fotoDepois || (atual.fotosDepois && atual.fotosDepois[0]),
+              }),
             });
             toast('Enviado à Obras — aguardando aprovação da foto');
             load();
@@ -475,19 +480,36 @@
     }
     window.openOS = openOS;
 
-    function readFoto(e, tipo) {
-      const f = e.target.files[0];
-      if (!f) return;
-      const r = new FileReader();
-      r.onload = async () => {
-        const foto = await compressImageDataUrl(r.result);
+    async function readFoto(e, tipo) {
+      const files = [...(e.target.files || [])].filter((f) => f && f.type && f.type.startsWith('image/'));
+      if (!files.length || !selected) return;
+      const MAX = 5;
+      const atual = await api('/api/chamados/' + selected.id);
+      const ja = tipo === 'antes'
+        ? (atual.fotosAntes || []).length
+        : (atual.fotosDepois || []).length;
+      const room = Math.max(0, MAX - ja);
+      if (room <= 0) {
+        toast('Máximo de ' + MAX + ' fotos do ' + tipo);
+        e.target.value = '';
+        return;
+      }
+      const slice = files.slice(0, room);
+      for (const f of slice) {
+        const dataUrl = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.onerror = reject;
+          r.readAsDataURL(f);
+        });
+        const foto = await compressImageDataUrl(dataUrl);
         await api('/api/chamados/' + selected.id + '/anexo', {
           method: 'POST', body: JSON.stringify({ foto, tipo }),
         });
-        toast('Foto ' + tipo);
-        openOS(selected.id);
-      };
-      r.readAsDataURL(f);
+      }
+      toast(slice.length + ' foto(s) ' + tipo + ' adicionada(s)');
+      e.target.value = '';
+      openOS(selected.id);
     }
 
     document.getElementById('somToggle')?.addEventListener('click', () => {

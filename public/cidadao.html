@@ -38,9 +38,10 @@
           <textarea id="descricao" placeholder="Ex.: vi o problema na rua, na frente do nº 120…"></textarea>
         </div>
 
-        <label>Foto do problema</label>
-        <input type="file" id="foto" accept="image/*" capture="environment" />
-        <img id="preview" class="preview" alt="Prévia" />
+        <label>Fotos do problema <span class="muted" style="font-weight:500">(até 5)</span></label>
+        <input type="file" id="foto" accept="image/*" capture="environment" multiple />
+        <div id="fotoGal" class="foto-pick-gal"></div>
+        <p class="muted" id="fotoHint" style="margin:0.35rem 0 0.75rem;font-size:0.8rem">Adicione ângulos diferentes: buraco, rua, placa. A 1ª foto é a capa.</p>
         <div id="iaBox" class="muted" style="margin-bottom:0.9rem;font-size:0.85rem"></div>
 
         <label>Bairro</label>
@@ -88,7 +89,7 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=fotos5"></script>
   <script src="/map.js"></script>
   <script>
     if (new URLSearchParams(location.search).get('cidade')) {
@@ -97,10 +98,83 @@
     if (!requireCidade()) throw new Error('sem cidade');
 
     let categoria = null;
-    let fotoData = null;
+    let fotosAntes = [];
+    const MAX_FOTOS = 5;
     let urgencia = null;
     let lat = -4.2917, lng = -44.7917;
     let map, marker;
+
+    function renderFotoGal() {
+      const gal = document.getElementById('fotoGal');
+      const hint = document.getElementById('fotoHint');
+      if (!fotosAntes.length) {
+        gal.innerHTML = '';
+        hint.textContent = 'Adicione ângulos diferentes: buraco, rua, placa. A 1ª foto é a capa.';
+        return;
+      }
+      gal.innerHTML = fotosAntes.map((u, i) => `
+        <div class="foto-pick-item">
+          <img src="${u}" alt="Foto ${i + 1}" onclick="openFotoLightbox(this.src)" />
+          ${i === 0 ? '<span class="foto-pick-capa">Capa</span>' : ''}
+          <button type="button" class="foto-pick-rm" data-i="${i}" title="Remover">×</button>
+        </div>
+      `).join('');
+      hint.textContent = `${fotosAntes.length}/${MAX_FOTOS} fotos · toque + para adicionar outra`;
+      gal.querySelectorAll('.foto-pick-rm').forEach((btn) => {
+        btn.onclick = () => {
+          fotosAntes.splice(Number(btn.dataset.i), 1);
+          renderFotoGal();
+        };
+      });
+    }
+
+    async function addFotosFromFiles(fileList) {
+      const files = [...(fileList || [])].filter((f) => f && f.type && f.type.startsWith('image/'));
+      if (!files.length) return;
+      const box = document.getElementById('iaBox');
+      const room = MAX_FOTOS - fotosAntes.length;
+      if (room <= 0) {
+        toast('Máximo de ' + MAX_FOTOS + ' fotos do problema');
+        return;
+      }
+      box.textContent = 'Otimizando fotos…';
+      const slice = files.slice(0, room);
+      for (const file of slice) {
+        const dataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        const compressed = await compressImageDataUrl(dataUrl);
+        fotosAntes.push(compressed);
+      }
+      renderFotoGal();
+      document.getElementById('foto').value = '';
+
+      // IA analisa a capa (1ª foto)
+      const capa = fotosAntes[0];
+      box.textContent = 'IA analisando a foto…';
+      try {
+        const ia = await api('/api/ia/foto', {
+          method: 'POST',
+          body: JSON.stringify({
+            foto: capa,
+            texto: document.getElementById('descricao').value,
+          }),
+        });
+        urgencia = ia.urgencia;
+        box.innerHTML = `<strong style="color:var(--brand)">IA ${ia.confianca}%</strong> — ${ia.label} · urgência ${ia.urgencia}. ${ia.aviso}`;
+        categoria = ia.categoria;
+        document.querySelectorAll('.cat').forEach(el => {
+          el.classList.toggle('selected', el.dataset.id === ia.categoria);
+        });
+        const desc = document.getElementById('descricao');
+        if (!desc.value.trim()) desc.value = ia.descricaoSugerida;
+      } catch (err) {
+        box.textContent = 'Não foi possível analisar — escolha o tipo manualmente.';
+      }
+    }
 
     function renderMeus() {
       const box = document.getElementById('meus');
@@ -290,39 +364,8 @@
       }
     }
 
-    document.getElementById('foto').onchange = e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const box = document.getElementById('iaBox');
-        box.textContent = 'Otimizando foto…';
-        fotoData = await compressImageDataUrl(reader.result);
-        const img = document.getElementById('preview');
-        img.src = fotoData;
-        img.classList.add('show');
-        box.textContent = 'IA analisando a foto…';
-        try {
-          const ia = await api('/api/ia/foto', {
-            method: 'POST',
-            body: JSON.stringify({
-              foto: fotoData,
-              texto: document.getElementById('descricao').value,
-            }),
-          });
-          urgencia = ia.urgencia;
-          box.innerHTML = `<strong style="color:var(--brand)">IA ${ia.confianca}%</strong> — ${ia.label} · urgência ${ia.urgencia}. ${ia.aviso}`;
-          categoria = ia.categoria;
-          document.querySelectorAll('.cat').forEach(el => {
-            el.classList.toggle('selected', el.dataset.id === ia.categoria);
-          });
-          const desc = document.getElementById('descricao');
-          if (!desc.value.trim()) desc.value = ia.descricaoSugerida;
-        } catch (err) {
-          box.textContent = 'Não foi possível analisar — escolha o tipo manualmente.';
-        }
-      };
-      reader.readAsDataURL(file);
+    document.getElementById('foto').onchange = (e) => {
+      addFotosFromFiles(e.target.files).catch((err) => toast(err.message || 'Erro na foto'));
     };
 
     document.getElementById('enviar').onclick = async () => {
@@ -331,8 +374,9 @@
       const endereco = document.getElementById('endereco').value.trim();
       const nome = document.getElementById('nome').value.trim();
       if (!nome) return toast('Informe o seu nome');
-      if (!descricao && !fotoData && !endereco) return toast('Informe foto, descrição ou endereço do problema');
+      if (!descricao && !fotosAntes.length && !endereco) return toast('Informe foto, descrição ou endereço do problema');
       const descricaoFinal = descricao || (endereco ? 'Problema em: ' + endereco : '');
+      const fotoData = fotosAntes[0] || null;
 
       const btn = document.getElementById('enviar');
       await withBusy(btn, 'Enviando chamado…', async () => {
@@ -363,6 +407,7 @@
               telefone: document.getElementById('telefone').value.trim(),
               lat, lng,
               foto: fotoData,
+              fotosAntes,
               urgencia,
               prioridade: urgencia === 'alta' ? 'alta' : urgencia === 'baixa' ? 'baixa' : 'media',
             }),
@@ -393,14 +438,15 @@
           document.getElementById('descricao').value = '';
           document.getElementById('endereco').value = '';
           document.getElementById('foto').value = '';
-          fotoData = null;
+          fotosAntes = [];
+          renderFotoGal();
           urgencia = null;
-          document.getElementById('preview').classList.remove('show');
           document.getElementById('iaBox').textContent = '';
           document.querySelectorAll('.cat').forEach(x => x.classList.remove('selected'));
           categoria = null;
 
           renderChamado(chamado);
+          if (typeof bindFotoThumbs === 'function') bindFotoThumbs(document.getElementById('resultado'));
           toast('Protocolo ' + chamado.protocolo);
         } catch (e) {
           toast(e.message);

@@ -1084,14 +1084,20 @@ async function handleAPI(req, res, pathname, url) {
     }
 
     if (!cat) return sendJSON(res, 400, { error: 'Categoria inválida' });
-    if (!body.descricao && !body.foto) {
+    const temFoto = !!(body.foto || (Array.isArray(body.fotosAntes) && body.fotosAntes.length) || (Array.isArray(body.fotos) && body.fotos.length));
+    if (!body.descricao && !temFoto) {
       return sendJSON(res, 400, { error: 'Informe descrição ou foto' });
     }
 
     // Sem foto anexada: usa a foto padrão de buraco (base de teste do assistente)
     const fotoFile = path.join(PUBLIC_DIR, 'assets', 'buraco-demo-antes.jpg');
-    const fotoPadrao = (!body.foto && fs.existsSync(fotoFile)) ? FOTO_DEMO_BURACO : null;
-    const fotoFinal = body.foto || fotoPadrao;
+    const fotosIn = Array.isArray(body.fotosAntes)
+      ? body.fotosAntes
+      : (Array.isArray(body.fotos) ? body.fotos : (body.foto ? [body.foto] : []));
+    let fotosAntes = fotosIn.filter((u) => typeof u === 'string' && u.length > 8).slice(0, 5);
+    const fotoPadrao = (!fotosAntes.length && fs.existsSync(fotoFile)) ? FOTO_DEMO_BURACO : null;
+    if (fotoPadrao) fotosAntes.push(fotoPadrao);
+    const fotoFinal = fotosAntes[0] || null;
 
     const chamados = readTenant(slug, 'chamados.json', []);
     const dups = detectarDuplicidade(chamados, {
@@ -1126,12 +1132,16 @@ async function handleAPI(req, res, pathname, url) {
       foto: fotoFinal,
       fotoAntes: fotoFinal,
       fotoDepois: null,
-      anexos: fotoFinal ? [{ tipo: 'foto', url: fotoFinal, em: now }] : [],
+      fotosAntes,
+      fotosDepois: [],
+      anexos: fotosAntes.map((url) => ({ tipo: 'foto', url, em: now })),
       posteId: body.posteId || null,
       historico: [{
         em: now,
         status: 'novo',
-        nota: 'Chamado aberto pelo cidadão com foto',
+        nota: fotosAntes.length > 1
+          ? `Chamado aberto com ${fotosAntes.length} fotos do problema`
+          : 'Chamado aberto pelo cidadão com foto',
       }],
       criadoEm: now,
       atualizadoEm: now,

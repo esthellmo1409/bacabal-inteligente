@@ -187,10 +187,39 @@ function badge(status) {
   return `<span class="badge badge-${s}">${statusLabel(status)}</span>`;
 }
 
+/** Galeria de miniaturas (clique amplia). */
+function fotoGaleriaHtml(urls, label) {
+  const list = (urls || []).filter(Boolean);
+  if (!list.length) {
+    return `<div class="antes-depois-empty">Sem foto</div>`;
+  }
+  const capa = list[0];
+  const extras = list.slice(1);
+  return `
+    <img class="preview show foto-zoom" src="${capa}" alt="${label}" onclick="openFotoLightbox(this.src)" />
+    ${extras.length ? `
+      <div class="foto-thumbs">
+        ${list.map((u, i) => `
+          <button type="button" class="foto-thumb ${i === 0 ? 'on' : ''}" data-foto-src="${String(u).replace(/"/g, '&quot;')}" title="Foto ${i + 1}">
+            <img src="${u}" alt="" />
+          </button>
+        `).join('')}
+      </div>
+      <div class="foto-count muted">${list.length} fotos</div>
+    ` : ''}
+  `;
+}
+
 /** Foto do problema (cidadão) — ou Antes/Depois quando o campo já enviou a prova. */
 function antesDepoisHtml(c) {
-  const antes = c.fotoAntes || c.foto;
-  const depois = c.fotoDepois;
+  const fotosAntes = (c.fotosAntes && c.fotosAntes.length)
+    ? c.fotosAntes
+    : ((c.fotoAntes || c.foto) ? [c.fotoAntes || c.foto] : []);
+  const fotosDepois = (c.fotosDepois && c.fotosDepois.length)
+    ? c.fotosDepois
+    : (c.fotoDepois ? [c.fotoDepois] : []);
+  const antes = fotosAntes[0];
+  const depois = fotosDepois[0];
   if (!antes && !depois) return '';
 
   const faseProva =
@@ -198,15 +227,12 @@ function antesDepoisHtml(c) {
     c.status === 'aguardando_aprovacao' ||
     c.status === 'concluido';
 
-  // Planejamento / execução: só a foto do problema (IA sugere material)
   if (!faseProva) {
     return `
     <div class="antes-depois antes-depois-problema">
       <div class="antes-depois-item antes-depois-item-full">
-        <div class="antes-depois-label">Foto do problema</div>
-        ${antes
-          ? `<img class="preview show foto-zoom" src="${antes}" alt="Foto do problema" onclick="openFotoLightbox(this.src)" />`
-          : `<div class="antes-depois-empty">Sem foto</div>`}
+        <div class="antes-depois-label">Foto do problema${fotosAntes.length > 1 ? ` (${fotosAntes.length})` : ''}</div>
+        ${fotoGaleriaHtml(fotosAntes, 'Foto do problema')}
       </div>
     </div>
   `;
@@ -215,15 +241,13 @@ function antesDepoisHtml(c) {
   return `
     <div class="antes-depois">
       <div class="antes-depois-item">
-        <div class="antes-depois-label">Antes</div>
-        ${antes
-          ? `<img class="preview show foto-zoom" src="${antes}" alt="Foto antes" onclick="openFotoLightbox(this.src)" />`
-          : `<div class="antes-depois-empty">Sem foto</div>`}
+        <div class="antes-depois-label">Antes${fotosAntes.length > 1 ? ` (${fotosAntes.length})` : ''}</div>
+        ${fotoGaleriaHtml(fotosAntes, 'Foto antes')}
       </div>
       <div class="antes-depois-item">
-        <div class="antes-depois-label">Depois</div>
-        ${depois
-          ? `<img class="preview show foto-zoom" src="${depois}" alt="Foto depois" onclick="openFotoLightbox(this.src)" />`
+        <div class="antes-depois-label">Depois${fotosDepois.length > 1 ? ` (${fotosDepois.length})` : ''}</div>
+        ${fotosDepois.length
+          ? fotoGaleriaHtml(fotosDepois, 'Foto depois')
           : `<div class="antes-depois-empty">${
               c.status === 'concluido'
                 ? 'Aguardando registro'
@@ -234,6 +258,18 @@ function antesDepoisHtml(c) {
       </div>
     </div>
   `;
+}
+
+function bindFotoThumbs(root) {
+  (root || document).querySelectorAll('.foto-thumb[data-foto-src]').forEach((btn) => {
+    if (btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openFotoLightbox(btn.getAttribute('data-foto-src'));
+    });
+  });
 }
 
 function openFotoLightbox(src) {
