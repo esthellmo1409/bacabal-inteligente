@@ -696,7 +696,7 @@ function serveBrandedPage(req, res, url) {
   let html = fs.readFileSync(filePath, 'utf8');
   const slug = (url.searchParams.get('cidade') || '').trim() || 'bacabal';
   // Páginas Anselmo Carvalho / uso interno Bacabal — nunca rebrandear para Bom Lugar
-  const keepBacabal = /ac-pitch|ac-script|data-keep-bacabal/i.test(rel + html.slice(0, 800));
+  const keepBacabal = /ac-pitch|ac-script|ac-precos|data-keep-bacabal/i.test(rel + html.slice(0, 800));
   if (!keepBacabal) {
     html = brandHtmlForCity(html, slug, { isHome: rel === '/index.html' || url.pathname === '/' });
   }
