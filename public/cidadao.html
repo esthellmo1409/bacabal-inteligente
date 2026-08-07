@@ -284,6 +284,7 @@
         marker.setLatLng([c.lat, c.lng]);
         map.setView([c.lat, c.lng], 16);
       }
+      if (typeof bindFotoThumbs === 'function') bindFotoThumbs(box);
     }
 
     async function init() {
@@ -446,7 +447,6 @@
           categoria = null;
 
           renderChamado(chamado);
-          if (typeof bindFotoThumbs === 'function') bindFotoThumbs(document.getElementById('resultado'));
           toast('Protocolo ' + chamado.protocolo);
         } catch (e) {
           toast(e.message);
