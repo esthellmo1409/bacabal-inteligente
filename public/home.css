@@ -773,21 +773,21 @@ html[data-cidade="bomlugar"] .landing-nav .nav-protocolo:hover {
   gap: 0.65rem;
   padding: 0.85rem 1.25rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #ff8000, #398a21);
+  background: var(--pmb-orange, #ff8000);
   color: #fff !important;
   font-weight: 800;
   font-size: 0.95rem;
   letter-spacing: -0.02em;
   text-decoration: none !important;
-  box-shadow: 0 10px 24px rgba(57, 138, 33, 0.28);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 8px 20px rgba(255, 128, 0, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
   white-space: nowrap;
 }
 
 .btn-pratica:hover {
-  filter: brightness(1.05);
+  background: var(--pmb-orange-deep, #e67300);
   transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(57, 138, 33, 0.34);
+  box-shadow: 0 12px 24px rgba(255, 128, 0, 0.34);
   color: #fff !important;
 }
 
@@ -813,12 +813,13 @@ html[data-cidade="bomlugar"] .landing-pratica-copy h2 {
 }
 
 html[data-cidade="bomlugar"] .btn-pratica {
-  background: linear-gradient(135deg, #03327A, #022456);
-  box-shadow: 0 10px 24px rgba(3, 50, 122, 0.3);
+  background: #03327A;
+  box-shadow: 0 8px 20px rgba(3, 50, 122, 0.28);
 }
 
 html[data-cidade="bomlugar"] .btn-pratica:hover {
-  box-shadow: 0 14px 28px rgba(3, 50, 122, 0.38);
+  background: #022456;
+  box-shadow: 0 12px 24px rgba(3, 50, 122, 0.34);
 }
 
 @media (max-width: 700px) {
