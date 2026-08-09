@@ -99,7 +99,7 @@
     html.brand-ready body.landing { visibility: visible; }
   </style>
   <link rel="stylesheet" href="/styles.css" />
-  <link rel="stylesheet" href="/home.css?v=15" />
+  <link rel="stylesheet" href="/home.css?v=16" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <script>
@@ -260,34 +260,22 @@
           <span>A cidade conectada de verdade</span>
         </div>
       </a>
-      <nav class="landing-nav" aria-label="Principal">
+      <nav class="landing-nav landing-nav--clean" aria-label="Principal">
+        <a href="/fluxo.html?cidade=bacabal">Como funciona</a>
+        <a href="/cidadao.html?cidade=bacabal" id="navCidadao">Cidadão</a>
+        <a href="/mapa.html?cidade=bacabal">Mapa</a>
         <a href="#protocoloHome" class="nav-protocolo" id="navAcompanhar">
-          <svg class="nav-protocolo-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+          <svg class="nav-protocolo-ico" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false">
             <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/>
             <path d="M15.5 15.5L21 21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
           </svg>
-          <span class="nav-protocolo-label-full">Acompanhar protocolo</span>
+          <span class="nav-protocolo-label-full">Acompanhar</span>
           <span class="nav-protocolo-label-short">Acompanhar</span>
         </a>
-        <a href="/fluxo.html?cidade=bacabal">Como funciona</a>
-        <div class="nav-drop">
-          <button type="button" class="nav-cidadao" id="navCidadao" aria-expanded="false" aria-haspopup="true">
-            Cidadão
-          </button>
-          <div class="nav-drop-menu" id="navCidadaoMenu" hidden>
-            <a href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
-          </div>
-        </div>
-        <a href="/mapa.html?cidade=bacabal">Mapa</a>
-        <div class="nav-drop">
-          <button type="button" class="nav-admin" id="navAdmin" aria-expanded="false" aria-haspopup="true">
-            <span class="label-full">Área administrativa</span>
-            <span class="label-short">Admin</span>
-          </button>
-          <div class="nav-drop-menu nav-drop-menu-admin" id="navAdminMenu" hidden>
-            <a href="/login.html?cidade=bacabal">Acessar</a>
-          </div>
-        </div>
+        <a href="/login.html?cidade=bacabal" class="nav-admin-link" id="navAdmin">
+          <span class="label-full">Área administrativa</span>
+          <span class="label-short">Admin</span>
+        </a>
       </nav>
     </div>
   </header>
@@ -568,8 +556,6 @@
       if (navAcompanhar && input) {
         navAcompanhar.addEventListener('click', (e) => {
           e.preventDefault();
-          document.querySelectorAll('.nav-drop-menu').forEach((m) => { m.hidden = true; });
-          document.querySelectorAll('.nav-cidadao, .nav-admin').forEach((b) => b.setAttribute('aria-expanded', 'false'));
           const box = document.getElementById('protocoloHome');
           if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
           setTimeout(() => {
@@ -579,70 +565,6 @@
           }, 280);
         });
       }
-    })();
-
-    (function () {
-      function pulseCta(el, pulseClass) {
-        if (!el) return;
-        el.classList.remove('cta-pulse', 'cta-pulse-admin');
-        void el.offsetWidth;
-        el.classList.add(pulseClass || 'cta-pulse');
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        try { el.focus({ preventScroll: true }); } catch (_) { /* ok */ }
-        setTimeout(() => el.classList.remove('cta-pulse', 'cta-pulse-admin'), 3800);
-      }
-
-      function focusAbrirChamado() {
-        if (typeof window.__homeCarouselGo === 'function') window.__homeCarouselGo(0);
-        const cta =
-          document.getElementById('ctaAbrirChamado') ||
-          document.querySelector('.carousel-slide.is-active .btn-hero-primary');
-        pulseCta(cta, 'cta-pulse');
-      }
-
-      function focusAcessarSistema() {
-        // Slide da gestão — botão Acessar sistema
-        if (typeof window.__homeCarouselGo === 'function') window.__homeCarouselGo(2);
-        const cta =
-          document.getElementById('ctaAcessarSistema') ||
-          document.querySelector('.carousel-slide.is-active .btn-hero-primary');
-        // Espera o slide trocar pra rolar no botão certo
-        setTimeout(() => pulseCta(cta, 'cta-pulse-admin'), 80);
-      }
-
-      function bindDrop(btnId, menuId) {
-        const btn = document.getElementById(btnId);
-        const menu = document.getElementById(menuId);
-        if (!btn || !menu) return;
-        const close = () => {
-          menu.hidden = true;
-          btn.setAttribute('aria-expanded', 'false');
-        };
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const willOpen = menu.hidden;
-          document.querySelectorAll('.nav-drop-menu').forEach((m) => { m.hidden = true; });
-          document.querySelectorAll('.nav-cidadao, .nav-admin').forEach((b) => b.setAttribute('aria-expanded', 'false'));
-          if (willOpen) {
-            menu.hidden = false;
-            btn.setAttribute('aria-expanded', 'true');
-          }
-          if (!willOpen) return;
-          if (btnId === 'navCidadao') setTimeout(focusAbrirChamado, 60);
-          if (btnId === 'navAdmin') setTimeout(focusAcessarSistema, 60);
-        });
-        menu.addEventListener('click', (e) => e.stopPropagation());
-        // Evita fechar no mesmo toque do celular
-        setTimeout(() => {
-          document.addEventListener('click', close);
-        }, 10);
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') close();
-        });
-      }
-      bindDrop('navCidadao', 'navCidadaoMenu');
-      bindDrop('navAdmin', 'navAdminMenu');
     })();
 
     // Carousel — 3 slides, como o banner do portal
