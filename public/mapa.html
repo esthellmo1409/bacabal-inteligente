@@ -174,19 +174,6 @@
       document.getElementById('top').innerHTML = topbar('Mapa', cfg);
       document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
 
-      const u = (typeof getSessionUser === 'function') ? getSessionUser() : null;
-      const actions = document.getElementById('mapHeroActions');
-      if (actions && u && ['prefeito', 'admin', 'secretaria'].includes(u.papel)) {
-        if (u.papel === 'prefeito' || u.papel === 'admin') {
-          actions.insertAdjacentHTML('beforeend',
-            `<a class="btn btn-sm" href="${cityLink('/prefeito.html')}">Gabinete</a>`);
-        }
-        if (u.papel === 'secretaria' || u.papel === 'admin') {
-          actions.insertAdjacentHTML('beforeend',
-            `<a class="btn btn-sm" href="${cityLink('/secretaria.html')}">Minha secretaria</a>`);
-        }
-      }
-
       fStatus.innerHTML = '<option value="">Status</option>' + statusOptions();
       fSec.innerHTML = '<option value="">Secretaria</option>' +
         (cfg.secretarias || []).map(s => `<option value="${s.id}">${s.nome}</option>`).join('');

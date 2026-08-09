@@ -632,15 +632,17 @@ function logoutOps(dest) {
 
 /**
  * Topbar.
- * opts.lock / BI_OPS_LOCK / BI_AUTH_SLOT: área administrativa travada —
- * logado só vê Sair (não pula para Início/Campo/Gabinete misturando sessão).
+ * - Área ops (opts.lock / BI_OPS_LOCK / BI_AUTH_SLOT): logado vê só usuário + Sair.
+ * - Páginas públicas: sempre topo de visitante (ignora sessão de campo/secretaria/gabinete),
+ *   para não misturar crachá administrativo na vitrine (Mapa, Cidadão, etc.).
  */
 function topbar(active, cfg, opts = {}) {
   const nome = cfg?.produto || window.__CITY_PRODUTO || 'Cidade Conecta';
   const sub = cfg?.tagline
     || `${cfg?.cidade || window.__CITY_NOME || ''} · ${cfg?.uf || 'MA'}`;
-  const user = getSessionUser();
   const opsLock = !!(opts.lock || window.BI_OPS_LOCK || window.BI_AUTH_SLOT);
+  // Só lê sessão em área administrativa; no público o topo fica limpo
+  const user = opsLock ? getSessionUser() : null;
 
   // Área administrativa logada: sem atalhos — só Sair
   if (opsLock && user) {
@@ -661,46 +663,18 @@ function topbar(active, cfg, opts = {}) {
   </div>`;
   }
 
-  // Público / login sem sessão
-  let links = [
+  // Visitante / login / página pública
+  const links = [
     [cityLink('/'), 'Início'],
     [cityLink('/fluxo.html'), 'Como funciona'],
     [cityLink('/cidadao.html'), 'Cidadão'],
     [cityLink('/mapa.html'), 'Mapa'],
+    [cityLink('/login.html'), 'Área administrativa'],
   ];
-
-  if (!user) {
-    links.push([cityLink('/login.html'), 'Área administrativa']);
-  } else if (!opsLock) {
-    // Logado em página pública: ainda assim não misturar — só Sair para trocar de área
-    const papel = user.papel;
-    if (papel === 'prefeito' || papel === 'admin') {
-      links = [[cityLink('/prefeito.html'), 'Gabinete']];
-    } else if (papel === 'secretaria') {
-      links = [[cityLink('/secretaria.html'), 'Minha secretaria']];
-    } else if (papel === 'campo') {
-      links = [[cityLink('/equipes.html'), 'Campo']];
-    } else {
-      links = [];
-    }
-    if (papel === 'admin') {
-      links.push([cityLink('/acessos.html'), 'Acessos']);
-    }
-  }
-
-  const userBit = user
-    ? `<span class="nav-user">${user.nome || user.id}</span>
-       <button type="button" class="nav-logout" onclick="logoutOps('/')">Sair</button>`
-    : '';
-
-  const brandHref = user ? '#' : cityLink('/');
-  const brandClick = user
-    ? `onclick="event.preventDefault();if(confirm('Sair da área administrativa para ir ao início?'))logoutOps('/');"`
-    : '';
 
   return `
   <div class="topbar">
-    <a class="brand" href="${brandHref}" ${brandClick}>
+    <a class="brand" href="${cityLink('/')}">
       <div class="brand-mark"><img src="${cfg?.logo || '/assets/logo-prefeitura.png'}" alt="Brasão de ${cfg?.cidade || ''}" /></div>
       <div>
         <strong>${nome}</strong>
@@ -708,12 +682,9 @@ function topbar(active, cfg, opts = {}) {
       </div>
     </a>
     <nav class="nav">
-      ${!user ? links.map(([href, label]) =>
-        `<a href="${href}" class="${active === label ? 'active' : ''}">${label}</a>`
-      ).join('') : links.map(([href, label]) =>
+      ${links.map(([href, label]) =>
         `<a href="${href}" class="${active === label ? 'active' : ''}">${label}</a>`
       ).join('')}
-      ${userBit}
     </nav>
   </div>`;
 }
