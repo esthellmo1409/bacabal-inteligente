@@ -99,7 +99,7 @@
     html.brand-ready body.landing { visibility: visible; }
   </style>
   <link rel="stylesheet" href="/styles.css" />
-  <link rel="stylesheet" href="/home.css?v=12" />
+  <link rel="stylesheet" href="/home.css?v=13" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <script>
@@ -261,6 +261,14 @@
         </div>
       </a>
       <nav class="landing-nav" aria-label="Principal">
+        <a href="#protocoloHome" class="nav-protocolo" id="navAcompanhar">
+          <svg class="nav-protocolo-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+            <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M15.5 15.5L21 21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          <span class="nav-protocolo-label-full">Acompanhar protocolo</span>
+          <span class="nav-protocolo-label-short">Acompanhar</span>
+        </a>
         <a href="/fluxo.html?cidade=bacabal">Como funciona</a>
         <div class="nav-drop">
           <button type="button" class="nav-cidadao" id="navCidadao" aria-expanded="false" aria-haspopup="true">
@@ -268,7 +276,6 @@
           </button>
           <div class="nav-drop-menu" id="navCidadaoMenu" hidden>
             <a href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
-            <a href="#protocoloHome" id="navAcompanhar">Acompanhar protocolo</a>
           </div>
         </div>
         <a href="/mapa.html?cidade=bacabal">Mapa</a>
@@ -354,7 +361,13 @@
   <section class="landing-protocol" id="protocoloHome" aria-label="Acompanhar protocolo">
     <form class="landing-protocol-form" id="formProtocoloHome">
       <div class="landing-protocol-copy">
-        <strong>Acompanhar protocolo</strong>
+        <strong>
+          <svg class="landing-protocol-ico" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+            <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M15.5 15.5L21 21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          Acompanhar protocolo
+        </strong>
         <span>Digite o número e veja o andamento do seu chamado</span>
       </div>
       <div class="landing-protocol-fields">
@@ -366,7 +379,13 @@
           placeholder="Ex.: 20261064"
           aria-label="Número do protocolo"
         />
-        <button type="submit" class="btn btn-primary">Consultar</button>
+        <button type="submit" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+            <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M15.5 15.5L21 21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          Consultar
+        </button>
       </div>
     </form>
   </section>

@@ -308,6 +308,40 @@ html[data-cidade="bomlugar"] .btn-hero-ghost:hover {
   background: var(--pmb-orange-deep);
 }
 
+.landing-nav .nav-protocolo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fff;
+  color: var(--pmb-green-deep) !important;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+}
+
+.landing-nav .nav-protocolo:hover {
+  background: #f4fff0;
+  color: var(--pmb-green-deep) !important;
+}
+
+.landing-nav .nav-protocolo-ico {
+  flex-shrink: 0;
+}
+
+.landing-nav .nav-protocolo-label-short {
+  display: none;
+}
+
+html[data-cidade="bomlugar"] .landing-nav .nav-protocolo {
+  background: #fff;
+  color: #03327A !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+}
+
+html[data-cidade="bomlugar"] .landing-nav .nav-protocolo:hover {
+  background: #eef3fb;
+  color: #022456 !important;
+}
+
 .landing-nav .nav-drop {
   position: relative;
 }
@@ -711,10 +745,29 @@ html[data-cidade="bomlugar"] .btn-hero-ghost:hover {
 }
 
 .landing-protocol-copy strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: 1.05rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--pmb-ink, #142033);
+}
+
+.landing-protocol-ico {
+  flex-shrink: 0;
+  color: var(--home-accent, var(--pmb-orange, #ff8000));
+}
+
+.landing-protocol-fields .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.landing-protocol-fields .btn svg {
+  flex-shrink: 0;
 }
 
 .landing-protocol-copy span {
@@ -1297,7 +1350,19 @@ html[data-cidade="bomlugar"] .landing-footer-inner .footer-social a {
     box-sizing: border-box;
     flex-wrap: nowrap;
   }
-  .landing-nav a:not(.nav-cta) { display: none; }
+  .landing-nav a:not(.nav-cta):not(.nav-protocolo) { display: none; }
+  .landing-nav .nav-protocolo {
+    display: inline-flex !important;
+    grid-column: 1 / -1;
+    order: -1;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.7rem 0.75rem;
+    font-size: 0.88rem;
+  }
+  .landing-nav .nav-protocolo-label-full { display: none; }
+  .landing-nav .nav-protocolo-label-short { display: inline; }
   .landing-nav .nav-drop {
     display: block;
     width: 100%;
