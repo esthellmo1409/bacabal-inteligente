@@ -99,7 +99,7 @@
     html.brand-ready body.landing { visibility: visible; }
   </style>
   <link rel="stylesheet" href="/styles.css" />
-  <link rel="stylesheet" href="/home.css?v=13" />
+  <link rel="stylesheet" href="/home.css?v=14" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <script>
@@ -388,6 +388,20 @@
         </button>
       </div>
     </form>
+  </section>
+
+  <section class="landing-pratica" aria-label="Veja na prática">
+    <div class="landing-pratica-card">
+      <div class="landing-pratica-copy">
+        <p class="eyebrow">Demonstração</p>
+        <h2>Veja na prática</h2>
+        <p>Como os chamados aparecem para a gestão — um clipe curto da cidade em ação.</p>
+      </div>
+      <a class="btn-pratica" id="ctaVejaPratica" href="/tv.html?cidade=bacabal" target="_blank" rel="noopener">
+        <span class="btn-pratica-play" aria-hidden="true">▶</span>
+        Veja na prática
+      </a>
+    </div>
   </section>
 
   <main class="landing-main">
@@ -817,6 +831,17 @@
       const homeProt = document.getElementById('homeProtocolo');
       if (homeProt) {
         homeProt.placeholder = slug === 'bomlugar' ? 'Ex.: 20269064' : 'Ex.: 20261064';
+      }
+      const vejaPratica = document.getElementById('ctaVejaPratica');
+      if (vejaPratica) {
+        vejaPratica.href = slug === 'bomlugar'
+          ? cityLink('/tv-bomlugar.html')
+          : cityLink('/tv.html');
+        vejaPratica.setAttribute('aria-label',
+          slug === 'bomlugar'
+            ? 'Veja na prática — clipe Bom Lugar Conecta'
+            : 'Veja na prática — clipe Bacabal Conecta'
+        );
       }
       document.documentElement.classList.remove('brand-pending');
       document.documentElement.classList.add('brand-ready');

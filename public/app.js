@@ -474,8 +474,10 @@ function applyPageBrand(cfg) {
     document.querySelectorAll('a[href*="tv.html"]').forEach((a) => {
       const href = a.getAttribute('href') || '';
       if (href.includes('tv-bomlugar')) return;
-      a.href = '/tv-bomlugar.html';
-      if (/Bacabal|TV/i.test(a.textContent || '')) a.textContent = 'Clipe TV Bom Lugar';
+      a.href = cityLink('/tv-bomlugar.html');
+      // Não sobrescreve rótulos da home (ex.: "Veja na prática")
+      if (a.id === 'ctaVejaPratica' || a.classList.contains('btn-pratica')) return;
+      if (/Bacabal|TV|Clipe/i.test(a.textContent || '')) a.textContent = 'Clipe TV Bom Lugar';
     });
   }
 
