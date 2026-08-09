@@ -682,6 +682,125 @@ html[data-cidade="bomlugar"] .btn-hero-ghost:hover {
   color: var(--pmb-muted);
 }
 
+/* Consulta de protocolo (home) */
+.landing-protocol {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 1rem auto 0;
+  position: relative;
+  z-index: 5;
+}
+
+.landing-protocol-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.25rem;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border: 1px solid var(--pmb-line);
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+}
+
+.landing-protocol-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: min(100%, 220px);
+}
+
+.landing-protocol-copy strong {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--pmb-ink, #142033);
+}
+
+.landing-protocol-copy span {
+  font-size: 0.88rem;
+  color: var(--pmb-muted, #5b677a);
+  line-height: 1.35;
+}
+
+.landing-protocol-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+  flex: 1 1 260px;
+  justify-content: flex-end;
+}
+
+.landing-protocol-fields input {
+  flex: 1 1 160px;
+  min-width: 140px;
+  max-width: 280px;
+  margin: 0;
+  padding: 0.75rem 0.95rem;
+  border: 1px solid #d8dee8;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: #f8fafc;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.landing-protocol-fields input:focus {
+  outline: none;
+  border-color: var(--home-accent, var(--brand, #2163e8));
+  background: #fff;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--home-accent, var(--brand, #2163e8)) 22%, transparent);
+}
+
+.landing-protocol-fields input.protocol-focus {
+  border-color: var(--home-accent, var(--brand, #2163e8));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--home-accent, var(--brand, #2163e8)) 28%, transparent);
+}
+
+.landing-protocol-fields .btn {
+  white-space: nowrap;
+  border-radius: 12px;
+  padding: 0.75rem 1.2rem;
+  font-weight: 700;
+}
+
+html[data-cidade="bomlugar"] .landing-protocol-form {
+  border-color: rgba(3, 50, 122, 0.18);
+  box-shadow: 0 12px 32px rgba(3, 50, 122, 0.08);
+}
+
+html[data-cidade="bomlugar"] .landing-protocol-copy strong {
+  color: #03327A;
+}
+
+html[data-cidade="bomlugar"] .landing-protocol-fields .btn-primary {
+  background: #03327A;
+  border-color: #03327A;
+}
+
+html[data-cidade="bomlugar"] .landing-protocol-fields .btn-primary:hover {
+  background: #022456;
+  border-color: #022456;
+}
+
+@media (max-width: 700px) {
+  .landing-protocol-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .landing-protocol-fields {
+    justify-content: stretch;
+  }
+  .landing-protocol-fields input {
+    max-width: none;
+  }
+  .landing-protocol-fields .btn {
+    width: 100%;
+  }
+}
+
 .landing-metric .value {
   font-size: 1.85rem;
   font-weight: 800;

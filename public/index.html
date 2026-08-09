@@ -99,7 +99,7 @@
     html.brand-ready body.landing { visibility: visible; }
   </style>
   <link rel="stylesheet" href="/styles.css" />
-  <link rel="stylesheet" href="/home.css?v=11" />
+  <link rel="stylesheet" href="/home.css?v=12" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <script>
@@ -268,6 +268,7 @@
           </button>
           <div class="nav-drop-menu" id="navCidadaoMenu" hidden>
             <a href="/cidadao.html?cidade=bacabal">Abrir chamado</a>
+            <a href="#protocoloHome" id="navAcompanhar">Acompanhar protocolo</a>
           </div>
         </div>
         <a href="/mapa.html?cidade=bacabal">Mapa</a>
@@ -349,6 +350,26 @@
   </section>
 
   <div class="landing-metrics" id="stats" aria-live="polite"></div>
+
+  <section class="landing-protocol" id="protocoloHome" aria-label="Acompanhar protocolo">
+    <form class="landing-protocol-form" id="formProtocoloHome">
+      <div class="landing-protocol-copy">
+        <strong>Acompanhar protocolo</strong>
+        <span>Digite o número e veja o andamento do seu chamado</span>
+      </div>
+      <div class="landing-protocol-fields">
+        <input
+          id="homeProtocolo"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="Ex.: 20261064"
+          aria-label="Número do protocolo"
+        />
+        <button type="submit" class="btn btn-primary">Consultar</button>
+      </div>
+    </form>
+  </section>
 
   <main class="landing-main">
     <div class="landing-section-head landing-ia-note" id="landingIaNote">
@@ -486,6 +507,45 @@
       initCidade();
       const brand = document.getElementById('landingBrand');
       if (brand) brand.setAttribute('href', cityLink('/'));
+      rewriteCityLinks();
+    })();
+
+    (function () {
+      const form = document.getElementById('formProtocoloHome');
+      const input = document.getElementById('homeProtocolo');
+      if (form && input) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const p = input.value.trim();
+          if (!p) {
+            toast('Informe o protocolo');
+            input.focus();
+            return;
+          }
+          try {
+            const u = new URL(cityLink('/cidadao.html'), location.origin);
+            u.searchParams.set('protocolo', p);
+            location.href = u.pathname + u.search;
+          } catch (_) {
+            location.href = cityLink('/cidadao.html') + '&protocolo=' + encodeURIComponent(p);
+          }
+        });
+      }
+      const navAcompanhar = document.getElementById('navAcompanhar');
+      if (navAcompanhar && input) {
+        navAcompanhar.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelectorAll('.nav-drop-menu').forEach((m) => { m.hidden = true; });
+          document.querySelectorAll('.nav-cidadao, .nav-admin').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+          const box = document.getElementById('protocoloHome');
+          if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => {
+            input.focus();
+            input.classList.add('protocol-focus');
+            setTimeout(() => input.classList.remove('protocol-focus'), 2200);
+          }, 280);
+        });
+      }
     })();
 
     (function () {
@@ -732,9 +792,13 @@
             `<span>${cfg.contato || '(98) 9.9196-7607'}</span>`,
           ].filter(Boolean).join('');
         }
-        rewriteCityLinks();
       }
 
+      rewriteCityLinks();
+      const homeProt = document.getElementById('homeProtocolo');
+      if (homeProt) {
+        homeProt.placeholder = slug === 'bomlugar' ? 'Ex.: 20269064' : 'Ex.: 20261064';
+      }
       document.documentElement.classList.remove('brand-pending');
       document.documentElement.classList.add('brand-ready');
 
