@@ -762,6 +762,202 @@ function logoutOps(dest) {
   location.href = cityLink(dest || '/login.html');
 }
 
+/* ── Alarme ops: bip + banner (Gabinete / chat do prefeito) ── */
+const _opsAlarm = { ctx: null, timer: null, active: false, storageKey: 'bi_som_on' };
+
+function opsSomLigado(storageKey) {
+  return localStorage.getItem(storageKey || _opsAlarm.storageKey || 'bi_som_on') !== '0';
+}
+
+function opsPlayBeep(urgent, storageKey) {
+  if (!opsSomLigado(storageKey)) return;
+  try {
+    _opsAlarm.ctx = _opsAlarm.ctx || new (window.AudioContext || window.webkitAudioContext)();
+    if (_opsAlarm.ctx.state === 'suspended') _opsAlarm.ctx.resume().catch(() => {});
+    const o = _opsAlarm.ctx.createOscillator();
+    const g = _opsAlarm.ctx.createGain();
+    o.type = urgent ? 'square' : 'sine';
+    o.frequency.value = urgent ? 740 : 880;
+    g.gain.value = urgent ? 0.08 : 0.06;
+    o.connect(g);
+    g.connect(_opsAlarm.ctx.destination);
+    o.start();
+    setTimeout(() => { o.frequency.value = urgent ? 980 : 1175; }, urgent ? 160 : 120);
+    setTimeout(() => { try { o.stop(); } catch (_) {} }, urgent ? 420 : 280);
+  } catch (_) {}
+}
+
+function opsStartAlarm(storageKey) {
+  _opsAlarm.storageKey = storageKey || _opsAlarm.storageKey || 'bi_som_on';
+  if (_opsAlarm.active) return;
+  _opsAlarm.active = true;
+  opsPlayBeep(true, _opsAlarm.storageKey);
+  _opsAlarm.timer = setInterval(() => opsPlayBeep(true, _opsAlarm.storageKey), 4500);
+}
+
+function opsStopAlarm() {
+  _opsAlarm.active = false;
+  if (_opsAlarm.timer) clearInterval(_opsAlarm.timer);
+  _opsAlarm.timer = null;
+}
+window.opsStopAlarm = opsStopAlarm;
+
+function opsEnsureAlertaBanner() {
+  let box = document.getElementById('alertaGabinete');
+  if (box) return box;
+  box = document.createElement('div');
+  box.id = 'alertaGabinete';
+  box.className = 'alerta-gabinete';
+  box.style.display = 'none';
+  box.innerHTML = `
+    <div class="alerta-gabinete-pulse"></div>
+    <div class="alerta-gabinete-content">
+      <strong id="alertaTitulo">Alerta do Gabinete</strong>
+      <p class="muted" id="alertaTexto" style="margin:0.35rem 0 0.65rem"></p>
+      <div class="cta-row" id="alertaAcoes"></div>
+    </div>`;
+  const top = document.getElementById('top');
+  if (top && top.parentNode) top.parentNode.insertBefore(box, top.nextSibling);
+  else document.body.insertBefore(box, document.body.firstChild);
+  return box;
+}
+
+function opsShowAlerta(titulo, texto, acoesHtml) {
+  const box = opsEnsureAlertaBanner();
+  const t = document.getElementById('alertaTitulo');
+  const p = document.getElementById('alertaTexto');
+  const a = document.getElementById('alertaAcoes');
+  if (t) t.textContent = titulo || 'Alerta';
+  if (p) p.textContent = texto || '';
+  if (a) a.innerHTML = acoesHtml || '';
+  box.style.display = 'block';
+  box.classList.toggle('alerta-urgente', !!acoesHtml);
+}
+
+function opsHideAlerta() {
+  const box = document.getElementById('alertaGabinete');
+  if (box) {
+    box.style.display = 'none';
+    box.classList.remove('alerta-urgente');
+  }
+}
+window.opsHideAlerta = opsHideAlerta;
+
+function opsTemCobrancaPendente(c) {
+  if (!c) return false;
+  if (c.alertaGabineteAtivo && !c.cienteGabineteEm) return true;
+  return (c.cobrancas || []).some((x) => Object.prototype.hasOwnProperty.call(x, 'cienteEm') && !x.cienteEm);
+}
+
+function opsChatFingerprint(msgs) {
+  const gab = (msgs || []).filter((m) => m.de === 'gabinete');
+  if (!gab.length) return '';
+  const last = gab[gab.length - 1];
+  return [last.id || '', last.criadoEm || last.em || '', gab.length, String(last.texto || '').slice(0, 48)].join('|');
+}
+
+/**
+ * Detecta mensagem nova do prefeito no chat e dispara bip + banner.
+ * Na 1ª carga só grava fingerprint (não alarma).
+ */
+function opsCheckChatAlerta(msgs, { storageKey, label, goChat } = {}) {
+  const fp = opsChatFingerprint(msgs);
+  const key = 'bi_chat_fp_' + (storageKey || 'ops');
+  const prev = sessionStorage.getItem(key) || '';
+  if (!fp) return false;
+  if (!prev) {
+    sessionStorage.setItem(key, fp);
+    return false;
+  }
+  if (fp === prev) return false;
+  sessionStorage.setItem(key, fp);
+  const go = typeof goChat === 'function'
+    ? goChat
+    : `try{if(typeof goPane==='function')goPane('chat');}catch(_){ }opsHideAlerta();opsStopAlarm();`;
+  opsShowAlerta(
+    'Gabinete no chat',
+    `O prefeito mandou mensagem${label ? ' para ' + label : ''}. Abra o chat e responda.`,
+    `<button class="btn btn-sm btn-primary" type="button" onclick="${go.replace(/"/g, '&quot;')}">Abrir chat</button>
+     <button class="btn btn-sm" type="button" onclick="opsHideAlerta();opsStopAlarm();">Silenciar agora</button>`
+  );
+  opsStartAlarm(storageKey);
+  if (window.Notification && Notification.permission === 'granted') {
+    try {
+      new Notification('Gabinete no chat', {
+        body: label ? `Nova mensagem para ${label}` : 'Nova mensagem do prefeito',
+        tag: 'gabinete-chat-' + (storageKey || 'ops'),
+        renotify: true,
+      });
+    } catch (_) {}
+  }
+  return true;
+}
+
+function opsCheckCobrancasAlerta(list, { storageKey, onCiencia } = {}) {
+  const pend = (list || []).filter(opsTemCobrancaPendente);
+  if (!pend.length) return false;
+  const nomes = pend.slice(0, 3).map((c) => c.protocolo || c.id).join(', ');
+  const extra = pend.length > 3 ? ` +${pend.length - 3}` : '';
+  const acoes = pend.map((c) => {
+    const id = c.id;
+    if (typeof onCiencia === 'string') {
+      return `<button class="btn btn-sm btn-primary" type="button" onclick="${onCiencia}('${id}')">Estou ciente · ${c.protocolo || id}</button>`;
+    }
+    return `<button class="btn btn-sm btn-primary" type="button" data-ops-ciencia="${id}">Estou ciente · ${c.protocolo || id}</button>`;
+  }).join('');
+  opsShowAlerta(
+    'Alerta do Gabinete — ação obrigatória',
+    `${pend.length} chamado(s) com cobrança (${nomes}${extra}). O alarme continua até confirmar ciência.`,
+    acoes + ` <button class="btn btn-sm" type="button" onclick="opsHideAlerta();opsStopAlarm();">Silenciar agora</button>`
+  );
+  opsStartAlarm(storageKey);
+  document.querySelectorAll('[data-ops-ciencia]').forEach((btn) => {
+    if (btn._opsBound) return;
+    btn._opsBound = true;
+    btn.onclick = async () => {
+      const id = btn.getAttribute('data-ops-ciencia');
+      try {
+        await api('/api/chamados/' + id + '/ciencia', { method: 'POST', body: '{}' });
+        toast('Ciência registrada');
+        if (typeof onCiencia === 'function') onCiencia(id);
+      } catch (e) { toast(e.message); }
+    };
+  });
+  return true;
+}
+
+function opsWireSomToggle(storageKey) {
+  const btn = document.getElementById('somToggleTop') || document.getElementById('somToggle');
+  if (!btn) return;
+  const key = storageKey || 'bi_som_on';
+  const sync = () => {
+    const on = opsSomLigado(key);
+    btn.classList.toggle('on', on);
+    btn.classList.toggle('off', !on);
+    btn.textContent = on ? '🔔 Som ligado' : '🔕 Som mudo';
+  };
+  if (!btn._opsSomBound) {
+    btn._opsSomBound = true;
+    btn.addEventListener('click', () => {
+      const on = !(localStorage.getItem(key) !== '0');
+      localStorage.setItem(key, on ? '0' : '1');
+      if (!opsSomLigado(key)) opsStopAlarm();
+      sync();
+      toast(opsSomLigado(key) ? 'Som ligado — bip do Gabinete ativo' : 'Som mudo');
+    });
+  }
+  sync();
+}
+
+/** Nota curta: onde fica a IA e para que serve. */
+function opsIaHelpNoteHtml(contexto) {
+  const ctx = contexto || 'serviço';
+  return `<div class="hint-box" style="margin:0 0 .85rem;background:#eff6ff;border-color:#bfdbfe;color:#1e3a8a">
+    <strong>Ajuda da IA</strong> — abra <em>Detalhar</em> no chamado: a IA analisa a foto/relato e sugere material, quantidade, tempo e ferramentas para o ${ctx}.
+    Se o campo enviar a foto do depois, a IA também ajuda a conferir antes de aprovar.
+  </div>`;
+}
+
 /**
  * Topbar.
  * - Área ops (opts.lock / BI_OPS_LOCK / BI_AUTH_SLOT): sem Início/Cidadão/Mapa —

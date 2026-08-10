@@ -148,7 +148,7 @@
       <div class="ops-section-head">
         <div>
           <h3 style="margin:0;color:#9a3412;font-size:1.15rem">Chamados mais recentes</h3>
-          <p class="muted" style="margin:.25rem 0 0">Abra <strong>Detalhar</strong>: foto antes/depois, dia e hora do campo, e análise da IA.</p>
+          <p class="muted" style="margin:.25rem 0 0">Abra <strong>Detalhar</strong>: foto antes/depois, dia e hora do campo, e análise da IA (material, tempo, ferramentas).</p>
         </div>
         <button class="btn btn-sm btn-primary" type="button" id="btnVerTodosChamados" data-nav-pane="chamados">Ver toda a fila</button>
       </div>
@@ -273,7 +273,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-sess2"></script>
+  <script src="/app.js?v=ops-alarm1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -281,26 +281,40 @@
 
     let painelAtual = null;
     let somLigado = localStorage.getItem('bi_som_obras') !== '0';
+    let pollTimer = null;
 
     function syncSomToggle() {
-      const btn = document.getElementById('somToggleTop') || document.getElementById('somToggle');
-      if (!btn) return;
-      btn.classList.toggle('on', somLigado);
-      btn.classList.toggle('off', !somLigado);
-      btn.textContent = somLigado ? '🔔 Som ligado' : '🔕 Som mudo';
+      if (typeof opsWireSomToggle === 'function') opsWireSomToggle('bi_som_obras');
+      else {
+        const btn = document.getElementById('somToggleTop') || document.getElementById('somToggle');
+        if (!btn) return;
+        btn.classList.toggle('on', somLigado);
+        btn.classList.toggle('off', !somLigado);
+        btn.textContent = somLigado ? '🔔 Som ligado' : '🔕 Som mudo';
+      }
     }
 
     function wireSomToggle() {
-      const btn = document.getElementById('somToggleTop') || document.getElementById('somToggle');
-      if (!btn || btn._somBound) return;
-      btn._somBound = true;
-      btn.onclick = () => {
-        somLigado = !somLigado;
-        localStorage.setItem('bi_som_obras', somLigado ? '1' : '0');
-        syncSomToggle();
-        toast(somLigado ? 'Som ligado — alarme do Gabinete ativo' : 'Som mudo');
-      };
       syncSomToggle();
+    }
+
+    function checkAlertasOps(p, msgs) {
+      const cobrou = typeof opsCheckCobrancasAlerta === 'function'
+        && opsCheckCobrancasAlerta(p?.chamados || [], {
+          storageKey: 'bi_som_obras',
+          onCiencia: () => load().catch(() => {}),
+        });
+      const chatou = typeof opsCheckChatAlerta === 'function'
+        && opsCheckChatAlerta(msgs || [], {
+          storageKey: 'bi_som_obras',
+          label: 'Obras',
+          goChat: "try{goPane('chat');}catch(_){ }opsHideAlerta();opsStopAlarm();",
+        });
+      if (!cobrou && !chatou && typeof opsStopAlarm === 'function') {
+        // não para se o usuário só atualizou sem alerta novo — só para se não há cobrança pendente
+        const pend = (p?.chamados || []).some((c) => typeof opsTemCobrancaPendente === 'function' && opsTemCobrancaPendente(c));
+        if (!pend) { /* mantém alarm só se chat acabou de disparar */ }
+      }
     }
 
     function goPane(name, { scroll = true } = {}) {
@@ -782,11 +796,14 @@
           </div>`).join('')
         : '<p class="muted">Nenhuma mensagem do Gabinete ainda.</p>';
       box.scrollTop = box.scrollHeight;
+      return msgs;
     }
 
     async function load() {
-      render(await api('/api/obras-ops/hoje'));
-      await loadChat().catch(() => {});
+      const p = await api('/api/obras-ops/hoje');
+      render(p);
+      const msgs = await loadChat().catch(() => []);
+      checkAlertasOps(p, msgs);
     }
 
     async function boot() {
@@ -863,9 +880,13 @@
       const btnTodos = document.getElementById('btnVerTodosChamados');
       if (btnTodos) btnTodos.onclick = () => goPane('chamados');
       await load();
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(() => load().catch(() => {}), 12000);
+      if (window.Notification && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
       const aba = new URLSearchParams(location.search).get('aba');
       if (aba) goPane(aba);
-      // Garante que a seção de recentes entra na tela
       const sec = document.getElementById('secRecentes');
       if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
