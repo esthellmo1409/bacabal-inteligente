@@ -276,7 +276,7 @@
   <div id="visitaRoot"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=nav-ops3"></script>
+  <script src="/app.js?v=ops-alarm1"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_OPS_LOCK = true;
@@ -311,6 +311,50 @@
     }
     function rotaStatusLabel(s) {
       return ({ pendente: 'Pendente', em_atendimento: 'Em atendimento', concluido: 'Concluído' })[s] || s;
+    }
+
+    /** Card de problema no Gabinete: resumo na frente, foto só dentro de Detalhar. */
+    function cardProblemaGabinete(c, { did, acoesHtml, metaExtra } = {}) {
+      const id = did || ('gab-' + (c.id || c.protocolo || Math.random().toString(36).slice(2, 8)));
+      const temFoto = !!(c.foto || c.fotoAntes || c.fotoDepois
+        || (c.fotosAntes && c.fotosAntes.length) || (c.fotosDepois && c.fotosDepois.length));
+      return `
+        <div class="item" data-chamado-id="${c.id || ''}">
+          <div class="item-head">
+            <strong>${c.protocolo ? c.protocolo + ' · ' : ''}${c.titulo || c.tituloChamado || c.categoria || 'Problema'}</strong>
+            ${c.status ? badge(c.status) : (c.statusPonto ? `<span class="badge">${c.statusPonto}</span>` : '')}
+            ${c.slaEstourado ? '<span class="badge badge-cancelado">SLA</span>' : ''}
+            ${c.avaliacao ? `<span class="badge badge-em_analise">★ ${c.avaliacao.nota}</span>` : ''}
+            ${c.demoFixo === 'buraco-foto' || c.simBuraco ? '<span class="badge badge-em_analise">simulação</span>' : ''}
+          </div>
+          <div class="meta">
+            ${c.secretariaNome ? c.secretariaNome + ' · ' : ''}${c.bairro || '—'}${c.rua ? ' · ' + c.rua : ''}${c.endereco && !c.rua ? ' · ' + c.endereco : ''}
+            ${c.prioridade ? ' · ' + prioridadeLabel(c.prioridade) : ''}${c.horasAberto != null ? ' · ' + c.horasAberto + 'h' : ''}
+          </div>
+          ${metaExtra || ''}
+          ${temFoto ? '<div class="meta" style="font-weight:700;color:#475569">Há foto — abra Detalhar para ver</div>' : ''}
+          ${acoesHtml ? `<div class="actions" style="margin-top:0.4rem">${acoesHtml}</div>` : ''}
+          <button type="button" class="btn-detalhar" data-detalhar="${id}">
+            <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+          </button>
+          <div class="detalhe-box" id="detalhe-${id}">
+            ${c.cidadaoChamouEm || c.criadoEm
+              ? `<div class="meta" style="margin-bottom:0.45rem">Cidadão chamou em ${fmtDate(c.cidadaoChamouEm || c.criadoEm)}</div>`
+              : ''}
+            ${c.descricao ? `<p class="muted" style="margin:0 0 .45rem">${c.descricao}</p>` : ''}
+            ${typeof antesDepoisHtml === 'function'
+              ? (antesDepoisHtml(c, { forcarDupla: !!temFoto }) || '<p class="muted">Sem foto anexada.</p>')
+              : (c.foto || c.fotoAntes
+                ? `<img src="${c.foto || c.fotoAntes}" alt="" style="max-width:100%;max-height:220px;border-radius:10px;object-fit:cover;cursor:pointer" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />`
+                : '<p class="muted">Sem foto.</p>')}
+            ${c.cidadao?.nome ? `<div class="meta">${c.cidadao.nome}${c.cidadao.telefone ? ' · ' + c.cidadao.telefone : ''}</div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    function bindGabineteDetalhar(root) {
+      if (typeof bindDetalharToggle === 'function') bindDetalharToggle(root || document);
+      if (typeof bindFotoThumbs === 'function') bindFotoThumbs(root || document);
     }
     function pontoStatusLabel(s) {
       return ({
@@ -671,22 +715,33 @@
               Gabinete só visualiza e cobra.
             </p>
             <div class="list">
-              ${pontos.map((p) => `
-                <div class="item">
-                  <div class="item-head">
-                    <strong>${p.titulo}</strong>
-                    <span class="badge ${p.prioridade === 'alta' ? 'badge-cancelado' : 'badge-em_analise'}">${pontoStatusLabel(p.status)}</span>
-                    ${p.simBuraco || p.demoFixo ? '<span class="badge badge-em_analise">simulação</span>' : ''}
-                  </div>
-                  <div class="meta">${p.bairro} · ${p.rua}${p.prazoHoje ? ' · prazo ' + p.prazoHoje : ''}</div>
-                  ${p.cidadaoChamouEm ? `<div class="meta" style="color:#9a3412;font-weight:700">Cidadão chamou em ${fmtDate(p.cidadaoChamouEm)}${p.protocolo ? ' · ' + p.protocolo : ''}</div>` : ''}
-                  ${p.motivoAtraso ? `<div class="meta" style="color:#b91c1c;font-weight:600">${p.motivoAtraso}</div>` : ''}
-                  ${p.foto ? `<img src="${p.foto}" alt="" style="max-width:220px;max-height:120px;border-radius:10px;margin:.4rem 0;object-fit:cover;cursor:pointer" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : ''}
-                  ${p.prioridade === 'alta' ? `
-                    <div class="actions">
-                      <button class="btn btn-sm btn-warn" onclick="cobrarObras('${String(p.titulo || '').replace(/'/g, '')}')">Cobrar secretaria</button>
-                    </div>` : ''}
-                </div>`).join('') || '<p class="muted">Nenhum ponto quente aberto.</p>'}
+              ${pontos.map((p) => cardProblemaGabinete({
+                id: p.id,
+                titulo: p.titulo,
+                status: null,
+                statusPonto: pontoStatusLabel(p.status),
+                bairro: p.bairro,
+                rua: p.rua,
+                prioridade: p.prioridade,
+                foto: p.foto,
+                fotoAntes: p.fotoAntes || p.foto,
+                fotoDepois: p.fotoDepois,
+                cidadaoChamouEm: p.cidadaoChamouEm,
+                protocolo: p.protocolo,
+                descricao: p.descricao,
+                cidadao: p.cidadao,
+                simBuraco: p.simBuraco,
+                demoFixo: p.demoFixo,
+              }, {
+                did: 'obr-pt-' + p.id,
+                metaExtra: [
+                  p.prazoHoje ? `<div class="meta">Prazo ${p.prazoHoje}</div>` : '',
+                  p.motivoAtraso ? `<div class="meta" style="color:#b91c1c;font-weight:600">${p.motivoAtraso}</div>` : '',
+                ].join(''),
+                acoesHtml: p.prioridade === 'alta'
+                  ? `<button class="btn btn-sm btn-warn" onclick="cobrarObras('${String(p.titulo || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
+                  : '',
+              })).join('') || '<p class="muted">Nenhum ponto quente aberto.</p>'}
             </div>
           </div>
           <div class="panel">
@@ -738,19 +793,12 @@
           <div class="panel" style="grid-column:1/-1">
             <h3 style="margin-bottom:0.55rem">Chamados das Obras</h3>
             <div class="list">
-              ${obrasHoje.chamados.slice(0, 8).map((c) => `
-                <div class="item">
-                  <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span>
-                    ${c.demoFixo === 'buraco-foto' ? '<span class="badge badge-em_analise">simulação</span>' : ''}
-                  </div>
-                  <div class="meta">${c.titulo || c.categoria} · ${c.bairro || ''}</div>
-                  ${c.criadoEm ? `<div class="meta" style="color:#9a3412;font-weight:700">Cidadão chamou em ${fmtDate(c.criadoEm)}</div>` : ''}
-                  ${c.foto || c.fotoAntes ? `<img src="${c.foto || c.fotoAntes}" alt="" style="max-width:180px;max-height:100px;border-radius:8px;margin:.35rem 0;object-fit:cover" />` : ''}
-                  <div class="actions">
-                    <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
-                    <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
-                  </div>
-                </div>`).join('')}
+              ${obrasHoje.chamados.slice(0, 8).map((c) => cardProblemaGabinete(c, {
+                did: 'obr-ch-' + c.id,
+                acoesHtml: `
+                  <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+                  <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>`,
+              })).join('')}
             </div>
           </div>` : ''}`;
         return;
@@ -834,15 +882,12 @@
           <div class="panel" style="grid-column:1/-1">
             <h3 style="margin-bottom:0.55rem">Chamados da Iluminação</h3>
             <div class="list">
-              ${iluminacaoHoje.chamados.slice(0, 8).map((c) => `
-                <div class="item">
-                  <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span></div>
-                  <div class="meta">${c.titulo || c.categoria} · ${c.bairro || ''}</div>
-                  <div class="actions">
-                    <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
-                    <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
-                  </div>
-                </div>`).join('')}
+              ${iluminacaoHoje.chamados.slice(0, 8).map((c) => cardProblemaGabinete(c, {
+                did: 'ilu-ch-' + c.id,
+                acoesHtml: `
+                  <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+                  <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>`,
+              })).join('')}
             </div>
           </div>` : ''}`;
         return;
@@ -913,11 +958,9 @@
           <div class="panel" style="grid-column:1/-1">
             <h3 style="margin-bottom:0.55rem">Chamados da Saúde</h3>
             <div class="list">
-              ${saudeHoje.reclamacoes.slice(0, 6).map(c => `
-                <div class="item">
-                  <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span></div>
-                  <div class="meta">${c.titulo || c.categoria} · ${c.bairro || ''}</div>
-                </div>`).join('')}
+              ${saudeHoje.reclamacoes.slice(0, 6).map((c) => cardProblemaGabinete(c, {
+                did: 'sau-ch-' + c.id,
+              })).join('')}
             </div>
           </div>` : ''}
           <div class="panel" style="grid-column:1/-1;border-color:#99f6e4">
@@ -1127,25 +1170,17 @@
       renderAcoesEixo(g);
       renderExtra(g, saudeHoje, iluminacaoHoje, obrasHoje);
 
-      document.getElementById('filaDecisoes').innerHTML = g.fila.length ? g.fila.slice(0, 8).map(c => `
-        <div class="item">
-          <div class="item-head">
-            <strong>${c.protocolo} · ${c.titulo}</strong>
-            ${badge(c.status)}
-            ${c.slaEstourado ? '<span class="badge badge-cancelado">SLA</span>' : ''}
-            ${c.avaliacao ? `<span class="badge badge-em_analise">★ ${c.avaliacao.nota}</span>` : ''}
-          </div>
-          <div class="meta">${c.secretariaNome} · ${c.bairro} · ${prioridadeLabel(c.prioridade)} · ${c.horasAberto}h
-            ${c.eventoId ? ' · evento ' + c.eventoId : ''} ${c.unidadeId ? ' · ' + c.unidadeId : ''}</div>
-          ${antesDepoisHtml(c)}
-          <div class="actions">
-            <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
-            <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
-            <button class="btn btn-sm" onclick="decidir('${c.id}','determinar_prazo')">Prazo 3 dias</button>
-            <button class="btn btn-sm" onclick="decidir('${c.id}','autorizar_execucao')">Autorizar</button>
-          </div>
-        </div>
-      `).join('') : '<p class="muted">Nenhuma pendência neste eixo.</p>';
+      document.getElementById('filaDecisoes').innerHTML = g.fila.length ? g.fila.slice(0, 8).map((c) => cardProblemaGabinete(c, {
+        did: 'fila-' + c.id,
+        acoesHtml: `
+          <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
+          <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+          <button class="btn btn-sm" onclick="decidir('${c.id}','determinar_prazo')">Prazo 3 dias</button>
+          <button class="btn btn-sm" onclick="decidir('${c.id}','autorizar_execucao')">Autorizar</button>`,
+      })).join('') : '<p class="muted">Nenhuma pendência neste eixo.</p>';
+
+      bindGabineteDetalhar(document.getElementById('filaDecisoes'));
+      bindGabineteDetalhar(document.getElementById('blocoExtra'));
 
       document.getElementById('histDec').innerHTML = (g.decisoes || []).length
         ? g.decisoes.slice(0, 8).map(d => `
