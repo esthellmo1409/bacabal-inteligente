@@ -450,8 +450,11 @@
     function equipeStatusLabel(s) {
       return ({
         em_campo: 'Em campo',
+        em_deslocamento: 'Em deslocamento',
         base: 'Na base',
         disponivel: 'Disponível',
+        intervalo: 'Intervalo',
+        aguardando_material: 'Aguardando material',
         folga: 'Folga',
       })[s] || String(s || '—').replace(/_/g, ' ');
     }
@@ -1075,17 +1078,20 @@
             <p class="muted" style="margin-bottom:0.75rem">Quem está em campo agora.</p>
             <div class="list">
               ${(obrasHoje.equipes || []).map((e) => {
-                const emCampo = e.status === 'em_campo';
+                const emCampo = e.status === 'em_campo' || e.status === 'em_deslocamento';
                 return cardOpsDetalhe({
                   did: 'obr-eq-' + e.id,
                   titulo: e.nome,
                   badgeHtml: `<span class="badge ${emCampo ? 'badge-em_analise' : e.status === 'disponivel' ? 'badge-concluido' : ''}">${equipeStatusLabel(e.status)}</span>`,
-                  meta: `${e.lider || '—'} · ${e.veiculoId || 'sem veículo'}`,
+                  meta: `${e.lider || '—'} · ${e.membros || '—'} pessoas · ${e.veiculoId || 'sem veículo'}`,
                   detalheHtml: `
-                    <div class="meta"><strong>Líder:</strong> ${e.lider || '—'}</div>
+                    <div class="meta"><strong>Especialidade:</strong> ${e.especialidade || '—'}</div>
+                    <div class="meta"><strong>Líder:</strong> ${e.lider || '—'} · ${e.telefone || 'sem tel.'}</div>
+                    <div class="meta"><strong>Rádio:</strong> ${e.radio || '—'} · <strong>Pessoas:</strong> ${e.membros || '—'}</div>
                     <div class="meta"><strong>Status:</strong> ${equipeStatusLabel(e.status)}</div>
                     <div class="meta"><strong>Veículo:</strong> ${e.veiculoId || '—'}</div>
-                    <div class="meta"><strong>Ponto atual:</strong> ${e.pontoId || 'nenhum'}</div>`,
+                    <div class="meta"><strong>Ponto atual:</strong> ${e.pontoId || 'nenhum'}</div>
+                    ${e.observacao ? `<p class="muted" style="margin:0.55rem 0 0">${e.observacao}</p>` : ''}`,
                 });
               }).join('') || '<p class="muted">Sem equipes.</p>'}
             </div>

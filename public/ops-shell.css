@@ -334,8 +334,12 @@ body.ops-body {
   color: #166534;
 }
 
-.ops-body .pill.em_campo,
-.ops-body .pill.em_rota {
+.ops-body .pill.intervalo {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.ops-body .pill.em_deslocamento {
   background: #dbeafe;
   color: #1e40af;
 }

@@ -4,12 +4,62 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>App das Equipes · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
+  <link rel="stylesheet" href="/styles.css?v=campo-ops2" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'campo';
   </script>
+  <style>
+    .campo-steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.45rem;
+      margin: 0.75rem 0 1rem;
+    }
+    .campo-step {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      border-radius: 12px;
+      padding: 0.65rem 0.7rem;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+      font-size: 0.78rem;
+      color: #0f172a;
+    }
+    .campo-step span { display: block; font-weight: 600; font-size: 0.68rem; color: #64748b; margin-top: 0.15rem; }
+    .campo-step:hover { border-color: #398A21; background: #f0fdf4; }
+    .campo-step.done { border-color: #86efac; background: #f0fdf4; color: #166534; }
+    .campo-step.active { border-color: #398A21; background: #398A21; color: #fff; }
+    .campo-step.active span { color: #dcfce7; }
+    .campo-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.35rem 0 0.65rem; }
+    .campo-chip {
+      border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 999px;
+      padding: 0.28rem 0.65rem; font: inherit; font-size: 0.75rem; font-weight: 700; cursor: pointer;
+    }
+    .campo-chip:hover { background: #ecfdf5; border-color: #86efac; }
+    .campo-check { display: flex; flex-wrap: wrap; gap: 0.55rem 1rem; margin: 0.35rem 0 0.75rem; }
+    .campo-check label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; font-weight: 700; color: #334155; cursor: pointer; }
+    .campo-block {
+      margin: 0.85rem 0; padding: 0.75rem 0.85rem; border-radius: 12px;
+      border: 1px solid #e2e8f0; background: #f8fafc;
+    }
+    .campo-block h4 { margin: 0 0 0.45rem; font-size: 0.88rem; color: #0f172a; }
+    .atalhos-campo {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.45rem; margin-bottom: 1rem;
+    }
+    .atalhos-campo button {
+      border: 1px solid #bbf7d0; background: #fff; border-radius: 12px;
+      padding: 0.7rem 0.75rem; text-align: left; font: inherit; cursor: pointer;
+    }
+    .atalhos-campo button strong { display: block; color: #166534; font-size: 0.88rem; }
+    .atalhos-campo button span { display: block; color: #64748b; font-size: 0.72rem; margin-top: 0.15rem; }
+    @media (max-width: 720px) {
+      .campo-steps, .atalhos-campo { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
 </head>
 <body class="ops-body">
   <div class="wrap">
@@ -29,8 +79,8 @@
       <div id="opsBuscaMount"></div>
       <div class="sec-hero" style="margin-bottom:1rem">
         <p class="page-kicker" style="margin-bottom:0.25rem">Campo · operação</p>
-        <h1 class="display" style="font-size:1.55rem;margin:0">Ordens de serviço</h1>
-        <p class="muted" style="margin:0.3rem 0 0">Aceitar · navegar · foto do depois · enviar à secretaria</p>
+        <h1 class="display" style="font-size:1.55rem;margin:0">Equipe em campo</h1>
+        <p class="muted" style="margin:0.3rem 0 0">Aceitar · deslocar · check-in · material · foto · reforço · enviar à secretaria</p>
         <p class="ia-ops-note" id="iaOpsNote">A plataforma apoia as equipes com inteligência artificial para planejar melhor cada serviço.</p>
       </div>
       <div id="alertaCampo" class="alerta-gabinete" style="display:none">
@@ -52,7 +102,14 @@
 
       <div class="grid-3" id="kpis" style="margin-bottom:1rem"></div>
 
-      <div class="panel" style="margin-bottom:1rem;border-color:rgba(46,125,50,.35);background:linear-gradient(180deg,rgba(46,125,50,.06),transparent)">
+      <div class="atalhos-campo">
+        <button type="button" data-jump-campo="recentes"><strong>OS recentes</strong><span>Encaminhadas pra você</span></button>
+        <button type="button" data-jump-campo="lista"><strong>Rota do dia</strong><span>Ordem + navegar GPS</span></button>
+        <button type="button" data-jump-campo="osBox"><strong>OS aberta</strong><span>Check-in e execução</span></button>
+        <button type="button" data-jump-campo="concluidos"><strong>Concluídos</strong><span>Antes e depois</span></button>
+      </div>
+
+      <div class="panel" id="recentesPanel" style="margin-bottom:1rem;border-color:rgba(46,125,50,.35);background:linear-gradient(180deg,rgba(46,125,50,.06),transparent)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem">
           <div>
             <h3 style="margin:0">OS recentes</h3>
@@ -72,7 +129,7 @@
       </div>
       <div class="panel" style="margin-top:1rem" id="osBox"><p class="muted">Selecione uma OS recente ou na rota</p></div>
 
-      <div class="panel" style="margin-top:1rem;border-color:rgba(12,188,135,.35);background:linear-gradient(180deg,rgba(12,188,135,.07),transparent)">
+      <div class="panel" id="concluidosPanel" style="margin-top:1rem;border-color:rgba(12,188,135,.35);background:linear-gradient(180deg,rgba(12,188,135,.07),transparent)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem">
           <div>
             <h3 style="margin:0">Serviços concluídos</h3>
@@ -85,7 +142,7 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=audit-fix1"></script>
+  <script src="/app.js?v=campo-ops2"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
@@ -221,9 +278,10 @@
         opsInitBusca({
           placeholder: 'Buscar no campo: rota, OS, mapa…',
           items: [
-            { id: 'c-rota', title: 'Rota / OS recentes', hint: 'Ordens de serviço', keywords: 'rota os chamado', jump: 'lista' },
-            { id: 'c-os', title: 'Detalhe da OS', hint: 'Aceitar, foto, encerrar', keywords: 'ordem servico foto', jump: 'osBox' },
+            { id: 'c-rota', title: 'Rota / OS recentes', hint: 'Ordens de serviço', keywords: 'rota os chamado', jump: 'recentesPanel' },
+            { id: 'c-os', title: 'Detalhe da OS', hint: 'Aceitar, check-in, foto, reforço', keywords: 'ordem servico foto checkin', jump: 'osBox' },
             { id: 'c-map', title: 'Mapa', hint: 'Localização', keywords: 'mapa gps', jump: 'map' },
+            { id: 'c-conc', title: 'Concluídos', hint: 'Antes e depois', keywords: 'concluidos portfolio', jump: 'concluidosPanel' },
           ],
           getExtraItems: () => (window.__campoChamados || []).slice(0, 30).map((c) => ({
             id: 'os-' + c.id,
@@ -297,6 +355,7 @@
               <div class="actions">
                 <button class="btn btn-sm btn-primary" data-open="${p.id}">Abrir OS</button>
                 <a class="btn btn-sm" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}">Navegar GPS</a>
+                ${p.status === 'encaminhado' ? `<button class="btn btn-sm" data-quick-aceitar="${p.id}">Aceitar</button>` : ''}
               </div>
             </div>
           </div>
@@ -328,8 +387,8 @@
 
       document.getElementById('kpis').innerHTML = `
         <div class="panel stat"><div class="label">OS abertas</div><div class="value">${data.rota.length}</div></div>
-        <div class="panel stat"><div class="label">Concluídos</div><div class="value">${data.totalConcluidos || (data.concluidos || []).length}</div></div>
-        <div class="panel stat"><div class="label">Km / Min</div><div class="value" style="font-size:1.35rem">${data.totalKm} · ${data.tempoEstimadoMin}</div></div>`;
+        <div class="panel stat"><div class="label">Em execução</div><div class="value">${(data.rota || []).filter((p) => p.status === 'em_execucao' || p.status === 'aguardando_material').length}</div></div>
+        <div class="panel stat"><div class="label">Concluídos</div><div class="value">${data.totalConcluidos || (data.concluidos || []).length}</div></div>`;
 
       // Notificação por OS nova (ID) após a secretaria encaminhar
       const idsAgora = idsParaAlerta(data.rota);
@@ -429,8 +488,23 @@
       document.querySelectorAll('[data-open]').forEach(el => {
         el.onclick = (e) => {
           if (e.target.tagName === 'A' || e.target.classList.contains('foto-zoom') || e.target.closest('.antes-depois')) return;
+          if (e.target.closest('[data-quick-aceitar]')) return;
           const id = el.getAttribute('data-open');
           if (id) openOS(id);
+        };
+      });
+      document.querySelectorAll('[data-quick-aceitar]').forEach((btn) => {
+        btn.onclick = async (e) => {
+          e.stopPropagation();
+          try {
+            await api('/api/chamados/' + btn.dataset.quickAceitar + '/os', {
+              method: 'POST',
+              body: JSON.stringify({ acao: 'aceitar', equipeId: user.equipeId }),
+            });
+            toast('OS aceita');
+            openOS(btn.dataset.quickAceitar);
+            load();
+          } catch (err) { toast(err.message); }
         };
       });
     }
@@ -438,66 +512,201 @@
     async function openOS(id) {
       selected = await api('/api/chamados/' + id);
       const c = selected;
+      const os = c.ordemServico || {};
+      const chk = os.checklistCampo || {};
+      const mats = c.materiais || [];
       stopCampoAlarm();
       const alerta = document.getElementById('alertaCampo');
-      if (alerta) {
-        alerta.classList.remove('alerta-urgente');
-      }
+      if (alerta) alerta.classList.remove('alerta-urgente');
+
+      const step = (key, label, sub, done, active) =>
+        `<button type="button" class="campo-step ${done ? 'done' : ''} ${active ? 'active' : ''}" data-step="${key}"><strong>${label}</strong><span>${sub}</span></button>`;
+
+      const aceita = !!os.aceitaEm || c.status === 'em_execucao' || c.status === 'aguardando_material' || c.status === 'aguardando_aprovacao';
+      const emDesloc = os.status === 'em_deslocamento';
+      const noLocal = os.status === 'no_local' || !!os.checkinEm;
+      const aguardMat = c.status === 'aguardando_material';
+      const enviada = c.status === 'aguardando_aprovacao' || c.status === 'concluido';
+
       document.getElementById('osBox').innerHTML = `
-        <h3>OS ${c.protocolo}</h3>
-        <p class="muted">${c.descricao || ''}</p>
-        <p class="meta" style="margin:0.35rem 0 0.75rem">Toque na foto para ampliar. Ao enviar o <strong>depois</strong>, a Secretaria de Obras avalia e só ela finaliza.</p>
+        <div style="display:flex;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;align-items:start">
+          <div>
+            <h3 style="margin:0 0 .25rem">OS ${c.protocolo}</h3>
+            <div class="meta">${c.titulo || ''} · ${c.bairro || '—'} · ${badge(c.status)}</div>
+          </div>
+          <a class="btn btn-sm btn-primary" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lng}">Navegar GPS</a>
+        </div>
+        <p class="muted" style="margin:.55rem 0">${c.descricao || ''}</p>
+        <p class="meta" style="margin:0 0 .55rem">Toque na foto para ampliar. Ao enviar o <strong>depois</strong>, a secretaria avalia e finaliza.</p>
         ${antesDepoisHtml(c)}
         ${iaObraAssistHtml(c)}
-        <div class="actions" style="margin:0.85rem 0">
-          <button class="btn btn-sm btn-primary" id="aceitar">Aceitar serviço</button>
-          <button class="btn btn-sm" id="antes">+ Foto ANTES (até 5)</button>
-          <button class="btn btn-sm" id="depois">+ Foto DEPOIS (até 5)</button>
+
+        <div class="campo-steps">
+          ${step('aceitar', '1. Aceitar', aceita ? 'OK' : 'Pegar OS', aceita, !aceita)}
+          ${step('deslocamento', '2. Deslocar', emDesloc ? 'A caminho' : 'Sair da base', emDesloc || noLocal || enviada, aceita && !emDesloc && !noLocal && !enviada && !aguardMat)}
+          ${step('checkin', '3. Check-in', noLocal ? 'No local' : 'Cheguei', noLocal || enviada, (emDesloc || aceita) && !noLocal && !enviada)}
+          ${step('enviar', '4. Enviar', enviada ? 'Na secretaria' : 'Foto depois', enviada, noLocal && !enviada)}
         </div>
-        <input type="file" id="fAntes" accept="image/*" capture="environment" multiple style="display:none" />
-        <input type="file" id="fDepois" accept="image/*" capture="environment" multiple style="display:none" />
-        <p class="muted" style="font-size:0.8rem;margin:0 0 0.75rem">Pode adicionar várias fotos em cada fase. A primeira vira capa.</p>        <label>Material usado</label>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-          <input id="matNome" placeholder="Ex.: asfalto frio" style="margin:0;flex:1" />
-          <input id="matQtd" type="number" value="1" style="margin:0;max-width:80px" />
-          <button class="btn btn-sm" id="addMat">Registrar</button>
+
+        <div class="actions" style="margin:0 0 .85rem;flex-wrap:wrap">
+          <button class="btn btn-sm btn-primary" id="aceitar" ${aceita ? 'disabled' : ''}>Aceitar serviço</button>
+          <button class="btn btn-sm" id="btnDesloc" ${!aceita || enviada ? 'disabled' : ''}>Em deslocamento</button>
+          <button class="btn btn-sm" id="btnCheckin" ${!aceita || enviada ? 'disabled' : ''}>Cheguei no local</button>
+          <button class="btn btn-sm" id="btnAguardar" ${!aceita || enviada ? 'disabled' : ''}>Aguardar material</button>
+          <button class="btn btn-sm" id="btnRetomar" ${c.status !== 'aguardando_material' ? 'disabled' : ''}>Retomar serviço</button>
+          <button class="btn btn-sm" id="btnReforco" ${!aceita || enviada ? 'disabled' : ''}>Pedir reforço</button>
         </div>
-        <label>Horas trabalhadas</label>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-          <input id="horas" type="number" step="0.5" value="2" style="margin:0" />
-          <button class="btn btn-sm" id="addHoras">Salvar horas</button>
+
+        <div class="campo-block">
+          <h4>Checklist no local</h4>
+          <div class="campo-check">
+            <label><input type="checkbox" id="chkEpi" ${chk.epi ? 'checked' : ''}/> EPI ok</label>
+            <label><input type="checkbox" id="chkSinal" ${chk.sinalizacao ? 'checked' : ''}/> Sinalização</label>
+            <label><input type="checkbox" id="chkTransito" ${chk.transito ? 'checked' : ''}/> Trânsito seguro</label>
+            <label><input type="checkbox" id="chkFotoAntes" ${chk.fotoAntes || (c.fotosAntes && c.fotosAntes.length) || c.fotoAntes ? 'checked' : ''}/> Foto antes</label>
+          </div>
+          <button class="btn btn-sm" id="btnChecklist" type="button">Salvar checklist</button>
         </div>
-        <label>Custo (R$)</label>
-        <input id="custo" type="number" value="0" />
+
+        <div class="campo-block">
+          <h4>Fotos do serviço</h4>
+          <div class="actions" style="margin:0">
+            <button class="btn btn-sm" id="antes">+ Foto ANTES (até 5)</button>
+            <button class="btn btn-sm" id="depois">+ Foto DEPOIS (até 5)</button>
+          </div>
+          <input type="file" id="fAntes" accept="image/*" capture="environment" multiple style="display:none" />
+          <input type="file" id="fDepois" accept="image/*" capture="environment" multiple style="display:none" />
+          <p class="muted" style="font-size:0.8rem;margin:0.55rem 0 0">Várias fotos por fase. A primeira vira capa.</p>
+        </div>
+
+        <div class="campo-block">
+          <h4>Material usado</h4>
+          <div class="campo-chips">
+            ${['Asfalto frio', 'Brita 1', 'Areia', 'Cimento', 'Concreto', 'LED 100W', 'Cabo', 'Saco de lixo'].map((m) =>
+              `<button type="button" class="campo-chip" data-mat-preset="${m}">${m}</button>`).join('')}
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <input id="matNome" placeholder="Outro material…" style="margin:0;flex:1" />
+            <input id="matQtd" type="number" value="1" min="0.1" step="0.1" style="margin:0;max-width:80px" />
+            <button class="btn btn-sm" id="addMat">Registrar</button>
+          </div>
+          ${mats.length ? `<p class="muted" style="margin:.55rem 0 0;font-size:.8rem">Já registrado: ${mats.map((m) => `${m.nome} x${m.qtd}`).join(' · ')}</p>` : ''}
+        </div>
+
+        <div class="campo-block">
+          <h4>Equipe no serviço</h4>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+            <label class="muted" style="margin:0">Pessoas</label>
+            <input id="pessoas" type="number" min="1" max="20" value="${os.pessoas || 3}" style="margin:0;width:72px" />
+            <button class="btn btn-sm" id="btnPessoas">Salvar</button>
+            <label class="muted" style="margin:0 0 0 .5rem">Horas</label>
+            <input id="horas" type="number" step="0.5" value="${c.horasTrabalhadas || 2}" style="margin:0;width:80px" />
+            <button class="btn btn-sm" id="addHoras">Salvar horas</button>
+          </div>
+        </div>
+
+        <div class="campo-block">
+          <h4>Ocorrência / observação</h4>
+          <div class="campo-chips">
+            ${[['chuva', 'Chuva'], ['buraco_maior', 'Buraco maior'], ['precisa_retro', 'Precisa retro'], ['rede', 'Rede/interferência'], ['transito', 'Trânsito intenso']].map(([v, l]) =>
+              `<button type="button" class="campo-chip" data-ocor="${v}">${l}</button>`).join('')}
+          </div>
+          <textarea id="obsCampo" rows="2" placeholder="Detalhe pra secretaria…" style="width:100%;margin:0 0 .45rem">${os.obsCampo || ''}</textarea>
+          <div class="cta-row">
+            <button class="btn btn-sm" id="btnObs">Salvar observação</button>
+            <button class="btn btn-sm" id="btnOcorAvistar">Registrar ocorrência + avisar</button>
+          </div>
+          ${os.ultimaOcorrencia ? `<p class="muted" style="margin:.45rem 0 0;font-size:.8rem">Última: ${os.ultimaOcorrencia.tipo}${os.ultimaOcorrencia.texto ? ' — ' + os.ultimaOcorrencia.texto : ''}</p>` : ''}
+        </div>
+
         ${c.status === 'aguardando_aprovacao'
-          ? `<div class="success-box" style="margin-top:0.75rem"><strong>Enviado para aprovação</strong><p class="muted" style="margin:0.35rem 0 0">A Secretaria de Obras está avaliando a foto do depois.</p></div>`
-          : `<button class="btn btn-primary" id="encerrar" style="width:100%;margin-top:0.75rem">Enviar foto do depois para aprovação</button>`
+          ? `<div class="success-box" style="margin-top:0.75rem"><strong>Enviado para aprovação</strong><p class="muted" style="margin:0.35rem 0 0">A secretaria está avaliando a foto do depois.</p></div>`
+          : `<button class="btn btn-primary" id="encerrar" style="width:100%;margin-top:0.75rem" ${enviada ? 'disabled' : ''}>Enviar foto do depois para aprovação</button>`
         }
       `;
       document.getElementById('osBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (typeof bindFotoThumbs === 'function') bindFotoThumbs(document.getElementById('osBox'));
-      bindIaObraAssist(document.getElementById('osBox'), async (id) => {
-        if (selected && selected.id === id) return selected;
-        return api('/api/chamados/' + id);
+      bindIaObraAssist(document.getElementById('osBox'), async (cid) => {
+        if (selected && selected.id === cid) return selected;
+        return api('/api/chamados/' + cid);
       });
+
+      async function osAcao(body, okMsg) {
+        await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify(body) });
+        if (okMsg) toast(okMsg);
+        openOS(c.id);
+        load();
+      }
+
       const aceitarBtn = document.getElementById('aceitar');
-      if (aceitarBtn) aceitarBtn.onclick = async () => {
-        await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'aceitar', equipeId: user.equipeId }) });
-        toast('OS aceita'); openOS(c.id); load();
-      };
+      if (aceitarBtn) aceitarBtn.onclick = () => osAcao({ acao: 'aceitar', equipeId: user.equipeId }, 'OS aceita');
+      document.getElementById('btnDesloc')?.addEventListener('click', () => osAcao({ acao: 'deslocamento' }, 'Em deslocamento'));
+      document.getElementById('btnCheckin')?.addEventListener('click', () => {
+        const run = (lat, lng) => osAcao({ acao: 'checkin', lat, lng }, 'Check-in no local');
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => run(pos.coords.latitude, pos.coords.longitude),
+            () => run(null, null),
+            { timeout: 4000 }
+          );
+        } else run(null, null);
+      });
+      document.getElementById('btnAguardar')?.addEventListener('click', () => {
+        const material = prompt('Qual material está faltando?', 'Asfalto frio') || '';
+        osAcao({ acao: 'aguardar_material', material, nota: material ? `Aguardando: ${material}` : undefined }, 'Status: aguardando material');
+      });
+      document.getElementById('btnRetomar')?.addEventListener('click', () => osAcao({ acao: 'retomar' }, 'Serviço retomado'));
+      document.getElementById('btnReforco')?.addEventListener('click', () => {
+        const motivo = prompt('Motivo do reforço?', 'Precisa mais gente / veículo') || 'Pedido de reforço';
+        osAcao({ acao: 'reforco', motivo }, 'Reforço pedido à secretaria');
+      });
+      document.getElementById('btnChecklist')?.addEventListener('click', () => osAcao({
+        acao: 'checklist',
+        epi: !!document.getElementById('chkEpi')?.checked,
+        sinalizacao: !!document.getElementById('chkSinal')?.checked,
+        transito: !!document.getElementById('chkTransito')?.checked,
+        fotoAntes: !!document.getElementById('chkFotoAntes')?.checked,
+      }, 'Checklist salvo'));
+      document.getElementById('btnPessoas')?.addEventListener('click', () =>
+        osAcao({ acao: 'pessoas', pessoas: Number(document.getElementById('pessoas')?.value || 1) }, 'Pessoas atualizadas'));
+      document.getElementById('btnObs')?.addEventListener('click', () => {
+        const texto = document.getElementById('obsCampo')?.value?.trim();
+        if (!texto) return toast('Escreva a observação');
+        osAcao({ acao: 'obs', texto }, 'Observação salva');
+      });
+      document.getElementById('btnOcorAvistar')?.addEventListener('click', () => {
+        const texto = document.getElementById('obsCampo')?.value?.trim() || 'Ocorrência no local';
+        osAcao({ acao: 'ocorrencia', tipo: 'aviso', texto, avisarSecretaria: true }, 'Ocorrência enviada');
+      });
+      document.querySelectorAll('[data-ocor]').forEach((btn) => {
+        btn.onclick = () => osAcao({
+          acao: 'ocorrencia',
+          tipo: btn.dataset.ocor,
+          texto: document.getElementById('obsCampo')?.value?.trim() || '',
+          avisarSecretaria: true,
+        }, 'Ocorrência: ' + btn.dataset.ocor);
+      });
+      document.querySelectorAll('[data-mat-preset]').forEach((btn) => {
+        btn.onclick = () => {
+          const nome = btn.dataset.matPreset;
+          document.getElementById('matNome').value = nome;
+          osAcao({ acao: 'material', nome, qtd: Number(document.getElementById('matQtd')?.value || 1) }, 'Material: ' + nome);
+        };
+      });
+
       const antesBtn = document.getElementById('antes');
       const depoisBtn = document.getElementById('depois');
       if (antesBtn) antesBtn.onclick = () => fAntes.click();
       if (depoisBtn) depoisBtn.onclick = () => fDepois.click();
-      if (document.getElementById('fAntes')) fAntes.onchange = e => readFoto(e, 'antes');
-      if (document.getElementById('fDepois')) fDepois.onchange = e => readFoto(e, 'depois');
+      if (document.getElementById('fAntes')) fAntes.onchange = (e) => readFoto(e, 'antes');
+      if (document.getElementById('fDepois')) fDepois.onchange = (e) => readFoto(e, 'depois');
       if (document.getElementById('addMat')) addMat.onclick = async () => {
-        await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'material', nome: matNome.value, qtd: Number(matQtd.value) }) });
-        toast('Material ok');
+        const nome = matNome.value.trim();
+        if (!nome) return toast('Informe o material');
+        await osAcao({ acao: 'material', nome, qtd: Number(matQtd.value) }, 'Material ok');
       };
       if (document.getElementById('addHoras')) addHoras.onclick = async () => {
-        await api('/api/chamados/' + c.id + '/os', { method: 'POST', body: JSON.stringify({ acao: 'horas', horas: Number(horas.value) }) });
-        toast('Horas ok');
+        await osAcao({ acao: 'horas', horas: Number(horas.value) }, 'Horas ok');
       };
       const encerrarBtn = document.getElementById('encerrar');
       if (encerrarBtn) encerrarBtn.onclick = async () => {
@@ -512,11 +721,10 @@
               method: 'POST',
               body: JSON.stringify({
                 acao: 'encerrar',
-                custo: Number(custo.value),
                 fotoDepois: atual.fotoDepois || (atual.fotosDepois && atual.fotosDepois[0]),
               }),
             });
-            toast('Enviado à Obras — aguardando aprovação da foto');
+            toast('Enviado à secretaria — aguardando aprovação');
             load();
             openOS(c.id);
           } catch (e) { toast(e.message); }
@@ -565,6 +773,13 @@
       toast(somLigado ? 'Som ligado' : 'Som mudo');
     });
     document.getElementById('refreshCampo')?.addEventListener('click', () => load().catch(e => toast(e.message)));
+    document.querySelectorAll('[data-jump-campo]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const mapJump = { recentes: 'recentesPanel', lista: 'lista', osBox: 'osBox', concluidos: 'concluidosPanel' };
+        const id = mapJump[btn.dataset.jumpCampo] || btn.dataset.jumpCampo;
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
 
     (async () => {
       const cfg0 = await loadCityBrand();

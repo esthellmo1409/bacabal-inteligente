@@ -109,8 +109,8 @@
 
     <div class="pane" id="pane-equipes">
       <div class="panel">
-        <h3 style="margin-bottom:.35rem">Equipes</h3>
-        <p class="muted" style="margin-bottom:.85rem">Campo, base e disponíveis</p>
+        <h3 style="margin-bottom:.35rem">Equipes em campo</h3>
+        <p class="muted" style="margin-bottom:.85rem">Status, veículo, ponto, rádio, pessoas e observação — o que o Gabinete acompanha</p>
         <div id="equipesBox"></div>
       </div>
     </div>
@@ -639,19 +639,53 @@
           </div>`).join('')
         : '<p class="muted">Nenhum ponto na rota. Clique em “Montar rota do dia”.</p>';
 
-      document.getElementById('equipesBox').innerHTML = (p.equipes || []).map((e) => `
-        <div class="unidade-card">
+      document.getElementById('equipesBox').innerHTML = (p.equipes || []).map((e) => {
+        const ponto = (p.pontosQuentes || []).find((x) => x.id === e.pontoId);
+        const veic = (p.frota || []).find((x) => x.id === e.veiculoId);
+        const pontosOpts = [`<option value="">— sem ponto —</option>`]
+          .concat((p.pontosQuentes || []).filter((x) => x.status !== 'concluido').map((x) =>
+            `<option value="${x.id}" ${e.pontoId === x.id ? 'selected' : ''}>${x.titulo}</option>`))
+          .join('');
+        const frotaOpts = [`<option value="">— sem veículo —</option>`]
+          .concat((p.frota || []).map((f) =>
+            `<option value="${f.id}" ${e.veiculoId === f.id ? 'selected' : ''}>${f.placa} · ${f.tipo}</option>`))
+          .join('');
+        return `
+        <div class="unidade-card ${e.status === 'em_campo' || e.status === 'em_deslocamento' ? '' : ''}">
           <div class="item-head"><strong>${e.nome}</strong>${statusPill(e.status)}</div>
-          <div class="meta">Líder: ${e.lider || '—'} · veículo ${e.veiculoId || '—'}</div>
-          <div class="form-row">
+          <div class="meta">${e.especialidade || 'Equipe operacional'} · Líder: ${e.lider || '—'}</div>
+          <div class="meta" style="margin-top:.25rem">
+            ${e.membros || '—'} pessoas · rádio ${e.radio || '—'} · ${e.telefone || 'sem tel.'}
+            ${veic ? ` · ${veic.placa}` : ''}
+            ${ponto ? ` · no ponto: ${ponto.titulo}` : ''}
+          </div>
+          ${e.observacao ? `<p class="muted" style="margin:.4rem 0 0;font-size:.82rem">${e.observacao}</p>` : ''}
+          <div class="form-row" style="margin-top:.65rem">
             <select data-eq-st="${e.id}">
               <option value="disponivel" ${e.status === 'disponivel' ? 'selected' : ''}>Disponível</option>
+              <option value="em_deslocamento" ${e.status === 'em_deslocamento' ? 'selected' : ''}>Em deslocamento</option>
               <option value="em_campo" ${e.status === 'em_campo' ? 'selected' : ''}>Em campo</option>
+              <option value="intervalo" ${e.status === 'intervalo' ? 'selected' : ''}>Intervalo</option>
               <option value="base" ${e.status === 'base' ? 'selected' : ''}>Na base</option>
+              <option value="aguardando_material" ${e.status === 'aguardando_material' ? 'selected' : ''}>Aguardando material</option>
             </select>
+            <select data-eq-vei="${e.id}" style="min-width:150px">${frotaOpts}</select>
+            <select data-eq-ponto="${e.id}" style="min-width:150px">${pontosOpts}</select>
+          </div>
+          <div class="form-row">
+            <input type="number" min="1" max="30" style="width:72px" data-eq-membros="${e.id}" value="${e.membros || 3}" title="Pessoas" />
+            <input style="width:110px" data-eq-radio="${e.id}" value="${(e.radio || '').replace(/"/g, '&quot;')}" placeholder="Rádio" />
+            <input style="flex:1;min-width:120px" data-eq-tel="${e.id}" value="${(e.telefone || '').replace(/"/g, '&quot;')}" placeholder="Telefone" />
+          </div>
+          <div class="form-row">
+            <input style="flex:1;min-width:180px" data-eq-obs="${e.id}" value="${(e.observacao || '').replace(/"/g, '&quot;')}" placeholder="Observação / ordem do dia" />
+            <button class="btn btn-sm" type="button" data-eq-quick="${e.id}" data-st="em_deslocamento">Saiu</button>
+            <button class="btn btn-sm" type="button" data-eq-quick="${e.id}" data-st="em_campo">No local</button>
+            <button class="btn btn-sm" type="button" data-eq-quick="${e.id}" data-st="base">Base</button>
             <button class="btn btn-sm btn-primary" type="button" data-eq-save="${e.id}">Salvar</button>
           </div>
-        </div>`).join('');
+        </div>`;
+      }).join('') || '<p class="muted">Nenhuma equipe cadastrada.</p>';
 
       document.getElementById('frotaBox').innerHTML = (p.frota || []).map((f) => `
         <div class="unidade-card ${f.status === 'oficina' ? 'critico' : ''}">
@@ -830,9 +864,30 @@
           try {
             render(await api('/api/obras-ops/equipe', {
               method: 'POST',
-              body: JSON.stringify({ id, status: document.querySelector(`[data-eq-st="${id}"]`)?.value }),
+              body: JSON.stringify({
+                id,
+                status: document.querySelector(`[data-eq-st="${id}"]`)?.value,
+                veiculoId: document.querySelector(`[data-eq-vei="${id}"]`)?.value || null,
+                pontoId: document.querySelector(`[data-eq-ponto="${id}"]`)?.value || null,
+                membros: Number(document.querySelector(`[data-eq-membros="${id}"]`)?.value || 0),
+                radio: document.querySelector(`[data-eq-radio="${id}"]`)?.value || '',
+                telefone: document.querySelector(`[data-eq-tel="${id}"]`)?.value || '',
+                observacao: document.querySelector(`[data-eq-obs="${id}"]`)?.value || '',
+              }),
             }));
             toast('Equipe atualizada');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-eq-quick]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.eqQuick;
+          try {
+            render(await api('/api/obras-ops/equipe', {
+              method: 'POST',
+              body: JSON.stringify({ id, status: btn.dataset.st }),
+            }));
+            toast(btn.dataset.st === 'em_campo' ? 'Equipe no local' : btn.dataset.st === 'base' ? 'Equipe na base' : 'Equipe em deslocamento');
           } catch (e) { toast(e.message); }
         };
       });
