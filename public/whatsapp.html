@@ -46,7 +46,8 @@
 
     async function boot() {
       const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('WhatsApp', cfg);
+      window.BI_OPS_LOCK = true;
+      document.getElementById('top').innerHTML = topbar('WhatsApp', cfg, { lock: true });
       await loadLog();
     }
 

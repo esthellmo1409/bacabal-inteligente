@@ -632,38 +632,65 @@ function logoutOps(dest) {
 
 /**
  * Topbar.
- * - Área ops (opts.lock / BI_OPS_LOCK / BI_AUTH_SLOT): logado vê só usuário + Sair.
- * - Páginas públicas: sempre topo de visitante (ignora sessão de campo/secretaria/gabinete),
- *   para não misturar crachá administrativo na vitrine (Mapa, Cidadão, etc.).
+ * - Área ops (opts.lock / BI_OPS_LOCK / BI_AUTH_SLOT): sem Início/Cidadão/Mapa —
+ *   só status da área logada + Sair (evita confusão na secretaria).
+ * - Páginas públicas: topo de visitante (ignora sessão administrativa).
  */
 function topbar(active, cfg, opts = {}) {
   const nome = cfg?.produto || window.__CITY_PRODUTO || 'Cidade Conecta';
   const sub = cfg?.tagline
     || `${cfg?.cidade || window.__CITY_NOME || ''} · ${cfg?.uf || 'MA'}`;
   const opsLock = !!(opts.lock || window.BI_OPS_LOCK || window.BI_AUTH_SLOT);
-  // Só lê sessão em área administrativa; no público o topo fica limpo
   const user = opsLock ? getSessionUser() : null;
 
-  // Área administrativa logada: sem atalhos — só Sair
-  if (opsLock && user) {
+  const SEC_LABEL = {
+    obras: 'Secretaria de Obras',
+    iluminacao: 'Iluminação Pública',
+    limpeza: 'Limpeza Urbana',
+    meio_ambiente: 'Meio Ambiente',
+    transito: 'Trânsito',
+    defesa_civil: 'Defesa Civil',
+    ouvidoria: 'Ouvidoria',
+    saude: 'Secretaria de Saúde',
+    eventos: 'Cultura e Eventos',
+  };
+
+  function opsStatusLine(u, area) {
+    if (!u) return `${area || 'Área administrativa'} · entre para continuar`;
+    if (u.papel === 'prefeito') return 'Gabinete · sessão ativa';
+    if (u.papel === 'admin' || u.papel === 'platform') return 'Administração · sessão ativa';
+    if (u.papel === 'campo') return 'Campo · sessão ativa';
+    if (u.secretaria && SEC_LABEL[u.secretaria]) {
+      return `${SEC_LABEL[u.secretaria]} · sessão ativa`;
+    }
+    if (u.secretaria) return `Secretaria · ${u.secretaria} · sessão ativa`;
+    return `${area || 'Área administrativa'} · sessão ativa`;
+  }
+
+  // Área administrativa: nunca mostrar Início / Cidadão / Mapa
+  if (opsLock) {
     const area = active || 'Área administrativa';
+    const status = opsStatusLine(user, area);
+    const who = user
+      ? `<span class="nav-user">${user.nome || user.id}</span>
+         <button type="button" class="nav-logout" onclick="logoutOps('/login.html')">Sair</button>`
+      : `<a class="nav-logout" href="${cityLink('/login.html')}">Entrar</a>`;
     return `
   <div class="topbar topbar-ops">
-    <div class="brand" title="Para trocar de área, clique em Sair">
+    <div class="brand" title="Para trocar de área, use Sair">
       <div class="brand-mark"><img src="${cfg?.logo || '/assets/logo-prefeitura.png'}" alt="Brasão de ${cfg?.cidade || ''}" /></div>
       <div>
         <strong>${nome}</strong>
-        <span>${area} · sessão ativa</span>
+        <span>${status}</span>
       </div>
     </div>
     <nav class="nav">
-      <span class="nav-user">${user.nome || user.id}</span>
-      <button type="button" class="nav-logout" onclick="logoutOps('/')">Sair</button>
+      ${who}
     </nav>
   </div>`;
   }
 
-  // Visitante / login / página pública
+  // Visitante / página pública
   const links = [
     [cityLink('/'), 'Início'],
     [cityLink('/fluxo.html'), 'Como funciona'],
