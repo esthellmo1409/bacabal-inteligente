@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cultura e Eventos</title>
+  <link rel="stylesheet" href="/styles.css?v=evt-ops1" />
+  <link rel="stylesheet" href="/ops-shell.css?v=evt-ops1" />
+  <script>
+    window.BI_OPS_LOCK = true;
+    window.BI_AUTH_SLOT = 'secretaria';
+  </script>
+  <style>
+    :root { --evt: #6d28d9; --evt-soft: #f5f3ff; --evt-line: #c4b5fd; --ink-soft: #5b21b6; }
+    .chk-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.35rem 0.75rem; margin: 0.45rem 0 0.65rem;
+    }
+    .chk-grid label {
+      display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 700; color: #334155; cursor: pointer;
+    }
+    .evt-progress {
+      height: 8px; border-radius: 999px; background: #ede9fe; overflow: hidden; margin: 0.4rem 0 0.15rem;
+    }
+    .evt-progress > i { display: block; height: 100%; background: var(--sec, #6d28d9); }
+    .acao-grid { margin-top: 0.25rem; }
+    @media (max-width: 720px) { .chk-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body class="ops-body ops-theme-eventos">
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <div id="opsBuscaMount"></div>
+
+    <div class="ops-hero evt-hero">
+      <div>
+        <p class="page-kicker">Cultura e Eventos</p>
+        <h1 class="display">Central operacional</h1>
+        <p class="muted">Agenda · estrutura · segurança · limpeza — Gabinete só acompanha</p>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-sm" id="btnRefresh" type="button">Atualizar</button>
+      </div>
+    </div>
+
+    <div class="grid-4" id="kpis" style="margin-bottom:1rem"></div>
+
+    <div class="acao-grid" id="acoesRapidas">
+      <button type="button" class="acao-card" data-jump="secAgenda"><strong>Agenda</strong><span>Próximos eventos</span></button>
+      <button type="button" class="acao-card" data-jump="secEstrutura"><strong>Estrutura</strong><span>Palco · som · luz</span></button>
+      <button type="button" class="acao-card" data-jump="secRecentes"><strong>Chamados</strong><span>Fila da secretaria</span></button>
+      <button type="button" class="acao-card" data-jump="chatGabBox"><strong>Gabinete</strong><span>Responder cobranças</span></button>
+    </div>
+
+    <div class="panel ops-block" id="secAgenda">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0;font-size:1.15rem">① Agenda de eventos</h3>
+          <p class="muted" style="margin:.25rem 0 0">Confirme status, público e checklist. Abra <strong>Detalhar</strong> para operar.</p>
+        </div>
+        <span class="muted" id="agendaHint" style="font-size:0.8rem"></span>
+      </div>
+      <div id="agendaBox" class="list"><p class="muted">Carregando…</p></div>
+    </div>
+
+    <div class="panel ops-block" id="secEstrutura">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0;font-size:1.15rem">② Pendências de estrutura</h3>
+          <p class="muted" style="margin:.25rem 0 0">Itens do checklist ainda em aberto nos próximos eventos.</p>
+        </div>
+      </div>
+      <div id="estruturaBox" class="list"></div>
+    </div>
+
+    <div class="panel ops-block" id="secRecentes">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0;font-size:1.15rem">③ Chamados recentes</h3>
+          <p class="muted" style="margin:.25rem 0 0">Estrutura, som, segurança e limpeza pós-evento.</p>
+        </div>
+        <div class="cta-row">
+          <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
+          <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
+        </div>
+      </div>
+      <div id="recentesBox" class="list"><p class="muted">Carregando…</p></div>
+    </div>
+
+    <div class="ops-subnav">
+      <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
+      <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
+      <button class="btn btn-sm" type="button" data-jump="secAgenda">Agenda</button>
+      <button class="btn btn-sm" type="button" data-jump="chatGabBox">Gabinete</button>
+    </div>
+
+    <div class="panel" id="secAbertos">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0">④ Chamados abertos</h3>
+          <p class="muted" style="margin:.25rem 0 0">Fila em andamento — encaminhar e acompanhar.</p>
+        </div>
+        <span class="count" id="countAbertos">0</span>
+      </div>
+      <div id="chamadosAbertosBox" class="list"></div>
+    </div>
+
+    <div class="panel" id="secConcluidos">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0;color:#166534">⑤ Concluídos</h3>
+          <p class="muted" style="margin:.25rem 0 0">Portfólio com antes/depois quando houver.</p>
+        </div>
+        <span class="count" id="countConcluidos">0</span>
+      </div>
+      <div id="chamadosConcluidosBox" class="list"></div>
+    </div>
+
+    <div class="panel" id="chatGabBox">
+      <h3 style="margin:0 0 .25rem">Gabinete</h3>
+      <p class="muted" style="margin:0 0 .75rem;font-size:.85rem">Mensagens do prefeito para Cultura e Eventos</p>
+      <div id="secChatMsgs" class="list" style="max-height:260px;overflow:auto;background:#f5f3ff;border-radius:12px;padding:.75rem;margin-bottom:.65rem"></div>
+      <div style="display:flex;gap:.45rem;flex-wrap:wrap">
+        <input id="secChatInput" style="flex:1;min-width:180px;margin:0" placeholder="Responder ao Gabinete…" maxlength="500" />
+        <button class="btn btn-primary" type="button" id="secChatSend">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=evt-ops1"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
+  </script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    window.BI_AUTH_SLOT = 'secretaria';
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+
+    let user = null;
+    let todosChamados = [];
+    let agenda = [];
+    let pollTimer = null;
+
+    const CHK_LABELS = {
+      palco: 'Palco / tenda',
+      som: 'Som',
+      iluminacao: 'Iluminação',
+      seguranca: 'Segurança',
+      limpezaPre: 'Limpeza pré',
+      limpezaPos: 'Limpeza pós',
+      banheiros: 'Banheiros',
+      divulgacao: 'Divulgação',
+      ambulancia: 'Ambulância',
+      transito: 'Trânsito / desvio',
+    };
+
+    function flashSecao(el) {
+      if (!el) return;
+      el.classList.add('ops-busca-flash');
+      setTimeout(() => el.classList.remove('ops-busca-flash'), 1600);
+    }
+
+    function goPane(_name, { jump } = {}) {
+      if (!jump) return;
+      const el = document.getElementById(jump);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        flashSecao(el);
+      }
+    }
+    window.goPane = goPane;
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target?.closest?.('[data-jump]');
+      if (!btn || !document.body.contains(btn)) return;
+      const jump = btn.getAttribute('data-jump');
+      if (!jump) return;
+      e.preventDefault();
+      goPane(null, { jump });
+    });
+
+    function statusEvtLabel(s) {
+      return ({
+        confirmado: 'Confirmado',
+        planejamento: 'Planejamento',
+        em_andamento: 'Em andamento',
+        cancelado: 'Cancelado',
+        concluido: 'Concluído',
+      })[s] || (s || '—');
+    }
+
+    function statusEvtPill(s) {
+      const cls = s === 'confirmado' || s === 'concluido' ? 'ok'
+        : s === 'em_andamento' ? 'em_execucao'
+        : s === 'cancelado' ? 'atrasada'
+        : 'media';
+      return `<span class="pill ${cls}">${statusEvtLabel(s)}</span>`;
+    }
+
+    function checklistProgress(chk) {
+      const keys = Object.keys(CHK_LABELS);
+      const c = chk || {};
+      const ok = keys.filter((k) => c[k]).length;
+      return { ok, total: keys.length, pct: Math.round((ok / keys.length) * 100) };
+    }
+
+    function pendenciasDe(chk) {
+      return Object.keys(CHK_LABELS).filter((k) => !(chk || {})[k]).map((k) => CHK_LABELS[k]);
+    }
+
+    function fmtDataEvt(iso) {
+      if (!iso) return '—';
+      try {
+        const [y, m, d] = String(iso).split('-');
+        return `${d}/${m}/${y}`;
+      } catch { return iso; }
+    }
+
+    function cardEventoHtml(e) {
+      const did = 'evt-' + e.id;
+      const prog = checklistProgress(e.checklist);
+      const pend = pendenciasDe(e.checklist);
+      const chkHtml = Object.keys(CHK_LABELS).map((k) => `
+        <label>
+          <input type="checkbox" data-evt-chk="${e.id}" data-item="${k}" ${e.checklist?.[k] ? 'checked' : ''} />
+          ${CHK_LABELS[k]}
+        </label>`).join('');
+      return `
+        <div class="unidade-card ${pend.length > 3 ? 'critico' : ''}" data-evento-id="${e.id}">
+          <div class="item-head">
+            <strong>${e.nome}</strong>
+            ${statusEvtPill(e.status)}
+            ${e.destaqueGabinete ? '<span class="pill alta">Gabinete</span>' : ''}
+          </div>
+          <div class="meta">${fmtDataEvt(e.data)} · ${e.horaInicio || '—'}–${e.horaFim || '—'} · ${e.local || '—'}</div>
+          <div class="meta">Público ~${(e.publicoEstimado || 0).toLocaleString('pt-BR')} · ${e.responsavel || '—'}</div>
+          <div class="evt-progress" title="${prog.ok}/${prog.total}"><i style="width:${prog.pct}%"></i></div>
+          <div class="meta" style="font-size:.75rem">${prog.ok}/${prog.total} estrutura ok${pend.length ? ' · falta: ' + pend.slice(0, 3).join(', ') + (pend.length > 3 ? '…' : '') : ''}</div>
+          <button type="button" class="btn-detalhar" data-detalhar="${did}">
+            <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+          </button>
+          <div class="detalhe-box" id="detalhe-${did}">
+            ${e.observacao ? `<p class="muted" style="margin:0 0 .55rem">${e.observacao}</p>` : ''}
+            <div class="meta"><strong>Tipo:</strong> ${e.tipo || '—'} · <strong>Tel.:</strong> ${e.telefone || '—'}</div>
+            <div class="form-row" style="margin-top:.55rem">
+              <select data-evt-st="${e.id}">
+                <option value="planejamento" ${e.status === 'planejamento' ? 'selected' : ''}>Planejamento</option>
+                <option value="confirmado" ${e.status === 'confirmado' ? 'selected' : ''}>Confirmado</option>
+                <option value="em_andamento" ${e.status === 'em_andamento' ? 'selected' : ''}>Em andamento</option>
+                <option value="concluido" ${e.status === 'concluido' ? 'selected' : ''}>Concluído</option>
+                <option value="cancelado" ${e.status === 'cancelado' ? 'selected' : ''}>Cancelado</option>
+              </select>
+              <input type="number" min="0" style="width:110px" data-evt-pub="${e.id}" value="${e.publicoEstimado || 0}" title="Público estimado" />
+              <button class="btn btn-sm btn-primary" type="button" data-evt-save="${e.id}">Salvar</button>
+            </div>
+            <div class="meta" style="margin-top:.65rem;font-weight:800;color:#5b21b6">Checklist de estrutura</div>
+            <div class="chk-grid">${chkHtml}</div>
+            <div class="form-row">
+              <input style="flex:1;min-width:180px" data-evt-obs="${e.id}" value="${(e.observacao || '').replace(/"/g, '&quot;')}" placeholder="Observação / ordem do dia" />
+              <button class="btn btn-sm" type="button" data-evt-save="${e.id}">Salvar obs.</button>
+            </div>
+            <div class="actions" style="margin-top:.55rem">
+              <button class="btn btn-sm" type="button" data-evt-quick="${e.id}" data-st="confirmado">Confirmar</button>
+              <button class="btn btn-sm" type="button" data-evt-quick="${e.id}" data-st="em_andamento">Em andamento</button>
+              <button class="btn btn-sm btn-primary" type="button" data-evt-quick="${e.id}" data-st="concluido">Concluir evento</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function cardChamadoHtml(c, { recente } = {}) {
+      const did = (recente ? 'evt-rec-' : 'evt-ch-') + c.id;
+      const acoesHtml = `
+        <button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>
+        <button class="btn btn-sm" type="button" data-status="${c.id}" data-st="em_execucao">Em execução</button>
+        <button class="btn btn-sm btn-primary" type="button" data-status="${c.id}" data-st="concluido">Concluir</button>
+      `;
+      return `
+        <div class="item" data-chamado-id="${c.id}">
+          <div class="item-head">
+            <strong>${c.protocolo || c.id}</strong>
+            <span class="badge">${typeof statusLabel === 'function' ? statusLabel(c.status) : (c.status || '')}</span>
+            ${typeof opsTemCobrancaPendente === 'function' && opsTemCobrancaPendente(c) ? '<span class="badge badge-cancelado">Gabinete</span>' : ''}
+          </div>
+          <div>${c.titulo || c.categoria || 'Chamado'}</div>
+          <div class="meta">${c.bairro || '—'} ${c.endereco ? '· ' + c.endereco : ''}</div>
+          <button type="button" class="btn-detalhar" data-detalhar="${did}">
+            <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+          </button>
+          <div class="detalhe-box" id="detalhe-${did}">
+            ${typeof detalheOperacaoHtml === 'function' ? detalheOperacaoHtml(c, { acoesHtml }) : `<div class="actions">${acoesHtml}</div>`}
+          </div>
+        </div>`;
+    }
+
+    function renderEstrutura() {
+      const itens = [];
+      agenda.filter((e) => e.status !== 'cancelado' && e.status !== 'concluido').forEach((e) => {
+        pendenciasDe(e.checklist).forEach((label) => {
+          itens.push({ evento: e.nome, data: e.data, label, id: e.id });
+        });
+      });
+      const box = document.getElementById('estruturaBox');
+      if (!itens.length) {
+        box.innerHTML = '<p class="muted">Nenhuma pendência de estrutura — checklists em dia.</p>';
+        return;
+      }
+      box.innerHTML = itens.slice(0, 18).map((x) => `
+        <div class="unidade-card">
+          <div class="item-head"><strong>${x.label}</strong><span class="pill atrasada">pendente</span></div>
+          <div class="meta">${fmtDataEvt(x.data)} · ${x.evento}</div>
+          <button class="btn btn-sm" type="button" data-jump="secAgenda" data-focus-evt="${x.id}">Abrir na agenda</button>
+        </div>`).join('');
+      box.querySelectorAll('[data-focus-evt]').forEach((btn) => {
+        btn.onclick = () => {
+          goPane(null, { jump: 'secAgenda' });
+          setTimeout(() => {
+            const el = document.querySelector(`[data-evento-id="${btn.dataset.focusEvt}"]`);
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const detBtn = el?.querySelector('[data-detalhar]');
+            if (detBtn && !detBtn.classList.contains('open')) detBtn.click();
+          }, 200);
+        };
+      });
+    }
+
+    function bindAgendaActions() {
+      document.querySelectorAll('[data-evt-save]').forEach((btn) => {
+        if (btn._bound) return;
+        btn._bound = true;
+        btn.onclick = async () => {
+          const id = btn.dataset.evtSave;
+          try {
+            const r = await api('/api/eventos', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                status: document.querySelector(`[data-evt-st="${id}"]`)?.value,
+                publicoEstimado: Number(document.querySelector(`[data-evt-pub="${id}"]`)?.value || 0),
+                observacao: document.querySelector(`[data-evt-obs="${id}"]`)?.value || '',
+              }),
+            });
+            agenda = r.agenda || agenda;
+            toast('Evento atualizado');
+            renderAgenda();
+            renderEstrutura();
+            renderKpis();
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-evt-quick]').forEach((btn) => {
+        if (btn._bound) return;
+        btn._bound = true;
+        btn.onclick = async () => {
+          try {
+            const r = await api('/api/eventos', {
+              method: 'POST',
+              body: JSON.stringify({ id: btn.dataset.evtQuick, status: btn.dataset.st }),
+            });
+            agenda = r.agenda || agenda;
+            toast(statusEvtLabel(btn.dataset.st));
+            renderAgenda();
+            renderEstrutura();
+            renderKpis();
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-evt-chk]').forEach((inp) => {
+        if (inp._bound) return;
+        inp._bound = true;
+        inp.onchange = async () => {
+          try {
+            const r = await api('/api/eventos', {
+              method: 'POST',
+              body: JSON.stringify({ id: inp.dataset.evtChk, item: inp.dataset.item, ok: inp.checked }),
+            });
+            agenda = r.agenda || agenda;
+            renderAgenda();
+            renderEstrutura();
+            renderKpis();
+          } catch (e) { toast(e.message); inp.checked = !inp.checked; }
+        };
+      });
+      if (typeof bindDetalharToggle === 'function') {
+        bindDetalharToggle(document.getElementById('agendaBox'));
+      }
+    }
+
+    function renderAgenda() {
+      const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document.getElementById('agendaBox'));
+      if (detalheEmUso) return;
+      const sorted = [...agenda].sort((a, b) => String(a.data).localeCompare(String(b.data)));
+      document.getElementById('agendaHint').textContent = sorted.length + ' na agenda';
+      document.getElementById('agendaBox').innerHTML = sorted.length
+        ? sorted.map(cardEventoHtml).join('')
+        : '<p class="muted">Nenhum evento na agenda.</p>';
+      bindAgendaActions();
+    }
+
+    function renderKpis() {
+      const abertos = todosChamados.filter((c) => c.status !== 'concluido' && c.status !== 'cancelado');
+      const ativos = agenda.filter((e) => e.status !== 'cancelado' && e.status !== 'concluido');
+      const conf = agenda.filter((e) => e.status === 'confirmado' || e.status === 'em_andamento').length;
+      let pendChk = 0;
+      ativos.forEach((e) => { pendChk += pendenciasDe(e.checklist).length; });
+      const publico = ativos.reduce((s, e) => s + (Number(e.publicoEstimado) || 0), 0);
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">Na agenda</div><div class="value">${ativos.length}</div>
+          <div class="hint">${conf} confirmado(s)</div></div>
+        <div class="panel stat"><div class="label">Estrutura pendente</div><div class="value">${pendChk}</div>
+          <div class="hint">itens do checklist</div></div>
+        <div class="panel stat"><div class="label">Público estimado</div><div class="value" style="font-size:1.35rem">${publico.toLocaleString('pt-BR')}</div>
+          <div class="hint">próximos eventos</div></div>
+        <div class="panel stat"><div class="label">Chamados abertos</div><div class="value">${abertos.length}</div>
+          <div class="hint">fila Eventos</div></div>`;
+    }
+
+    function renderChamados(list) {
+      todosChamados = Array.isArray(list) ? list.filter((c) => c.secretaria === 'eventos' || c.eixo === 'eventos') : [];
+      const sorted = [...todosChamados].sort((a, b) =>
+        String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
+      );
+      const abertos = sorted.filter((c) => c.status !== 'concluido' && c.status !== 'cancelado');
+      const concluidos = sorted.filter((c) => c.status === 'concluido');
+      const recentes = sorted.slice(0, 5);
+      const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
+
+      if (!detalheEmUso) {
+        document.getElementById('recentesBox').innerHTML = recentes.length
+          ? recentes.map((c) => cardChamadoHtml(c, { recente: true })).join('')
+          : '<p class="muted">Nenhum chamado recente de Eventos.</p>';
+        document.getElementById('chamadosAbertosBox').innerHTML = abertos.length
+          ? abertos.map((c) => cardChamadoHtml(c)).join('')
+          : '<p class="muted">Nenhum chamado aberto.</p>';
+        document.getElementById('chamadosConcluidosBox').innerHTML = concluidos.length
+          ? concluidos.map((c) => cardChamadoHtml(c)).join('')
+          : '<p class="muted">Nenhum concluído ainda.</p>';
+        document.getElementById('countAbertos').textContent = String(abertos.length);
+        document.getElementById('countConcluidos').textContent = String(concluidos.length);
+
+        const getC = (id) => todosChamados.find((c) => c.id === id);
+        if (typeof bindDetalharToggle === 'function') {
+          bindDetalharToggle(document.getElementById('recentesBox'), getC);
+          bindDetalharToggle(document.getElementById('chamadosAbertosBox'), getC);
+          bindDetalharToggle(document.getElementById('chamadosConcluidosBox'), getC);
+        }
+        if (typeof bindChatCampoSec === 'function') {
+          bindChatCampoSec(document.getElementById('recentesBox'));
+          bindChatCampoSec(document.getElementById('chamadosAbertosBox'));
+          bindChatCampoSec(document.getElementById('chamadosConcluidosBox'));
+        }
+        if (typeof bindIaObraAssist === 'function') {
+          bindIaObraAssist(document.getElementById('recentesBox'), getC);
+          bindIaObraAssist(document.getElementById('chamadosAbertosBox'), getC);
+          bindIaObraAssist(document.getElementById('chamadosConcluidosBox'), getC);
+        }
+      }
+
+      document.querySelectorAll('[data-encaminhar]').forEach((btn) => {
+        if (btn._eBound) return;
+        btn._eBound = true;
+        btn.onclick = async () => {
+          try {
+            await api('/api/chamados/' + btn.dataset.encaminhar, {
+              method: 'PATCH',
+              body: JSON.stringify({ status: 'encaminhado', nota: 'Encaminhado à equipe em campo' }),
+            });
+            toast('Encaminhado pra equipe em campo');
+            await load();
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-status]').forEach((btn) => {
+        if (btn._sBound) return;
+        btn._sBound = true;
+        btn.onclick = async () => {
+          try {
+            await api('/api/chamados/' + btn.dataset.status, {
+              method: 'PATCH',
+              body: JSON.stringify({ status: btn.dataset.st }),
+            });
+            toast('Status: ' + (typeof statusLabel === 'function' ? statusLabel(btn.dataset.st) : btn.dataset.st));
+            await load();
+          } catch (e) { toast(e.message); }
+        };
+      });
+    }
+
+    async function loadChat() {
+      const box = document.getElementById('secChatMsgs');
+      if (!box) return [];
+      try {
+        const r = await api('/api/gabinete/chat?secretaria=eventos');
+        const msgs = r.thread?.mensagens || [];
+        box.innerHTML = msgs.length
+          ? msgs.map((m) => `
+            <div class="item" style="background:${m.de === 'gabinete' ? '#ede9fe' : '#fff'};margin-bottom:.4rem">
+              <div class="item-head"><strong>${m.autor || m.de}</strong>
+                <span class="meta">${m.criadoEm ? new Date(m.criadoEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+              </div>
+              <div>${m.texto}</div>
+            </div>`).join('')
+          : '<p class="muted">Nenhuma mensagem do Gabinete ainda.</p>';
+        box.scrollTop = box.scrollHeight;
+        opsCheckChatAlerta?.(msgs, {
+          storageKey: 'bi_som_eventos',
+          label: 'Eventos',
+          goChat: "try{document.getElementById('chatGabBox')?.scrollIntoView({behavior:'smooth'});}catch(_){ }opsHideAlerta();opsStopAlarm();",
+        });
+        return msgs;
+      } catch (_) {
+        return [];
+      }
+    }
+
+    async function load() {
+      agenda = await api('/api/eventos');
+      const list = await api('/api/chamados');
+      renderAgenda();
+      renderEstrutura();
+      renderChamados(list);
+      renderKpis();
+      opsCheckCobrancasAlerta?.(todosChamados || [], {
+        storageKey: 'bi_som_eventos',
+        onCiencia: () => load().catch(() => {}),
+      });
+      await loadChat().catch(() => []);
+    }
+
+    async function showApp() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Eventos', cfg, { lock: true, user });
+      if (typeof opsInitBusca === 'function') {
+        opsInitBusca({
+          placeholder: 'Buscar: agenda, estrutura, chamado…',
+          items: [
+            { id: 'e-agenda', title: 'Agenda', hint: 'Próximos eventos', keywords: 'agenda feira show', jump: 'secAgenda' },
+            { id: 'e-est', title: 'Estrutura', hint: 'Checklist pendente', keywords: 'palco som seguranca', jump: 'secEstrutura' },
+            { id: 'e-rec', title: 'Chamados recentes', hint: 'Fila', keywords: 'chamados recentes', jump: 'secRecentes' },
+            { id: 'e-ab', title: 'Abertos', hint: 'Em andamento', keywords: 'abertos', jump: 'secAbertos' },
+            { id: 'e-ok', title: 'Concluídos', hint: 'Portfólio', keywords: 'concluidos', jump: 'secConcluidos' },
+            { id: 'e-chat', title: 'Gabinete', hint: 'Chat', keywords: 'gabinete chat', jump: 'chatGabBox' },
+          ],
+          getExtraItems: () => [
+            ...agenda.map((e) => ({
+              id: 'ev-' + e.id,
+              group: 'dado',
+              title: e.nome,
+              hint: `${fmtDataEvt(e.data)} · ${statusEvtLabel(e.status)}`,
+              keywords: `${e.nome} ${e.local} ${e.tipo}`,
+              jump: 'secAgenda',
+              go: () => {
+                goPane(null, { jump: 'secAgenda' });
+                setTimeout(() => document.querySelector(`[data-evento-id="${e.id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
+              },
+            })),
+            ...todosChamados.slice(0, 30).map((c) => ({
+              id: 'ch-' + c.id,
+              group: 'dado',
+              title: `${c.protocolo || c.id} · ${c.titulo || 'Chamado'}`,
+              hint: c.status,
+              keywords: `${c.protocolo} ${c.titulo}`,
+              jump: c.status === 'concluido' ? 'secConcluidos' : 'secAbertos',
+            })),
+          ],
+          onGo: (it) => {
+            if (typeof it.go === 'function') return it.go(it);
+            goPane(null, { jump: it.jump });
+          },
+        });
+      }
+      await load();
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(() => load().catch(() => {}), 15000);
+    }
+
+    async function trySession() {
+      const key = authTokenKey();
+      if (!localStorage.getItem(key)) return false;
+      try {
+        user = await api('/api/me');
+        if (user.papel !== 'secretaria' && user.papel !== 'admin') return false;
+        if (user.secretaria && user.secretaria !== 'eventos' && user.papel !== 'admin') {
+          toast('Esta página é da equipe de Eventos');
+          return false;
+        }
+        setSession(localStorage.getItem(key), user);
+        await showApp();
+        return true;
+      } catch {
+        localStorage.removeItem(key);
+        return false;
+      }
+    }
+
+    document.getElementById('btnRefresh')?.addEventListener('click', () => load().catch((e) => toast(e.message)));
+    document.getElementById('secChatSend')?.addEventListener('click', async () => {
+      const input = document.getElementById('secChatInput');
+      const texto = (input?.value || '').trim();
+      if (!texto) return toast('Escreva a mensagem');
+      try {
+        await api('/api/gabinete/chat', {
+          method: 'POST',
+          body: JSON.stringify({ secretaria: 'eventos', texto, de: 'secretaria' }),
+        });
+        if (input) input.value = '';
+        toast('Enviado ao Gabinete');
+        await loadChat();
+      } catch (e) { toast(e.message); }
+    });
+
+    (async () => {
+      const cfg0 = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Eventos', cfg0, { lock: true });
+      const ok = await trySession();
+      if (!ok) {
+        // redireciona ao login com dica
+        location.href = cityLink('/login.html') + '&papel=secretaria';
+      }
+    })();
+  </script>
+</body>
+</html>

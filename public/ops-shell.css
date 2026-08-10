@@ -53,6 +53,18 @@ body.ops-theme-saude {
   --sec-shadow: rgba(15, 118, 110, 0.28);
 }
 
+body.ops-theme-eventos {
+  --sec: #6d28d9;
+  --sec-mid: #7c3aed;
+  --sec-deep: #4c1d95;
+  --sec-soft: #f5f3ff;
+  --sec-line: #c4b5fd;
+  --sec-ink: #5b21b6;
+  --sec-kicker: #ddd6fe;
+  --sec-muted: #ede9fe;
+  --sec-shadow: rgba(109, 40, 217, 0.28);
+}
+
 body.ops-body {
   background: linear-gradient(180deg, var(--sec-soft, #f8fafc) 0%, #f8fafc 220px, #f8fafc 100%);
 }

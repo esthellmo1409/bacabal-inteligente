@@ -1646,18 +1646,41 @@
           </div>` : ''}`;
         bindGabJump(box);
       } else if (eixo === 'eventos') {
+        const CHK = { palco: 'Palco', som: 'Som', iluminacao: 'Luz', seguranca: 'Segurança', limpezaPre: 'Limpeza pré', limpezaPos: 'Limpeza pós', banheiros: 'Banheiros', divulgacao: 'Divulgação', ambulancia: 'Ambulância', transito: 'Trânsito' };
         box.innerHTML = `
           <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.75rem">Agenda de eventos</h3>
-            <div class="list">${(g.agenda||[]).map(e => `
+            <h3 style="margin-bottom:0.35rem">Agenda de eventos</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Resumo na frente — Detalhar mostra checklist de estrutura.</p>
+            <div class="list">${(g.agenda||[]).map(e => {
+              const chk = e.checklist || {};
+              const keys = Object.keys(CHK);
+              const ok = keys.filter((k) => chk[k]).length;
+              const pend = keys.filter((k) => !chk[k]).map((k) => CHK[k]);
+              const did = 'gab-evt-' + e.id;
+              return `
               <div class="item">
                 <div class="item-head"><strong>${e.nome}</strong>
-                  <span class="badge badge-${e.status==='confirmado'?'concluido':'em_analise'}">${e.status}</span>
+                  <span class="badge badge-${e.status==='confirmado'||e.status==='em_andamento'?'concluido':e.status==='cancelado'?'cancelado':'em_analise'}">${e.status}</span>
+                  ${e.destaqueGabinete ? '<span class="badge badge-em_analise">Prioridade</span>' : ''}
                 </div>
-                <div class="meta">${e.data} · ${e.local} · público ~${e.publicoEstimado || '—'}</div>
-              </div>`).join('') || '<p class="muted">Sem eventos</p>'}
+                <div class="meta">${e.data}${e.horaInicio ? ' · ' + e.horaInicio : ''} · ${e.local} · público ~${e.publicoEstimado || '—'}</div>
+                <div class="meta">${ok}/${keys.length} estrutura ok${pend.length ? ' · falta ' + pend.slice(0, 3).join(', ') : ''}</div>
+                <button type="button" class="btn-detalhar" data-detalhar="${did}">
+                  <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+                </button>
+                <div class="detalhe-box" id="detalhe-${did}">
+                  <div class="meta"><strong>Responsável:</strong> ${e.responsavel || '—'} · ${e.telefone || ''}</div>
+                  ${e.observacao ? `<p class="muted" style="margin:0.45rem 0">${e.observacao}</p>` : ''}
+                  <div class="meta" style="margin-top:0.35rem"><strong>Checklist:</strong> ${keys.map((k) => `${CHK[k]} ${chk[k] ? '✓' : '·'}`).join(' · ')}</div>
+                  <div class="actions" style="margin-top:0.55rem">
+                    <button class="btn btn-sm btn-warn" type="button" onclick="cobrarEventos('${(e.nome || '').replace(/'/g, "\\'")}')">Cobrar secretaria</button>
+                  </div>
+                </div>
+              </div>`;
+            }).join('') || '<p class="muted">Sem eventos</p>'}
             </div>
           </div>`;
+        bindGabineteDetalhar(box);
       } else {
         box.innerHTML = '';
       }
@@ -1747,9 +1770,39 @@
           : 'Cobrança do Gabinete — verificar pontos quentes, rota, frota e materiais.',
       });
     }
+
+    async function cobrarEventos(detalhe) {
+      const pendente = (lastFila?.fila || [])[0];
+      if (!pendente) {
+        try {
+          chatSec = 'eventos';
+          await api('/api/gabinete/chat', {
+            method: 'POST',
+            body: JSON.stringify({
+              secretaria: 'eventos',
+              texto: detalhe
+                ? `Cobrança do Gabinete: ${detalhe}. Preciso de retorno hoje sobre estrutura e segurança.`
+                : 'Cobrança do Gabinete: atualizem agenda, checklist de estrutura e limpeza pós-evento. Preciso de retorno hoje.',
+              de: 'gabinete',
+            }),
+          });
+          toast('Cobrança enviada no chat de Eventos');
+          await loadChat?.();
+        } catch (e) {
+          toast(e.message || 'Use o chat de Eventos');
+        }
+        return;
+      }
+      await decidir(pendente.id, 'cobrar', {
+        nota: detalhe
+          ? `Cobrança do Gabinete — Eventos: ${detalhe}`
+          : 'Cobrança do Gabinete — verificar agenda, estrutura e segurança.',
+      });
+    }
     window.cobrarUnidade = cobrarUnidade;
     window.cobrarIluminacao = cobrarIluminacao;
     window.cobrarObras = cobrarObras;
+    window.cobrarEventos = cobrarEventos;
     window.visitaSurpresa = visitaSurpresa;
 
     async function load() {
