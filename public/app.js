@@ -855,24 +855,31 @@ function ensureOpsUser() {
 }
 
 function logout() {
-  if (typeof opsLiberarVoltar === 'function') opsLiberarVoltar();
+  _opsBackLock.allowLeave = true;
+  opsLiberarVoltar();
   clearAllSessions();
   location.href = cityLink('/login.html');
 }
 
-/** Sair da área administrativa (obrigatório antes de ir a outra tela). */
+/** Sair da área administrativa — único caminho para sair da página travada. */
 function logoutOps(dest) {
-  if (typeof opsLiberarVoltar === 'function') opsLiberarVoltar();
+  _opsBackLock.allowLeave = true;
+  opsLiberarVoltar();
   clearAllSessions();
   location.href = cityLink(dest || '/login.html');
 }
 
 /**
- * Trava o botão/seta Voltar do browser nas áreas ops (Gabinete, secretarias, campo).
- * Empilha um estado e, ao voltar, reempilha — a página não some.
- * Use Sair (ou opsLiberarVoltar) para sair de verdade.
+ * Trava saída da página: Voltar do browser e links externos à área.
+ * Só libera ao clicar em Sair (logoutOps / logout).
  */
-const _opsBackLock = { on: false, handler: null, msg: 'Use Sair no topo para trocar de área' };
+const _opsBackLock = {
+  on: false,
+  allowLeave: false,
+  handler: null,
+  clickHandler: null,
+  msg: 'Para sair, clique em Sair no topo',
+};
 
 function opsLiberarVoltar() {
   _opsBackLock.on = false;
@@ -880,36 +887,60 @@ function opsLiberarVoltar() {
     window.removeEventListener('popstate', _opsBackLock.handler);
     _opsBackLock.handler = null;
   }
+  if (_opsBackLock.clickHandler) {
+    document.removeEventListener('click', _opsBackLock.clickHandler, true);
+    _opsBackLock.clickHandler = null;
+  }
 }
 
 function opsTravarVoltar(opts = {}) {
   if (window.BI_ALLOW_BACK) return;
   if (_opsBackLock.on) return;
   _opsBackLock.on = true;
+  _opsBackLock.allowLeave = false;
   if (opts.msg) _opsBackLock.msg = opts.msg;
 
-  // Garante uma entrada extra no histórico para interceptar o Voltar
-  try {
-    const st = { biOpsLock: 1, t: Date.now() };
-    if (!history.state || !history.state.biOpsLock) {
-      history.pushState(st, '', location.href);
-    }
-  } catch (_) { /* ok */ }
-
-  _opsBackLock.handler = () => {
-    if (!_opsBackLock.on) return;
+  const pushLock = () => {
     try {
       history.pushState({ biOpsLock: 1, t: Date.now() }, '', location.href);
     } catch (_) { /* ok */ }
+  };
+
+  // Empilha 2 estados — Voltar uma ou duas vezes continua na página
+  pushLock();
+  pushLock();
+
+  _opsBackLock.handler = () => {
+    if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
+    pushLock();
     if (typeof toast === 'function') toast(_opsBackLock.msg);
   };
   window.addEventListener('popstate', _opsBackLock.handler);
+
+  // Bloqueia clique em links que saem desta página (exceto Sair)
+  _opsBackLock.clickHandler = (e) => {
+    if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
+    const a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    // Botão/link Sair (logoutOps via onclick) — deixa passar
+    if (a.classList.contains('nav-logout') || /sair/i.test(a.textContent || '')) return;
+    const href = a.getAttribute('href') || '';
+    if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+    let url;
+    try { url = new URL(href, location.href); } catch (_) { return; }
+    // Mesma página (só hash/query) — ok
+    if (url.pathname === location.pathname) return;
+    // Sai do app / outra página HTML — trava
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof toast === 'function') toast(_opsBackLock.msg);
+  };
+  document.addEventListener('click', _opsBackLock.clickHandler, true);
 }
 
-/** Navegação intencional (links internos) — libera a trava antes de ir. */
+/** Só Sair libera a trava — não use para navegar sem logout. */
 function opsGoto(href) {
-  opsLiberarVoltar();
-  location.href = cityLink(href);
+  if (typeof toast === 'function') toast(_opsBackLock.msg || 'Para sair, clique em Sair no topo');
 }
 
 /* ── Alarme ops: bip + banner (Gabinete / chat do prefeito) ── */
