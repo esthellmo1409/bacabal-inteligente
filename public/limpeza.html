@@ -4,14 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Limpeza Urbana</title>
-  <link rel="stylesheet" href="/styles.css?v=campo-chat1" />
-  <link rel="stylesheet" href="/ops-shell.css?v=ops1" />
+  <link rel="stylesheet" href="/styles.css?v=limp-ops1" />
+  <link rel="stylesheet" href="/ops-shell.css?v=limp-ops1" />
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
   </script>
   <style>
     :root { --limp: #047857; --limp-soft: #ecfdf5; --limp-line: #6ee7b7; --ink-soft: #064e3b; }
+    .ops-body .pill.em_andamento,
+    .ops-body .pill.em_campo,
+    .ops-body .pill.em_rota { background: #dbeafe; color: #1e40af; }
+    .ops-body .pill.em_deslocamento { background: #ffedd5; color: #9a3412; }
+    .ops-body .pill.pendente { background: #fef3c7; color: #92400e; }
+    .ops-body .pill.disponivel,
+    .ops-body .pill.concluido,
+    .ops-body .pill.ok { background: #dcfce7; color: #166534; }
+    .ops-body .pill.oficina,
+    .ops-body .pill.em_execucao { background: #ede9fe; color: #5b21b6; }
+    .chk-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0.65rem 0.85rem; border: 1px solid var(--limp-line); border-radius: 12px;
+      background: #fff; margin-bottom: 0.45rem;
+    }
+    .chk-row label { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 700; cursor: pointer; }
   </style>
 </head>
 <body class="ops-body ops-theme-limpeza">
@@ -23,14 +39,12 @@
       <div>
         <p class="page-kicker">Secretaria de Limpeza</p>
         <h1 class="display">Central operacional</h1>
-        <p class="muted">Recentes · abertos · concluídos — com foto, materiais e execução</p>
+        <p class="muted">Pontos · rotas · equipes · frota · materiais — Gabinete só acompanha</p>
       </div>
       <div class="cta-row">
         <button class="btn btn-sm" id="btnRefresh" type="button">Atualizar</button>
       </div>
     </div>
-
-    <div class="grid-3" id="kpis" style="margin-bottom:1rem"></div>
 
     <div class="panel ops-block" id="secRecentes">
       <div class="ops-section-head">
@@ -39,67 +53,162 @@
           <p class="muted" style="margin:.25rem 0 0">Últimos atualizados — abra <strong>Detalhar</strong> para fotos e execução.</p>
         </div>
         <div class="cta-row">
-          <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
-          <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
+          <button class="btn btn-sm" type="button" data-nav-pane="chamados" data-jump="secAbertos">Abertos</button>
+          <button class="btn btn-sm btn-primary" type="button" data-nav-pane="chamados" data-jump="secConcluidos">Concluídos</button>
         </div>
       </div>
       <div id="recentesBox" class="list"><p class="muted">Carregando…</p></div>
     </div>
 
-    <div class="ops-subnav">
-      <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
-      <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
-      <button class="btn btn-sm" type="button" data-jump="secRecentes">Recentes</button>
-      <button class="btn btn-sm" type="button" data-jump="chatGabBox">Gabinete</button>
+    <div class="grid-4" id="kpis" style="margin-bottom:1rem"></div>
+
+    <div class="acao-grid" id="acoesRapidas">
+      <button type="button" class="acao-card" data-go="pontos"><strong>Pontos</strong><span>Acúmulo · entulho · varrição</span></button>
+      <button type="button" class="acao-card" data-go="rotas"><strong>Rotas</strong><span>Coleta e varrição do dia</span></button>
+      <button type="button" class="acao-card" data-go="equipes"><strong>Equipes</strong><span>Campo e rádio</span></button>
+      <button type="button" class="acao-card" data-go="frota"><strong>Frota</strong><span>Compactador · caçamba</span></button>
+      <button type="button" class="acao-card" data-go="materiais"><strong>Materiais</strong><span>Sacos · EPI · combustível</span></button>
+      <button type="button" class="acao-card" data-go="checklist"><strong>Checklist</strong><span>Rotina do dia</span></button>
+      <button type="button" class="acao-card" data-go="chamados" data-jump="secAbertos"><strong>Abertos</strong><span>Fila em andamento</span></button>
+      <button type="button" class="acao-card" data-go="alertas"><strong>Alertas</strong><span>O que exige atenção</span></button>
+      <button type="button" class="acao-card" data-go="chat"><strong>Gabinete</strong><span>Responder cobranças</span></button>
     </div>
 
-    <div class="panel" id="secAbertos">
-      <div class="ops-section-head">
-        <div>
-          <h3 style="margin:0">② Chamados abertos</h3>
-          <p class="muted" style="margin:.25rem 0 0">Fila em andamento — encaminhar e acompanhar execução.</p>
-        </div>
-        <span class="count" id="countAbertos">0</span>
+    <div class="limp-tabs" id="tabs">
+      <button type="button" class="limp-tab active" data-pane="pontos">Pontos<span class="count" id="tabPontos">0</span></button>
+      <button type="button" class="limp-tab" data-pane="rotas">Rotas<span class="count" id="tabRotas">0</span></button>
+      <button type="button" class="limp-tab" data-pane="equipes">Equipes</button>
+      <button type="button" class="limp-tab" data-pane="frota">Frota</button>
+      <button type="button" class="limp-tab" data-pane="materiais">Materiais<span class="count" id="tabMats">0</span></button>
+      <button type="button" class="limp-tab" data-pane="checklist">Checklist<span class="count" id="tabChk">0</span></button>
+      <button type="button" class="limp-tab" data-pane="chamados">Chamados<span class="count" id="tabChamados">0</span></button>
+      <button type="button" class="limp-tab" data-pane="alertas">Alertas<span class="count" id="tabAlertas">0</span></button>
+      <button type="button" class="limp-tab" data-pane="chat">Gabinete</button>
+    </div>
+
+    <div class="pane active" id="pane-pontos">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Pontos de limpeza</h3>
+        <p class="muted" style="margin-bottom:.85rem">Acúmulo, entulho, varrição e coleta irregular</p>
+        <div id="pontosBox"></div>
       </div>
-      <div id="chamadosAbertosBox" class="list"></div>
     </div>
 
-    <div class="panel" id="secConcluidos">
-      <div class="ops-section-head">
-        <div>
-          <h3 style="margin:0;color:#166534">③ Concluídos</h3>
-          <p class="muted" style="margin:.25rem 0 0">Portfólio com antes/depois, materiais e tempo.</p>
-        </div>
-        <span class="count" id="countConcluidos">0</span>
+    <div class="pane" id="pane-rotas">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Rotas do dia</h3>
+        <p class="muted" style="margin-bottom:.85rem">Coleta, varrição e entulho — avance o status em campo</p>
+        <div id="rotasBox"></div>
       </div>
-      <div id="chamadosConcluidosBox" class="list"></div>
     </div>
 
-    <div class="panel" id="chatGabBox">
-      <h3 style="margin:0 0 .25rem">Gabinete</h3>
-      <p class="muted" style="margin:0 0 .75rem;font-size:.85rem">Mensagens do prefeito para a Limpeza</p>
-      <div id="secChatMsgs" class="list" style="max-height:260px;overflow:auto;background:#ecfdf5;border-radius:12px;padding:.75rem;margin-bottom:.65rem"></div>
-      <div style="display:flex;gap:.45rem;flex-wrap:wrap">
-        <input id="secChatInput" style="flex:1;min-width:180px;margin:0" placeholder="Responder ao Gabinete…" maxlength="500" />
-        <button class="btn btn-primary" type="button" id="secChatSend">Enviar</button>
+    <div class="pane" id="pane-equipes">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Equipes em campo</h3>
+        <p class="muted" style="margin-bottom:.85rem">Status, rádio e tamanho da equipe</p>
+        <div id="equipesBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-frota">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Frota</h3>
+        <p class="muted" style="margin-bottom:.85rem">Compactadores, varredeiras e caçambas</p>
+        <div id="frotaBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-materiais">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Materiais e estoque</h3>
+        <p class="muted" style="margin-bottom:.85rem">Atualize quantidades — itens abaixo do mínimo ficam em alerta</p>
+        <div id="materiaisBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-checklist">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Checklist do dia</h3>
+        <p class="muted" style="margin-bottom:.85rem">Marque o que já foi feito nesta manhã / turno</p>
+        <div id="checklistBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-chamados">
+      <div class="ops-subnav" style="display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .75rem">
+        <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
+        <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
+        <button class="btn btn-sm" type="button" data-jump="secRecentes">Recentes (topo)</button>
+      </div>
+      <div class="panel" id="secAbertos">
+        <div class="ops-section-head">
+          <div>
+            <h3 style="margin:0">② Chamados abertos</h3>
+            <p class="muted" style="margin:.25rem 0 0">Fila em andamento — encaminhar e acompanhar execução.</p>
+          </div>
+          <span class="count" id="countAbertos">0</span>
+        </div>
+        <div id="chamadosAbertosBox" class="list"></div>
+      </div>
+      <div class="panel" id="secConcluidos">
+        <div class="ops-section-head">
+          <div>
+            <h3 style="margin:0;color:#166534">③ Concluídos</h3>
+            <p class="muted" style="margin:.25rem 0 0">Portfólio com antes/depois, materiais e tempo.</p>
+          </div>
+          <span class="count" id="countConcluidos">0</span>
+        </div>
+        <div id="chamadosConcluidosBox" class="list"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-alertas">
+      <div class="panel">
+        <h3 style="margin-bottom:.5rem">Alertas agora</h3>
+        <div id="alertasBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-chat">
+      <div class="panel" id="chatGabBox">
+        <h3 style="margin:0 0 .25rem">Gabinete</h3>
+        <p class="muted" style="margin:0 0 .75rem;font-size:.85rem">Mensagens do prefeito para a Limpeza</p>
+        <div id="secChatMsgs" class="list" style="max-height:260px;overflow:auto;background:#ecfdf5;border-radius:12px;padding:.75rem;margin-bottom:.65rem"></div>
+        <div style="display:flex;gap:.45rem;flex-wrap:wrap">
+          <input id="secChatInput" style="flex:1;min-width:180px;margin:0" placeholder="Responder ao Gabinete…" maxlength="500" />
+          <button class="btn btn-primary" type="button" id="secChatSend">Enviar</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <script src="/app.js?v=campo-chat1"></script>
+  <script src="/app.js?v=limp-ops1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
   </script>
-
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
 
     let user = null;
+    let painelAtual = null;
     let todosChamados = [];
     let pollTimer = null;
+
+    const TIPO_LABEL = {
+      acumulo: 'Acúmulo',
+      entulho: 'Entulho',
+      varricao: 'Varrição',
+      coleta: 'Coleta',
+    };
+    const ROTA_TIPO = { coleta: 'Coleta', varricao: 'Varrição', entulho: 'Entulho' };
+    const EQ_ST = {
+      disponivel: 'Disponível',
+      em_campo: 'Em campo',
+      em_deslocamento: 'Em deslocamento',
+    };
 
     function flashSecao(el) {
       if (!el) return;
@@ -107,25 +216,81 @@
       setTimeout(() => el.classList.remove('ops-busca-flash'), 1600);
     }
 
-    function goPane(_name, { jump } = {}) {
-      if (!jump) return;
-      const el = document.getElementById(jump);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        flashSecao(el);
+    function goPane(name, { scroll = true, jump } = {}) {
+      if (!name && jump) {
+        const elOnly = document.getElementById(jump);
+        if (elOnly) {
+          elOnly.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          flashSecao(elOnly);
+        }
+        return;
+      }
+      if (!name) return;
+      if (name === 'recentes') {
+        const el = document.getElementById('secRecentes');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          flashSecao(el);
+        }
+        return;
+      }
+      const pane = document.getElementById('pane-' + name);
+      if (!pane) {
+        if (typeof toast === 'function') toast('Seção não encontrada: ' + name);
+        return;
+      }
+      document.querySelectorAll('.limp-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
+      document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('active', p.id === 'pane-' + name));
+      document.querySelectorAll('.acao-card').forEach((c) => {
+        const go = c.getAttribute('data-go');
+        const j = c.getAttribute('data-jump');
+        c.classList.toggle('active', go === name || j === jump);
+      });
+      try {
+        const url = new URL(location.href);
+        url.searchParams.set('aba', name);
+        if (jump) url.searchParams.set('sec', jump);
+        else url.searchParams.delete('sec');
+        history.replaceState({ biOpsLock: 1, t: Date.now(), aba: name, sec: jump || null }, '', url.toString());
+        if (typeof opsTravarVoltar === 'function') opsTravarVoltar();
+      } catch (_) {}
+      if (scroll) {
+        requestAnimationFrame(() => {
+          const target = (jump && document.getElementById(jump))
+            || document.getElementById('tabs')
+            || pane;
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (jump) flashSecao(document.getElementById(jump));
+        });
       }
     }
     window.goPane = goPane;
 
     document.addEventListener('click', (e) => {
-      const btn = e.target?.closest?.('[data-jump]');
+      const btn = e.target?.closest?.(
+        '.acao-card[data-go], .acao-card[data-jump], .limp-tab[data-pane], [data-nav-pane], [data-jump]'
+      );
       if (!btn || !document.body.contains(btn)) return;
-      if (btn.closest('.item') && !btn.hasAttribute('data-jump')) return;
-      const jump = btn.getAttribute('data-jump');
-      if (!jump) return;
+      if (btn.closest('.unidade-card') && !btn.classList.contains('acao-card') && !btn.hasAttribute('data-nav-pane') && !btn.closest('.ops-subnav') && !btn.closest('.ops-section-head')) {
+        return;
+      }
+      const name = btn.getAttribute('data-pane')
+        || btn.getAttribute('data-go')
+        || btn.getAttribute('data-nav-pane');
+      const jump = btn.getAttribute('data-jump') || null;
+      if (!name && !jump) return;
       e.preventDefault();
-      goPane(null, { jump });
+      if (name) goPane(name, { scroll: true, jump });
+      else goPane(null, { scroll: true, jump });
     });
+
+    function statusPill(st) {
+      return `<span class="pill ${st || ''}">${st || '—'}</span>`;
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    }
 
     function cardChamadoHtml(c, { recente } = {}) {
       const did = (recente ? 'limp-rec-' : 'limp-') + c.id;
@@ -156,7 +321,7 @@
         </div>`;
     }
 
-    function render(list) {
+    function renderChamados(list) {
       todosChamados = Array.isArray(list) ? list : [];
       const sorted = [...todosChamados].sort((a, b) =>
         String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
@@ -164,17 +329,6 @@
       const abertos = sorted.filter((c) => c.status !== 'concluido' && c.status !== 'cancelado');
       const concluidos = sorted.filter((c) => c.status === 'concluido');
       const recentes = sorted.slice(0, 5);
-      const andamento = abertos.filter((c) =>
-        ['em_analise', 'encaminhado', 'em_execucao', 'aguardando_material', 'aguardando_aprovacao'].includes(c.status)
-      ).length;
-
-      document.getElementById('kpis').innerHTML = `
-        <div class="panel stat"><div class="label">Abertos</div><div class="value">${abertos.length}</div>
-          <div class="hint">${andamento} em tratamento</div></div>
-        <div class="panel stat"><div class="label">Concluídos</div><div class="value">${concluidos.length}</div>
-          <div class="hint">portfólio</div></div>
-        <div class="panel stat"><div class="label">Total</div><div class="value">${sorted.length}</div>
-          <div class="hint">filtro da secretaria</div></div>`;
 
       const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
       if (!detalheEmUso) {
@@ -238,6 +392,255 @@
       });
     }
 
+    function renderOps(p) {
+      painelAtual = p;
+      const t = p.totais || {};
+      document.getElementById('tabPontos').textContent = String(t.pontosAbertos || 0);
+      document.getElementById('tabRotas').textContent = String(t.rotasPendentes || 0);
+      document.getElementById('tabMats').textContent = String(t.materiaisBaixos || 0);
+      document.getElementById('tabChk').textContent = String(t.checklistPendentes || 0);
+      document.getElementById('tabChamados').textContent = String(t.chamadosAbertos || 0);
+      document.getElementById('tabAlertas').textContent = String((p.alertas || []).length);
+
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">Pontos abertos</div><div class="value">${t.pontosAbertos || 0}</div>
+          <div class="hint">${t.pontosAlta || 0} prioridade alta</div></div>
+        <div class="panel stat"><div class="label">Rotas do dia</div><div class="value">${t.rotasAndamento || 0}/${(p.rotas || []).length}</div>
+          <div class="hint">${t.rotasPendentes || 0} ainda pendente(s)</div></div>
+        <div class="panel stat"><div class="label">Equipes em campo</div><div class="value">${t.equipesEmCampo || 0}/${t.equipesTotal || 0}</div>
+          <div class="hint">frota livre ${t.frotaLivre || 0}/${t.frotaTotal || 0}</div></div>
+        <div class="panel stat"><div class="label">Materiais baixos</div><div class="value">${t.materiaisBaixos || 0}</div>
+          <div class="hint">${t.chamadosAbertos || 0} chamado(s) · checklist ${t.checklistPendentes || 0}</div></div>`;
+
+      document.getElementById('pontosBox').innerHTML = (p.pontos || []).map((x) => `
+        <div class="unidade-card ${x.prioridade === 'alta' && x.status !== 'concluido' ? 'critico' : ''}">
+          <div class="item-head">
+            <strong>${esc(x.titulo)}</strong>
+            ${statusPill(x.status)}
+            <span class="pill ${x.prioridade || ''}">${x.prioridade || ''}</span>
+          </div>
+          <div class="meta">${TIPO_LABEL[x.tipo] || x.tipo || '—'} · ${x.bairro || '—'} · ${x.rua || ''}</div>
+          <div class="form-row">
+            <select data-ponto-st="${x.id}">
+              <option value="pendente" ${x.status === 'pendente' ? 'selected' : ''}>Pendente</option>
+              <option value="em_execucao" ${x.status === 'em_execucao' ? 'selected' : ''}>Em execução</option>
+              <option value="concluido" ${x.status === 'concluido' ? 'selected' : ''}>Concluído</option>
+            </select>
+            <select data-ponto-pr="${x.id}">
+              <option value="alta" ${x.prioridade === 'alta' ? 'selected' : ''}>Alta</option>
+              <option value="media" ${x.prioridade === 'media' ? 'selected' : ''}>Média</option>
+              <option value="baixa" ${x.prioridade === 'baixa' ? 'selected' : ''}>Baixa</option>
+            </select>
+            <button class="btn btn-sm btn-primary" type="button" data-ponto-save="${x.id}">Salvar</button>
+          </div>
+        </div>`).join('') || '<p class="muted">Nenhum ponto cadastrado.</p>';
+
+      document.getElementById('rotasBox').innerHTML = (p.rotas || []).length
+        ? [...(p.rotas || [])].sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map((r) => {
+          const eq = (p.equipes || []).find((e) => e.id === r.equipeId);
+          return `
+          <div class="unidade-card">
+            <div class="item-head">
+              <strong>${r.ordem}. ${ROTA_TIPO[r.tipo] || r.tipo} — ${esc(r.bairro)}</strong>
+              ${statusPill(r.status)}
+            </div>
+            <div class="meta">Turno ${r.turno || '—'} · ~${r.km || 0} km · ${eq ? eq.nome : (r.equipeId || 'sem equipe')}</div>
+            <div class="form-row">
+              <button class="btn btn-sm" type="button" data-rota="${r.id}" data-st="em_andamento">Em andamento</button>
+              <button class="btn btn-sm btn-primary" type="button" data-rota="${r.id}" data-st="concluido">Concluir rota</button>
+            </div>
+          </div>`;
+        }).join('')
+        : '<p class="muted">Nenhuma rota no dia.</p>';
+
+      document.getElementById('equipesBox').innerHTML = (p.equipes || []).map((e) => `
+        <div class="unidade-card">
+          <div class="item-head">
+            <strong>${esc(e.nome)}</strong>
+            ${statusPill(e.status)}
+          </div>
+          <div class="meta">Líder ${esc(e.lider)} · ${e.membros || 0} pessoas · rádio ${esc(e.radio || '—')}</div>
+          <div class="form-row">
+            <select data-eq-st="${e.id}">
+              <option value="disponivel" ${e.status === 'disponivel' ? 'selected' : ''}>Disponível</option>
+              <option value="em_deslocamento" ${e.status === 'em_deslocamento' ? 'selected' : ''}>Em deslocamento</option>
+              <option value="em_campo" ${e.status === 'em_campo' ? 'selected' : ''}>Em campo</option>
+            </select>
+            <input style="width:70px" type="number" min="1" data-eq-membros="${e.id}" value="${e.membros || 1}" />
+            <input style="flex:1;min-width:100px" data-eq-radio="${e.id}" value="${esc(e.radio)}" placeholder="Rádio" />
+            <button class="btn btn-sm btn-primary" type="button" data-eq-save="${e.id}">Salvar</button>
+          </div>
+          <div class="form-row" style="margin-top:.35rem">
+            <button class="btn btn-sm" type="button" data-eq-quick="${e.id}" data-st="em_deslocamento">Saiu</button>
+            <button class="btn btn-sm" type="button" data-eq-quick="${e.id}" data-st="em_campo">No local</button>
+            <button class="btn btn-sm" type="button" data-eq-quick="${e.id}" data-st="disponivel">Base</button>
+          </div>
+        </div>`).join('') || '<p class="muted">Nenhuma equipe.</p>';
+
+      document.getElementById('frotaBox').innerHTML = (p.frota || []).map((f) => `
+        <div class="unidade-card ${f.status === 'oficina' ? 'critico' : ''}">
+          <div class="item-head"><strong>${esc(f.placa)}</strong><span class="meta">${esc(f.tipo)}</span> ${statusPill(f.status)}</div>
+          <div class="form-row">
+            <select data-frota-st="${f.id}">
+              <option value="disponivel" ${f.status === 'disponivel' ? 'selected' : ''}>Disponível</option>
+              <option value="em_rota" ${f.status === 'em_rota' ? 'selected' : ''}>Em rota</option>
+              <option value="oficina" ${f.status === 'oficina' ? 'selected' : ''}>Oficina</option>
+            </select>
+            <input style="flex:1;min-width:140px" data-frota-mot="${f.id}" value="${esc(f.motorista)}" placeholder="Motorista" />
+            <button class="btn btn-sm btn-primary" type="button" data-frota-save="${f.id}">Salvar</button>
+          </div>
+        </div>`).join('') || '<p class="muted">Nenhum veículo.</p>';
+
+      document.getElementById('materiaisBox').innerHTML = (p.materiais || []).map((m) => {
+        const baixo = (m.qtd || 0) < (m.minimo || 0);
+        return `
+        <div class="unidade-card ${baixo ? 'critico' : ''}">
+          <div class="item-head"><strong>${esc(m.nome)}</strong>${baixo ? '<span class="pill pendente">baixo</span>' : '<span class="pill ok">ok</span>'}</div>
+          <div class="meta">mín. ${m.minimo || 0} ${m.unidade || 'un'}</div>
+          <div class="form-row">
+            <input type="number" min="0" style="width:100px" data-mat-qtd="${m.id}" value="${m.qtd || 0}" />
+            <span class="meta">${m.unidade || 'un'}</span>
+            <button class="btn btn-sm btn-primary" type="button" data-mat-save="${m.id}">Salvar</button>
+          </div>
+        </div>`;
+      }).join('') || '<p class="muted">Nenhum material.</p>';
+
+      document.getElementById('checklistBox').innerHTML = (p.checklist || []).map((c) => `
+        <div class="chk-row">
+          <label>
+            <input type="checkbox" data-chk="${c.id}" ${c.ok ? 'checked' : ''} />
+            ${esc(c.label)}
+          </label>
+          <span class="meta">${c.ok ? 'ok' : 'pendente'}</span>
+        </div>`).join('') || '<p class="muted">Checklist vazio.</p>';
+
+      document.getElementById('alertasBox').innerHTML = (p.alertas || []).length
+        ? `<ul style="margin:0;padding-left:1.1rem">${(p.alertas || []).map((a) => `<li style="margin:.35rem 0">${esc(a)}</li>`).join('')}</ul>`
+        : '<p class="muted">Nenhum alerta no momento.</p>';
+
+      bindOpsActions();
+    }
+
+    function bindOpsActions() {
+      document.querySelectorAll('[data-ponto-save]').forEach((btn) => {
+        if (btn._bound) return;
+        btn._bound = true;
+        btn.onclick = async () => {
+          const id = btn.dataset.pontoSave;
+          const st = document.querySelector(`[data-ponto-st="${id}"]`)?.value;
+          const pr = document.querySelector(`[data-ponto-pr="${id}"]`)?.value;
+          try {
+            renderOps(await api('/api/limpeza/ponto', {
+              method: 'POST',
+              body: JSON.stringify({ id, status: st, prioridade: pr }),
+            }));
+            toast('Ponto atualizado');
+          } catch (e) { toast(e.message); }
+        };
+      });
+
+      document.querySelectorAll('[data-rota]').forEach((btn) => {
+        if (btn._bound) return;
+        btn._bound = true;
+        btn.onclick = async () => {
+          try {
+            renderOps(await api('/api/limpeza/rota', {
+              method: 'POST',
+              body: JSON.stringify({ id: btn.dataset.rota, status: btn.dataset.st }),
+            }));
+            toast('Rota: ' + btn.dataset.st);
+          } catch (e) { toast(e.message); }
+        };
+      });
+
+      document.querySelectorAll('[data-eq-save]').forEach((btn) => {
+        if (btn._bound) return;
+        btn._bound = true;
+        btn.onclick = async () => {
+          const id = btn.dataset.eqSave;
+          try {
+            renderOps(await api('/api/limpeza/equipe', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                status: document.querySelector(`[data-eq-st="${id}"]`)?.value,
+                membros: Number(document.querySelector(`[data-eq-membros="${id}"]`)?.value || 1),
+                radio: document.querySelector(`[data-eq-radio="${id}"]`)?.value || '',
+              }),
+            }));
+            toast('Equipe atualizada');
+          } catch (e) { toast(e.message); }
+        };
+      });
+
+      document.querySelectorAll('[data-eq-quick]').forEach((btn) => {
+        if (btn._bound) return;
+        btn._bound = true;
+        btn.onclick = async () => {
+          try {
+            renderOps(await api('/api/limpeza/equipe', {
+              method: 'POST',
+              body: JSON.stringify({ id: btn.dataset.eqQuick, status: btn.dataset.st }),
+            }));
+            toast(EQ_ST[btn.dataset.st] || btn.dataset.st);
+          } catch (e) { toast(e.message); }
+        };
+      });
+
+      document.querySelectorAll('[data-frota-save]').forEach((btn) => {
+        if (btn._bound) return;
+        btn._bound = true;
+        btn.onclick = async () => {
+          const id = btn.dataset.frotaSave;
+          try {
+            renderOps(await api('/api/limpeza/frota', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                status: document.querySelector(`[data-frota-st="${id}"]`)?.value,
+                motorista: document.querySelector(`[data-frota-mot="${id}"]`)?.value || '',
+              }),
+            }));
+            toast('Frota atualizada');
+          } catch (e) { toast(e.message); }
+        };
+      });
+
+      document.querySelectorAll('[data-mat-save]').forEach((btn) => {
+        if (btn._bound) return;
+        btn._bound = true;
+        btn.onclick = async () => {
+          const id = btn.dataset.matSave;
+          try {
+            renderOps(await api('/api/limpeza/material', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                qtd: Number(document.querySelector(`[data-mat-qtd="${id}"]`)?.value || 0),
+              }),
+            }));
+            toast('Material atualizado');
+          } catch (e) { toast(e.message); }
+        };
+      });
+
+      document.querySelectorAll('[data-chk]').forEach((chk) => {
+        if (chk._bound) return;
+        chk._bound = true;
+        chk.onchange = async () => {
+          try {
+            renderOps(await api('/api/limpeza/checklist', {
+              method: 'POST',
+              body: JSON.stringify({ id: chk.dataset.chk, ok: !!chk.checked }),
+            }));
+          } catch (e) {
+            toast(e.message);
+            chk.checked = !chk.checked;
+          }
+        };
+      });
+    }
+
     async function loadChat() {
       const box = document.getElementById('secChatMsgs');
       if (!box) return [];
@@ -257,7 +660,7 @@
         opsCheckChatAlerta?.(msgs, {
           storageKey: 'bi_som_limpeza',
           label: 'Limpeza',
-          goChat: "try{document.getElementById('chatGabBox')?.scrollIntoView({behavior:'smooth'});}catch(_){ }opsHideAlerta();opsStopAlarm();",
+          goChat: "try{goPane('chat');}catch(_){ }opsHideAlerta();opsStopAlarm();",
         });
         return msgs;
       } catch (_) {
@@ -266,8 +669,12 @@
     }
 
     async function load() {
-      const list = await api('/api/chamados');
-      render(list);
+      const [painel, list] = await Promise.all([
+        api('/api/limpeza/hoje'),
+        api('/api/chamados'),
+      ]);
+      renderOps(painel);
+      renderChamados(list);
       opsCheckCobrancasAlerta?.(list || [], {
         storageKey: 'bi_som_limpeza',
         onCiencia: () => load().catch(() => {}),
@@ -277,37 +684,82 @@
 
     if (typeof opsInitBusca === 'function') {
       opsInitBusca({
-        placeholder: 'Buscar: recentes, abertos, concluídos, protocolo…',
+        placeholder: 'Buscar: rotas, frota, materiais, protocolo…',
         items: [
-          { id: 'l-recentes', title: 'Chamados recentes', hint: 'Últimos atualizados', keywords: 'recentes novo ultimo atualizado', jump: 'secRecentes' },
-          { id: 'l-abertos', title: 'Chamados abertos', hint: 'Fila em andamento', keywords: 'abertos fila andamento pendente', jump: 'secAbertos' },
-          { id: 'l-concluidos', title: 'Concluídos', hint: 'Antes/depois + materiais', keywords: 'concluidos finalizados prontos resolvidos', jump: 'secConcluidos' },
-          { id: 'l-chat', title: 'Gabinete', hint: 'Responder cobranças', keywords: 'chat gabinete cobranca', jump: 'chatGabBox' },
+          { id: 'l-recentes', title: 'Chamados recentes', hint: 'Últimos atualizados', keywords: 'recentes novo ultimo', jump: 'secRecentes' },
+          { id: 'l-pontos', title: 'Pontos de limpeza', hint: 'Acúmulo e entulho', keywords: 'ponto acumulo entulho varricao', pane: 'pontos' },
+          { id: 'l-rotas', title: 'Rotas do dia', hint: 'Coleta e varrição', keywords: 'rota coleta varricao', pane: 'rotas' },
+          { id: 'l-eq', title: 'Equipes', hint: 'Campo e rádio', keywords: 'equipe campo radio', pane: 'equipes' },
+          { id: 'l-frota', title: 'Frota', hint: 'Veículos', keywords: 'frota compactador cacamba', pane: 'frota' },
+          { id: 'l-mat', title: 'Materiais', hint: 'Estoque', keywords: 'material saco epi combustivel', pane: 'materiais' },
+          { id: 'l-chk', title: 'Checklist', hint: 'Rotina do dia', keywords: 'checklist briefing', pane: 'checklist' },
+          { id: 'l-abertos', title: 'Chamados abertos', hint: 'Fila', keywords: 'abertos fila', pane: 'chamados', jump: 'secAbertos' },
+          { id: 'l-concluidos', title: 'Concluídos', hint: 'Portfólio', keywords: 'concluidos', pane: 'chamados', jump: 'secConcluidos' },
+          { id: 'l-al', title: 'Alertas', hint: 'Atenção', keywords: 'alerta', pane: 'alertas' },
+          { id: 'l-chat', title: 'Gabinete', hint: 'Chat', keywords: 'chat gabinete', pane: 'chat' },
         ],
-        getExtraItems: () => (todosChamados || []).map((c) => {
-          const ok = c.status === 'concluido';
-          return {
-            id: 'ch-' + c.id,
-            group: 'dado',
-            title: `${c.protocolo || c.id} · ${c.titulo || c.categoria || 'Chamado'}`,
-            hint: `${ok ? 'Concluído' : 'Aberto'} · ${c.bairro || '—'} · ${c.status || ''}`,
-            keywords: `${c.protocolo} ${c.titulo} ${c.bairro} ${c.status} chamado ${ok ? 'concluido' : 'aberto'}`,
-            jump: ok ? 'secConcluidos' : 'secAbertos',
-            go: () => {
-              goPane(null, { jump: ok ? 'secConcluidos' : 'secAbertos' });
-              setTimeout(() => {
-                const el = document.querySelector(`[data-chamado-id="${c.id}"]`);
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  flashSecao(el);
-                }
-              }, 350);
-            },
-          };
-        }),
+        getExtraItems: () => {
+          const p = painelAtual;
+          const out = [];
+          (todosChamados || []).forEach((c) => {
+            const ok = c.status === 'concluido';
+            out.push({
+              id: 'ch-' + c.id,
+              group: 'dado',
+              title: `${c.protocolo || c.id} · ${c.titulo || c.categoria || 'Chamado'}`,
+              hint: `${ok ? 'Concluído' : 'Aberto'} · ${c.bairro || '—'}`,
+              keywords: `${c.protocolo} ${c.titulo} ${c.bairro} ${c.status}`,
+              pane: 'chamados',
+              jump: ok ? 'secConcluidos' : 'secAbertos',
+              go: () => {
+                goPane('chamados', { scroll: true, jump: ok ? 'secConcluidos' : 'secAbertos' });
+                setTimeout(() => {
+                  const el = document.querySelector(`[data-chamado-id="${c.id}"]`);
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    flashSecao(el);
+                  }
+                }, 350);
+              },
+            });
+          });
+          if (!p) return out;
+          (p.pontos || []).forEach((x) => {
+            out.push({
+              id: 'pt-' + x.id,
+              group: 'dado',
+              title: x.titulo,
+              hint: `${x.status} · ${x.bairro || ''}`,
+              keywords: `ponto ${x.titulo} ${x.bairro} ${x.tipo}`,
+              pane: 'pontos',
+            });
+          });
+          (p.frota || []).forEach((f) => {
+            out.push({
+              id: 'fr-' + f.id,
+              group: 'dado',
+              title: f.placa,
+              hint: `${f.tipo} · ${f.status}`,
+              keywords: `frota ${f.placa} ${f.tipo}`,
+              pane: 'frota',
+            });
+          });
+          (p.materiais || []).forEach((m) => {
+            out.push({
+              id: 'mat-' + m.id,
+              group: 'dado',
+              title: m.nome,
+              hint: `${m.qtd} ${m.unidade || 'un'}`,
+              keywords: `material ${m.nome}`,
+              pane: 'materiais',
+            });
+          });
+          return out;
+        },
         onGo: (it) => {
           if (typeof it.go === 'function') return it.go(it);
-          if (it.jump) goPane(null, { jump: it.jump });
+          if (it.pane) goPane(it.pane, { scroll: true, jump: it.jump || null });
+          else if (it.jump) goPane(null, { scroll: true, jump: it.jump });
         },
       });
     }
@@ -320,7 +772,6 @@
         location.href = cityLink('/login.html');
         return;
       }
-      // Força branding Limpeza (mesmo se token genérico de secretaria)
       const secOk = !user?.secretaria || user.secretaria === 'limpeza' || user.id === 'limpeza'
         || user.papel === 'admin' || user.papel === 'prefeito';
       if (user && !secOk) {
@@ -354,8 +805,10 @@
       if (window.Notification && Notification.permission === 'default') {
         Notification.requestPermission().catch(() => {});
       }
+      const aba = new URLSearchParams(location.search).get('aba');
       const sec = new URLSearchParams(location.search).get('sec');
-      if (sec) goPane(null, { jump: sec });
+      if (aba) goPane(aba, { scroll: false, jump: sec });
+      else if (sec) goPane(null, { jump: sec });
     }
 
     boot().catch((e) => toast(e.message));

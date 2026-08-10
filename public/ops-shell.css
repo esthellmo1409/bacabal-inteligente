@@ -206,6 +206,7 @@ body.ops-body {
 .ops-tabs,
 .obr-tabs,
 .ilu-tabs,
+.limp-tabs,
 .saude-tabs {
   display: flex;
   gap: 0.4rem;
@@ -221,6 +222,7 @@ body.ops-body {
 .ops-tab,
 .obr-tab,
 .ilu-tab,
+.limp-tab,
 .saude-tab {
   border: none;
   background: transparent;
@@ -235,6 +237,7 @@ body.ops-body {
 .ops-tab.active,
 .obr-tab.active,
 .ilu-tab.active,
+.limp-tab.active,
 .saude-tab.active {
   background: var(--sec);
   color: #fff;
@@ -243,6 +246,7 @@ body.ops-body {
 .ops-tab .count,
 .obr-tab .count,
 .ilu-tab .count,
+.limp-tab .count,
 .saude-tab .count {
   display: inline-flex;
   min-width: 1.2rem;
@@ -259,6 +263,7 @@ body.ops-body {
 .ops-tab:not(.active) .count,
 .obr-tab:not(.active) .count,
 .ilu-tab:not(.active) .count,
+.limp-tab:not(.active) .count,
 .saude-tab:not(.active) .count {
   background: var(--sec-soft);
   color: var(--sec-ink);
