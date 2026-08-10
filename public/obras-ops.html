@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Secretaria de Obras</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    :root {
+      --obr: #c2410c;
+      --obr-soft: #fff7ed;
+      --obr-line: #fdba74;
+      --ink-soft: #7c2d12;
+    }
+    body.ops-body { background: linear-gradient(180deg, #fff7ed 0%, #f8fafc 240px, #f8fafc 100%); }
+    .obr-hero {
+      display:flex; justify-content:space-between; align-items:end; gap:1rem; flex-wrap:wrap;
+      margin-bottom:1rem; padding:1.05rem 1.2rem; border-radius:16px;
+      background: linear-gradient(135deg, #ea580c, #c2410c 55%, #9a3412);
+      color:#fff; box-shadow:0 10px 28px rgba(194,65,12,.28);
+    }
+    .obr-hero .page-kicker { color:#ffedd5; margin:0 0 .2rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.72rem; }
+    .obr-hero h1 { margin:0 0 .25rem; color:#fff; font-size:1.6rem; }
+    .obr-hero .muted { color:#ffedd5; margin:0; }
+    .obr-hero .btn { background:#fff; color:#9a3412; border:none; font-weight:800; }
+    .acao-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.55rem; margin-bottom:1rem; }
+    .acao-card {
+      border:1px solid var(--obr-line); background:#fff; border-radius:14px;
+      padding:.85rem .9rem; text-align:left; cursor:pointer; font:inherit; color:inherit;
+    }
+    .acao-card:hover { box-shadow:0 8px 18px rgba(194,65,12,.12); transform:translateY(-2px); }
+    .acao-card strong { display:block; color:var(--ink-soft); font-size:.95rem; margin-bottom:.2rem; }
+    .acao-card span { display:block; color:#64748b; font-size:.75rem; line-height:1.35; }
+    .acao-card.active { background:var(--obr); border-color:var(--obr); color:#fff; }
+    .acao-card.active strong, .acao-card.active span { color:#fff; }
+    .obr-tabs {
+      display:flex; gap:.4rem; flex-wrap:wrap; margin:0 0 1rem; padding:.35rem;
+      background:#fff; border:1px solid var(--obr-line); border-radius:14px;
+    }
+    .obr-tab {
+      border:none; background:transparent; border-radius:10px; cursor:pointer;
+      padding:.55rem .85rem; font-weight:800; font-size:.8rem; color:var(--ink-soft);
+    }
+    .obr-tab.active { background:var(--obr); color:#fff; }
+    .obr-tab .count {
+      display:inline-flex; min-width:1.2rem; height:1.2rem; align-items:center; justify-content:center;
+      margin-left:.3rem; border-radius:999px; font-size:.68rem; background:rgba(255,255,255,.25);
+    }
+    .obr-tab:not(.active) .count { background:#ffedd5; color:var(--ink-soft); }
+    .pane { display:none; }
+    .pane.active { display:block; }
+    .hint-box {
+      margin-bottom:.85rem; padding:.75rem .95rem; border-radius:12px;
+      background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; font-size:.88rem; font-weight:600;
+    }
+    .unidade-card {
+      border:1px solid #fed7aa; border-radius:14px; padding:.9rem 1rem; margin-bottom:.65rem; background:#fff;
+    }
+    .unidade-card.critico { border-color:#fecaca; background:#fffafa; }
+    .form-row { display:flex; flex-wrap:wrap; gap:.45rem; align-items:center; margin-top:.55rem; }
+    .form-row input, .form-row select { margin:0; }
+    .pill {
+      display:inline-flex; align-items:center; padding:.22rem .5rem; border-radius:999px;
+      font-size:.7rem; font-weight:800; background:#f1f5f9; margin-right:.25rem;
+    }
+    .pill.alta, .pill.pendente, .pill.atrasada { background:#fee2e2; color:#991b1b; }
+    .pill.media, .pill.em_deslocamento, .pill.em_atendimento, .pill.em_execucao, .pill.em_andamento { background:#ffedd5; color:#9a3412; }
+    .pill.baixa, .pill.disponivel, .pill.ok, .pill.concluido, .pill.concluida { background:#dcfce7; color:#166534; }
+    .pill.em_campo, .pill.em_rota { background:#dbeafe; color:#1e40af; }
+    .pill.oficina, .pill.aguardando_material, .pill.base { background:#fef3c7; color:#92400e; }
+    .alert-obr {
+      padding:.85rem 1rem; border-radius:12px; margin-bottom:.55rem;
+      border:1px solid #fdba74; background:#fff7ed; color:#9a3412; font-size:.9rem; font-weight:600;
+    }
+    .bar-mini { height:8px; border-radius:999px; background:#eee; overflow:hidden; margin:.4rem 0; }
+    .bar-mini > i { display:block; height:100%; background:var(--obr); }
+    @media (max-width:900px) { .acao-grid { grid-template-columns:1fr 1fr; } }
+    @media (max-width:720px) { .acao-grid { grid-template-columns:1fr; } .obr-hero h1 { font-size:1.3rem; } }
+  </style>
+</head>
+<body class="ops-body">
+  <div class="wrap-wide">
+    <div id="top"></div>
+
+    <div class="hint-box">
+      Esta é a <strong>Secretaria de Obras</strong>. Aqui você gerencia pontos quentes, rota do dia, equipes, frota e materiais.
+      O Gabinete só acompanha.
+    </div>
+
+    <div class="obr-hero">
+      <div>
+        <p class="page-kicker">Secretaria de Obras</p>
+        <h1 class="display">Central operacional</h1>
+        <p class="muted">Buracos · equipes · frota · materiais — o que o prefeito vê começa aqui</p>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-sm" id="btnRebuildRota" type="button">Montar rota do dia</button>
+        <a class="btn btn-sm" id="linkTransp" href="/obras.html">Obras transparentes</a>
+        <button class="btn btn-sm" id="btnRefresh" type="button">Atualizar</button>
+      </div>
+    </div>
+
+    <div class="grid-4" id="kpis"></div>
+
+    <div class="acao-grid">
+      <button type="button" class="acao-card" data-go="pontos"><strong>Pontos quentes</strong><span>Buracos, calçada, drenagem</span></button>
+      <button type="button" class="acao-card" data-go="rota"><strong>Rota do dia</strong><span>Ordem das equipes</span></button>
+      <button type="button" class="acao-card" data-go="equipes"><strong>Equipes</strong><span>Campo e base</span></button>
+      <button type="button" class="acao-card" data-go="frota"><strong>Frota</strong><span>Brita, caçamba, retro</span></button>
+      <button type="button" class="acao-card" data-go="materiais"><strong>Materiais</strong><span>Brita, asfalto, cimento</span></button>
+      <button type="button" class="acao-card" data-go="obras"><strong>Obras grandes</strong><span>% e prazo</span></button>
+      <button type="button" class="acao-card" data-go="chamados"><strong>Chamados</strong><span>Fila da secretaria</span></button>
+      <button type="button" class="acao-card" data-go="checklist"><strong>Checklist</strong><span>Rotina do dia</span></button>
+      <button type="button" class="acao-card" data-go="alertas"><strong>Alertas</strong><span>O que exige atenção</span></button>
+      <button type="button" class="acao-card" data-go="chat"><strong>Gabinete</strong><span>Responder cobranças</span></button>
+    </div>
+
+    <div class="obr-tabs" id="tabs">
+      <button type="button" class="obr-tab active" data-pane="pontos">Pontos<span class="count" id="tabPontos">0</span></button>
+      <button type="button" class="obr-tab" data-pane="rota">Rota</button>
+      <button type="button" class="obr-tab" data-pane="equipes">Equipes</button>
+      <button type="button" class="obr-tab" data-pane="frota">Frota</button>
+      <button type="button" class="obr-tab" data-pane="materiais">Materiais</button>
+      <button type="button" class="obr-tab" data-pane="obras">Obras</button>
+      <button type="button" class="obr-tab" data-pane="chamados">Chamados<span class="count" id="tabChamados">0</span></button>
+      <button type="button" class="obr-tab" data-pane="checklist">Checklist</button>
+      <button type="button" class="obr-tab" data-pane="alertas">Alertas<span class="count" id="tabAlertas">0</span></button>
+      <button type="button" class="obr-tab" data-pane="chat">Gabinete</button>
+    </div>
+
+    <div class="pane active" id="pane-pontos">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Pontos quentes do dia</h3>
+        <p class="muted" style="margin-bottom:.85rem">Atualize status — alimenta a rota e o Gabinete</p>
+        <div id="pontosBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-rota">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Rota das equipes</h3>
+        <p class="muted" style="margin-bottom:.85rem">Ordem de atendimento do dia</p>
+        <div id="rotaBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-equipes">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Equipes</h3>
+        <p class="muted" style="margin-bottom:.85rem">Campo, base e disponíveis</p>
+        <div id="equipesBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-frota">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Frota</h3>
+        <p class="muted" style="margin-bottom:.85rem">Caminhão brita, caçamba, utilitário e retro</p>
+        <div id="frotaBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-materiais">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Materiais</h3>
+        <p class="muted" style="margin-bottom:.85rem">Brita, asfalto frio, areia, cimento</p>
+        <div id="materiaisBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-obras">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Obras grandes (transparência)</h3>
+        <p class="muted" style="margin-bottom:.85rem">Atualize % e status — aparece no painel público</p>
+        <div id="obrasBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-chamados">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Chamados abertos</h3>
+        <div id="chamadosBox" class="list"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-checklist">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Checklist do dia</h3>
+        <div id="checklistBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-alertas">
+      <div class="panel">
+        <h3 style="margin-bottom:.5rem">Alertas agora</h3>
+        <div id="alertasBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-chat">
+      <div class="panel">
+        <h3 style="margin:0 0 .25rem">Gabinete</h3>
+        <p class="muted" style="margin:0 0 .75rem;font-size:.85rem">Mensagens do prefeito para as Obras</p>
+        <div id="secChatMsgs" class="list" style="max-height:260px;overflow:auto;background:#fff7ed;border-radius:12px;padding:.75rem;margin-bottom:.65rem"></div>
+        <div class="form-row">
+          <input id="secChatInput" style="flex:1;min-width:180px" placeholder="Responder ao Gabinete…" maxlength="500" />
+          <button class="btn btn-primary" type="button" id="secChatSend">Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=nav-ops5"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    window.BI_AUTH_SLOT = 'secretaria';
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+
+    let painelAtual = null;
+
+    function goPane(name) {
+      document.querySelectorAll('.obr-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
+      document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('active', p.id === 'pane-' + name));
+      document.querySelectorAll('.acao-card').forEach((c) => c.classList.toggle('active', c.dataset.go === name));
+    }
+
+    document.querySelectorAll('.obr-tab, .acao-card').forEach((btn) => {
+      btn.onclick = () => goPane(btn.dataset.pane || btn.dataset.go);
+    });
+
+    function statusPill(st) {
+      return `<span class="pill ${st || ''}">${String(st || '—').replace(/_/g, ' ')}</span>`;
+    }
+
+    function render(p) {
+      painelAtual = p;
+      const t = p.totais || {};
+      document.getElementById('tabPontos').textContent = String(t.pontosAbertos || 0);
+      document.getElementById('tabChamados').textContent = String(t.osAbertas || 0);
+      document.getElementById('tabAlertas').textContent = String((p.alertas || []).length);
+
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">Pontos abertos</div><div class="value">${t.pontosAbertos || 0}</div>
+          <div class="hint">${t.pontosAlta || 0} prioridade alta</div></div>
+        <div class="panel stat"><div class="label">Rota do dia</div><div class="value">${t.rotaPendentes || 0}</div>
+          <div class="hint">${t.equipesEmCampo || 0} equipe(s) em campo</div></div>
+        <div class="panel stat"><div class="label">Frota livre</div><div class="value">${t.frotaLivre || 0}/${t.frotaTotal || 0}</div>
+          <div class="hint">${t.materiaisBaixos || 0} material(is) baixo(s)</div></div>
+        <div class="panel stat"><div class="label">Obras / OS</div><div class="value">${t.obrasAtrasadas || 0}</div>
+          <div class="hint">${t.obrasAndamento || 0} andamento · ${t.osAbertas || 0} chamado(s)</div></div>`;
+
+      document.getElementById('pontosBox').innerHTML = (p.pontosQuentes || []).map((x) => `
+        <div class="unidade-card ${x.prioridade === 'alta' && x.status !== 'concluido' ? 'critico' : ''}">
+          <div class="item-head">
+            <strong>${x.titulo}</strong>
+            ${statusPill(x.status)}
+            ${statusPill(x.prioridade)}
+          </div>
+          <div class="meta">${x.bairro} · ${x.rua}${x.prazoHoje ? ' · prazo ' + x.prazoHoje : ''}</div>
+          ${x.motivoAtraso ? `<div class="meta" style="color:#b91c1c;font-weight:600">${x.motivoAtraso}</div>` : ''}
+          <div class="form-row">
+            <select data-ponto-st="${x.id}">
+              <option value="pendente" ${x.status === 'pendente' ? 'selected' : ''}>Pendente</option>
+              <option value="em_deslocamento" ${x.status === 'em_deslocamento' ? 'selected' : ''}>Em deslocamento</option>
+              <option value="em_execucao" ${x.status === 'em_execucao' ? 'selected' : ''}>Em execução</option>
+              <option value="aguardando_material" ${x.status === 'aguardando_material' ? 'selected' : ''}>Aguardando material</option>
+              <option value="concluido" ${x.status === 'concluido' ? 'selected' : ''}>Concluído</option>
+            </select>
+            <select data-ponto-pr="${x.id}">
+              <option value="alta" ${x.prioridade === 'alta' ? 'selected' : ''}>Alta</option>
+              <option value="media" ${x.prioridade === 'media' ? 'selected' : ''}>Média</option>
+              <option value="baixa" ${x.prioridade === 'baixa' ? 'selected' : ''}>Baixa</option>
+            </select>
+            <input style="width:90px" data-ponto-prazo="${x.id}" value="${(x.prazoHoje || '').replace(/"/g, '&quot;')}" placeholder="Prazo" />
+            <input style="flex:1;min-width:160px" data-ponto-motivo="${x.id}" value="${(x.motivoAtraso || '').replace(/"/g, '&quot;')}" placeholder="Motivo atraso (opcional)" />
+            <button class="btn btn-sm btn-primary" type="button" data-ponto-save="${x.id}">Salvar</button>
+          </div>
+        </div>`).join('') || '<p class="muted">Nenhum ponto quente.</p>';
+
+      document.getElementById('rotaBox').innerHTML = (p.rota || []).length
+        ? p.rota.map((r) => `
+          <div class="unidade-card">
+            <div class="item-head"><strong>${r.ordem}. ${r.titulo}</strong>${statusPill(r.status)}</div>
+            <div class="meta">${r.bairro} · ${r.rua}</div>
+            <div class="form-row">
+              <button class="btn btn-sm" type="button" data-rota="${r.pontoId}" data-st="em_atendimento">Em atendimento</button>
+              <button class="btn btn-sm btn-primary" type="button" data-rota="${r.pontoId}" data-st="concluido">Concluir</button>
+            </div>
+          </div>`).join('')
+        : '<p class="muted">Nenhum ponto na rota. Clique em “Montar rota do dia”.</p>';
+
+      document.getElementById('equipesBox').innerHTML = (p.equipes || []).map((e) => `
+        <div class="unidade-card">
+          <div class="item-head"><strong>${e.nome}</strong>${statusPill(e.status)}</div>
+          <div class="meta">Líder: ${e.lider || '—'} · veículo ${e.veiculoId || '—'}</div>
+          <div class="form-row">
+            <select data-eq-st="${e.id}">
+              <option value="disponivel" ${e.status === 'disponivel' ? 'selected' : ''}>Disponível</option>
+              <option value="em_campo" ${e.status === 'em_campo' ? 'selected' : ''}>Em campo</option>
+              <option value="base" ${e.status === 'base' ? 'selected' : ''}>Na base</option>
+            </select>
+            <button class="btn btn-sm btn-primary" type="button" data-eq-save="${e.id}">Salvar</button>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('frotaBox').innerHTML = (p.frota || []).map((f) => `
+        <div class="unidade-card ${f.status === 'oficina' ? 'critico' : ''}">
+          <div class="item-head"><strong>${f.placa}</strong><span class="meta">${f.tipo}</span> ${statusPill(f.status)}</div>
+          <div class="form-row">
+            <select data-frota-st="${f.id}">
+              <option value="disponivel" ${f.status === 'disponivel' ? 'selected' : ''}>Disponível</option>
+              <option value="em_rota" ${f.status === 'em_rota' ? 'selected' : ''}>Em rota</option>
+              <option value="oficina" ${f.status === 'oficina' ? 'selected' : ''}>Oficina</option>
+            </select>
+            <input style="flex:1;min-width:140px" data-frota-mot="${f.id}" value="${(f.motorista || '').replace(/"/g, '&quot;')}" placeholder="Motorista" />
+            <button class="btn btn-sm btn-primary" type="button" data-frota-save="${f.id}">Salvar</button>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('materiaisBox').innerHTML = (p.materiais || []).map((m) => {
+        const baixo = (m.qtd || 0) < (m.minimo || 0);
+        return `
+        <div class="unidade-card ${baixo ? 'critico' : ''}">
+          <div class="item-head"><strong>${m.nome}</strong>${baixo ? '<span class="pill atrasada">baixo</span>' : '<span class="pill ok">ok</span>'}</div>
+          <div class="form-row">
+            <span class="meta">Qtd</span>
+            <input type="number" min="0" step="0.1" style="width:90px" data-mat-qtd="${m.id}" value="${m.qtd || 0}" />
+            <span class="meta">${m.unidade || ''} · Mín.</span>
+            <input type="number" min="0" step="0.1" style="width:80px" data-mat-min="${m.id}" value="${m.minimo || 0}" />
+            <button class="btn btn-sm btn-primary" type="button" data-mat-save="${m.id}">Salvar</button>
+          </div>
+        </div>`;
+      }).join('');
+
+      document.getElementById('obrasBox').innerHTML = (p.obras || []).map((o) => `
+        <div class="unidade-card ${o.status === 'atrasada' ? 'critico' : ''}">
+          <div class="item-head"><strong>${o.nome}</strong>${statusPill(o.status)}</div>
+          <div class="meta">${o.bairro || '—'} · ${o.empresa || '—'} · prazo ${o.prazo || '—'}</div>
+          <div class="bar-mini"><i style="width:${o.percentual || 0}%"></i></div>
+          <div class="form-row">
+            <span class="meta">%</span>
+            <input type="number" min="0" max="100" style="width:80px" data-obra-pct="${o.id}" value="${o.percentual || 0}" />
+            <select data-obra-st="${o.id}">
+              <option value="em_andamento" ${o.status === 'em_andamento' ? 'selected' : ''}>Em andamento</option>
+              <option value="atrasada" ${o.status === 'atrasada' ? 'selected' : ''}>Atrasada</option>
+              <option value="concluida" ${o.status === 'concluida' ? 'selected' : ''}>Concluída</option>
+            </select>
+            <button class="btn btn-sm btn-primary" type="button" data-obra-save="${o.id}">Salvar</button>
+          </div>
+        </div>`).join('') || '<p class="muted">Nenhuma obra cadastrada.</p>';
+
+      document.getElementById('chamadosBox').innerHTML = (p.chamados || []).length
+        ? p.chamados.map((c) => `
+          <div class="item">
+            <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status}</span></div>
+            <div>${c.titulo || c.categoria}</div>
+            <div class="meta">${c.bairro || '—'} · ${c.prioridade || ''}</div>
+          </div>`).join('')
+        : '<p class="muted">Nenhum chamado aberto de obras.</p>';
+
+      document.getElementById('checklistBox').innerHTML = (p.checklist || []).map((c) => `
+        <div class="unidade-card ${c.ok ? '' : 'critico'}">
+          <div class="item-head"><strong>${c.label}</strong>${c.ok ? statusPill('ok') : statusPill('pendente')}</div>
+          <div class="form-row">
+            <button class="btn btn-sm ${c.ok ? '' : 'btn-primary'}" type="button" data-chk="${c.id}" data-ok="${c.ok ? '0' : '1'}">
+              ${c.ok ? 'Marcar pendente' : 'Marcar ok'}
+            </button>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('alertasBox').innerHTML = (p.alertas || []).length
+        ? p.alertas.map((a) => `<div class="alert-obr"><strong>${a.tipo}</strong> — ${a.mensagem}</div>`).join('')
+        : '<p class="muted">Nenhum alerta no momento.</p>';
+
+      bindActions();
+    }
+
+    function bindActions() {
+      document.querySelectorAll('[data-ponto-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.pontoSave;
+          try {
+            render(await api('/api/obras-ops/ponto', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                status: document.querySelector(`[data-ponto-st="${id}"]`)?.value,
+                prioridade: document.querySelector(`[data-ponto-pr="${id}"]`)?.value,
+                prazoHoje: document.querySelector(`[data-ponto-prazo="${id}"]`)?.value,
+                motivoAtraso: document.querySelector(`[data-ponto-motivo="${id}"]`)?.value,
+              }),
+            }));
+            toast('Ponto atualizado');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-rota]').forEach((btn) => {
+        btn.onclick = async () => {
+          try {
+            render(await api('/api/obras-ops/rota', {
+              method: 'POST',
+              body: JSON.stringify({ pontoId: btn.dataset.rota, status: btn.dataset.st }),
+            }));
+            toast(btn.dataset.st === 'concluido' ? 'Ponto concluído na rota' : 'Em atendimento');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-eq-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.eqSave;
+          try {
+            render(await api('/api/obras-ops/equipe', {
+              method: 'POST',
+              body: JSON.stringify({ id, status: document.querySelector(`[data-eq-st="${id}"]`)?.value }),
+            }));
+            toast('Equipe atualizada');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-frota-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.frotaSave;
+          try {
+            render(await api('/api/obras-ops/frota', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                status: document.querySelector(`[data-frota-st="${id}"]`)?.value,
+                motorista: document.querySelector(`[data-frota-mot="${id}"]`)?.value,
+              }),
+            }));
+            toast('Frota atualizada');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-mat-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.matSave;
+          try {
+            render(await api('/api/obras-ops/material', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                qtd: document.querySelector(`[data-mat-qtd="${id}"]`)?.value,
+                minimo: document.querySelector(`[data-mat-min="${id}"]`)?.value,
+              }),
+            }));
+            toast('Material atualizado');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-obra-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.obraSave;
+          try {
+            render(await api('/api/obras-ops/obra', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                percentual: document.querySelector(`[data-obra-pct="${id}"]`)?.value,
+                status: document.querySelector(`[data-obra-st="${id}"]`)?.value,
+              }),
+            }));
+            toast('Obra atualizada');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-chk]').forEach((btn) => {
+        btn.onclick = async () => {
+          try {
+            render(await api('/api/obras-ops/checklist', {
+              method: 'POST',
+              body: JSON.stringify({ id: btn.dataset.chk, ok: btn.dataset.ok === '1' }),
+            }));
+          } catch (e) { toast(e.message); }
+        };
+      });
+    }
+
+    async function loadChat() {
+      const r = await api('/api/gabinete/chat?secretaria=obras');
+      const msgs = r.thread?.mensagens || [];
+      const box = document.getElementById('secChatMsgs');
+      box.innerHTML = msgs.length
+        ? msgs.map((m) => `
+          <div class="item" style="background:${m.de === 'gabinete' ? '#e8eef8' : '#fff'};margin-bottom:.4rem">
+            <div class="item-head"><strong>${m.autor || m.de}</strong>
+              <span class="meta">${m.criadoEm ? new Date(m.criadoEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+            </div>
+            <div>${m.texto}</div>
+          </div>`).join('')
+        : '<p class="muted">Nenhuma mensagem do Gabinete ainda.</p>';
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function load() {
+      render(await api('/api/obras-ops/hoje'));
+      await loadChat().catch(() => {});
+    }
+
+    async function boot() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Obras', cfg, { lock: true, user: getSessionUser() });
+      document.title = `Obras · ${cfg.produto || cfg.cidade || ''}`;
+      document.getElementById('linkTransp').href = cityLink('/obras.html');
+      rewriteCityLinks();
+      document.getElementById('secChatSend').onclick = async () => {
+        const input = document.getElementById('secChatInput');
+        const texto = input.value.trim();
+        if (!texto) return;
+        try {
+          await api('/api/gabinete/chat', {
+            method: 'POST',
+            body: JSON.stringify({ secretaria: 'obras', texto, de: 'secretaria', autoAck: false }),
+          });
+          input.value = '';
+          await loadChat();
+        } catch (e) { toast(e.message); }
+      };
+      document.getElementById('btnRebuildRota').onclick = async () => {
+        try {
+          render(await api('/api/obras-ops/rota', {
+            method: 'POST',
+            body: JSON.stringify({ acao: 'rebuild' }),
+          }));
+          toast('Rota montada com pontos abertos');
+          goPane('rota');
+        } catch (e) { toast(e.message); }
+      };
+      document.getElementById('btnRefresh').onclick = () => load().catch((e) => toast(e.message));
+      await load();
+      const aba = new URLSearchParams(location.search).get('aba');
+      if (aba) goPane(aba);
+    }
+
+    boot().catch((e) => toast(e.message));
+  </script>
+</body>
+</html>

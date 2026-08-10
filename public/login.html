@@ -104,6 +104,8 @@
             location.href = cityLink('/saude.html');
           } else if (r.user.secretaria === 'iluminacao' || r.user.id === 'iluminacao') {
             location.href = cityLink('/iluminacao.html');
+          } else if (r.user.secretaria === 'obras' || r.user.id === 'obras') {
+            location.href = cityLink('/obras-ops.html');
           } else {
             location.href = cityLink('/secretaria.html');
           }
