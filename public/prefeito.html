@@ -8,7 +8,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gabinete do Prefeito · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css?v=campo-chat1" />
+  <link rel="stylesheet" href="/styles.css?v=gab-tab1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -347,7 +347,7 @@
     window.BI_AUTH_SLOT = 'gabinete';
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=campo-chat1"></script>
+  <script src="/app.js?v=gab-tab1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
@@ -362,6 +362,18 @@
     let chartStatus, chartSec;
     let filtersWired = false;
     let lastFila = null;
+    let loadGen = 0;
+
+    /** Fecha Detalhar ao trocar de eixo — senão o painel antigo (ex.: Obras) fica preso na tela. */
+    function fecharDetalhesGabinete() {
+      try { window.__opsDetalheAbertos?.clear(); } catch (_) {}
+      document.querySelectorAll('.detalhe-box.open').forEach((el) => el.classList.remove('open'));
+      document.querySelectorAll('.btn-detalhar.open').forEach((btn) => {
+        btn.classList.remove('open');
+        const label = btn.querySelector('[data-detalhar-label]') || btn.querySelector('span:first-child');
+        if (label) label.textContent = 'Detalhar';
+      });
+    }
 
     const mid = '#2163e8';
     const colors = {
@@ -629,9 +641,10 @@
       }
       mapState = MapBI.create('map', { center: [cfg.lat, cfg.lng], zoom: 13 });
       async function setEixo(novo, jump) {
+        if (novo !== eixo) fecharDetalhesGabinete();
         eixo = novo;
         document.querySelectorAll('.eixo-tab').forEach((b) => b.classList.toggle('active', b.dataset.eixo === novo));
-        await load();
+        await load({ force: true });
         if (jump) {
           requestAnimationFrame(() => {
             const el = document.getElementById(jump);
@@ -1805,24 +1818,30 @@
     window.cobrarEventos = cobrarEventos;
     window.visitaSurpresa = visitaSurpresa;
 
-    async function load() {
+    async function load(opts = {}) {
+      const force = !!opts.force;
+      const myGen = ++loadGen;
+      const eixoLoad = eixo;
       const m = await api('/api/metricas');
-      const g = await api('/api/gabinete/fila?eixo=' + eixo);
+      if (myGen !== loadGen) return;
+      const g = await api('/api/gabinete/fila?eixo=' + eixoLoad);
+      if (myGen !== loadGen) return;
       lastFila = g;
       let saudeHoje = null;
       let iluminacaoHoje = null;
       let obrasHoje = null;
-      if (eixo === 'saude') {
+      if (eixoLoad === 'saude') {
         saudeHoje = await api('/api/saude/hoje');
       }
-      if (eixo === 'iluminacao') {
+      if (eixoLoad === 'iluminacao') {
         iluminacaoHoje = await api('/api/iluminacao/hoje');
       }
-      if (eixo === 'obras') {
+      if (eixoLoad === 'obras') {
         obrasHoje = await api('/api/obras-ops/hoje');
       }
+      if (myGen !== loadGen || eixo !== eixoLoad) return;
 
-      document.getElementById('kpis').innerHTML = eixo === 'saude' && saudeHoje ? `
+      document.getElementById('kpis').innerHTML = eixoLoad === 'saude' && saudeHoje ? `
         <div class="panel stat"><div class="label">Na fila agora</div><div class="value">${saudeHoje.totais.naFila}</div>
           <div class="hint">Espera média ${saudeHoje.totais.tempoMedioMin} min</div></div>
         <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${saudeHoje.totais.atendidosHoje}</div>
@@ -1831,7 +1850,7 @@
           <div class="hint">${saudeHoje.totais.avaliacoesBaixas} avaliação(ões) ≤ 2★</div></div>
         <div class="panel stat"><div class="label">Unidades em alerta</div><div class="value">${saudeHoje.totais.unidadesCriticas}</div>
           <div class="hint">Plantão ${saudeHoje.totais.plantoesOk}/${saudeHoje.totais.plantoesTotal}</div></div>
-      ` : eixo === 'iluminacao' && iluminacaoHoje ? `
+      ` : eixoLoad === 'iluminacao' && iluminacaoHoje ? `
         <div class="panel stat"><div class="label">Postes apagados</div><div class="value">${iluminacaoHoje.totais.apagados}</div>
           <div class="hint">${iluminacaoHoje.totais.semEnergia} sem energia · ${iluminacaoHoje.totais.emReparo} em reparo</div></div>
         <div class="panel stat"><div class="label">Rota da noite</div><div class="value">${iluminacaoHoje.totais.rotaPendentes}</div>
@@ -1840,7 +1859,7 @@
           <div class="hint">${iluminacaoHoje.totais.estoqueBaixo} item(ns) estoque baixo</div></div>
         <div class="panel stat"><div class="label">Chamados abertos</div><div class="value">${iluminacaoHoje.totais.chamadosAbertos}</div>
           <div class="hint">${(iluminacaoHoje.alertas || []).length} alerta(s) operacional(is)</div></div>
-      ` : eixo === 'obras' && obrasHoje ? `
+      ` : eixoLoad === 'obras' && obrasHoje ? `
         <div class="panel stat"><div class="label">Pontos quentes</div><div class="value">${obrasHoje.totais.pontosAbertos}</div>
           <div class="hint">${obrasHoje.totais.pontosAlta} prioridade alta</div></div>
         <div class="panel stat"><div class="label">Rota do dia</div><div class="value">${obrasHoje.totais.rotaPendentes}</div>
@@ -1849,7 +1868,7 @@
           <div class="hint">${obrasHoje.totais.materiaisBaixos} material(is) baixo(s)</div></div>
         <div class="panel stat"><div class="label">Obras atrasadas</div><div class="value">${obrasHoje.totais.obrasAtrasadas}</div>
           <div class="hint">${obrasHoje.totais.osAbertas} chamado(s) · ${(obrasHoje.alertas || []).length} alerta(s)</div></div>
-      ` : eixo === 'eventos' ? `
+      ` : eixoLoad === 'eventos' ? `
         <div class="panel stat"><div class="label">Pendências eventos</div><div class="value">${g.resumo.totalPendentes}</div></div>
         <div class="panel stat"><div class="label">Críticos</div><div class="value">${g.resumo.criticos}</div></div>
         <div class="panel stat"><div class="label">Na agenda</div><div class="value">${g.resumo.eventosProximos || 0}</div></div>
@@ -1862,7 +1881,8 @@
       `;
 
       renderAcoesEixo(g);
-      const detalheBusy = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
+      // force=true na troca de aba: sempre redesenha (Detalhar aberto não pode travar o eixo)
+      const detalheBusy = !force && typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
       if (!detalheBusy) {
         renderExtra(g, saudeHoje, iluminacaoHoje, obrasHoje);
         document.getElementById('filaDecisoes').innerHTML = g.fila.length ? g.fila.slice(0, 8).map((c) => cardProblemaGabinete(c, {
@@ -1880,11 +1900,12 @@
           portfolio = await api('/api/chamados');
           if (!Array.isArray(portfolio)) portfolio = [];
         } catch (_) { portfolio = []; }
+        if (myGen !== loadGen || eixo !== eixoLoad) return;
         const noEixo = (c) => {
-          if (eixo === 'obras') return c.secretaria === 'obras';
-          if (eixo === 'iluminacao') return c.secretaria === 'iluminacao';
-          if (eixo === 'saude') return c.secretaria === 'saude';
-          if (eixo === 'eventos') return c.secretaria === 'eventos';
+          if (eixoLoad === 'obras') return c.secretaria === 'obras';
+          if (eixoLoad === 'iluminacao') return c.secretaria === 'iluminacao';
+          if (eixoLoad === 'saude') return c.secretaria === 'saude';
+          if (eixoLoad === 'eventos') return c.secretaria === 'eventos';
           return !['saude', 'eventos', 'iluminacao', 'obras'].includes(c.secretaria);
         };
         const sorted = portfolio.filter(noEixo).sort((a, b) =>
