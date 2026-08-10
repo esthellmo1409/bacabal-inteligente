@@ -304,7 +304,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=nav-ops2"></script>
+  <script src="/app.js?v=nav-ops3"></script>
   <script>
     window.BI_OPS_LOCK = true;
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
@@ -784,7 +784,7 @@
 
     async function boot() {
       const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Saúde', cfg, { lock: true });
+      document.getElementById('top').innerHTML = topbar('Saúde', cfg, { lock: true, user: getSessionUser() });
       document.title = `Secretaria de Saúde · ${cfg.produto || cfg.cidade || ''}`;
       rewriteCityLinks();
       document.getElementById('secChatSend').onclick = async () => {

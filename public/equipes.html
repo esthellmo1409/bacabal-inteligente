@@ -80,7 +80,7 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=nav-ops2"></script>
+  <script src="/app.js?v=nav-ops3"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_AUTH_SLOT = 'campo';
@@ -163,6 +163,7 @@
             return;
           }
           user = u;
+          setSession(localStorage.getItem(key), user);
           showApp();
           return;
         } catch {
@@ -173,6 +174,7 @@
       if (!localStorage.getItem(key)) return;
       try {
         user = await api('/api/me');
+        setSession(localStorage.getItem(key), user);
         showApp();
       } catch { localStorage.removeItem(key); }
     }
@@ -194,7 +196,7 @@
 
     async function showApp() {
       cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Campo', cfg, { lock: true });
+      document.getElementById('top').innerHTML = topbar('Campo', cfg, { lock: true, user });
       loginView.style.display = 'none';
       appView.style.display = 'block';
       const iaNote = document.getElementById('iaOpsNote');

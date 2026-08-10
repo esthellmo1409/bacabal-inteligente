@@ -613,10 +613,19 @@ function clearAllSessions() {
 
 function getSessionUser() {
   try {
-    return JSON.parse(localStorage.getItem(authTokenKey() + '_user') || localStorage.getItem('bi_user') || 'null');
+    const key = authTokenKey() + '_user';
+    const raw = localStorage.getItem(key) || localStorage.getItem('bi_user');
+    return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
+}
+
+function hasOpsToken() {
+  const key = authTokenKey();
+  if (localStorage.getItem(key)) return true;
+  if (!window.BI_AUTH_SLOT && localStorage.getItem('bi_token')) return true;
+  return false;
 }
 
 function logout() {
@@ -641,7 +650,8 @@ function topbar(active, cfg, opts = {}) {
   const sub = cfg?.tagline
     || `${cfg?.cidade || window.__CITY_NOME || ''} · ${cfg?.uf || 'MA'}`;
   const opsLock = !!(opts.lock || window.BI_OPS_LOCK || window.BI_AUTH_SLOT);
-  const user = opsLock ? getSessionUser() : null;
+  const user = opsLock ? (opts.user || getSessionUser()) : null;
+  const logged = !!(user || (opsLock && hasOpsToken()));
 
   const SEC_LABEL = {
     obras: 'Secretaria de Obras',
@@ -656,6 +666,7 @@ function topbar(active, cfg, opts = {}) {
   };
 
   function opsStatusLine(u, area) {
+    if (!u && logged) return `${area || 'Área administrativa'} · sessão ativa`;
     if (!u) return `${area || 'Área administrativa'} · entre para continuar`;
     if (u.papel === 'prefeito') return 'Gabinete · sessão ativa';
     if (u.papel === 'admin' || u.papel === 'platform') return 'Administração · sessão ativa';
@@ -671,8 +682,9 @@ function topbar(active, cfg, opts = {}) {
   if (opsLock) {
     const area = active || 'Área administrativa';
     const status = opsStatusLine(user, area);
-    const who = user
-      ? `<span class="nav-user">${user.nome || user.id}</span>
+    // Já logado: só usuário + Sair (sem botão Entrar)
+    const who = logged
+      ? `<span class="nav-user">${(user && (user.nome || user.id)) || 'Sessão ativa'}</span>
          <button type="button" class="nav-logout" onclick="logoutOps('/login.html')">Sair</button>`
       : `<a class="nav-logout" href="${cityLink('/login.html')}">Entrar</a>`;
     return `
