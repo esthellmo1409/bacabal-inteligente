@@ -274,14 +274,27 @@ function detalheOperacaoHtml(c, { acoesHtml } = {}) {
         <div class="meta">${c.cidadao?.nome || 'Cidadão'}${c.cidadao?.telefone ? ' · ' + c.cidadao.telefone : ''}
           ${c.endereco ? ' · ' + c.endereco : ''} · ${c.bairro || ''}</div>
       </div>
+      ${Array.isArray(c.materiais) && c.materiais.length ? `
       <div class="detalhe-ops-sec">
-        <h4 class="detalhe-ops-title">4 · Analisar obra (IA)</h4>
+        <h4 class="detalhe-ops-title">4 · Materiais utilizados</h4>
+        <ul class="detalhe-ops-mats">
+          ${c.materiais.map((m) => {
+            const nome = typeof m === 'string' ? m : (m.nome || m.id || 'Item');
+            const qtd = typeof m === 'object' && m.qtd != null ? ` — ${m.qtd}${m.unidade ? ' ' + m.unidade : ''}` : '';
+            return `<li><strong>${nome}</strong>${qtd}</li>`;
+          }).join('')}
+        </ul>
+        ${c.horasTrabalhadas ? `<div class="meta" style="margin-top:.35rem">Tempo de execução: ~${c.horasTrabalhadas}h</div>` : ''}
+        ${c.custo ? `<div class="meta">Custo estimado: R$ ${Number(c.custo).toLocaleString('pt-BR')}</div>` : ''}
+      </div>` : ''}
+      <div class="detalhe-ops-sec">
+        <h4 class="detalhe-ops-title">${Array.isArray(c.materiais) && c.materiais.length ? '5' : '4'} · Analisar obra (IA)</h4>
         <p class="muted" style="margin:0 0 .45rem;font-size:.82rem">A IA sugere material, quantidade, tempo e ferramentas para a equipe.</p>
         ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : ''}
       </div>
       ${acoesHtml ? `
       <div class="detalhe-ops-sec">
-        <h4 class="detalhe-ops-title">5 · Ações</h4>
+        <h4 class="detalhe-ops-title">${Array.isArray(c.materiais) && c.materiais.length ? '6' : '5'} · Ações</h4>
         <div class="actions">${acoesHtml}</div>
       </div>` : ''}
     </div>`;

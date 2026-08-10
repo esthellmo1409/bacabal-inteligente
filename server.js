@@ -400,7 +400,10 @@ function limparChamadosParaDemo(slug = 'bacabal') {
   if (fs.existsSync(marker)) {
     // Mantém só o demo da foto do problema (IA de material) — remove aprovação e o resto
     const list = readTenant(slug, 'chamados.json', []);
-    const limpa = list.filter((c) => c.demoFixo === 'buraco-foto');
+    const limpa = list.filter((c) =>
+      c.demoFixo === 'buraco-foto'
+      || (c.demoFixo && String(c.demoFixo).startsWith('cenario-'))
+    );
     if (limpa.length !== list.length) writeTenant(slug, 'chamados.json', limpa);
     return;
   }
@@ -416,9 +419,321 @@ function limparChamadosParaDemo(slug = 'bacabal') {
 function seedDemosIa() {
   limparChamadosParaDemo('bacabal');
   limparChamadosParaDemo('bomlugar');
-  // Só o demo da foto do problema → IA sugere material (sem alerta de aprovação)
+  // Demo vivo da IA de material (foto do problema)
   ensureDemoChamado('bacabal');
   ensureDemoChamado('bomlugar');
+  // Portfólio: concluídos + aguardando + em andamento (antes/depois + materiais)
+  ensureDemoPortfolio('bacabal');
+  ensureDemoPortfolio('bomlugar');
+}
+
+/**
+ * Cenários de demonstração — como se a ferramenta já tivesse rodado por semanas.
+ * Upsert por demoFixo (não apaga chamados reais do volume).
+ */
+function ensureDemoPortfolio(slug = 'bacabal') {
+  if (!getMunicipio(slug) && !fs.existsSync(tenantPath(slug, 'chamados.json'))) return;
+  const cfg = readTenant(slug, 'config.json', {});
+  const cats = readTenant(slug, 'categorias.json', []);
+  const catId = (id) => (cats.find((c) => c.id === id) ? id : (cats[0] && cats[0].id) || 'buraco');
+  const catLabel = (id) => (cats.find((c) => c.id === id) || {}).label || id;
+  const lat0 = cfg.lat || -4.2917;
+  const lng0 = cfg.lng || -44.7917;
+  const prefix = String(slug || 'bac').slice(0, 3).toUpperCase();
+  const year = new Date().getFullYear();
+  const diasAtras = (n) => {
+    const d = new Date();
+    d.setDate(d.getDate() - n);
+    return d.toISOString();
+  };
+  const A = (name) => `/assets/demo/${name}`;
+
+  const cenarios = [
+    {
+      demoFixo: 'cenario-buraco-ok',
+      protocolo: `${year}9101`,
+      categoria: catId('buraco'),
+      secretaria: 'obras',
+      titulo: catLabel('buraco'),
+      descricao: 'Buraco profundo na via — risco a motos e carros. Equipe fez tapa-buraco com brita e asfalto frio.',
+      bairro: 'Centro',
+      endereco: 'Av. Getúlio Vargas, em frente ao nº 412',
+      lat: lat0 + 0.006, lng: lng0 - 0.004,
+      prioridade: 'alta',
+      status: 'concluido',
+      cidadao: { nome: 'Carlos Mendes', telefone: '(99) 98111-2200', email: '' },
+      fotoAntes: A('demo-buraco-antes.jpg'),
+      fotoDepois: A('demo-buraco-depois.jpg'),
+      materiais: [
+        { nome: 'Brita 1', qtd: 1.5, unidade: 'm³' },
+        { nome: 'Asfalto frio', qtd: 0.4, unidade: 't' },
+      ],
+      horasTrabalhadas: 3.5,
+      custo: 680,
+      avaliacao: { nota: 5, comentario: 'Resolveu rápido, rua ficou boa', em: diasAtras(2) },
+      criadoEm: diasAtras(9),
+      diasHist: [9, 8, 7, 6, 2],
+      histNotas: [
+        'Chamado aberto pelo cidadão com foto',
+        'Encaminhado à equipe de campo',
+        'Equipe em execução no local',
+        'Foto do depois enviada',
+        'Concluído e validado pela secretaria',
+      ],
+      histStatus: ['novo', 'encaminhado', 'em_execucao', 'aguardando_aprovacao', 'concluido'],
+    },
+    {
+      demoFixo: 'cenario-calcada-ok',
+      protocolo: `${year}9102`,
+      categoria: catId('calcada'),
+      secretaria: 'obras',
+      titulo: catLabel('calcada'),
+      descricao: 'Calçada quebrada com risco de queda. Reposição de concreto e acabamento.',
+      bairro: 'São Francisco',
+      endereco: 'Rua das Palmeiras, 88',
+      lat: lat0 - 0.005, lng: lng0 + 0.003,
+      prioridade: 'media',
+      status: 'concluido',
+      cidadao: { nome: 'Ana Paula Rocha', telefone: '(99) 98222-3344', email: '' },
+      fotoAntes: A('demo-calcada-antes.jpg'),
+      fotoDepois: A('demo-calcada-depois.jpg'),
+      materiais: [
+        { nome: 'Cimento', qtd: 8, unidade: 'sc' },
+        { nome: 'Areia', qtd: 1.2, unidade: 'm³' },
+        { nome: 'Concreto usinado', qtd: 0.8, unidade: 'm³' },
+      ],
+      horasTrabalhadas: 6,
+      custo: 1450,
+      avaliacao: { nota: 5, comentario: 'Calçada nova, ótimo', em: diasAtras(1) },
+      criadoEm: diasAtras(14),
+      diasHist: [14, 12, 10, 8, 1],
+      histNotas: [
+        'Chamado aberto pelo cidadão com foto',
+        'Encaminhado à equipe de obras',
+        'Equipe em execução',
+        'Foto do depois enviada',
+        'Concluído — cidadão avaliou 5★',
+      ],
+      histStatus: ['novo', 'encaminhado', 'em_execucao', 'aguardando_aprovacao', 'concluido'],
+    },
+    {
+      demoFixo: 'cenario-meiofio-ok',
+      protocolo: `${year}9103`,
+      categoria: catId('meio_fio'),
+      secretaria: 'obras',
+      titulo: catLabel('meio_fio'),
+      descricao: 'Meio-fio danificado na esquina — água da chuva invadia o lote. Reconstrução concluída.',
+      bairro: 'Mutirão',
+      endereco: 'Esquina Rua B / Rua 7',
+      lat: lat0 + 0.008, lng: lng0 + 0.002,
+      prioridade: 'media',
+      status: 'concluido',
+      cidadao: { nome: 'Roberto Dias', telefone: '(99) 98333-4455', email: '' },
+      fotoAntes: A('demo-meiofio-antes.jpg'),
+      fotoDepois: A('demo-meiofio-depois.jpg'),
+      materiais: [
+        { nome: 'Concreto usinado', qtd: 1.1, unidade: 'm³' },
+        { nome: 'Brita 1', qtd: 0.5, unidade: 'm³' },
+      ],
+      horasTrabalhadas: 5,
+      custo: 980,
+      avaliacao: { nota: 4, comentario: 'Ficou bom', em: diasAtras(4) },
+      criadoEm: diasAtras(18),
+      diasHist: [18, 16, 12, 10, 4],
+      histNotas: [
+        'Chamado aberto pelo cidadão',
+        'Encaminhado',
+        'Em execução',
+        'Foto do depois',
+        'Concluído',
+      ],
+      histStatus: ['novo', 'encaminhado', 'em_execucao', 'aguardando_aprovacao', 'concluido'],
+    },
+    {
+      demoFixo: 'cenario-poste-aprov',
+      protocolo: `${year}9104`,
+      categoria: catId('lampada'),
+      secretaria: 'iluminacao',
+      titulo: catLabel('lampada'),
+      descricao: 'Poste apagado na avenida. Equipe trocou LED e enviou foto do depois — aguardando validação.',
+      bairro: 'Centro',
+      endereco: 'Av. Magalhães de Almeida, poste próximo ao mercado',
+      lat: lat0 + 0.002, lng: lng0 - 0.006,
+      prioridade: 'alta',
+      status: 'aguardando_aprovacao',
+      cidadao: { nome: 'Fernanda Lima', telefone: '(99) 98444-5566', email: '' },
+      fotoAntes: A('demo-poste-antes.jpg'),
+      fotoDepois: A('demo-poste-depois.jpg'),
+      materiais: [
+        { nome: 'Lâmpada LED 100W', qtd: 1, unidade: 'un' },
+        { nome: 'Reator / driver LED', qtd: 1, unidade: 'un' },
+      ],
+      horasTrabalhadas: 1.5,
+      custo: 220,
+      criadoEm: diasAtras(3),
+      diasHist: [3, 2, 1, 0],
+      histNotas: [
+        'Chamado aberto pelo cidadão à noite',
+        'Encaminhado à Iluminação',
+        'Equipe na cesta — troca de LED',
+        'Foto do depois enviada — aguardando secretaria',
+      ],
+      histStatus: ['novo', 'encaminhado', 'em_execucao', 'aguardando_aprovacao'],
+    },
+    {
+      demoFixo: 'cenario-lixo-exec',
+      protocolo: `${year}9105`,
+      categoria: catId('lixo'),
+      secretaria: 'limpeza',
+      titulo: catLabel('lixo'),
+      descricao: 'Entulho e lixo irregular na calçada. Equipe a caminho / em remoção.',
+      bairro: 'Alto Alegre',
+      endereco: 'Rua do Comércio, esquina com Travessa 3',
+      lat: lat0 - 0.007, lng: lng0 - 0.001,
+      prioridade: 'media',
+      status: 'em_execucao',
+      cidadao: { nome: 'Juliana Castro', telefone: '(99) 98555-6677', email: '' },
+      fotoAntes: A('demo-lixo-antes.jpg'),
+      fotoDepois: null,
+      materiais: [],
+      criadoEm: diasAtras(1),
+      diasHist: [1, 1, 0],
+      histNotas: [
+        'Chamado aberto com foto',
+        'Encaminhado à Limpeza Urbana',
+        'Equipe em execução no local',
+      ],
+      histStatus: ['novo', 'encaminhado', 'em_execucao'],
+    },
+    {
+      demoFixo: 'cenario-pav-mat',
+      protocolo: `${year}9106`,
+      categoria: catId('pavimentacao'),
+      secretaria: 'obras',
+      titulo: catLabel('pavimentacao'),
+      descricao: 'Trecho com asfalto esburacado. Equipe aguarda liberação de asfalto frio na base.',
+      bairro: 'Povoado',
+      endereco: 'Estrada Vicinal, km 1,2',
+      lat: lat0 + 0.011, lng: lng0 + 0.005,
+      prioridade: 'alta',
+      status: 'aguardando_material',
+      cidadao: { nome: 'Marcos Vinícius', telefone: '(99) 98666-7788', email: '' },
+      fotoAntes: A('demo-buraco-antes.jpg'),
+      fotoDepois: null,
+      materiais: [
+        { nome: 'Asfalto frio (previsto)', qtd: 1.0, unidade: 't' },
+        { nome: 'Brita 1 (previsto)', qtd: 2.0, unidade: 'm³' },
+      ],
+      criadoEm: diasAtras(5),
+      diasHist: [5, 4, 2],
+      histNotas: [
+        'Chamado aberto pelo cidadão',
+        'Encaminhado à Obras',
+        'Aguardando material na base (asfalto frio)',
+      ],
+      histStatus: ['novo', 'encaminhado', 'aguardando_material'],
+    },
+    {
+      demoFixo: 'cenario-lixo-ok',
+      protocolo: `${year}9107`,
+      categoria: catId('lixo'),
+      secretaria: 'limpeza',
+      titulo: catLabel('lixo'),
+      descricao: 'Ponto de descarte irregular limpo pela equipe — antes e depois registrados.',
+      bairro: 'Centro',
+      endereco: 'Praça da Matriz, lateral',
+      lat: lat0 + 0.001, lng: lng0 + 0.001,
+      prioridade: 'baixa',
+      status: 'concluido',
+      cidadao: { nome: 'Patrícia Nunes', telefone: '(99) 98777-8899', email: '' },
+      fotoAntes: A('demo-lixo-antes.jpg'),
+      fotoDepois: A('demo-lixo-depois.jpg'),
+      materiais: [
+        { nome: 'Sacos de entulho', qtd: 12, unidade: 'un' },
+        { nome: 'Horas caçamba', qtd: 2, unidade: 'h' },
+      ],
+      horasTrabalhadas: 2,
+      custo: 350,
+      avaliacao: { nota: 5, comentario: 'Limparam tudo', em: diasAtras(6) },
+      criadoEm: diasAtras(11),
+      diasHist: [11, 10, 9, 8, 6],
+      histNotas: [
+        'Chamado aberto',
+        'Encaminhado',
+        'Em execução',
+        'Foto do depois',
+        'Concluído',
+      ],
+      histStatus: ['novo', 'encaminhado', 'em_execucao', 'aguardando_aprovacao', 'concluido'],
+    },
+  ];
+
+  let chamados = readTenant(slug, 'chamados.json', []);
+  if (!Array.isArray(chamados)) chamados = [];
+
+  for (const s of cenarios) {
+    const id = `${prefix}-${s.demoFixo.toUpperCase().replace(/CENARIO-/, 'CEN-')}`;
+    const historico = (s.histStatus || []).map((st, i) => ({
+      em: diasAtras(s.diasHist[i] || 0),
+      status: st,
+      nota: (s.histNotas && s.histNotas[i]) || st,
+      por: i === 0 ? 'Cidadão' : 'Sistema',
+    }));
+    const fotoAntes = s.fotoAntes;
+    const fotoDepois = s.fotoDepois || null;
+    const anexos = [];
+    if (fotoAntes) anexos.push({ tipo: 'foto', url: fotoAntes, em: s.criadoEm });
+    if (fotoDepois) anexos.push({ tipo: 'foto_depois', url: fotoDepois, em: historico[historico.length - 1]?.em || s.criadoEm });
+
+    const item = normalizeChamado({
+      id,
+      protocolo: s.protocolo,
+      categoria: s.categoria,
+      secretaria: s.secretaria,
+      titulo: s.titulo,
+      descricao: s.descricao,
+      bairro: s.bairro,
+      endereco: s.endereco,
+      lat: s.lat,
+      lng: s.lng,
+      status: s.status,
+      prioridade: s.prioridade,
+      cidadao: s.cidadao,
+      foto: fotoAntes,
+      fotoAntes,
+      fotoDepois,
+      fotosAntes: fotoAntes ? [fotoAntes] : [],
+      fotosDepois: fotoDepois ? [fotoDepois] : [],
+      anexos,
+      materiais: s.materiais || [],
+      horasTrabalhadas: s.horasTrabalhadas || 0,
+      custo: s.custo || 0,
+      avaliacao: s.avaliacao || null,
+      demoFixo: s.demoFixo,
+      historico,
+      criadoEm: s.criadoEm,
+      atualizadoEm: historico[historico.length - 1]?.em || s.criadoEm,
+    });
+
+    const idx = chamados.findIndex((c) => c.demoFixo === s.demoFixo || c.id === id);
+    if (idx >= 0) chamados[idx] = { ...chamados[idx], ...item, id: chamados[idx].id || id };
+    else chamados.push(item);
+  }
+
+  // Mantém demos de cenário juntos, sem empurrar o demo vivo da IA para fora
+  chamados.sort((a, b) => {
+    const score = (c) => {
+      if (c.demoFixo === 'buraco-foto') return 0;
+      if (c.demoFixo && String(c.demoFixo).startsWith('cenario-')) return 1;
+      return 2;
+    };
+    const d = score(a) - score(b);
+    if (d !== 0) return d;
+    return new Date(b.atualizadoEm || b.criadoEm || 0) - new Date(a.atualizadoEm || a.criadoEm || 0);
+  });
+
+  writeTenant(slug, 'chamados.json', chamados);
+  console.log(`  Portfólio demo (${slug}): ${cenarios.length} cenários com fotos/materiais`);
 }
 
 try {

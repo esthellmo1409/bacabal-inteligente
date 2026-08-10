@@ -438,6 +438,12 @@ a:hover { text-decoration: underline; }
 }
 .detalhe-ops-timeline strong { font-weight: 700; color: #334155; }
 .detalhe-ops-timeline span { color: #0f172a; font-weight: 600; text-align: right; }
+.detalhe-ops-mats {
+  margin: 0; padding-left: 1.1rem; display: grid; gap: 0.25rem;
+}
+.detalhe-ops-mats li {
+  font-size: 0.88rem; color: #334155; line-height: 1.35;
+}
 .ops-section-head {
   display: flex;
   justify-content: space-between;
