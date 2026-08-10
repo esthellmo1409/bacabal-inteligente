@@ -79,7 +79,11 @@ if (typeof document !== 'undefined') {
 async function api(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
   const tokenKey = (typeof authTokenKey === 'function') ? authTokenKey() : 'bi_token';
-  const token = localStorage.getItem(tokenKey) || (!window.BI_AUTH_SLOT ? localStorage.getItem('bi_token') : null);
+  const token = localStorage.getItem(tokenKey)
+    || localStorage.getItem('bi_token_secretaria')
+    || localStorage.getItem('bi_token_gabinete')
+    || localStorage.getItem('bi_token_campo')
+    || localStorage.getItem('bi_token');
   if (token) headers.Authorization = `Bearer ${token}`;
   const slug = getCidade();
   if (slug) headers['X-Cidade'] = slug;
@@ -682,7 +686,12 @@ function setSession(token, user) {
   if (token) localStorage.setItem(key, token);
   // Compat: mantém bi_token se não houver slot (páginas antigas)
   if (token && !window.BI_AUTH_SLOT) localStorage.setItem('bi_token', token);
-  if (user) localStorage.setItem(key + '_user', JSON.stringify(user));
+  // Sempre espelha no legado para migração entre telas
+  if (token) localStorage.setItem('bi_token', token);
+  if (user) {
+    localStorage.setItem(key + '_user', JSON.stringify(user));
+    localStorage.setItem('bi_user', JSON.stringify(user));
+  }
 }
 
 function clearSession() {
@@ -707,36 +716,49 @@ function clearAllSessions() {
 
 function getSessionUser() {
   try {
-    const key = authTokenKey() + '_user';
-    let raw = localStorage.getItem(key);
-    // Compat: login antigo gravava em bi_user / sem slot
-    if (!raw) raw = localStorage.getItem('bi_user');
-    if (!raw && window.BI_AUTH_SLOT === 'secretaria') {
-      raw = localStorage.getItem('bi_token_user');
+    const candidates = [
+      authTokenKey() + '_user',
+      'bi_token_secretaria_user',
+      'bi_token_gabinete_user',
+      'bi_token_campo_user',
+      'bi_user',
+    ];
+    for (const key of candidates) {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const u = JSON.parse(raw);
+      if (u && (u.nome || u.id || u.papel)) return u;
     }
-    return raw ? JSON.parse(raw) : null;
+    return null;
   } catch {
     return null;
   }
 }
 
 function hasOpsToken() {
-  const key = authTokenKey();
-  if (localStorage.getItem(key)) return true;
-  // Compat com login sem slot (bi_token)
-  if (localStorage.getItem('bi_token')) return true;
-  return false;
+  const keys = [
+    authTokenKey(),
+    'bi_token_secretaria',
+    'bi_token_gabinete',
+    'bi_token_campo',
+    'bi_token',
+  ];
+  return keys.some((k) => !!localStorage.getItem(k));
 }
 
 /** Migra token legado (bi_token) para o slot atual e devolve o usuário. */
 function ensureOpsUser() {
   const key = authTokenKey();
-  if (!localStorage.getItem(key) && localStorage.getItem('bi_token')) {
-    let user = null;
-    try { user = JSON.parse(localStorage.getItem('bi_user') || 'null'); } catch (_) {}
-    setSession(localStorage.getItem('bi_token'), user);
+  const user = getSessionUser();
+  let token = localStorage.getItem(key);
+  if (!token) {
+    token = localStorage.getItem('bi_token_secretaria')
+      || localStorage.getItem('bi_token_gabinete')
+      || localStorage.getItem('bi_token_campo')
+      || localStorage.getItem('bi_token');
   }
-  return getSessionUser();
+  if (token) setSession(token, user);
+  return getSessionUser() || user;
 }
 
 function logout() {
@@ -794,12 +816,14 @@ function topbar(active, cfg, opts = {}) {
   if (opsLock) {
     const area = active || 'Área administrativa';
     const status = opsStatusLine(user, area);
-    // Já logado: usuário + Som (opcional) + Sair
+    const displayName = (user && (user.nome || user.id))
+      || (logged ? 'Sessão ativa' : '');
+    // Já logado: usuário + Som (opcional) + Sair — nunca "Entrar" se há token
     const somBtn = opts.som
       ? `<button type="button" class="btn btn-sm som-toggle on" id="somToggleTop" title="Alarme do Gabinete">🔔 Som</button>`
       : '';
     const who = logged
-      ? `${somBtn}<span class="nav-user">${(user && (user.nome || user.id)) || 'Sessão ativa'}</span>
+      ? `${somBtn}<span class="nav-user" title="${displayName}">${displayName}</span>
          <button type="button" class="nav-logout" onclick="logoutOps('/login.html')">Sair</button>`
       : `<a class="nav-logout" href="${cityLink('/login.html')}">Entrar</a>`;
     return `

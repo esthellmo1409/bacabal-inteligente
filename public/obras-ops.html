@@ -4,7 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Secretaria de Obras</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles.css?v=ops-sess1" />
+  <script>
+    // Slot ANTES do app.js — evita topbar achar que não há login
+    window.BI_OPS_LOCK = true;
+    window.BI_AUTH_SLOT = 'secretaria';
+  </script>
   <style>
     :root {
       --obr: #c2410c;
@@ -130,12 +135,24 @@
         <p class="page-kicker">Secretaria de Obras</p>
         <h1 class="display">Central operacional</h1>
         <p class="muted">Buracos · equipes · frota · materiais — o que o prefeito vê começa aqui</p>
+        <p class="muted" id="opsUserLine" style="margin-top:.45rem;font-weight:700;color:#ffedd5"></p>
       </div>
       <div class="cta-row">
         <button class="btn btn-sm" id="btnRebuildRota" type="button">Montar rota do dia</button>
         <a class="btn btn-sm" id="linkTransp" href="/obras.html">Obras transparentes</a>
         <button class="btn btn-sm" id="btnRefresh" type="button">Atualizar</button>
       </div>
+    </div>
+
+    <div class="panel ops-block" id="secRecentes" style="border:2px solid #fb923c;background:linear-gradient(180deg,#fff7ed,#fff)">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0;color:#9a3412;font-size:1.15rem">Chamados mais recentes</h3>
+          <p class="muted" style="margin:.25rem 0 0">Abra <strong>Detalhar</strong>: foto antes/depois, dia e hora do campo, e análise da IA.</p>
+        </div>
+        <button class="btn btn-sm btn-primary" type="button" id="btnVerTodosChamados" data-nav-pane="chamados">Ver toda a fila</button>
+      </div>
+      <div id="recentesBox" class="list"><p class="muted">Carregando chamados…</p></div>
     </div>
 
     <div class="panel ops-block">
@@ -146,17 +163,6 @@
         </div>
       </div>
       <div class="grid-4" id="kpis"></div>
-    </div>
-
-    <div class="panel ops-block" style="border-color:#fdba74;background:linear-gradient(180deg,#fff7ed,transparent)">
-      <div class="ops-section-head">
-        <div>
-          <h3>Chamados mais recentes</h3>
-          <p class="muted">Abra <strong>Detalhar</strong>: foto antes/depois, dia e hora do campo, e análise da IA.</p>
-        </div>
-        <button class="btn btn-sm" type="button" id="btnVerTodosChamados" data-nav-pane="chamados">Ver toda a fila</button>
-      </div>
-      <div id="recentesBox" class="list"></div>
     </div>
 
     <div class="acao-grid">
@@ -267,7 +273,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-nav2"></script>
+  <script src="/app.js?v=ops-sess1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -477,11 +483,19 @@
       const chamadosSorted = [...(p.chamados || [])].sort((a, b) =>
         String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
       );
+      // Se a fila de OS estiver vazia, mostra pontos quentes como “recentes” pra não ficar em branco
+      let recentesCards = chamadosSorted.slice(0, 5).map((c) => cardChamadoHtml(c, { recente: true }));
+      if (!recentesCards.length) {
+        recentesCards = (p.pontosQuentes || [])
+          .filter((x) => x.status !== 'concluido')
+          .slice(0, 5)
+          .map((x) => cardPontoHtml(x));
+      }
       const recentesEl = document.getElementById('recentesBox');
       if (recentesEl) {
-        recentesEl.innerHTML = chamadosSorted.length
-          ? chamadosSorted.slice(0, 5).map((c) => cardChamadoHtml(c, { recente: true })).join('')
-          : '<p class="muted">Nenhum chamado recente.</p>';
+        recentesEl.innerHTML = recentesCards.length
+          ? recentesCards.join('')
+          : '<p class="muted">Nenhum chamado recente no momento.</p>';
       }
 
       document.getElementById('chamadosBox').innerHTML = chamadosSorted.length
@@ -776,14 +790,49 @@
     }
 
     async function boot() {
+      window.BI_OPS_LOCK = true;
+      window.BI_AUTH_SLOT = 'secretaria';
       const cfg = await loadCityBrand();
-      const user = typeof ensureOpsUser === 'function' ? ensureOpsUser() : getSessionUser();
+      let user = typeof ensureOpsUser === 'function' ? ensureOpsUser() : getSessionUser();
+
       if (!user && !hasOpsToken()) {
-        toast('Faça login como Obras');
+        toast('Faça login como Obras (obras / obras123)');
         location.href = cityLink('/login.html');
         return;
       }
-      document.getElementById('top').innerHTML = topbar('Obras', cfg, { lock: true, user, som: true });
+
+      // Confirma sessão no servidor e grava nome (evita topbar com “Entrar”)
+      try {
+        const me = await api('/api/me');
+        if (me && (me.nome || me.id)) {
+          user = me;
+          if (typeof setSession === 'function') {
+            const tok = localStorage.getItem(authTokenKey())
+              || localStorage.getItem('bi_token_secretaria')
+              || localStorage.getItem('bi_token');
+            setSession(tok, me);
+          }
+        }
+      } catch (_) {
+        user = ensureOpsUser() || user;
+      }
+
+      if (!user && !hasOpsToken()) {
+        location.href = cityLink('/login.html');
+        return;
+      }
+
+      document.getElementById('top').innerHTML = topbar('Obras', cfg, {
+        lock: true,
+        user: user || { nome: 'Secretaria de Obras', secretaria: 'obras', papel: 'secretaria' },
+        som: true,
+      });
+      const line = document.getElementById('opsUserLine');
+      if (line) {
+        line.textContent = user
+          ? `Logado: ${user.nome || user.id} · Secretaria de Obras`
+          : 'Sessão ativa · Secretaria de Obras';
+      }
       wireSomToggle();
       document.title = `Obras · ${cfg.produto || cfg.cidade || ''}`;
       document.getElementById('linkTransp').href = cityLink('/obras.html');
@@ -817,6 +866,9 @@
       await load();
       const aba = new URLSearchParams(location.search).get('aba');
       if (aba) goPane(aba);
+      // Garante que a seção de recentes entra na tela
+      const sec = document.getElementById('secRecentes');
+      if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     boot().catch((e) => toast(e.message));

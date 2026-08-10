@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <script src="/app.js"></script>
+  <script src="/app.js?v=ops-sess1"></script>
   <script>
     initCidade();
     const senhas = {
@@ -82,6 +82,12 @@
       await withBusy(btn, 'Entrando…', async () => {
         try {
           const cidade = getCidade();
+          const perfil = document.getElementById('perfil').value;
+          if (perfil === 'campo') window.BI_AUTH_SLOT = 'campo';
+          else if (perfil === 'prefeito') window.BI_AUTH_SLOT = 'gabinete';
+          else if (perfil === 'admin') window.BI_AUTH_SLOT = undefined;
+          else window.BI_AUTH_SLOT = 'secretaria';
+
           const r = await api('/api/login', {
             method: 'POST',
             body: JSON.stringify({
@@ -91,8 +97,13 @@
             }),
           });
           localStorage.setItem('bi_token', r.token);
+          localStorage.setItem('bi_user', JSON.stringify(r.user));
           if (typeof setSession === 'function') setSession(r.token, r.user);
-          else localStorage.setItem('bi_user', JSON.stringify(r.user));
+          // Garante espelho no slot de secretaria (Obras / Iluminação / Saúde)
+          if (window.BI_AUTH_SLOT === 'secretaria') {
+            localStorage.setItem('bi_token_secretaria', r.token);
+            localStorage.setItem('bi_token_secretaria_user', JSON.stringify(r.user));
+          }
           toast('Bem-vindo, ' + r.user.nome);
           if (r.user.papel === 'admin') {
             location.href = cityLink('/admin-sistema.html');
