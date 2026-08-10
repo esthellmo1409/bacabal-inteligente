@@ -312,6 +312,25 @@ function bindDetalharToggle(root, getChamado) {
   });
 }
 
+/**
+ * True quando o usuário está com Detalhar aberto ou a IA analisando/digitando.
+ * Usado para o poll NÃO re-renderizar a lista e fechar o painel sozinho.
+ */
+function opsUiDetalheEmUso(root) {
+  const el = root || document;
+  try {
+    return !!(
+      el.querySelector('.detalhe-box.open') ||
+      el.querySelector('[data-ia-obra][data-typing="1"]') ||
+      el.querySelector('.ia-analisando') ||
+      el.querySelector('[data-ia-obra][data-ia-phase="plano"]') ||
+      el.querySelector('[data-ia-obra][data-ia-phase="aprovacao-resultado"]')
+    );
+  } catch (_) {
+    return false;
+  }
+}
+
 /** Foto do problema (cidadão) — ou Antes/Depois quando o campo já enviou a prova. */
 function antesDepoisHtml(c, { forcarDupla } = {}) {
   const fotosAntes = (c.fotosAntes && c.fotosAntes.length)
@@ -1640,6 +1659,7 @@ async function iaRunPlanoTyping(box, id, plano) {
 async function iaObraAnalisar(id, foto, texto) {
   const box = document.querySelector(`[data-ia-obra="${id}"]`);
   if (box) {
+    box.dataset.typing = '1';
     box.innerHTML = `
       <div class="ia-obra-avatar-row">
         <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=3" alt="" width="56" height="56" />
@@ -1659,12 +1679,14 @@ async function iaObraAnalisar(id, foto, texto) {
     if (box) {
       box.outerHTML = iaObraPlanoShell(id, plano, { empty: true });
       const novo = document.querySelector(`[data-ia-obra="${id}"]`);
+      if (novo) novo.dataset.typing = '1';
       await iaRunPlanoTyping(novo, id, plano);
     }
     toast('Plano de serviço sugerido');
     return plano;
   } catch (e) {
     if (box) {
+      box.dataset.typing = '0';
       box.innerHTML = `
         <div class="ia-obra-ask">
           <strong>Não consegui analisar agora</strong>
@@ -1684,6 +1706,7 @@ async function iaObraAnalisar(id, foto, texto) {
 async function iaAprovacaoAnalisar(id, c) {
   const box = document.querySelector(`[data-ia-obra="${id}"]`);
   if (box) {
+    box.dataset.typing = '1';
     box.innerHTML = `
       <div class="ia-obra-avatar-row">
         <img class="ia-obra-avatar" src="/assets/ia-assistente-servico.png?v=3" alt="" width="56" height="56" />
@@ -1710,12 +1733,14 @@ async function iaAprovacaoAnalisar(id, c) {
     if (box) {
       box.outerHTML = iaAprovacaoParecerShell(id, r, { empty: true });
       const novo = document.querySelector(`[data-ia-obra="${id}"]`);
+      if (novo) novo.dataset.typing = '1';
       await iaRunParecerTyping(novo, id, r);
     }
     toast(r.parecer === 'ok' ? 'Parecer: serviço aparenta ok' : 'Parecer: revisar antes de aprovar');
     return r;
   } catch (e) {
     if (box) {
+      box.dataset.typing = '0';
       box.innerHTML = `
         <div class="ia-obra-ask">
           <strong>Não consegui analisar agora</strong>

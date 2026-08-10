@@ -306,7 +306,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-busca1"></script>
+  <script src="/app.js?v=ops-fix-ia1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -662,29 +662,32 @@
           <button class="btn btn-sm btn-primary" type="button" data-chk-save="${c.unidadeId}" style="margin-top:0.45rem">Salvar checklist</button>
         </div>`).join('') || '<p class="muted">Sem checklist.</p>';
 
-      document.getElementById('chamadosBox').innerHTML = (p.reclamacoes || []).length
-        ? p.reclamacoes.map((c) => {
-          const did = 'sau-' + c.id;
-          const acoesHtml = `<button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>`;
-          return `
-          <div class="item" data-chamado-id="${c.id}">
-            <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span>
-              ${typeof opsTemCobrancaPendente === 'function' && opsTemCobrancaPendente(c) ? '<span class="badge badge-cancelado">Gabinete</span>' : ''}
-            </div>
-            <div>${c.titulo || c.categoria || 'Chamado'}</div>
-            <div class="meta">${c.bairro || '—'} · ${c.categoria || ''} · ${c.prioridade || ''}
-              ${c.criadoEm ? '· cidadão chamou ' + new Date(c.criadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</div>
-            <button type="button" class="btn-detalhar" data-detalhar="${did}">
-              <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
-            </button>
-            <div class="detalhe-box" id="detalhe-${did}">
-              ${typeof detalheOperacaoHtml === 'function'
-                ? detalheOperacaoHtml(c, { acoesHtml })
-                : (typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : '')}
-            </div>
-          </div>`;
-        }).join('')
-        : '<p class="muted">Nenhum chamado aberto da Saúde no momento.</p>';
+      const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document.getElementById('chamadosBox') || document);
+      if (!detalheEmUso) {
+        document.getElementById('chamadosBox').innerHTML = (p.reclamacoes || []).length
+          ? p.reclamacoes.map((c) => {
+            const did = 'sau-' + c.id;
+            const acoesHtml = `<button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>`;
+            return `
+            <div class="item" data-chamado-id="${c.id}">
+              <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span>
+                ${typeof opsTemCobrancaPendente === 'function' && opsTemCobrancaPendente(c) ? '<span class="badge badge-cancelado">Gabinete</span>' : ''}
+              </div>
+              <div>${c.titulo || c.categoria || 'Chamado'}</div>
+              <div class="meta">${c.bairro || '—'} · ${c.categoria || ''} · ${c.prioridade || ''}
+                ${c.criadoEm ? '· cidadão chamou ' + new Date(c.criadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</div>
+              <button type="button" class="btn-detalhar" data-detalhar="${did}">
+                <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+              </button>
+              <div class="detalhe-box" id="detalhe-${did}">
+                ${typeof detalheOperacaoHtml === 'function'
+                  ? detalheOperacaoHtml(c, { acoesHtml })
+                  : (typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : '')}
+              </div>
+            </div>`;
+          }).join('')
+          : '<p class="muted">Nenhum chamado aberto da Saúde no momento.</p>';
+      }
 
       const iaHelp = document.getElementById('iaHelpSaude');
       if (iaHelp && typeof opsIaHelpNoteHtml === 'function') {
@@ -692,15 +695,17 @@
       }
 
       bindActions();
-      if (typeof bindDetalharToggle === 'function') {
-        bindDetalharToggle(document.getElementById('chamadosBox'), (id) =>
-          (painelAtual?.reclamacoes || []).find((c) => c.id === id)
-        );
-      }
-      if (typeof bindIaObraAssist === 'function') {
-        bindIaObraAssist(document.getElementById('chamadosBox'), (id) =>
-          (painelAtual?.reclamacoes || []).find((c) => c.id === id)
-        );
+      if (!detalheEmUso) {
+        if (typeof bindDetalharToggle === 'function') {
+          bindDetalharToggle(document.getElementById('chamadosBox'), (id) =>
+            (painelAtual?.reclamacoes || []).find((c) => c.id === id)
+          );
+        }
+        if (typeof bindIaObraAssist === 'function') {
+          bindIaObraAssist(document.getElementById('chamadosBox'), (id) =>
+            (painelAtual?.reclamacoes || []).find((c) => c.id === id)
+          );
+        }
       }
       document.querySelectorAll('[data-encaminhar]').forEach((btn) => {
         if (btn._eBound) return;

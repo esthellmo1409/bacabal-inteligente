@@ -81,7 +81,7 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-busca1"></script>
+  <script src="/app.js?v=ops-fix-ia1"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_AUTH_SLOT = 'campo';
@@ -383,7 +383,9 @@
         : '';
       document.getElementById('campoHint').textContent = 'Atualiza a cada 12s · som ao encaminhar OS';
 
-      const iaFalando = !!document.querySelector('[data-ia-obra][data-typing="1"]');
+      const iaFalando = typeof opsUiDetalheEmUso === 'function'
+        ? opsUiDetalheEmUso(document.getElementById('appView'))
+        : !!document.querySelector('[data-ia-obra][data-typing="1"]');
       if (!iaFalando) {
         document.getElementById('recentes').innerHTML = recentes.length
           ? recentes.map(cardRecente).join('')

@@ -274,7 +274,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-busca1"></script>
+  <script src="/app.js?v=ops-fix-ia1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -568,9 +568,6 @@
         <div class="panel stat"><div class="label">Obras / OS</div><div class="value">${t.obrasAtrasadas || 0}</div>
           <div class="hint">${t.obrasAndamento || 0} andamento · ${t.osAbertas || 0} chamado(s)</div></div>`;
 
-      document.getElementById('pontosBox').innerHTML = (p.pontosQuentes || []).map(cardPontoHtml).join('')
-        || '<p class="muted">Nenhum ponto quente.</p>';
-
       const chamadosSorted = [...(p.chamados || [])].sort((a, b) =>
         String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
       );
@@ -582,16 +579,20 @@
           .slice(0, 5)
           .map((x) => cardPontoHtml(x));
       }
-      const recentesEl = document.getElementById('recentesBox');
-      if (recentesEl) {
-        recentesEl.innerHTML = recentesCards.length
-          ? recentesCards.join('')
-          : '<p class="muted">Nenhum chamado recente no momento.</p>';
+      const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
+      if (!detalheEmUso) {
+        document.getElementById('pontosBox').innerHTML = (p.pontosQuentes || []).map(cardPontoHtml).join('')
+          || '<p class="muted">Nenhum ponto quente.</p>';
+        const recentesEl = document.getElementById('recentesBox');
+        if (recentesEl) {
+          recentesEl.innerHTML = recentesCards.length
+            ? recentesCards.join('')
+            : '<p class="muted">Nenhum chamado recente no momento.</p>';
+        }
+        document.getElementById('chamadosBox').innerHTML = chamadosSorted.length
+          ? chamadosSorted.map((c) => cardChamadoHtml(c)).join('')
+          : '<p class="muted">Nenhum chamado aberto.</p>';
       }
-
-      document.getElementById('chamadosBox').innerHTML = chamadosSorted.length
-        ? chamadosSorted.map((c) => cardChamadoHtml(c)).join('')
-        : '<p class="muted">Nenhum chamado aberto.</p>';
 
       document.getElementById('rotaBox').innerHTML = (p.rota || []).length
         ? p.rota.map((r) => `
