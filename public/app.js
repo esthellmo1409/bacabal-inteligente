@@ -855,14 +855,61 @@ function ensureOpsUser() {
 }
 
 function logout() {
+  if (typeof opsLiberarVoltar === 'function') opsLiberarVoltar();
   clearAllSessions();
   location.href = cityLink('/login.html');
 }
 
 /** Sair da área administrativa (obrigatório antes de ir a outra tela). */
 function logoutOps(dest) {
+  if (typeof opsLiberarVoltar === 'function') opsLiberarVoltar();
   clearAllSessions();
   location.href = cityLink(dest || '/login.html');
+}
+
+/**
+ * Trava o botão/seta Voltar do browser nas áreas ops (Gabinete, secretarias, campo).
+ * Empilha um estado e, ao voltar, reempilha — a página não some.
+ * Use Sair (ou opsLiberarVoltar) para sair de verdade.
+ */
+const _opsBackLock = { on: false, handler: null, msg: 'Use Sair no topo para trocar de área' };
+
+function opsLiberarVoltar() {
+  _opsBackLock.on = false;
+  if (_opsBackLock.handler) {
+    window.removeEventListener('popstate', _opsBackLock.handler);
+    _opsBackLock.handler = null;
+  }
+}
+
+function opsTravarVoltar(opts = {}) {
+  if (window.BI_ALLOW_BACK) return;
+  if (_opsBackLock.on) return;
+  _opsBackLock.on = true;
+  if (opts.msg) _opsBackLock.msg = opts.msg;
+
+  // Garante uma entrada extra no histórico para interceptar o Voltar
+  try {
+    const st = { biOpsLock: 1, t: Date.now() };
+    if (!history.state || !history.state.biOpsLock) {
+      history.pushState(st, '', location.href);
+    }
+  } catch (_) { /* ok */ }
+
+  _opsBackLock.handler = () => {
+    if (!_opsBackLock.on) return;
+    try {
+      history.pushState({ biOpsLock: 1, t: Date.now() }, '', location.href);
+    } catch (_) { /* ok */ }
+    if (typeof toast === 'function') toast(_opsBackLock.msg);
+  };
+  window.addEventListener('popstate', _opsBackLock.handler);
+}
+
+/** Navegação intencional (links internos) — libera a trava antes de ir. */
+function opsGoto(href) {
+  opsLiberarVoltar();
+  location.href = cityLink(href);
 }
 
 /* ── Alarme ops: bip + banner (Gabinete / chat do prefeito) ── */
@@ -1260,6 +1307,7 @@ function topbar(active, cfg, opts = {}) {
     || `${cfg?.cidade || window.__CITY_NOME || ''} · ${cfg?.uf || 'MA'}`;
   const opsLock = !!(opts.lock || window.BI_OPS_LOCK || window.BI_AUTH_SLOT);
   if (opsLock && typeof ensureOpsUser === 'function') ensureOpsUser();
+  if (opsLock && typeof opsTravarVoltar === 'function') opsTravarVoltar();
   const user = opsLock ? (opts.user || getSessionUser()) : null;
   const logged = !!(user || (opsLock && hasOpsToken()));
 
