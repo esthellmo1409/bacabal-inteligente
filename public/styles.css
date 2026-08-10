@@ -1696,6 +1696,51 @@ input:focus, select:focus, textarea:focus {
   border-color: transparent;
 }
 
+.ia-gabinete-ask {
+  flex: 1 1 100%;
+  margin-top: 0.55rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed rgba(33, 99, 232, 0.22);
+}
+
+.ia-gabinete-ask label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-bottom: 0.4rem;
+}
+
+.ia-gabinete-ask-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.ia-gabinete-ask textarea {
+  flex: 1;
+  min-height: 2.8rem;
+  resize: vertical;
+  border: 1px solid rgba(33, 99, 232, 0.28);
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  background: #fff;
+}
+
+.ia-gabinete-ask textarea:focus {
+  outline: 2px solid rgba(33, 99, 232, 0.35);
+  outline-offset: 1px;
+}
+
+.ia-gabinete-ask-row .btn {
+  flex-shrink: 0;
+  align-self: stretch;
+  min-width: 6.5rem;
+}
+
 .ia-gabinete-resposta {
   margin-top: 0.9rem;
   padding: 0.85rem 0.95rem;
@@ -1706,6 +1751,7 @@ input:focus, select:focus, textarea:focus {
 
 @media (max-width: 640px) {
   .ia-obra-grid { grid-template-columns: 1fr; }
+  .ia-gabinete-ask-row { flex-direction: column; align-items: stretch; }
 }
 
 @media (max-width: 980px) {

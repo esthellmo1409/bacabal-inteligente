@@ -1400,6 +1400,7 @@ async function handleAPI(req, res, pathname, url) {
             rotaPendentes: (data.rota || []).filter((r) => r.status !== 'concluido').length,
             chamadosAbertos: chamados.filter((c) => c.secretaria === 'iluminacao' && !['concluido', 'cancelado'].includes(c.status)).length,
           },
+          estoque: data.estoque || [],
           alertas: [],
         };
       } catch (_) { return null; }
@@ -1422,12 +1423,40 @@ async function handleAPI(req, res, pathname, url) {
             osAbertas: chamados.filter((c) => c.secretaria === 'obras' && !['concluido', 'cancelado'].includes(c.status)).length,
           },
           pontosQuentes: pontos,
+          materiais: data.materiais || [],
+          alertas: [],
+        };
+      } catch (_) { return null; }
+    })();
+    const saudePainel = (() => {
+      try {
+        const data = readTenant(slug, 'saude-hoje.json', null);
+        if (!data) return null;
+        const unidades = data.unidades || [];
+        const farm = data.farmacia || [];
+        const leitos = data.leitos || [];
+        const amb = data.ambulancias || [];
+        const totLeitos = leitos.reduce((a, l) => a + (l.total || 0), 0);
+        const occLeitos = leitos.reduce((a, l) => a + (l.ocupados || 0), 0);
+        return {
+          totais: {
+            naFila: unidades.reduce((a, u) => a + (u.naFila || 0), 0),
+            plantoesOk: unidades.filter((u) => u.plantao?.status === 'ativo').length,
+            plantoesTotal: unidades.length,
+            leitosOcupacaoPct: totLeitos ? Math.round((occLeitos / totLeitos) * 100) : 0,
+            ambulanciasDisponiveis: amb.filter((a) => a.status === 'disponivel').length,
+            ambulanciasTotal: amb.length,
+            farmaciaAlertas: farm.filter((f) => f.estoque === 'baixo' || f.estoque === 'critico').length,
+          },
+          farmacia: farm,
+          leitos,
           alertas: [],
         };
       } catch (_) { return null; }
     })();
     const out = assistenteGabinete({
-      opcao: body.opcao || body.option || 'ajuda',
+      opcao: body.opcao || body.option || (body.pergunta || body.message || body.texto ? 'livre' : 'ajuda'),
+      pergunta: body.pergunta || body.message || body.texto || '',
       chamados,
       obras,
       metricas,
@@ -1435,6 +1464,7 @@ async function handleAPI(req, res, pathname, url) {
       cargo,
       iluminacaoPainel,
       obrasPainel,
+      saudePainel,
     });
     return sendJSON(res, 200, out);
   }

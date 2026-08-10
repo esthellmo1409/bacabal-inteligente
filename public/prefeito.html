@@ -214,6 +214,14 @@
         <button type="button" class="btn btn-sm" data-ia-gab="saude">Saúde em resumo</button>
         <button type="button" class="btn btn-sm" data-ia-gab="iluminacao">Iluminação em resumo</button>
         <button type="button" class="btn btn-sm" data-ia-gab="obras">Obras em resumo</button>
+        <div class="ia-gabinete-ask">
+          <label for="iaGabPergunta">Ou escreva sua pergunta</label>
+          <div class="ia-gabinete-ask-row">
+            <textarea id="iaGabPergunta" rows="2" maxlength="500" placeholder="Ex.: Como está o estoque de LED? O que cobrar na Saúde hoje? Tem obra atrasada?"></textarea>
+            <button type="button" class="btn btn-primary" id="iaGabAskBtn">Perguntar</button>
+          </div>
+          <p class="muted" style="margin:0.35rem 0 0;font-size:0.75rem">Enter envia · Shift+Enter quebra linha</p>
+        </div>
       </div>
       <div id="iaGabResposta" class="ia-gabinete-resposta" hidden>
         <strong id="iaGabResTitulo" style="display:block;margin-bottom:0.35rem"></strong>
@@ -317,7 +325,7 @@
     window.BI_AUTH_SLOT = 'gabinete';
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-gab3"></script>
+  <script src="/app.js?v=ops-gab4"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_OPS_LOCK = true;
@@ -598,7 +606,7 @@
       if (!titleEl || !subEl || !ops) return;
 
       const title = `Oi! Sou a ${produto}, sua assistente de IA.`;
-      const sub = `Olá, ${cargo}. Como posso te ajudar hoje? Quer que eu analise como está a cidade de modo geral na sua plataforma?`;
+      const sub = `Olá, ${cargo}. Clique em um atalho ou escreva sua pergunta abaixo — eu consulto os dados da plataforma e te respondo.`;
       titleEl.textContent = '';
       subEl.textContent = '';
       ops.hidden = true;
@@ -616,26 +624,58 @@
       ops.querySelectorAll('[data-ia-gab]').forEach((btn) => {
         if (btn._iaBound) return;
         btn._iaBound = true;
-        btn.addEventListener('click', () => perguntarIaGabinete(btn.getAttribute('data-ia-gab'), btn));
+        btn.addEventListener('click', () => perguntarIaGabinete({ opcao: btn.getAttribute('data-ia-gab') }, btn));
       });
+
+      const askBtn = document.getElementById('iaGabAskBtn');
+      const askInput = document.getElementById('iaGabPergunta');
+      if (askBtn && !askBtn._iaBound) {
+        askBtn._iaBound = true;
+        askBtn.addEventListener('click', () => enviarPerguntaLivreIa());
+      }
+      if (askInput && !askInput._iaBound) {
+        askInput._iaBound = true;
+        askInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            enviarPerguntaLivreIa();
+          }
+        });
+      }
     }
 
-    async function perguntarIaGabinete(opcao, btn) {
+    function enviarPerguntaLivreIa() {
+      const input = document.getElementById('iaGabPergunta');
+      const pergunta = (input?.value || '').trim();
+      if (!pergunta) {
+        toast('Escreva sua pergunta para a IA');
+        input?.focus();
+        return;
+      }
+      perguntarIaGabinete({ pergunta }, document.getElementById('iaGabAskBtn'));
+    }
+
+    async function perguntarIaGabinete(payload, btn) {
       const box = document.getElementById('iaGabResposta');
       const tit = document.getElementById('iaGabResTitulo');
       const txt = document.getElementById('iaGabResTexto');
       if (!box || !tit || !txt) return;
+      const body = typeof payload === 'string'
+        ? { opcao: payload }
+        : (payload || {});
       document.querySelectorAll('[data-ia-gab]').forEach((b) => b.classList.remove('ia-gab-active'));
-      if (btn) btn.classList.add('ia-gab-active');
+      if (btn && btn.hasAttribute?.('data-ia-gab')) btn.classList.add('ia-gab-active');
       box.hidden = false;
       tit.textContent = '';
       txt.textContent = '';
       txt.classList.add('ia-analisando');
-      txt.textContent = 'Consultando os dados do gabinete';
+      txt.textContent = body.pergunta
+        ? 'Lendo sua pergunta e consultando os dados'
+        : 'Consultando os dados do gabinete';
       try {
         const r = await api('/api/ia/gabinete', {
           method: 'POST',
-          body: JSON.stringify({ opcao }),
+          body: JSON.stringify(body),
         });
         txt.classList.remove('ia-analisando');
         tit.textContent = r.titulo || 'Resposta';
