@@ -5,109 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Iluminação Pública</title>
   <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
+  <link rel="stylesheet" href="/ops-shell.css?v=ops1" />
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
   </script>
   <style>
-    :root {
-      --ilu: #b45309;
-      --ilu-soft: #fffbeb;
-      --ilu-line: #fcd34d;
-      --ink-soft: #78350f;
-    }
-    body.ops-body { background: linear-gradient(180deg, #fffbeb 0%, #f8fafc 240px, #f8fafc 100%); }
-    .ilu-hero {
-      display:flex; justify-content:space-between; align-items:end; gap:1rem; flex-wrap:wrap;
-      margin-bottom:1rem; padding:1.05rem 1.2rem; border-radius:16px;
-      background: linear-gradient(135deg, #b45309, #92400e 55%, #78350f);
-      color:#fff; box-shadow:0 10px 28px rgba(180,83,9,.28);
-    }
-    .ilu-hero .page-kicker { color:#fde68a; margin:0 0 .2rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.72rem; }
-    .ilu-hero h1 { margin:0 0 .25rem; color:#fff; font-size:1.6rem; }
-    .ilu-hero .muted { color:#ffedd5; margin:0; }
-    .ilu-hero .btn { background:#fff; color:#92400e; border:none; font-weight:800; }
-    .acao-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.55rem; margin-bottom:1rem; }
-    .acao-card {
-      border:1px solid var(--ilu-line); background:#fff; border-radius:14px;
-      padding:.85rem .9rem; text-align:left; cursor:pointer; font:inherit; color:inherit;
-    }
-    .acao-card:hover { box-shadow:0 8px 18px rgba(180,83,9,.12); transform:translateY(-2px); }
-    .acao-card strong { display:block; color:var(--ink-soft); font-size:.95rem; margin-bottom:.2rem; }
-    .acao-card span { display:block; color:#64748b; font-size:.75rem; line-height:1.35; }
-    .acao-card.active { background:var(--ilu); border-color:var(--ilu); color:#fff; }
-    .acao-card.active strong, .acao-card.active span { color:#fff; }
-    .ilu-tabs {
-      display:flex; gap:.4rem; flex-wrap:wrap; margin:0 0 1rem; padding:.35rem;
-      background:#fff; border:1px solid var(--ilu-line); border-radius:14px;
-    }
-    .ilu-tab {
-      border:none; background:transparent; border-radius:10px; cursor:pointer;
-      padding:.55rem .85rem; font-weight:800; font-size:.8rem; color:var(--ink-soft);
-    }
-    .ilu-tab.active { background:var(--ilu); color:#fff; }
-    .ilu-tab .count {
-      display:inline-flex; min-width:1.2rem; height:1.2rem; align-items:center; justify-content:center;
-      margin-left:.3rem; border-radius:999px; font-size:.68rem; background:rgba(255,255,255,.25);
-    }
-    .ilu-tab:not(.active) .count { background:#fef3c7; color:var(--ink-soft); }
-    .pane { display:none; }
-    .pane.active { display:block; }
-    .hint-box {
-      margin-bottom:.85rem; padding:.75rem .95rem; border-radius:12px;
-      background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; font-size:.88rem; font-weight:600;
-    }
-    .unidade-card {
-      border:1px solid #fde68a; border-radius:14px; padding:.9rem 1rem; margin-bottom:.65rem; background:#fff;
-    }
-    .unidade-card.critico { border-color:#fecaca; background:#fffafa; }
-    .form-row { display:flex; flex-wrap:wrap; gap:.45rem; align-items:center; margin-top:.55rem; }
-    .form-row input, .form-row select { margin:0; }
-    .pill {
-      display:inline-flex; align-items:center; padding:.22rem .5rem; border-radius:999px;
-      font-size:.7rem; font-weight:800; background:#f1f5f9; margin-right:.25rem;
-    }
-    .pill.apagado { background:#fee2e2; color:#991b1b; }
-    .pill.em_reparo { background:#ffedd5; color:#9a3412; }
-    .pill.sem_energia { background:#ede9fe; color:#5b21b6; }
-    .pill.ok { background:#dcfce7; color:#166534; }
-    .pill.alta { background:#fee2e2; color:#991b1b; }
-    .alert-ilu {
-      padding:.85rem 1rem; border-radius:12px; margin-bottom:.55rem;
-      border:1px solid #fcd34d; background:#fffbeb; color:#92400e; font-size:.9rem; font-weight:600;
-    }
-    .btn-detalhar {
-      display:inline-flex; align-items:center; justify-content:space-between; gap:.5rem;
-      width:100%; margin-top:.55rem; padding:.55rem .75rem;
-      border:1px solid var(--ilu-line); border-radius:10px; background:#fff;
-      font:inherit; font-weight:800; font-size:.85rem; color:var(--ink-soft); cursor:pointer;
-    }
-    .btn-detalhar .seta {
-      width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent;
-      border-top:6px solid var(--ilu); transition: transform .15s ease;
-    }
-    .btn-detalhar.open .seta { transform: rotate(180deg); }
-    .detalhe-box { display:none; margin-top:.65rem; padding:.85rem; border:1px solid var(--ilu-line); border-radius:12px; background:#fffbeb; }
-    .detalhe-box.open { display:block; }
-    @media (max-width:900px) { .acao-grid { grid-template-columns:1fr 1fr; } }
-    @media (max-width:720px) { .acao-grid { grid-template-columns:1fr; } .ilu-hero h1 { font-size:1.3rem; } }
+    :root { --ilu: #b45309; --ilu-soft: #fffbeb; --ilu-line: #fcd34d; --ink-soft: #78350f; }
+    .ops-body .pill.sem_energia { background:#ede9fe; color:#5b21b6; }
   </style>
 </head>
-<body class="ops-body">
+<body class="ops-body ops-theme-iluminacao">
   <div class="wrap-wide">
     <div id="top"></div>
     <div id="opsBuscaMount"></div>
-
-    <div class="hint-box">
-      Esta é a <strong>Iluminação Pública</strong>. Aqui você gerencia postes, rota da cesta, frota e estoque de LED.
-      O Gabinete só acompanha.
-    </div>
 
     <div class="ilu-hero">
       <div>
         <p class="page-kicker">Secretaria de Iluminação</p>
         <h1 class="display">Central operacional</h1>
-        <p class="muted">Postes · rota · frota · estoque — o que o prefeito vê começa aqui</p>
+        <p class="muted">Postes · rota · frota · estoque — Gabinete só acompanha</p>
       </div>
       <div class="cta-row">
         <button class="btn btn-sm" id="btnRebuildRota" type="button">Montar rota do dia</button>
@@ -115,10 +32,10 @@
       </div>
     </div>
 
-    <div class="panel ops-block" id="secRecentes" style="border:2px solid #fcd34d;background:linear-gradient(180deg,#fffbeb,#fff);margin-bottom:1rem">
+    <div class="panel ops-block" id="secRecentes">
       <div class="ops-section-head">
         <div>
-          <h3 style="margin:0;color:#92400e;font-size:1.15rem">① Chamados recentes</h3>
+          <h3 style="margin:0;font-size:1.15rem">① Chamados recentes</h3>
           <p class="muted" style="margin:.25rem 0 0">Últimos atualizados — abra <strong>Detalhar</strong> para fotos e execução.</p>
         </div>
         <div class="cta-row">
@@ -213,17 +130,17 @@
         <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
         <button class="btn btn-sm" type="button" data-jump="secRecentes">Recentes (topo)</button>
       </div>
-      <div class="panel" id="secAbertos" style="border:2px solid #fcd34d;margin-bottom:1rem">
+      <div class="panel" id="secAbertos">
         <div class="ops-section-head">
           <div>
-            <h3 style="margin:0;color:#92400e">② Chamados abertos</h3>
+            <h3 style="margin:0">② Chamados abertos</h3>
             <p class="muted" style="margin:.25rem 0 0">Fila em andamento — encaminhar, material, execução.</p>
           </div>
           <span class="count" id="countAbertos">0</span>
         </div>
         <div id="chamadosAbertosBox" class="list"></div>
       </div>
-      <div class="panel" id="secConcluidos" style="border:2px solid #86efac;background:linear-gradient(180deg,#f0fdf4,#fff)">
+      <div class="panel" id="secConcluidos">
         <div class="ops-section-head">
           <div>
             <h3 style="margin:0;color:#166534">③ Concluídos</h3>

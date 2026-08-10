@@ -1,0 +1,493 @@
+/**
+ * Shell visual unificado das secretarias (Obras, Iluminação, Limpeza, Saúde).
+ * Cada página só define o tema (--sec-*) no body.
+ * Não usar na home / páginas públicas.
+ */
+
+/* —— Temas —— */
+body.ops-theme-obras {
+  --sec: #c2410c;
+  --sec-mid: #ea580c;
+  --sec-deep: #9a3412;
+  --sec-soft: #fff7ed;
+  --sec-line: #fdba74;
+  --sec-ink: #7c2d12;
+  --sec-kicker: #ffedd5;
+  --sec-muted: #ffedd5;
+  --sec-shadow: rgba(194, 65, 12, 0.28);
+}
+
+body.ops-theme-iluminacao {
+  --sec: #b45309;
+  --sec-mid: #d97706;
+  --sec-deep: #78350f;
+  --sec-soft: #fffbeb;
+  --sec-line: #fcd34d;
+  --sec-ink: #78350f;
+  --sec-kicker: #fde68a;
+  --sec-muted: #ffedd5;
+  --sec-shadow: rgba(180, 83, 9, 0.28);
+}
+
+body.ops-theme-limpeza {
+  --sec: #047857;
+  --sec-mid: #059669;
+  --sec-deep: #064e3b;
+  --sec-soft: #ecfdf5;
+  --sec-line: #6ee7b7;
+  --sec-ink: #064e3b;
+  --sec-kicker: #a7f3d0;
+  --sec-muted: #d1fae5;
+  --sec-shadow: rgba(4, 120, 87, 0.28);
+}
+
+body.ops-theme-saude {
+  --sec: #0f766e;
+  --sec-mid: #0d9488;
+  --sec-deep: #134e4a;
+  --sec-soft: #ecfdf5;
+  --sec-line: #99f6e4;
+  --sec-ink: #115e59;
+  --sec-kicker: #a7f3d0;
+  --sec-muted: #ccfbf1;
+  --sec-shadow: rgba(15, 118, 110, 0.28);
+}
+
+body.ops-body {
+  background: linear-gradient(180deg, var(--sec-soft, #f8fafc) 0%, #f8fafc 220px, #f8fafc 100%);
+}
+
+/* —— Hero —— */
+.ops-hero,
+.obr-hero,
+.ilu-hero,
+.limp-hero,
+.saude-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--sec-mid), var(--sec) 55%, var(--sec-deep));
+  color: #fff;
+  box-shadow: 0 10px 28px var(--sec-shadow);
+}
+
+.ops-hero .page-kicker,
+.obr-hero .page-kicker,
+.ilu-hero .page-kicker,
+.limp-hero .page-kicker,
+.saude-hero .page-kicker {
+  color: var(--sec-kicker);
+  margin: 0 0 0.2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.ops-hero h1,
+.obr-hero h1,
+.ilu-hero h1,
+.limp-hero h1,
+.saude-hero h1 {
+  margin: 0 0 0.25rem;
+  color: #fff;
+  font-size: 1.55rem;
+  letter-spacing: -0.02em;
+}
+
+.ops-hero .muted,
+.obr-hero .muted,
+.ilu-hero .muted,
+.limp-hero .muted,
+.saude-hero .muted {
+  color: var(--sec-muted);
+  margin: 0;
+}
+
+.ops-hero .btn,
+.obr-hero .btn,
+.ilu-hero .btn,
+.limp-hero .btn,
+.saude-hero .btn {
+  background: #fff;
+  color: var(--sec-deep);
+  border: none;
+  font-weight: 800;
+}
+
+/* —— Hint (cor da secretaria, não azul genérico) —— */
+.ops-body .hint-box {
+  margin-bottom: 0.85rem;
+  padding: 0.7rem 0.95rem;
+  border-radius: 12px;
+  background: var(--sec-soft);
+  border: 1px solid var(--sec-line);
+  color: var(--sec-ink);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+/* —— Atalhos —— */
+.ops-body .acao-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.ops-body .acao-card {
+  border: 1px solid var(--sec-line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 0.85rem 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: box-shadow 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+
+.ops-body .acao-card:hover {
+  box-shadow: 0 8px 18px var(--sec-shadow);
+  transform: translateY(-2px);
+}
+
+.ops-body .acao-card:focus-visible {
+  outline: 2px solid var(--sec);
+  outline-offset: 2px;
+}
+
+.ops-body .acao-card strong {
+  display: block;
+  color: var(--sec-ink);
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+  pointer-events: none;
+}
+
+.ops-body .acao-card span {
+  display: block;
+  color: #64748b;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.ops-body .acao-card.active {
+  background: var(--sec);
+  border-color: var(--sec);
+  color: #fff;
+  box-shadow: 0 8px 20px var(--sec-shadow);
+}
+
+.ops-body .acao-card.active strong,
+.ops-body .acao-card.active span {
+  color: #fff;
+}
+
+/* —— Abas —— */
+.ops-tabs,
+.obr-tabs,
+.ilu-tabs,
+.saude-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0 0 1rem;
+  padding: 0.35rem;
+  background: #fff;
+  border: 1px solid var(--sec-line);
+  border-radius: 14px;
+  scroll-margin-top: 0.75rem;
+}
+
+.ops-tab,
+.obr-tab,
+.ilu-tab,
+.saude-tab {
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 0.55rem 0.85rem;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: var(--sec-ink);
+}
+
+.ops-tab.active,
+.obr-tab.active,
+.ilu-tab.active,
+.saude-tab.active {
+  background: var(--sec);
+  color: #fff;
+}
+
+.ops-tab .count,
+.obr-tab .count,
+.ilu-tab .count,
+.saude-tab .count {
+  display: inline-flex;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.3rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  background: rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+}
+
+.ops-tab:not(.active) .count,
+.obr-tab:not(.active) .count,
+.ilu-tab:not(.active) .count,
+.saude-tab:not(.active) .count {
+  background: var(--sec-soft);
+  color: var(--sec-ink);
+}
+
+/* —— Panes —— */
+.ops-body .pane {
+  display: none;
+  scroll-margin-top: 1rem;
+}
+
+.ops-body .pane.active {
+  display: block;
+  animation: opsPaneIn 0.18s ease;
+}
+
+@keyframes opsPaneIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* —— Cards / lista —— */
+.ops-body .unidade-card,
+.ops-body .item.unidade-card {
+  border: 1px solid var(--sec-line);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.65rem;
+  background: #fff;
+}
+
+.ops-body .unidade-card.critico {
+  border-color: #fecaca;
+  background: #fffafa;
+}
+
+.ops-body .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  margin-top: 0.55rem;
+}
+
+.ops-body .form-row input,
+.ops-body .form-row select {
+  margin: 0;
+}
+
+.ops-body .pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: #f1f5f9;
+  margin-right: 0.25rem;
+}
+
+.ops-body .pill.alta,
+.ops-body .pill.pendente,
+.ops-body .pill.atrasada,
+.ops-body .pill.apagado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.ops-body .pill.media,
+.ops-body .pill.em_deslocamento,
+.ops-body .pill.em_atendimento,
+.ops-body .pill.em_execucao,
+.ops-body .pill.em_andamento,
+.ops-body .pill.em_reparo {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.ops-body .pill.baixa,
+.ops-body .pill.disponivel,
+.ops-body .pill.ok,
+.ops-body .pill.concluido,
+.ops-body .pill.concluida {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.ops-body .pill.em_campo,
+.ops-body .pill.em_rota {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.ops-body .pill.oficina,
+.ops-body .pill.aguardando_material,
+.ops-body .pill.base,
+.ops-body .pill.sem_energia {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.ops-body .btn-detalhar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.55rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--sec-line);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--sec-ink);
+  cursor: pointer;
+}
+
+.ops-body .btn-detalhar:hover {
+  background: var(--sec-soft);
+}
+
+.ops-body .btn-detalhar .seta {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--sec);
+  transition: transform 0.15s ease;
+}
+
+.ops-body .btn-detalhar.open .seta {
+  transform: rotate(180deg);
+}
+
+.ops-body .detalhe-box {
+  display: none;
+  margin-top: 0.65rem;
+  padding: 0.85rem;
+  border: 1px solid var(--sec-line);
+  border-radius: 12px;
+  background: var(--sec-soft);
+}
+
+.ops-body .detalhe-box.open {
+  display: block;
+}
+
+.ops-body .ops-block {
+  margin-bottom: 1rem;
+}
+
+.ops-body .ops-block .ops-section-head h3,
+.ops-body .ops-section-head h3 {
+  color: var(--sec-ink);
+}
+
+.ops-body .ops-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+}
+
+.ops-body .cidadao-quando {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: var(--sec-soft);
+  color: var(--sec-ink);
+}
+
+.ops-body .bar-mini {
+  height: 8px;
+  border-radius: 999px;
+  background: #eee;
+  overflow: hidden;
+  margin: 0.4rem 0;
+}
+
+.ops-body .bar-mini > i {
+  display: block;
+  height: 100%;
+  background: var(--sec);
+}
+
+.ops-body .alert-obr,
+.ops-body .alert-ilu {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.55rem;
+  border: 1px solid var(--sec-line);
+  background: var(--sec-soft);
+  color: var(--sec-ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Seções recentes / abertos / concluídos — borda na cor do tema */
+.ops-body #secRecentes.panel,
+.ops-body .panel#secRecentes {
+  border: 2px solid var(--sec-line) !important;
+  background: linear-gradient(180deg, var(--sec-soft), #fff) !important;
+}
+
+.ops-body #secAbertos.panel,
+.ops-body .panel#secAbertos {
+  border: 2px solid var(--sec-line) !important;
+}
+
+.ops-body #secConcluidos.panel,
+.ops-body .panel#secConcluidos {
+  border: 2px solid #86efac !important;
+  background: linear-gradient(180deg, #f0fdf4, #fff) !important;
+}
+
+.ops-body #secConcluidos h3 {
+  color: #166534 !important;
+}
+
+@media (max-width: 900px) {
+  .ops-body .acao-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .ops-body .acao-grid {
+    grid-template-columns: 1fr;
+  }
+  .ops-hero h1,
+  .obr-hero h1,
+  .ilu-hero h1,
+  .limp-hero h1,
+  .saude-hero h1 {
+    font-size: 1.3rem;
+  }
+}

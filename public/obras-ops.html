@@ -5,138 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Secretaria de Obras</title>
   <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
+  <link rel="stylesheet" href="/ops-shell.css?v=ops1" />
   <script>
     // Slot ANTES do app.js — evita topbar achar que não há login
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
   </script>
   <style>
-    :root {
-      --obr: #c2410c;
-      --obr-soft: #fff7ed;
-      --obr-line: #fdba74;
-      --ink-soft: #7c2d12;
-    }
-    body.ops-body { background: linear-gradient(180deg, #fff7ed 0%, #f8fafc 240px, #f8fafc 100%); }
-    .obr-hero {
-      display:flex; justify-content:space-between; align-items:end; gap:1rem; flex-wrap:wrap;
-      margin-bottom:1rem; padding:1.05rem 1.2rem; border-radius:16px;
-      background: linear-gradient(135deg, #ea580c, #c2410c 55%, #9a3412);
-      color:#fff; box-shadow:0 10px 28px rgba(194,65,12,.28);
-    }
-    .obr-hero .page-kicker { color:#ffedd5; margin:0 0 .2rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.72rem; }
-    .obr-hero h1 { margin:0 0 .25rem; color:#fff; font-size:1.6rem; }
-    .obr-hero .muted { color:#ffedd5; margin:0; }
-    .obr-hero .btn { background:#fff; color:#9a3412; border:none; font-weight:800; }
-    .acao-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.55rem; margin-bottom:1rem; }
-    .pane { display:none; scroll-margin-top: 1rem; }
-    .pane.active { display:block; animation: paneIn .18s ease; }
-    @keyframes paneIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: none; }
-    }
-    .acao-card {
-      border:1px solid var(--obr-line); background:#fff; border-radius:14px;
-      padding:.85rem .9rem; text-align:left; cursor:pointer; font:inherit; color:inherit;
-      transition: box-shadow .15s ease, transform .15s ease, background .15s ease;
-    }
-    .acao-card:hover { box-shadow:0 8px 18px rgba(194,65,12,.12); transform:translateY(-2px); }
-    .acao-card:focus-visible { outline:2px solid var(--obr); outline-offset:2px; }
-    .acao-card strong { display:block; color:var(--ink-soft); font-size:.95rem; margin-bottom:.2rem; pointer-events:none; }
-    .acao-card span { display:block; color:#64748b; font-size:.75rem; line-height:1.35; pointer-events:none; }
-    .acao-card.active { background:var(--obr); border-color:var(--obr); color:#fff; box-shadow:0 8px 20px rgba(194,65,12,.25); }
-    .acao-card.active strong, .acao-card.active span { color:#fff; }
-    .obr-tabs {
-      display:flex; gap:.4rem; flex-wrap:wrap; margin:0 0 1rem; padding:.35rem;
-      background:#fff; border:1px solid var(--obr-line); border-radius:14px;
-      scroll-margin-top: .75rem;
-    }
-    .obr-tab {
-      border:none; background:transparent; border-radius:10px; cursor:pointer;
-      padding:.55rem .85rem; font-weight:800; font-size:.8rem; color:var(--ink-soft);
-    }
-    .obr-tab.active { background:var(--obr); color:#fff; }
-    .obr-tab .count {
-      display:inline-flex; min-width:1.2rem; height:1.2rem; align-items:center; justify-content:center;
-      margin-left:.3rem; border-radius:999px; font-size:.68rem; background:rgba(255,255,255,.25);
-      pointer-events:none;
-    }
-    .obr-tab:not(.active) .count { background:#ffedd5; color:var(--ink-soft); }
-    .hint-box {
-      margin-bottom:.85rem; padding:.75rem .95rem; border-radius:12px;
-      background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; font-size:.88rem; font-weight:600;
-    }
-    .unidade-card {
-      border:1px solid #fed7aa; border-radius:14px; padding:.9rem 1rem; margin-bottom:.65rem; background:#fff;
-    }
-    .unidade-card.critico { border-color:#fecaca; background:#fffafa; }
-    .form-row { display:flex; flex-wrap:wrap; gap:.45rem; align-items:center; margin-top:.55rem; }
-    .form-row input, .form-row select { margin:0; }
-    .pill {
-      display:inline-flex; align-items:center; padding:.22rem .5rem; border-radius:999px;
-      font-size:.7rem; font-weight:800; background:#f1f5f9; margin-right:.25rem;
-    }
-    .pill.alta, .pill.pendente, .pill.atrasada { background:#fee2e2; color:#991b1b; }
-    .pill.media, .pill.em_deslocamento, .pill.em_atendimento, .pill.em_execucao, .pill.em_andamento { background:#ffedd5; color:#9a3412; }
-    .pill.baixa, .pill.disponivel, .pill.ok, .pill.concluido, .pill.concluida { background:#dcfce7; color:#166534; }
-    .pill.em_campo, .pill.em_rota { background:#dbeafe; color:#1e40af; }
-    .pill.oficina, .pill.aguardando_material, .pill.base { background:#fef3c7; color:#92400e; }
-    .alert-obr {
-      padding:.85rem 1rem; border-radius:12px; margin-bottom:.55rem;
-      border:1px solid #fdba74; background:#fff7ed; color:#9a3412; font-size:.9rem; font-weight:600;
-    }
-    .bar-mini { height:8px; border-radius:999px; background:#eee; overflow:hidden; margin:.4rem 0; }
-    .bar-mini > i { display:block; height:100%; background:var(--obr); }
+    /* Exclusivo Obras — shell em ops-shell.css */
+    :root { --obr: #c2410c; --obr-soft: #fff7ed; --obr-line: #fdba74; --ink-soft: #7c2d12; }
     .foto-buraco {
       width:100%; max-height:180px; object-fit:cover; border-radius:12px; margin:.55rem 0;
-      border:1px solid #fed7aa; cursor:pointer; background:#fff7ed;
+      border:1px solid var(--sec-line, #fed7aa); cursor:pointer; background:var(--sec-soft, #fff7ed);
     }
-    .cidadao-quando {
-      display:inline-flex; align-items:center; gap:.35rem; margin-top:.35rem;
-      padding:.28rem .55rem; border-radius:999px; font-size:.72rem; font-weight:800;
-      background:#ffedd5; color:#9a3412;
-    }
-    .btn-detalhar {
-      display:inline-flex; align-items:center; justify-content:space-between; gap:.5rem;
-      width:100%; margin-top:.55rem; padding:.55rem .75rem;
-      border:1px solid #fdba74; border-radius:10px; background:#fff;
-      font:inherit; font-weight:800; font-size:.85rem; color:#7c2d12; cursor:pointer;
-    }
-    .btn-detalhar:hover { background:#fff7ed; }
-    .btn-detalhar .seta {
-      width:0; height:0;
-      border-left:5px solid transparent; border-right:5px solid transparent;
-      border-top:6px solid #9a3412;
-      transition: transform .15s ease;
-    }
-    .btn-detalhar.open .seta { transform: rotate(180deg); }
-    .detalhe-box {
-      display:none; margin-top:.65rem; padding:.85rem;
-      border:1px solid #fed7aa; border-radius:12px; background:#fffaf5;
-    }
-    .detalhe-box.open { display:block; }
-    .ops-block { margin-bottom:1rem; }
-    .ops-block .ops-section-head h3 { color:#9a3412; }
-    @media (max-width:900px) { .acao-grid { grid-template-columns:1fr 1fr; } }
-    @media (max-width:720px) { .acao-grid { grid-template-columns:1fr; } .obr-hero h1 { font-size:1.3rem; } }
   </style>
 </head>
-<body class="ops-body">
+<body class="ops-body ops-theme-obras">
   <div class="wrap-wide">
     <div id="top"></div>
     <div id="opsBuscaMount"></div>
-
-    <div class="hint-box">
-      Esta é a <strong>Secretaria de Obras</strong>. Aqui você gerencia pontos quentes, rota do dia, equipes, frota e materiais.
-      O Gabinete só acompanha.
-    </div>
 
     <div class="obr-hero">
       <div>
         <p class="page-kicker">Secretaria de Obras</p>
         <h1 class="display">Central operacional</h1>
-        <p class="muted">Buracos · equipes · frota · materiais — o que o prefeito vê começa aqui</p>
-        <p class="muted" id="opsUserLine" style="margin-top:.45rem;font-weight:700;color:#ffedd5"></p>
+        <p class="muted">Buracos · equipes · frota · materiais — Gabinete só acompanha</p>
+        <p class="muted" id="opsUserLine" style="margin-top:.45rem;font-weight:700"></p>
       </div>
       <div class="cta-row">
         <button class="btn btn-sm" id="btnRebuildRota" type="button">Montar rota do dia</button>
@@ -145,10 +39,10 @@
       </div>
     </div>
 
-    <div class="panel ops-block" id="secRecentes" style="border:2px solid #fb923c;background:linear-gradient(180deg,#fff7ed,#fff)">
+    <div class="panel ops-block" id="secRecentes">
       <div class="ops-section-head">
         <div>
-          <h3 style="margin:0;color:#9a3412;font-size:1.15rem">① Chamados recentes</h3>
+          <h3 style="margin:0;font-size:1.15rem">① Chamados recentes</h3>
           <p class="muted" style="margin:.25rem 0 0">Últimos atualizados — abra <strong>Detalhar</strong> para fotos e execução.</p>
         </div>
         <div class="cta-row">
@@ -270,17 +164,17 @@
         <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
         <button class="btn btn-sm" type="button" data-jump="secRecentes">Recentes (topo)</button>
       </div>
-      <div class="panel" id="secAbertos" style="border:2px solid #fdba74;margin-bottom:1rem">
+      <div class="panel" id="secAbertos">
         <div class="ops-section-head">
           <div>
-            <h3 style="margin:0;color:#9a3412">② Chamados abertos</h3>
+            <h3 style="margin:0">② Chamados abertos</h3>
             <p class="muted" style="margin:.25rem 0 0">Fila em andamento — encaminhar, material, execução.</p>
           </div>
           <span class="count" id="countAbertos">0</span>
         </div>
         <div id="chamadosAbertosBox" class="list"></div>
       </div>
-      <div class="panel" id="secConcluidos" style="border:2px solid #86efac;background:linear-gradient(180deg,#f0fdf4,#fff)">
+      <div class="panel" id="secConcluidos">
         <div class="ops-section-head">
           <div>
             <h3 style="margin:0;color:#166534">③ Concluídos</h3>

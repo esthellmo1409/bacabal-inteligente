@@ -5,57 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Limpeza Urbana</title>
   <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
+  <link rel="stylesheet" href="/ops-shell.css?v=ops1" />
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
   </script>
   <style>
-    :root {
-      --limp: #047857;
-      --limp-soft: #ecfdf5;
-      --limp-line: #6ee7b7;
-      --ink-soft: #064e3b;
-    }
-    body.ops-body { background: linear-gradient(180deg, #ecfdf5 0%, #f8fafc 240px, #f8fafc 100%); }
-    .limp-hero {
-      display:flex; justify-content:space-between; align-items:end; gap:1rem; flex-wrap:wrap;
-      margin-bottom:1rem; padding:1.05rem 1.2rem; border-radius:16px;
-      background: linear-gradient(135deg, #047857, #065f46 55%, #064e3b);
-      color:#fff; box-shadow:0 10px 28px rgba(4,120,87,.28);
-    }
-    .limp-hero .page-kicker { color:#a7f3d0; margin:0 0 .2rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.72rem; }
-    .limp-hero h1 { margin:0 0 .25rem; color:#fff; font-size:1.6rem; }
-    .limp-hero .muted { color:#d1fae5; margin:0; }
-    .limp-hero .btn { background:#fff; color:#065f46; border:none; font-weight:800; }
-    .hint-box {
-      margin-bottom:.85rem; padding:.75rem .95rem; border-radius:12px;
-      background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; font-size:.88rem; font-weight:600;
-    }
-    .ops-subnav { display:flex; flex-wrap:wrap; gap:.4rem; margin:0 0 .75rem; }
-    .btn-detalhar {
-      display:inline-flex; align-items:center; justify-content:space-between; gap:.5rem;
-      width:100%; margin-top:.55rem; padding:.55rem .75rem;
-      border:1px solid var(--limp-line); border-radius:10px; background:#fff;
-      font:inherit; font-weight:800; font-size:.85rem; color:var(--ink-soft); cursor:pointer;
-    }
-    .btn-detalhar .seta {
-      width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent;
-      border-top:6px solid var(--limp); transition: transform .15s ease;
-    }
-    .btn-detalhar.open .seta { transform: rotate(180deg); }
-    .detalhe-box { display:none; margin-top:.65rem; padding:.85rem; border:1px solid var(--limp-line); border-radius:12px; background:var(--limp-soft); }
-    .detalhe-box.open { display:block; }
+    :root { --limp: #047857; --limp-soft: #ecfdf5; --limp-line: #6ee7b7; --ink-soft: #064e3b; }
   </style>
 </head>
-<body class="ops-body">
+<body class="ops-body ops-theme-limpeza">
   <div class="wrap-wide">
     <div id="top"></div>
     <div id="opsBuscaMount"></div>
-
-    <div class="hint-box">
-      Esta é a <strong>Limpeza Urbana</strong>. Aqui você opera coleta, varrição e acúmulo de lixo.
-      O Gabinete só acompanha.
-    </div>
 
     <div class="limp-hero">
       <div>
@@ -70,10 +32,10 @@
 
     <div class="grid-3" id="kpis" style="margin-bottom:1rem"></div>
 
-    <div class="panel ops-block" id="secRecentes" style="border:2px solid #6ee7b7;background:linear-gradient(180deg,#ecfdf5,#fff);margin-bottom:1rem">
+    <div class="panel ops-block" id="secRecentes">
       <div class="ops-section-head">
         <div>
-          <h3 style="margin:0;color:#064e3b;font-size:1.15rem">① Chamados recentes</h3>
+          <h3 style="margin:0;font-size:1.15rem">① Chamados recentes</h3>
           <p class="muted" style="margin:.25rem 0 0">Últimos atualizados — abra <strong>Detalhar</strong> para fotos e execução.</p>
         </div>
         <div class="cta-row">
@@ -91,10 +53,10 @@
       <button class="btn btn-sm" type="button" data-jump="chatGabBox">Gabinete</button>
     </div>
 
-    <div class="panel" id="secAbertos" style="border:2px solid #fcd34d;margin-bottom:1rem">
+    <div class="panel" id="secAbertos">
       <div class="ops-section-head">
         <div>
-          <h3 style="margin:0;color:#9a3412">② Chamados abertos</h3>
+          <h3 style="margin:0">② Chamados abertos</h3>
           <p class="muted" style="margin:.25rem 0 0">Fila em andamento — encaminhar e acompanhar execução.</p>
         </div>
         <span class="count" id="countAbertos">0</span>
@@ -102,7 +64,7 @@
       <div id="chamadosAbertosBox" class="list"></div>
     </div>
 
-    <div class="panel" id="secConcluidos" style="border:2px solid #86efac;background:linear-gradient(180deg,#f0fdf4,#fff);margin-bottom:1rem">
+    <div class="panel" id="secConcluidos">
       <div class="ops-section-head">
         <div>
           <h3 style="margin:0;color:#166534">③ Concluídos</h3>

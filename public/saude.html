@@ -5,64 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Secretaria de Saúde</title>
   <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
+  <link rel="stylesheet" href="/ops-shell.css?v=ops1" />
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
   </script>
   <style>
-    :root {
-      --saude: #0f766e;
-      --saude-soft: #ecfdf5;
-      --saude-line: #99f6e4;
-      --warn: #b45309;
-      --danger: #b91c1c;
-    }
-    body.ops-body { background: linear-gradient(180deg, #ecfdf5 0%, #f8fafc 240px, #f8fafc 100%); }
-    .saude-hero {
-      display: flex; justify-content: space-between; align-items: end; gap: 1rem; flex-wrap: wrap;
-      margin-bottom: 1rem; padding: 1.05rem 1.2rem; border-radius: 16px;
-      background: linear-gradient(135deg, #0f766e, #115e59 55%, #134e4a);
-      color: #fff; box-shadow: 0 10px 28px rgba(15, 118, 110, .28);
-    }
-    .saude-hero .page-kicker { color: #a7f3d0; margin: 0 0 0.2rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: .72rem; }
-    .saude-hero h1 { margin: 0 0 0.25rem; color: #fff; font-size: 1.6rem; }
-    .saude-hero .muted { color: #ccfbf1; margin: 0; }
-    .saude-hero .btn { background: #fff; color: #115e59; border: none; font-weight: 800; }
-    .acao-grid {
-      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.55rem; margin-bottom: 1rem;
-    }
-    .acao-card {
-      border: 1px solid var(--saude-line); background: #fff; border-radius: 14px;
-      padding: 0.85rem 0.9rem; text-align: left; cursor: pointer; font: inherit; color: inherit;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .acao-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(15, 118, 110, .12); }
-    .acao-card strong { display: block; color: #134e4a; font-size: 0.95rem; margin-bottom: 0.2rem; }
-    .acao-card span { display: block; color: #64748b; font-size: 0.75rem; line-height: 1.35; }
-    .acao-card.active { background: var(--saude); border-color: var(--saude); color: #fff; }
-    .acao-card.active strong, .acao-card.active span { color: #fff; }
-    .saude-tabs {
-      display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0 0 1rem; padding: 0.35rem;
-      background: #fff; border: 1px solid var(--saude-line); border-radius: 14px;
-    }
-    .saude-tab {
-      border: none; background: transparent; border-radius: 10px; cursor: pointer;
-      padding: 0.55rem 0.85rem; font-weight: 800; font-size: 0.8rem; color: #115e59;
-    }
-    .saude-tab.active { background: var(--saude); color: #fff; }
-    .saude-tab .count {
-      display: inline-flex; min-width: 1.2rem; height: 1.2rem; align-items: center; justify-content: center;
-      margin-left: 0.3rem; border-radius: 999px; font-size: 0.68rem; background: rgba(255,255,255,.25);
-    }
-    .saude-tab:not(.active) .count { background: #ccfbf1; color: #115e59; }
-    .pane { display: none; }
-    .pane.active { display: block; }
+    :root { --saude: #0f766e; --saude-soft: #ecfdf5; --saude-line: #99f6e4; --warn: #b45309; --danger: #b91c1c; }
     .saude-alert {
       padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 0.55rem;
       border: 1px solid #fecaca; background: #fff5f5; color: #7f1d1d; font-size: 0.9rem; font-weight: 600;
     }
     .saude-alert.fila { border-color: #fcd34d; background: #fffbeb; color: #92400e; }
-    .saude-alert.escala { border-color: #bfdbfe; background: #eff6ff; color: #1e3a8a; }
+    .saude-alert.escala { border-color: var(--sec-line); background: var(--sec-soft); color: var(--sec-ink); }
     .turno-pill {
       display: inline-flex; align-items: center; padding: 0.25rem 0.55rem; border-radius: 999px;
       font-size: 0.72rem; font-weight: 800; background: #f1f5f9; margin-right: 0.25rem;
@@ -70,13 +25,9 @@
     .turno-pill.vago { background: #fee2e2; color: #991b1b; }
     .turno-pill.confirmado { background: #dcfce7; color: #166534; }
     .turno-pill.previsto { background: #e0f2fe; color: #075985; }
-    .fila-controls, .form-row { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; margin-top: 0.55rem; }
-    .fila-controls input, .form-row input, .form-row select, .form-row textarea { margin: 0; }
+    .fila-controls { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; margin-top: 0.55rem; }
+    .fila-controls input { margin: 0; }
     .fila-controls input[type=number] { width: 72px; }
-    .unidade-card {
-      border: 1px solid #d1fae5; border-radius: 14px; padding: 0.9rem 1rem; margin-bottom: 0.65rem; background: #fff;
-    }
-    .unidade-card.critico { border-color: #fecaca; background: #fffafa; }
     .fila-big { font-size: 1.85rem; font-weight: 900; color: var(--saude); line-height: 1; }
     .fila-big.warn { color: var(--warn); }
     .fila-big.danger { color: var(--danger); }
@@ -88,36 +39,22 @@
       display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center;
       margin-bottom: 0.45rem; padding: 0.45rem; background: #f8fafc; border-radius: 10px;
     }
-    .hint-box {
-      margin-bottom: 0.85rem; padding: 0.75rem 0.95rem; border-radius: 12px;
-      background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; font-size: 0.88rem; font-weight: 600;
-    }
     .form-grid { display: grid; gap: 0.65rem; }
     .form-grid label { display: block; font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem; }
     .form-grid input, .form-grid select, .form-grid textarea { width: 100%; }
-    @media (max-width: 980px) { .acao-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 720px) {
-      .mini-grid { grid-template-columns: 1fr 1fr; }
-      .saude-hero h1 { font-size: 1.3rem; }
-      .acao-grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 720px) { .mini-grid { grid-template-columns: 1fr 1fr; } }
   </style>
 </head>
-<body class="ops-body">
+<body class="ops-body ops-theme-saude">
   <div class="wrap-wide">
     <div id="top"></div>
     <div id="opsBuscaMount"></div>
-
-    <div class="hint-box">
-      Esta é a <strong>Secretaria de Saúde</strong>. Aqui você <strong>preenche e valida</strong> plantão, escala, fila, status e avisos.
-      O Gabinete só acompanha o que for lançado aqui.
-    </div>
 
     <div class="saude-hero">
       <div>
         <p class="page-kicker">Secretaria de Saúde</p>
         <h1 class="display">Central operacional</h1>
-        <p class="muted">Tudo que o prefeito vê na aba Saúde começa por aqui</p>
+        <p class="muted">Plantão · fila · leitos · farmácia — Gabinete só acompanha</p>
       </div>
       <div class="cta-row">
         <button class="btn btn-sm" id="btnRelatorio" type="button">Enviar resumo ao Gabinete</button>
@@ -268,7 +205,7 @@
         <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
         <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
       </div>
-      <div class="panel" id="secAbertos" style="border:2px solid #99f6e4;margin-bottom:1rem">
+      <div class="panel" id="secAbertos">
         <div class="ops-section-head">
           <div>
             <h3 style="margin:0;color:#115e59">Chamados abertos</h3>
@@ -278,7 +215,7 @@
         </div>
         <div id="chamadosAbertosBox" class="list"></div>
       </div>
-      <div class="panel" id="secConcluidos" style="border:2px solid #86efac;background:linear-gradient(180deg,#f0fdf4,#fff)">
+      <div class="panel" id="secConcluidos">
         <div class="ops-section-head">
           <div>
             <h3 style="margin:0;color:#166534">Concluídos</h3>
