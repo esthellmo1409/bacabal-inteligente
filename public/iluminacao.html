@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Iluminação Pública</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles.css?v=ops-busca1" />
   <style>
     :root {
       --ilu: #b45309;
@@ -92,6 +92,7 @@
 <body class="ops-body">
   <div class="wrap-wide">
     <div id="top"></div>
+    <div id="opsBuscaMount"></div>
 
     <div class="hint-box">
       Esta é a <strong>Iluminação Pública</strong>. Aqui você gerencia postes, rota da cesta, frota e estoque de LED.
@@ -207,7 +208,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-alarm1"></script>
+  <script src="/app.js?v=ops-busca1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -237,11 +238,67 @@
       document.querySelectorAll('.ilu-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
       document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('active', p.id === 'pane-' + name));
       document.querySelectorAll('.acao-card').forEach((c) => c.classList.toggle('active', c.dataset.go === name));
+      const el = document.getElementById('pane-' + name);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    window.goPane = goPane;
 
     document.querySelectorAll('.ilu-tab, .acao-card').forEach((btn) => {
       btn.onclick = () => goPane(btn.dataset.pane || btn.dataset.go);
     });
+
+    if (typeof opsInitBusca === 'function') {
+      opsInitBusca({
+        placeholder: 'Buscar na Iluminação: poste, rota, frota, estoque LED…',
+        items: [
+          { id: 'i-postes', title: 'Postes', hint: 'Apagados, reparo, sem energia', keywords: 'poste apagado luz', pane: 'postes' },
+          { id: 'i-rota', title: 'Rota da noite', hint: 'Ordem de atendimento', keywords: 'rota noite equipe', pane: 'rota' },
+          { id: 'i-frota', title: 'Frota / cestas', hint: 'Veículos da iluminação', keywords: 'cesta frota veiculo', pane: 'frota' },
+          { id: 'i-est', title: 'Estoque LED', hint: 'Lâmpadas e materiais', keywords: 'estoque led lampada cabo', pane: 'estoque' },
+          { id: 'i-ch', title: 'Chamados', hint: 'Fila da iluminação', keywords: 'chamado protocolo', pane: 'chamados' },
+          { id: 'i-al', title: 'Alertas', hint: 'O que exige atenção', keywords: 'alerta critico', pane: 'alertas' },
+          { id: 'i-qr', title: 'QR do poste', hint: 'Abrir página do poste', keywords: 'qr codigo', pane: 'qr' },
+          { id: 'i-chat', title: 'Gabinete', hint: 'Responder cobranças', keywords: 'chat gabinete cobranca', pane: 'chat' },
+        ],
+        getExtraItems: () => {
+          const p = painelAtual;
+          if (!p) return [];
+          const out = [];
+          (p.postes || []).forEach((x) => {
+            out.push({
+              id: 'poste-' + x.id,
+              group: 'dado',
+              title: `Poste ${x.codigo}`,
+              hint: `${x.status || '—'} · ${x.bairro || ''} · ${x.endereco || ''}`,
+              keywords: `poste ${x.codigo} ${x.status} ${x.bairro} ${x.endereco}`,
+              pane: 'postes',
+            });
+          });
+          (p.estoque || []).forEach((e) => {
+            out.push({
+              id: 'ilu-est-' + e.id,
+              group: 'dado',
+              title: e.nome,
+              hint: `${e.qtd} ${e.unidade || 'un'} (mín. ${e.minimo})`,
+              keywords: `estoque led material ${e.nome}`,
+              pane: 'estoque',
+            });
+          });
+          (p.frota || []).forEach((f) => {
+            out.push({
+              id: 'ilu-frota-' + f.id,
+              group: 'dado',
+              title: f.placa,
+              hint: `${f.tipo || ''} · ${f.status || ''}`,
+              keywords: `frota cesta ${f.placa} ${f.tipo}`,
+              pane: 'frota',
+            });
+          });
+          return out;
+        },
+        onGo: (it) => goPane(it.pane),
+      });
+    }
 
     function statusPill(st) {
       return `<span class="pill ${st || ''}">${st || '—'}</span>`;

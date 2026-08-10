@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gabinete do Prefeito · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles.css?v=ops-busca1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -183,6 +183,7 @@
 <body class="ops-body">
   <div class="wrap-wide">
     <div id="top"></div>
+    <div id="opsBuscaMount"></div>
 
     <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap">
       <div>
@@ -239,10 +240,7 @@
 
     <div class="grid-4" id="kpis"></div>
 
-    <div class="panel" style="margin-top:1rem;margin-bottom:1rem">
-      <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:end;margin-bottom:0.75rem">
-        <div>
-          <h3 style="margin:0 0 0.25rem">Falar com as secretarias</h3>
+    <div class="panel" style="margin-top:1rem;margin-bottom:1rem" id="gabChatPanel">
           <p class="muted" style="margin:0;font-size:0.85rem">Conversa direta com quem está no painel de cada secretaria</p>
         </div>
       </div>
@@ -325,7 +323,7 @@
     window.BI_AUTH_SLOT = 'gabinete';
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-gab4"></script>
+  <script src="/app.js?v=ops-busca1"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_OPS_LOCK = true;
@@ -576,18 +574,57 @@
         document.title = brandText(document.title, cfg);
       }
       mapState = MapBI.create('map', { center: [cfg.lat, cfg.lng], zoom: 13 });
+      async function setEixo(novo, jump) {
+        eixo = novo;
+        document.querySelectorAll('.eixo-tab').forEach((b) => b.classList.toggle('active', b.dataset.eixo === novo));
+        await load();
+        if (jump) {
+          requestAnimationFrame(() => {
+            const el = document.getElementById(jump);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+      }
+      window.setEixo = setEixo;
       document.querySelectorAll('.eixo-tab').forEach(btn => {
-        btn.onclick = () => {
-          eixo = btn.dataset.eixo;
-          document.querySelectorAll('.eixo-tab').forEach(b => b.classList.toggle('active', b === btn));
-          load();
-        };
+        btn.onclick = () => setEixo(btn.dataset.eixo);
       });
       document.getElementById('chatSend').onclick = () => enviarChat();
       document.getElementById('chatInput').onkeydown = (e) => {
         if (e.key === 'Enter') { e.preventDefault(); enviarChat(); }
       };
       initIaGabinete(cfg);
+      if (typeof opsInitBusca === 'function') {
+        opsInitBusca({
+          placeholder: 'Buscar no Gabinete: Saúde, Obras, estoque, postes, IA…',
+          items: [
+            { id: 'g-ia', title: 'Assistente de IA', hint: 'Perguntar ou usar atalhos', keywords: 'ia assistente pergunta', jump: 'iaGabinete' },
+            { id: 'g-chat', title: 'Falar com secretarias', hint: 'Chat do Gabinete', keywords: 'chat cobranca secretaria', jump: 'gabChatPanel' },
+            { id: 'g-cidade', title: 'Eixo Cidade', hint: 'Limpeza e trânsito', keywords: 'cidade limpeza transito', eixo: 'cidade' },
+            { id: 'g-obras', title: 'Eixo Obras', hint: 'Pontos, frota, materiais', keywords: 'obras buraco frota', eixo: 'obras' },
+            { id: 'g-ilu', title: 'Eixo Iluminação', hint: 'Postes, rota, LED', keywords: 'iluminacao poste led', eixo: 'iluminacao' },
+            { id: 'g-sau', title: 'Eixo Saúde', hint: 'Plantão, leitos, farmácia', keywords: 'saude ubs hospital', eixo: 'saude' },
+            { id: 'g-evt', title: 'Eixo Eventos', hint: 'Agenda e estrutura', keywords: 'eventos agenda', eixo: 'eventos' },
+            { id: 'g-obr-pt', title: 'Obras · pontos quentes', hint: 'Ir e abrir a seção', keywords: 'ponto quente buraco', eixo: 'obras', jump: 'gab-obr-pontos' },
+            { id: 'g-obr-mat', title: 'Obras · materiais / estoque', hint: 'Brita, asfalto…', keywords: 'material estoque brita', eixo: 'obras', jump: 'gab-obr-mat' },
+            { id: 'g-obr-frota', title: 'Obras · frota', hint: 'Veículos', keywords: 'frota caminhao', eixo: 'obras', jump: 'gab-obr-frota' },
+            { id: 'g-ilu-postes', title: 'Iluminação · postes', hint: 'Apagados e reparo', keywords: 'poste apagado', eixo: 'iluminacao', jump: 'gab-ilu-postes' },
+            { id: 'g-ilu-est', title: 'Iluminação · estoque LED', hint: 'Lâmpadas e cabo', keywords: 'estoque led lampada', eixo: 'iluminacao', jump: 'gab-ilu-estoque' },
+            { id: 'g-sau-farm', title: 'Saúde · farmácia / estoque', hint: 'Insumos', keywords: 'farmacia estoque medicamento', eixo: 'saude', jump: 'gab-sau-farm' },
+            { id: 'g-sau-amb', title: 'Saúde · ambulâncias', hint: 'Frota', keywords: 'ambulancia', eixo: 'saude', jump: 'gab-sau-amb' },
+            { id: 'g-sau-lei', title: 'Saúde · leitos', hint: 'Ocupação', keywords: 'leito uti', eixo: 'saude', jump: 'gab-sau-leitos' },
+            { id: 'g-map', title: 'Mapa', hint: 'Visualização geográfica', keywords: 'mapa heatmap', jump: 'map' },
+          ],
+          onGo: async (it) => {
+            if (it.eixo) await setEixo(it.eixo, it.jump);
+            else if (it.jump) {
+              const el = document.getElementById(it.jump);
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              if (it.jump === 'iaGabinete') document.getElementById('iaGabPergunta')?.focus();
+            }
+          },
+        });
+      }
       await load();
     }
 

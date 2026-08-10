@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Secretaria de Saúde</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles.css?v=ops-busca1" />
   <style>
     :root {
       --saude: #0f766e;
@@ -102,6 +102,7 @@
 <body class="ops-body">
   <div class="wrap-wide">
     <div id="top"></div>
+    <div id="opsBuscaMount"></div>
 
     <div class="hint-box">
       Esta é a <strong>Secretaria de Saúde</strong>. Aqui você <strong>preenche e valida</strong> plantão, escala, fila, status e avisos.
@@ -305,7 +306,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-alarm1"></script>
+  <script src="/app.js?v=ops-busca1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -339,6 +340,7 @@
       const el = document.getElementById('pane-' + name);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    window.goPane = goPane;
 
     document.querySelectorAll('.saude-tab').forEach((btn) => {
       btn.onclick = () => goPane(btn.dataset.pane);
@@ -346,6 +348,74 @@
     document.querySelectorAll('.acao-card').forEach((btn) => {
       btn.onclick = () => goPane(btn.dataset.go);
     });
+
+    if (typeof opsInitBusca === 'function') {
+      opsInitBusca({
+        placeholder: 'Buscar na Saúde: plantão, leitos, farmácia, ambulância…',
+        items: [
+          { id: 's-plantao', title: 'Plantão', hint: 'Registrar médico de plantão', keywords: 'medico doutor checkin', pane: 'plantao' },
+          { id: 's-escala', title: 'Escala', hint: 'Turnos manhã / tarde / noite', keywords: 'turno escala', pane: 'escala' },
+          { id: 's-fila', title: 'Fila', hint: 'Espera e atendidos', keywords: 'espera atendimento', pane: 'fila' },
+          { id: 's-amb', title: 'Ambulâncias', hint: 'Frota e status', keywords: 'ambulancia frota veiculo', pane: 'ambulancia' },
+          { id: 's-lei', title: 'Leitos', hint: 'Ocupação hospitalar', keywords: 'uti enfermaria pediatria', pane: 'leitos' },
+          { id: 's-farm', title: 'Farmácia / estoque', hint: 'Insumos críticos', keywords: 'estoque medicamento soro', pane: 'farmacia' },
+          { id: 's-chk', title: 'Checklist', hint: 'Abertura da unidade', keywords: 'rotina pendencia', pane: 'checklist' },
+          { id: 's-ch', title: 'Chamados', hint: 'Reclamações da Saúde', keywords: 'protocolo reclamacao', pane: 'chamados' },
+          { id: 's-st', title: 'Status operacional', hint: 'Situação das unidades', keywords: 'status insumos', pane: 'status' },
+          { id: 's-av', title: 'Avisos / Gabinete', hint: 'Falar com o prefeito', keywords: 'aviso chat gabinete', pane: 'avisos' },
+          { id: 's-al', title: 'Alertas', hint: 'Alertas do dia', keywords: 'alerta critico', pane: 'alertas' },
+          { id: 's-hi', title: 'Histórico', hint: 'Cobertura anterior', keywords: 'historico cobertura', pane: 'historico' },
+          { id: 's-vg', title: 'Visão geral', hint: 'Resumo completo', keywords: 'visao resumo geral', pane: 'visao' },
+        ],
+        getExtraItems: () => {
+          const p = painelAtual;
+          if (!p) return [];
+          const out = [];
+          (p.ambulancias || []).forEach((a) => {
+            out.push({
+              id: 'amb-' + a.id,
+              group: 'dado',
+              title: `Ambulância ${a.placa || a.id}`,
+              hint: `${a.status || '—'} · ${a.base || a.motorista || ''}`,
+              keywords: `ambulancia frota ${a.placa} ${a.status}`,
+              pane: 'ambulancia',
+            });
+          });
+          (p.leitos || []).forEach((l) => {
+            out.push({
+              id: 'lei-' + l.id,
+              group: 'dado',
+              title: `Leito · ${l.nome}`,
+              hint: `${l.ocupados}/${l.total} ocupados`,
+              keywords: `leito ocupacao ${l.nome}`,
+              pane: 'leitos',
+            });
+          });
+          (p.farmacia || []).forEach((f) => {
+            out.push({
+              id: 'farm-' + f.id,
+              group: 'dado',
+              title: f.nome,
+              hint: `Estoque ${f.estoque || '—'} · ${f.unidadeNome || ''}`,
+              keywords: `farmacia estoque medicamento ${f.nome} ${f.estoque}`,
+              pane: 'farmacia',
+            });
+          });
+          (p.unidades || []).forEach((u) => {
+            out.push({
+              id: 'uni-' + u.id,
+              group: 'dado',
+              title: u.nome,
+              hint: `Fila ${u.naFila || 0} · plantão ${u.plantao?.status || '—'}`,
+              keywords: `unidade ubs hospital ${u.nome} fila plantao`,
+              pane: 'fila',
+            });
+          });
+          return out;
+        },
+        onGo: (it) => goPane(it.pane),
+      });
+    }
 
     function badgeStatus(st) {
       if (st === 'ativo') return '<span class="badge" style="background:#dcfce7;color:#166534">Ativo</span>';

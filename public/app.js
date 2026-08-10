@@ -995,6 +995,193 @@ function opsIaHelpNoteHtml(contexto) {
   </div>`;
 }
 
+function opsBuscaNorm(s) {
+  try {
+    return String(s || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  } catch (_) {
+    return String(s || '').toLowerCase();
+  }
+}
+
+/**
+ * Lupa de busca no topo das secretarias / gabinete.
+ * Digite para achar abas, estoque, postes, materiais etc. sem caçar botões.
+ *
+ * opts: {
+ *   mount?: '#opsBuscaMount' | HTMLElement,
+ *   placeholder?: string,
+ *   items: [{ id, title, hint?, keywords?, pane?, jump?, go? }],
+ *   getExtraItems?: () => items[],
+ *   onGo?: (item) => void,
+ * }
+ */
+function opsInitBusca(opts = {}) {
+  const mountSel = opts.mount || '#opsBuscaMount';
+  const mount = typeof mountSel === 'string' ? document.querySelector(mountSel) : mountSel;
+  if (!mount) return null;
+
+  let root = mount.querySelector('.ops-busca');
+  if (!root) {
+    root = document.createElement('div');
+    root.className = 'ops-busca';
+    root.innerHTML = `
+      <div class="ops-busca-bar" role="search">
+        <span class="ops-busca-lupa" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.5-3.5"></path>
+          </svg>
+        </span>
+        <input type="search" class="ops-busca-input" autocomplete="off" spellcheck="false"
+          placeholder="${opts.placeholder || 'Buscar nesta secretaria…'}"
+          aria-label="Buscar nesta área" />
+        <kbd class="ops-busca-kbd">/</kbd>
+      </div>
+      <div class="ops-busca-drop" hidden role="listbox"></div>`;
+    mount.appendChild(root);
+  }
+
+  const input = root.querySelector('.ops-busca-input');
+  const drop = root.querySelector('.ops-busca-drop');
+  if (opts.placeholder) input.placeholder = opts.placeholder;
+
+  let activeIdx = 0;
+  let currentList = [];
+
+  function allItems() {
+    const base = Array.isArray(opts.items) ? opts.items.slice() : [];
+    let extra = [];
+    try {
+      if (typeof opts.getExtraItems === 'function') extra = opts.getExtraItems() || [];
+    } catch (_) { extra = []; }
+    const seen = new Set();
+    return [...base, ...extra].filter((it) => {
+      const id = it.id || it.title;
+      if (!id || seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  }
+
+  function matchItems(q) {
+    const items = allItems();
+    const nq = opsBuscaNorm(q).trim();
+    if (!nq) {
+      return items.filter((it) => it.group !== 'dado').slice(0, 12);
+    }
+    const tokens = nq.split(/\s+/).filter(Boolean);
+    return items
+      .map((it) => {
+        const hay = opsBuscaNorm([it.title, it.hint, it.keywords, it.pane, it.jump].filter(Boolean).join(' '));
+        let score = 0;
+        for (const t of tokens) {
+          if (!hay.includes(t)) return null;
+          score += hay.startsWith(t) ? 3 : hay.includes(' ' + t) ? 2 : 1;
+          if ((it.title && opsBuscaNorm(it.title).includes(t))) score += 2;
+        }
+        return { it, score };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 14)
+      .map((x) => x.it);
+  }
+
+  function renderDrop(list, { open } = {}) {
+    currentList = list;
+    activeIdx = 0;
+    if (!open && !input.value.trim()) {
+      drop.hidden = true;
+      drop.innerHTML = '';
+      return;
+    }
+    if (!list.length) {
+      drop.hidden = false;
+      drop.innerHTML = '<div class="ops-busca-empty">Nada encontrado — tente “estoque”, “rota”, “frota”…</div>';
+      return;
+    }
+    drop.hidden = false;
+    drop.innerHTML = list.map((it, i) => `
+      <button type="button" class="ops-busca-item ${i === 0 ? 'active' : ''}" role="option" data-idx="${i}">
+        <strong>${it.title}</strong>
+        ${it.hint ? `<span>${it.hint}</span>` : ''}
+      </button>`).join('');
+    drop.querySelectorAll('.ops-busca-item').forEach((btn) => {
+      btn.onmousedown = (e) => e.preventDefault();
+      btn.onclick = () => choose(Number(btn.dataset.idx));
+    });
+  }
+
+  function setActive(i) {
+    if (!currentList.length) return;
+    activeIdx = (i + currentList.length) % currentList.length;
+    drop.querySelectorAll('.ops-busca-item').forEach((el, idx) => {
+      el.classList.toggle('active', idx === activeIdx);
+    });
+    const el = drop.querySelector('.ops-busca-item.active');
+    if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+
+  function choose(idx) {
+    const it = currentList[idx];
+    if (!it) return;
+    drop.hidden = true;
+    input.blur();
+    try {
+      if (typeof it.go === 'function') it.go(it);
+      else if (typeof opts.onGo === 'function') opts.onGo(it);
+      else if (it.pane && typeof window.goPane === 'function') window.goPane(it.pane);
+      else if (it.jump) {
+        const el = document.getElementById(it.jump);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } catch (e) {
+      if (typeof toast === 'function') toast(e.message || 'Não foi possível abrir');
+    }
+    input.value = '';
+  }
+
+  function refresh() {
+    const q = input.value;
+    renderDrop(matchItems(q), { open: document.activeElement === input || !!q.trim() });
+  }
+
+  if (!input._opsBuscaBound) {
+    input._opsBuscaBound = true;
+    input.addEventListener('focus', () => refresh());
+    input.addEventListener('input', () => refresh());
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActive(activeIdx + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(activeIdx - 1); }
+      else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!drop.hidden && currentList.length) choose(activeIdx);
+      } else if (e.key === 'Escape') {
+        drop.hidden = true;
+        input.blur();
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (!root.contains(e.target)) drop.hidden = true;
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tag = (e.target && e.target.tagName) || '';
+        if (/^(INPUT|TEXTAREA|SELECT)$/i.test(tag) || e.target?.isContentEditable) return;
+        e.preventDefault();
+        input.focus();
+        refresh();
+      }
+    });
+  }
+
+  root._opsBuscaApi = { refresh, input, setItems(items) { opts.items = items; } };
+  return root._opsBuscaApi;
+}
+
 /**
  * Topbar.
  * - Área ops (opts.lock / BI_OPS_LOCK / BI_AUTH_SLOT): sem Início/Cidadão/Mapa —

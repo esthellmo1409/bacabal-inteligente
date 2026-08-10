@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>App das Equipes · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css?v=ia8" />
+  <link rel="stylesheet" href="/styles.css?v=ops-busca1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body class="ops-body">
@@ -22,6 +22,7 @@
     </div>
 
     <div id="appView" style="display:none">
+      <div id="opsBuscaMount"></div>
       <div class="sec-hero" style="margin-bottom:1rem">
         <p class="page-kicker" style="margin-bottom:0.25rem">Campo · operação</p>
         <h1 class="display" style="font-size:1.55rem;margin:0">Ordens de serviço</h1>
@@ -80,7 +81,7 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=nav-ops3"></script>
+  <script src="/app.js?v=ops-busca1"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_AUTH_SLOT = 'campo';
@@ -205,6 +206,36 @@
         iaNote.textContent = `Oi! Sou a ${nome}, sua assistente de IA — ajudo a planejar melhor cada serviço.`;
       }
       syncSomToggle();
+      if (typeof opsInitBusca === 'function' && !document.getElementById('opsBuscaMount')?._buscaOk) {
+        const mount = document.getElementById('opsBuscaMount');
+        if (mount) mount._buscaOk = true;
+        opsInitBusca({
+          placeholder: 'Buscar no campo: rota, OS, mapa…',
+          items: [
+            { id: 'c-rota', title: 'Rota / OS recentes', hint: 'Ordens de serviço', keywords: 'rota os chamado', jump: 'lista' },
+            { id: 'c-os', title: 'Detalhe da OS', hint: 'Aceitar, foto, encerrar', keywords: 'ordem servico foto', jump: 'osBox' },
+            { id: 'c-map', title: 'Mapa', hint: 'Localização', keywords: 'mapa gps', jump: 'map' },
+          ],
+          getExtraItems: () => (window.__campoChamados || []).slice(0, 30).map((c) => ({
+            id: 'os-' + c.id,
+            group: 'dado',
+            title: `${c.protocolo || c.id} · ${c.titulo || 'OS'}`,
+            hint: `${c.bairro || '—'} · ${c.status || ''}`,
+            keywords: `${c.protocolo} ${c.titulo} ${c.bairro}`,
+            go: () => {
+              const el = document.querySelector(`[data-chamado-id="${c.id}"]`);
+              if (el) {
+                el.click();
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              } else document.getElementById('lista')?.scrollIntoView({ behavior: 'smooth' });
+            },
+          })),
+          onGo: (it) => {
+            if (typeof it.go === 'function') return it.go(it);
+            document.getElementById(it.jump)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          },
+        });
+      }
       if (!map) {
         map = L.map('map').setView([cfg.lat, cfg.lng], 15);
         MapBI.basemaps(map, 'hybrid');
@@ -283,6 +314,7 @@
       const data = await api('/api/rota?lat=' + cfg.lat + '&lng=' + cfg.lng +
         (user.secretaria ? '&secretaria=' + user.secretaria : ''));
       const recentes = data.recentes || [...(data.rota || [])].reverse().slice(0, 5);
+      window.__campoChamados = [...(data.rota || []), ...recentes];
       const key = recentes.map(p => p.id + ':' + (p.atualizadoEm || '')).join('|');
 
       document.getElementById('kpis').innerHTML = `

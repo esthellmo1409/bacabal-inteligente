@@ -1760,3 +1760,121 @@ input:focus, select:focus, textarea:focus {
   .map-shell-tall { height: 520px; min-height: 420px; }
 }
 
+/* Lupa de busca — secretarias / gabinete */
+.ops-busca {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  margin: 0.65rem 0 0.85rem;
+}
+
+.ops-busca-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 0.45rem 0.75rem;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.ops-busca-bar:focus-within {
+  border-color: #2163e8;
+  box-shadow: 0 0 0 3px rgba(33, 99, 232, 0.18);
+}
+
+.ops-busca-lupa {
+  display: flex;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.ops-busca-input {
+  flex: 1;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0.35rem 0 !important;
+  font: inherit;
+  font-size: 0.95rem;
+  min-width: 0;
+}
+
+.ops-busca-kbd {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.1rem 0.4rem;
+  background: #f8fafc;
+}
+
+.ops-busca-drop {
+  margin-top: 0.35rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  max-height: min(52vh, 360px);
+  overflow: auto;
+  padding: 0.35rem;
+}
+
+.ops-busca-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.ops-busca-item strong {
+  font-size: 0.9rem;
+}
+
+.ops-busca-item span {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.ops-busca-item:hover,
+.ops-busca-item.active {
+  background: #eff6ff;
+}
+
+.ops-busca-item.active strong {
+  color: #1e40af;
+}
+
+.ops-busca-empty {
+  padding: 0.75rem 0.85rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+@keyframes opsBuscaFlash {
+  0%, 100% { box-shadow: none; }
+  30%, 70% { box-shadow: 0 0 0 3px rgba(33, 99, 232, 0.45); }
+}
+
+.ops-busca-flash {
+  animation: opsBuscaFlash 1.4s ease;
+  border-radius: 12px;
+}
+
+@media (max-width: 640px) {
+  .ops-busca-kbd { display: none; }
+}
+

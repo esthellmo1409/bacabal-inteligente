@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Secretaria de Obras</title>
-  <link rel="stylesheet" href="/styles.css?v=ops-sess1" />
+  <link rel="stylesheet" href="/styles.css?v=ops-busca1" />
   <script>
     // Slot ANTES do app.js — evita topbar achar que não há login
     window.BI_OPS_LOCK = true;
@@ -124,6 +124,7 @@
 <body class="ops-body">
   <div class="wrap-wide">
     <div id="top"></div>
+    <div id="opsBuscaMount"></div>
 
     <div class="hint-box">
       Esta é a <strong>Secretaria de Obras</strong>. Aqui você gerencia pontos quentes, rota do dia, equipes, frota e materiais.
@@ -273,7 +274,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-alarm1"></script>
+  <script src="/app.js?v=ops-busca1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -360,6 +361,82 @@
       e.preventDefault();
       goPane(name, { scroll: true });
     });
+    window.goPane = goPane;
+
+    if (typeof opsInitBusca === 'function') {
+      opsInitBusca({
+        placeholder: 'Buscar nas Obras: pontos, rota, frota, materiais…',
+        items: [
+          { id: 'o-pontos', title: 'Pontos quentes', hint: 'Buracos, calçada, drenagem', keywords: 'buraco ponto quente', pane: 'pontos' },
+          { id: 'o-rota', title: 'Rota do dia', hint: 'Ordem das equipes', keywords: 'rota ordem', pane: 'rota' },
+          { id: 'o-eq', title: 'Equipes', hint: 'Campo e base', keywords: 'equipe lider campo', pane: 'equipes' },
+          { id: 'o-frota', title: 'Frota', hint: 'Brita, caçamba, retro', keywords: 'caminhao frota veiculo', pane: 'frota' },
+          { id: 'o-mat', title: 'Materiais / estoque', hint: 'Brita, asfalto, cimento', keywords: 'material estoque brita asfalto', pane: 'materiais' },
+          { id: 'o-obras', title: 'Obras grandes', hint: 'Percentual e prazo', keywords: 'obra transparencia prazo', pane: 'obras' },
+          { id: 'o-ch', title: 'Chamados', hint: 'Fila da secretaria', keywords: 'chamado protocolo fila', pane: 'chamados' },
+          { id: 'o-chk', title: 'Checklist', hint: 'Rotina do dia', keywords: 'checklist rotina', pane: 'checklist' },
+          { id: 'o-al', title: 'Alertas', hint: 'O que exige atenção', keywords: 'alerta critico', pane: 'alertas' },
+          { id: 'o-chat', title: 'Gabinete', hint: 'Responder cobranças', keywords: 'chat gabinete cobranca', pane: 'chat' },
+        ],
+        getExtraItems: () => {
+          const p = painelAtual;
+          if (!p) return [];
+          const out = [];
+          (p.pontosQuentes || []).forEach((x) => {
+            out.push({
+              id: 'pq-' + x.id,
+              group: 'dado',
+              title: x.titulo || x.id,
+              hint: `${x.status || '—'} · ${x.bairro || ''} · ${x.rua || ''}`,
+              keywords: `ponto buraco ${x.titulo} ${x.bairro} ${x.rua} ${x.status}`,
+              pane: 'pontos',
+            });
+          });
+          (p.materiais || []).forEach((m) => {
+            out.push({
+              id: 'mat-' + m.id,
+              group: 'dado',
+              title: m.nome,
+              hint: `${m.qtd} ${m.unidade || ''} (mín. ${m.minimo})`,
+              keywords: `material estoque ${m.nome}`,
+              pane: 'materiais',
+            });
+          });
+          (p.frota || []).forEach((f) => {
+            out.push({
+              id: 'obr-frota-' + f.id,
+              group: 'dado',
+              title: f.placa,
+              hint: `${f.tipo || ''} · ${f.status || ''}`,
+              keywords: `frota ${f.placa} ${f.tipo}`,
+              pane: 'frota',
+            });
+          });
+          (p.equipes || []).forEach((e) => {
+            out.push({
+              id: 'eq-' + e.id,
+              group: 'dado',
+              title: e.nome,
+              hint: `${e.status || '—'} · ${e.lider || ''}`,
+              keywords: `equipe ${e.nome} ${e.lider}`,
+              pane: 'equipes',
+            });
+          });
+          (p.obras || []).forEach((o) => {
+            out.push({
+              id: 'obra-' + o.id,
+              group: 'dado',
+              title: o.nome,
+              hint: `${o.status || '—'} · ${o.percentual || 0}%`,
+              keywords: `obra grande ${o.nome} ${o.status}`,
+              pane: 'obras',
+            });
+          });
+          return out;
+        },
+        onGo: (it) => goPane(it.pane, { scroll: true }),
+      });
+    }
 
     function statusPill(st) {
       return `<span class="pill ${st || ''}">${String(st || '—').replace(/_/g, ' ')}</span>`;
