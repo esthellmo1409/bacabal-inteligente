@@ -72,6 +72,42 @@
       flex:1; height:8px; border-radius:999px; background:#eee; overflow:hidden;
     }
     .unidade-rank .bar > i { display:block; height:100%; background: var(--brand, #03327A); }
+    .chat-gab {
+      display:grid; grid-template-columns:220px 1fr; gap:0; min-height:340px;
+      border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#fff;
+    }
+    .chat-contacts { border-right:1px solid var(--line); background:#f8fafc; overflow:auto; max-height:420px; }
+    .chat-contact {
+      display:block; width:100%; text-align:left; border:0; border-bottom:1px solid #eef2f7;
+      background:transparent; padding:0.75rem 0.85rem; cursor:pointer; font:inherit; color:inherit;
+    }
+    .chat-contact:hover { background:#eef6ff; }
+    .chat-contact.active { background:#e8eef8; }
+    .chat-contact strong { display:block; font-size:0.86rem; }
+    .chat-contact span { display:block; font-size:0.72rem; color:var(--muted); margin-top:0.15rem; }
+    .chat-contact .dot {
+      display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e; margin-right:0.35rem;
+    }
+    .chat-main { display:flex; flex-direction:column; min-height:340px; max-height:420px; }
+    .chat-head { padding:0.75rem 1rem; border-bottom:1px solid var(--line); background:#fff; }
+    .chat-head strong { display:block; }
+    .chat-head span { font-size:0.78rem; color:var(--muted); }
+    .chat-msgs { flex:1; overflow:auto; padding:0.85rem 1rem; background:#f4f7fb; display:flex; flex-direction:column; gap:0.55rem; }
+    .chat-bubble {
+      max-width:85%; padding:0.65rem 0.8rem; border-radius:14px; font-size:0.88rem; line-height:1.4;
+      box-shadow:0 1px 2px rgba(15,23,42,.06);
+    }
+    .chat-bubble.gabinete { align-self:flex-end; background:var(--brand,#03327A); color:#fff; border-bottom-right-radius:4px; }
+    .chat-bubble.secretaria { align-self:flex-start; background:#fff; border:1px solid #e2e8f0; border-bottom-left-radius:4px; }
+    .chat-bubble .who { display:block; font-size:0.68rem; font-weight:800; opacity:.8; margin-bottom:0.2rem; }
+    .chat-bubble .when { display:block; font-size:0.65rem; opacity:.65; margin-top:0.3rem; }
+    .chat-compose { display:flex; gap:0.45rem; padding:0.7rem; border-top:1px solid var(--line); background:#fff; }
+    .chat-compose input { flex:1; margin:0; }
+    @media (max-width:720px) {
+      .chat-gab { grid-template-columns:1fr; }
+      .chat-contacts { display:flex; overflow:auto; max-height:none; border-right:0; border-bottom:1px solid var(--line); }
+      .chat-contact { min-width:140px; border-bottom:0; border-right:1px solid #eef2f7; }
+    }
   </style>
 </head>
 <body class="ops-body">
@@ -121,7 +157,30 @@
 
     <div class="grid-4" id="kpis"></div>
 
-    <div class="panel" style="margin-top:1rem;margin-bottom:1rem;background:linear-gradient(135deg,rgba(255,128,0,.08),rgba(57,138,33,.06));border-color:rgba(255,128,0,.25)">
+    <div class="panel" style="margin-top:1rem;margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:end;margin-bottom:0.75rem">
+        <div>
+          <h3 style="margin:0 0 0.25rem">Falar com as secretarias</h3>
+          <p class="muted" style="margin:0;font-size:0.85rem">Conversa direta com quem está no painel de cada secretaria</p>
+        </div>
+      </div>
+      <div class="chat-gab">
+        <div class="chat-contacts" id="chatContacts"></div>
+        <div class="chat-main">
+          <div class="chat-head">
+            <strong id="chatHeadNome">Selecione uma secretaria</strong>
+            <span id="chatHeadCargo">Escolha o responsável à esquerda</span>
+          </div>
+          <div class="chat-msgs" id="chatMsgs"></div>
+          <div class="chat-compose">
+            <input id="chatInput" placeholder="Escreva uma observação ou cobrança…" maxlength="500" />
+            <button class="btn btn-primary" type="button" id="chatSend">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:0;margin-bottom:1rem;background:linear-gradient(135deg,rgba(255,128,0,.08),rgba(57,138,33,.06));border-color:rgba(255,128,0,.25)">
       <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:start">
         <div>
           <h3 style="margin-bottom:0.35rem" id="tituloDec">Central de decisões</h3>
@@ -195,6 +254,85 @@
       em_execucao: '#f7c32e', aguardando_material: '#e67e22', concluido: '#0cbc87', cancelado: '#e74c3c',
     };
 
+    let chatSec = 'saude';
+    let chatData = null;
+
+    function eixoParaSecretaria() {
+      if (eixo === 'saude') return 'saude';
+      if (eixo === 'eventos') return 'eventos';
+      return chatSec && chatSec !== 'saude' && chatSec !== 'eventos' ? chatSec : 'obras';
+    }
+
+    function fmtChatHora(iso) {
+      try {
+        return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      } catch { return ''; }
+    }
+
+    function renderChatThread(thread) {
+      const c = thread?.contato || {};
+      document.getElementById('chatHeadNome').textContent = c.nome || 'Secretaria';
+      document.getElementById('chatHeadCargo').textContent = (c.cargo || '') + ' · online no painel';
+      const box = document.getElementById('chatMsgs');
+      const msgs = thread?.mensagens || [];
+      box.innerHTML = msgs.length
+        ? msgs.map((m) => `
+          <div class="chat-bubble ${m.de === 'gabinete' ? 'gabinete' : 'secretaria'}">
+            <span class="who">${m.autor || (m.de === 'gabinete' ? 'Gabinete' : 'Secretaria')}</span>
+            ${m.texto}
+            <span class="when">${fmtChatHora(m.criadoEm)}</span>
+          </div>`).join('')
+        : '<p class="muted" style="margin:auto">Nenhuma mensagem ainda. Escreva abaixo.</p>';
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function renderChatContacts() {
+      const list = chatData?.contatos || [];
+      document.getElementById('chatContacts').innerHTML = list.map((c) => `
+        <button type="button" class="chat-contact ${c.id === chatSec ? 'active' : ''}" data-sec="${c.id}">
+          <strong><span class="dot"></span>${c.nome}</strong>
+          <span>${c.cargo}</span>
+        </button>`).join('');
+      document.querySelectorAll('.chat-contact').forEach((btn) => {
+        btn.onclick = () => {
+          chatSec = btn.dataset.sec;
+          const thread = (chatData?.threads || []).find((t) => t.secretaria === chatSec);
+          renderChatContacts();
+          renderChatThread(thread);
+        };
+      });
+    }
+
+    async function loadChat({ preferEixo } = {}) {
+      chatData = await api('/api/gabinete/chat');
+      if (preferEixo) chatSec = eixoParaSecretaria();
+      if (!(chatData.contatos || []).find((c) => c.id === chatSec)) {
+        chatSec = chatData.contatos?.[0]?.id || 'obras';
+      }
+      renderChatContacts();
+      const thread = (chatData.threads || []).find((t) => t.secretaria === chatSec);
+      renderChatThread(thread);
+    }
+
+    async function enviarChat() {
+      const input = document.getElementById('chatInput');
+      const texto = input.value.trim();
+      if (!texto) return;
+      try {
+        const r = await api('/api/gabinete/chat', {
+          method: 'POST',
+          body: JSON.stringify({ secretaria: chatSec, texto, de: 'gabinete' }),
+        });
+        input.value = '';
+        if (chatData) {
+          const idx = (chatData.threads || []).findIndex((t) => t.secretaria === chatSec);
+          if (idx >= 0) chatData.threads[idx] = r.thread;
+          else chatData.threads.push(r.thread);
+        }
+        renderChatThread(r.thread);
+      } catch (e) { toast(e.message); }
+    }
+
     async function boot() {
       cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Gabinete', cfg, { lock: true });
@@ -222,6 +360,10 @@
           load();
         };
       });
+      document.getElementById('chatSend').onclick = () => enviarChat();
+      document.getElementById('chatInput').onkeydown = (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); enviarChat(); }
+      };
       initIaGabinete(cfg);
       await load();
     }
@@ -740,6 +882,8 @@
       }
       document.getElementById('mapCount').textContent =
         MapBI.setFilters(mapState, { status: stSel.value, bairro: bSel.value }) + ' no mapa';
+
+      await loadChat({ preferEixo: true }).catch(() => {});
     }
 
     window.decidir = decidir;

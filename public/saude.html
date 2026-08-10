@@ -243,6 +243,16 @@
         <div id="visaoUnidades"></div>
       </div>
     </div>
+
+    <div class="panel" style="margin-top:1rem" id="chatGabBox">
+      <h3 style="margin:0 0 0.25rem">Gabinete</h3>
+      <p class="muted" style="margin:0 0 0.75rem;font-size:0.85rem">Conversa com o Gabinete — responda observações e cobranças</p>
+      <div id="secChatMsgs" class="list" style="max-height:260px;overflow:auto;background:#f4f7fb;border-radius:12px;padding:0.75rem;margin-bottom:0.65rem"></div>
+      <div class="form-row">
+        <input id="secChatInput" style="flex:1;min-width:180px" placeholder="Responder ao Gabinete…" maxlength="500" />
+        <button class="btn btn-primary" type="button" id="secChatSend">Enviar</button>
+      </div>
+    </div>
   </div>
 
   <script src="/app.js?v=saude-ops3"></script>
@@ -553,8 +563,23 @@
       });
     }
 
+    async function loadChatSaude() {
+      const r = await api('/api/gabinete/chat?secretaria=saude');
+      const msgs = r.thread?.mensagens || [];
+      const box = document.getElementById('secChatMsgs');
+      box.innerHTML = msgs.length
+        ? msgs.map((m) => `
+          <div class="item" style="background:${m.de === 'gabinete' ? '#e8eef8' : '#fff'};margin-bottom:0.4rem">
+            <div class="item-head"><strong>${m.autor || m.de}</strong><span class="meta">${m.criadoEm ? new Date(m.criadoEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}</span></div>
+            <div>${m.texto}</div>
+          </div>`).join('')
+        : '<p class="muted">Nenhuma mensagem do Gabinete ainda.</p>';
+      box.scrollTop = box.scrollHeight;
+    }
+
     async function load() {
       render(await api('/api/saude/hoje'));
+      await loadChatSaude().catch(() => {});
     }
 
     async function boot() {
@@ -562,6 +587,19 @@
       document.getElementById('top').innerHTML = topbar('Saúde', cfg, { lock: true });
       document.title = `Secretaria de Saúde · ${cfg.produto || cfg.cidade || ''}`;
       rewriteCityLinks();
+      document.getElementById('secChatSend').onclick = async () => {
+        const input = document.getElementById('secChatInput');
+        const texto = input.value.trim();
+        if (!texto) return;
+        try {
+          await api('/api/gabinete/chat', {
+            method: 'POST',
+            body: JSON.stringify({ secretaria: 'saude', texto, de: 'secretaria', autoAck: false }),
+          });
+          input.value = '';
+          await loadChatSaude();
+        } catch (e) { toast(e.message); }
+      };
       await load();
       const aba = new URLSearchParams(location.search).get('aba') || location.hash.replace('#', '');
       if (aba) goPane(aba);
