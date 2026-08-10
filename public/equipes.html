@@ -6,6 +6,10 @@
   <title>App das Equipes · Bacabal Conecta</title>
   <link rel="stylesheet" href="/styles.css?v=ops-busca1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script>
+    window.BI_OPS_LOCK = true;
+    window.BI_AUTH_SLOT = 'campo';
+  </script>
 </head>
 <body class="ops-body">
   <div class="wrap">
@@ -81,7 +85,11 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-sair-only1"></script>
+  <script src="/app.js?v=ops-back-hard1"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    if (typeof opsTravarVoltar === 'function') opsTravarVoltar();
+  </script>
   <script src="/map.js"></script>
   <script>
     window.BI_AUTH_SLOT = 'campo';

@@ -870,14 +870,20 @@ function logoutOps(dest) {
 }
 
 /**
- * Trava saída da página: Voltar do browser e links externos à área.
+ * Trava saída da página: Voltar do browser e links que saem da área.
  * Só libera ao clicar em Sair (logoutOps / logout).
+ *
+ * Importante (MPA): o Voltar pode ir para OUTRO HTML (ex.: login). Por isso
+ * empilhamos vários estados na MESMA URL e, a cada popstate, reempilhamos
+ * imediatamente — o documento não chega a trocar.
  */
 const _opsBackLock = {
   on: false,
   allowLeave: false,
   handler: null,
   clickHandler: null,
+  pageShowHandler: null,
+  pulse: null,
   msg: 'Para sair, clique em Sair no topo',
 };
 
@@ -891,46 +897,70 @@ function opsLiberarVoltar() {
     document.removeEventListener('click', _opsBackLock.clickHandler, true);
     _opsBackLock.clickHandler = null;
   }
+  if (_opsBackLock.pageShowHandler) {
+    window.removeEventListener('pageshow', _opsBackLock.pageShowHandler);
+    _opsBackLock.pageShowHandler = null;
+  }
+  if (_opsBackLock.pulse) {
+    clearInterval(_opsBackLock.pulse);
+    _opsBackLock.pulse = null;
+  }
+}
+
+function opsPushBackLock(n) {
+  const times = Math.max(1, n || 1);
+  for (let i = 0; i < times; i++) {
+    try {
+      history.pushState({ biOpsLock: 1, t: Date.now(), i }, '', location.href);
+    } catch (_) { /* ok */ }
+  }
 }
 
 function opsTravarVoltar(opts = {}) {
   if (window.BI_ALLOW_BACK) return;
-  if (_opsBackLock.on) return;
-  _opsBackLock.on = true;
-  _opsBackLock.allowLeave = false;
   if (opts.msg) _opsBackLock.msg = opts.msg;
+  _opsBackLock.allowLeave = false;
 
-  const pushLock = () => {
-    try {
-      history.pushState({ biOpsLock: 1, t: Date.now() }, '', location.href);
-    } catch (_) { /* ok */ }
-  };
+  // Já ativo: só reforça a pilha (ex.: depois de replaceState da aba)
+  if (_opsBackLock.on) {
+    opsPushBackLock(3);
+    return;
+  }
+  _opsBackLock.on = true;
 
-  // Empilha 2 estados — Voltar uma ou duas vezes continua na página
-  pushLock();
-  pushLock();
+  // Muitos estados = precisa apertar Voltar muitas vezes seguidas para escapar
+  opsPushBackLock(8);
 
   _opsBackLock.handler = () => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
-    pushLock();
+    // Reempilha na hora — impede cair no HTML anterior (login/início)
+    opsPushBackLock(5);
     if (typeof toast === 'function') toast(_opsBackLock.msg);
   };
   window.addEventListener('popstate', _opsBackLock.handler);
 
-  // Bloqueia clique em links que saem desta página (exceto Sair)
+  _opsBackLock.pageShowHandler = (e) => {
+    if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
+    if (e && e.persisted) opsPushBackLock(5);
+  };
+  window.addEventListener('pageshow', _opsBackLock.pageShowHandler);
+
+  // Reforço periódico (replaceState de abas / race do Voltar)
+  _opsBackLock.pulse = setInterval(() => {
+    if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
+    if (!history.state || !history.state.biOpsLock) opsPushBackLock(2);
+  }, 1500);
+
   _opsBackLock.clickHandler = (e) => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
     const a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
     if (!a) return;
-    // Botão/link Sair (logoutOps via onclick) — deixa passar
-    if (a.classList.contains('nav-logout') || /sair/i.test(a.textContent || '')) return;
+    if (a.classList.contains('nav-logout') || /sair/i.test((a.textContent || '').trim())) return;
     const href = a.getAttribute('href') || '';
     if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
     let url;
     try { url = new URL(href, location.href); } catch (_) { return; }
-    // Mesma página (só hash/query) — ok
     if (url.pathname === location.pathname) return;
-    // Sai do app / outra página HTML — trava
     e.preventDefault();
     e.stopPropagation();
     if (typeof toast === 'function') toast(_opsBackLock.msg);
@@ -942,6 +972,22 @@ function opsTravarVoltar(opts = {}) {
 function opsGoto(href) {
   if (typeof toast === 'function') toast(_opsBackLock.msg || 'Para sair, clique em Sair no topo');
 }
+
+// Liga a trava cedo (antes do boot async) em qualquer página ops
+(function opsBackLockBoot() {
+  function arm() {
+    if (window.BI_ALLOW_BACK) return;
+    if (window.BI_OPS_LOCK || window.BI_AUTH_SLOT) opsTravarVoltar();
+  }
+  arm();
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', arm);
+    } else {
+      arm();
+    }
+  }
+})();
 
 /* ── Alarme ops: bip + banner (Gabinete / chat do prefeito) ── */
 const _opsAlarm = { ctx: null, timer: null, active: false, storageKey: 'bi_som_on' };

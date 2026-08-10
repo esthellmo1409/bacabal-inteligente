@@ -47,7 +47,11 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-sair-only1"></script>
+  <script src="/app.js?v=ops-back-hard1"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    if (typeof opsTravarVoltar === 'function') opsTravarVoltar();
+  </script>
   <script>
     initCidade();
     const senhas = {

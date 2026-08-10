@@ -274,7 +274,11 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-sair-only1"></script>
+  <script src="/app.js?v=ops-back-hard1"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    if (typeof opsTravarVoltar === 'function') opsTravarVoltar();
+  </script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -337,7 +341,12 @@
       try {
         const url = new URL(location.href);
         url.searchParams.set('aba', name);
-        history.replaceState(null, '', url.toString());
+        history.replaceState(
+          { biOpsLock: 1, t: Date.now(), aba: name },
+          '',
+          url.toString()
+        );
+        if (typeof opsTravarVoltar === 'function') opsTravarVoltar();
       } catch (_) {}
       if (scroll) {
         const tabs = document.getElementById('tabs');
