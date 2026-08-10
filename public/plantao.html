@@ -3,109 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Check-in de plantão · Saúde</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <title>Plantão da Saúde</title>
+  <script>
+    (function () {
+      var q = location.search || '';
+      var join = q ? '&' : '?';
+      location.replace('/saude.html' + q + join + 'aba=plantao');
+    })();
+  </script>
 </head>
 <body>
-  <div class="wrap">
-    <div id="top"></div>
-    <h1 class="display" style="font-size:1.7rem;margin-bottom:0.35rem">Plantão da Saúde</h1>
-    <div class="panel" style="margin-bottom:1rem;background:rgba(14,165,233,.08);border-color:rgba(14,165,233,.3)">
-      <strong>Quem preenche:</strong> Secretaria de Saúde / unidade<br />
-      <strong>Quem só vê:</strong> Gabinete do prefeito (aba Saúde)<br />
-      <span class="muted" style="display:block;margin-top:0.45rem;font-size:0.88rem">
-        Registre aqui o nome do médico ou profissional de plantão. O Gabinete acompanha cobertura — não digita esta informação.
-      </span>
-    </div>
-
-    <div class="panel" style="margin-bottom:1rem">
-      <label>Unidade</label>
-      <select id="unidade"></select>
-      <label>Nome do médico / profissional de plantão</label>
-      <input id="nome" placeholder="Ex.: Dra. Ana Paula" />
-      <label>Cargo / função</label>
-      <input id="cargo" placeholder="Ex.: Clínica geral" value="Plantão" />
-      <div class="actions" style="margin-top:0.75rem">
-        <button class="btn btn-primary" id="iniciar" type="button">Registrar plantão</button>
-        <button class="btn" id="checkin" type="button">Check-in (estou em plantão)</button>
-        <button class="btn btn-sm" id="encerrar" type="button">Encerrar</button>
-      </div>
-      <p class="muted" style="margin-top:0.75rem;font-size:0.8rem">
-        Demo: saude / saude123 · Painel completo: <a id="linkSaudePainel" href="/saude.html">Painel da Saúde</a>
-      </p>
-    </div>
-
-    <div class="panel">
-      <h3 style="margin-bottom:0.75rem">Status hoje</h3>
-      <div id="status" class="list"></div>
-      <a class="btn btn-sm" style="margin-top:0.75rem" id="linkGab" href="/prefeito.html">Ver no Gabinete</a>
-    </div>
-  </div>
-  <script src="/app.js?v=ops-lock1"></script>
-  <script>
-    window.BI_OPS_LOCK = true;
-    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
-    let painel;
-
-    async function boot() {
-      const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Plantão', cfg, { lock: true });
-      const linkPainel = document.getElementById('linkSaudePainel');
-      if (linkPainel) linkPainel.href = cityLink('/saude.html');
-      document.getElementById('linkGab').href = cityLink('/login.html');
-      document.getElementById('linkGab').textContent = 'Trocar para Gabinete (Sair)';
-      document.getElementById('linkGab').onclick = (e) => {
-        e.preventDefault();
-        if (confirm('Sair do plantão para o Gabinete?')) logoutOps('/prefeito.html');
-      };
-      await refresh();
-    }
-
-    async function refresh() {
-      painel = await api('/api/saude/hoje');
-      unidade.innerHTML = painel.unidades.map(u =>
-        `<option value="${u.id}">${u.nome}</option>`
-      ).join('');
-      status.innerHTML = painel.unidades.map(u => `
-        <div class="item">
-          <div class="item-head">
-            <strong>${u.nome}</strong>
-            ${u.critico
-              ? '<span class="badge badge-cancelado">Alerta</span>'
-              : '<span class="badge badge-concluido">Ok</span>'}
-          </div>
-          <div class="meta">
-            ${u.plantao?.status === 'ativo'
-              ? (u.plantao.profissional || 'Plantão ativo') + ' · último check-in há ' + (u.plantao.minutosDesdeCheckIn ?? '—') + ' min'
-              : u.plantao?.status === 'checkin_atrasado'
-                ? 'Check-in atrasado'
-                : 'Sem confirmação de plantão'}
-          </div>
-          <div class="meta">Fila ${u.naFila} · Atendidos ${u.atendidosHoje} · Espera ~${u.tempoMedioMin} min</div>
-        </div>
-      `).join('');
-    }
-
-    async function send(acao) {
-      try {
-        await api('/api/saude/plantao', {
-          method: 'POST',
-          body: JSON.stringify({
-            unidadeId: unidade.value,
-            profissional: nome.value.trim() || undefined,
-            cargo: cargo.value.trim() || undefined,
-            acao,
-          }),
-        });
-        toast(acao === 'encerrar' ? 'Plantão encerrado' : 'Plantão confirmado');
-        await refresh();
-      } catch (e) { toast(e.message); }
-    }
-
-    iniciar.onclick = () => send('iniciar');
-    checkin.onclick = () => send('checkin');
-    encerrar.onclick = () => send('encerrar');
-    boot().catch(e => toast(e.message));
-  </script>
+  <p style="font-family:system-ui;padding:2rem">Abrindo a Central operacional da Saúde…</p>
 </body>
 </html>

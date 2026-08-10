@@ -3,94 +3,270 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Painel da Saúde</title>
+  <title>Secretaria de Saúde</title>
   <link rel="stylesheet" href="/styles.css" />
   <style>
+    :root {
+      --saude: #0f766e;
+      --saude-soft: #ecfdf5;
+      --saude-line: #99f6e4;
+      --warn: #b45309;
+      --danger: #b91c1c;
+    }
+    body.ops-body { background: linear-gradient(180deg, #ecfdf5 0%, #f8fafc 240px, #f8fafc 100%); }
+    .saude-hero {
+      display: flex; justify-content: space-between; align-items: end; gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 1rem; padding: 1.05rem 1.2rem; border-radius: 16px;
+      background: linear-gradient(135deg, #0f766e, #115e59 55%, #134e4a);
+      color: #fff; box-shadow: 0 10px 28px rgba(15, 118, 110, .28);
+    }
+    .saude-hero .page-kicker { color: #a7f3d0; margin: 0 0 0.2rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: .72rem; }
+    .saude-hero h1 { margin: 0 0 0.25rem; color: #fff; font-size: 1.6rem; }
+    .saude-hero .muted { color: #ccfbf1; margin: 0; }
+    .saude-hero .btn { background: #fff; color: #115e59; border: none; font-weight: 800; }
+    .acao-grid {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.55rem; margin-bottom: 1rem;
+    }
+    .acao-card {
+      border: 1px solid var(--saude-line); background: #fff; border-radius: 14px;
+      padding: 0.85rem 0.9rem; text-align: left; cursor: pointer; font: inherit; color: inherit;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .acao-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(15, 118, 110, .12); }
+    .acao-card strong { display: block; color: #134e4a; font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .acao-card span { display: block; color: #64748b; font-size: 0.75rem; line-height: 1.35; }
+    .acao-card.active { background: var(--saude); border-color: var(--saude); color: #fff; }
+    .acao-card.active strong, .acao-card.active span { color: #fff; }
+    .saude-tabs {
+      display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0 0 1rem; padding: 0.35rem;
+      background: #fff; border: 1px solid var(--saude-line); border-radius: 14px;
+    }
+    .saude-tab {
+      border: none; background: transparent; border-radius: 10px; cursor: pointer;
+      padding: 0.55rem 0.85rem; font-weight: 800; font-size: 0.8rem; color: #115e59;
+    }
+    .saude-tab.active { background: var(--saude); color: #fff; }
+    .saude-tab .count {
+      display: inline-flex; min-width: 1.2rem; height: 1.2rem; align-items: center; justify-content: center;
+      margin-left: 0.3rem; border-radius: 999px; font-size: 0.68rem; background: rgba(255,255,255,.25);
+    }
+    .saude-tab:not(.active) .count { background: #ccfbf1; color: #115e59; }
+    .pane { display: none; }
+    .pane.active { display: block; }
     .saude-alert {
-      padding: 0.75rem 1rem;
-      border-radius: 12px;
-      margin-bottom: 0.55rem;
-      border: 1px solid #fecaca;
-      background: #fff5f5;
-      color: #7f1d1d;
-      font-size: 0.88rem;
-      font-weight: 600;
+      padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 0.55rem;
+      border: 1px solid #fecaca; background: #fff5f5; color: #7f1d1d; font-size: 0.9rem; font-weight: 600;
     }
     .saude-alert.fila { border-color: #fcd34d; background: #fffbeb; color: #92400e; }
     .saude-alert.escala { border-color: #bfdbfe; background: #eff6ff; color: #1e3a8a; }
     .turno-pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.25rem 0.55rem;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      background: #f1f5f9;
-      margin-right: 0.25rem;
+      display: inline-flex; align-items: center; padding: 0.25rem 0.55rem; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 800; background: #f1f5f9; margin-right: 0.25rem;
     }
     .turno-pill.vago { background: #fee2e2; color: #991b1b; }
     .turno-pill.confirmado { background: #dcfce7; color: #166534; }
     .turno-pill.previsto { background: #e0f2fe; color: #075985; }
-    .fila-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      align-items: center;
-      margin-top: 0.65rem;
+    .fila-controls, .form-row { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; margin-top: 0.55rem; }
+    .fila-controls input, .form-row input, .form-row select, .form-row textarea { margin: 0; }
+    .fila-controls input[type=number] { width: 72px; }
+    .unidade-card {
+      border: 1px solid #d1fae5; border-radius: 14px; padding: 0.9rem 1rem; margin-bottom: 0.65rem; background: #fff;
     }
-    .fila-controls input { width: 72px; margin: 0; }
-    .fila-controls select { width: 130px; margin: 0; }
+    .unidade-card.critico { border-color: #fecaca; background: #fffafa; }
+    .fila-big { font-size: 1.85rem; font-weight: 900; color: var(--saude); line-height: 1; }
+    .fila-big.warn { color: var(--warn); }
+    .fila-big.danger { color: var(--danger); }
+    .mini-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.55rem; }
+    .mini-stat { background: var(--saude-soft); border-radius: 10px; padding: 0.55rem 0.65rem; }
+    .mini-stat span { display: block; font-size: 0.7rem; color: #64748b; font-weight: 700; }
+    .mini-stat strong { font-size: 1.05rem; color: #0f172a; }
+    .escala-row {
+      display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center;
+      margin-bottom: 0.45rem; padding: 0.45rem; background: #f8fafc; border-radius: 10px;
+    }
+    .hint-box {
+      margin-bottom: 0.85rem; padding: 0.75rem 0.95rem; border-radius: 12px;
+      background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; font-size: 0.88rem; font-weight: 600;
+    }
+    .form-grid { display: grid; gap: 0.65rem; }
+    .form-grid label { display: block; font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem; }
+    .form-grid input, .form-grid select, .form-grid textarea { width: 100%; }
+    @media (max-width: 980px) { .acao-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 720px) {
+      .mini-grid { grid-template-columns: 1fr 1fr; }
+      .saude-hero h1 { font-size: 1.3rem; }
+      .acao-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body class="ops-body">
   <div class="wrap-wide">
     <div id="top"></div>
 
-    <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+    <div class="hint-box">
+      Esta é a <strong>Secretaria de Saúde</strong>. Aqui você <strong>preenche e valida</strong> plantão, escala, fila, status e avisos.
+      O Gabinete só acompanha o que for lançado aqui.
+    </div>
+
+    <div class="saude-hero">
       <div>
         <p class="page-kicker">Secretaria de Saúde</p>
-        <h1 class="display" style="font-size:1.75rem;margin:0 0 0.25rem">Painel da Saúde</h1>
-        <p class="muted" style="margin:0">Plantão · escala · fila · o Gabinete só acompanha</p>
+        <h1 class="display">Central operacional</h1>
+        <p class="muted">Tudo que o prefeito vê na aba Saúde começa por aqui</p>
       </div>
       <div class="cta-row">
         <button class="btn btn-sm" id="btnRefresh" type="button">Atualizar</button>
-        <a class="btn btn-sm btn-primary" id="linkPlantao" href="/plantao.html">Registrar plantão</a>
       </div>
     </div>
 
     <div class="grid-4" id="kpis"></div>
 
-    <div class="grid-2" style="margin-top:1rem;align-items:start">
+    <div class="acao-grid" id="acoesRapidas">
+      <button type="button" class="acao-card" data-go="plantao"><strong>1. Registrar plantão</strong><span>Nome do médico / profissional de plantão</span></button>
+      <button type="button" class="acao-card" data-go="escala"><strong>2. Preencher escala</strong><span>Manhã · tarde · noite por unidade</span></button>
+      <button type="button" class="acao-card" data-go="fila"><strong>3. Atualizar fila</strong><span>Quantidade na fila e tempo de espera</span></button>
+      <button type="button" class="acao-card" data-go="status"><strong>4. Status da unidade</strong><span>Situação, insumos e ambulância</span></button>
+      <button type="button" class="acao-card" data-go="avisos"><strong>5. Aviso ao Gabinete</strong><span>Mensagem que o prefeito vê na hora</span></button>
+    </div>
+
+    <div class="saude-tabs" id="tabs" role="tablist">
+      <button type="button" class="saude-tab active" data-pane="plantao">Plantão</button>
+      <button type="button" class="saude-tab" data-pane="escala">Escala</button>
+      <button type="button" class="saude-tab" data-pane="fila">Fila</button>
+      <button type="button" class="saude-tab" data-pane="status">Status</button>
+      <button type="button" class="saude-tab" data-pane="avisos">Avisos</button>
+      <button type="button" class="saude-tab" data-pane="alertas">Alertas<span class="count" id="tabAlertas">0</span></button>
+      <button type="button" class="saude-tab" data-pane="historico">Histórico</button>
+      <button type="button" class="saude-tab" data-pane="visao">Visão geral</button>
+    </div>
+
+    <div class="pane active" id="pane-plantao">
       <div class="panel">
-        <h3 style="margin-bottom:0.5rem">Alertas agora</h3>
+        <h3 style="margin-bottom:0.35rem">Registrar / confirmar plantão</h3>
+        <p class="muted" style="margin-bottom:0.85rem">É aqui que entra o nome do médico. O Gabinete só enxerga.</p>
+        <div class="form-grid" style="max-width:560px">
+          <div>
+            <label for="plUnidade">Unidade</label>
+            <select id="plUnidade"></select>
+          </div>
+          <div>
+            <label for="plNome">Nome do médico / profissional</label>
+            <input id="plNome" placeholder="Ex.: Dra. Ana Paula" />
+          </div>
+          <div>
+            <label for="plCargo">Cargo / função</label>
+            <input id="plCargo" value="Plantão" placeholder="Ex.: Clínica geral" />
+          </div>
+          <div class="form-row">
+            <button class="btn btn-primary" type="button" id="plIniciar">Registrar plantão</button>
+            <button class="btn" type="button" id="plCheckin">Check-in</button>
+            <button class="btn btn-sm" type="button" id="plEncerrar">Encerrar</button>
+          </div>
+        </div>
+        <h4 style="margin:1.25rem 0 0.55rem">Status hoje</h4>
+        <div id="plStatus" class="list"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-escala">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Escala do dia</h3>
+        <p class="muted" style="margin-bottom:0.85rem">Preencha manhã / tarde / noite e salve cada turno</p>
+        <div id="escalaBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-fila">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Fila e espera</h3>
+        <p class="muted" style="margin-bottom:0.85rem">Atualize os números — o Gabinete vê na hora</p>
+        <div id="unidades"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-status">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Status operacional da unidade</h3>
+        <p class="muted" style="margin-bottom:0.85rem">Situação, estoque/insumos e ambulância</p>
+        <div id="statusBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-avisos">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Aviso ao Gabinete</h3>
+        <p class="muted" style="margin-bottom:0.85rem">Envie um alerta curto para o prefeito acompanhar</p>
+        <div class="form-grid" style="max-width:640px">
+          <div>
+            <label for="avUnidade">Unidade (opcional)</label>
+            <select id="avUnidade"><option value="">Rede municipal</option></select>
+          </div>
+          <div>
+            <label for="avNivel">Nível</label>
+            <select id="avNivel">
+              <option value="info">Informativo</option>
+              <option value="atencao">Atenção</option>
+              <option value="urgente">Urgente</option>
+            </select>
+          </div>
+          <div>
+            <label for="avTexto">Mensagem</label>
+            <textarea id="avTexto" rows="3" placeholder="Ex.: UBS São José sem clínico no turno da tarde"></textarea>
+          </div>
+          <div>
+            <button class="btn btn-primary" type="button" id="avEnviar">Enviar aviso ao Gabinete</button>
+          </div>
+        </div>
+        <h4 style="margin:1.25rem 0 0.55rem">Avisos enviados</h4>
+        <div id="avisosLista" class="list"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-alertas">
+      <div class="panel">
+        <h3 style="margin-bottom:0.5rem">Alertas automáticos</h3>
         <div id="alertas"></div>
       </div>
+    </div>
+
+    <div class="pane" id="pane-historico">
       <div class="panel">
-        <h3 style="margin-bottom:0.5rem">Histórico de cobertura</h3>
+        <h3 style="margin-bottom:0.35rem">Histórico de cobertura</h3>
         <p class="muted" style="margin:0 0 0.65rem;font-size:0.82rem">Últimos dias com registro de plantão</p>
         <div id="historico" class="list"></div>
       </div>
     </div>
 
-    <div class="panel" style="margin-top:1rem">
-      <h3 style="margin-bottom:0.35rem">Unidades · fila e plantão</h3>
-      <p class="muted" style="margin-bottom:0.85rem">Atualize a fila aqui. O nome do médico de plantão entra em “Registrar plantão”.</p>
-      <div id="unidades" class="list"></div>
-    </div>
-
-    <div class="panel" style="margin-top:1rem">
-      <h3 style="margin-bottom:0.35rem">Escala do dia</h3>
-      <p class="muted" style="margin-bottom:0.85rem">Manhã · tarde · noite por unidade</p>
-      <div id="escalaBox"></div>
+    <div class="pane" id="pane-visao">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Visão geral das unidades</h3>
+        <div id="visaoUnidades"></div>
+      </div>
     </div>
   </div>
 
-  <script src="/app.js?v=saude-panel1"></script>
+  <script src="/app.js?v=saude-ops3"></script>
   <script>
     window.BI_OPS_LOCK = true;
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
 
     const TURNO_LABEL = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
+    let painelAtual = null;
+
+    function goPane(name) {
+      document.querySelectorAll('.saude-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
+      document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('active', p.id === 'pane-' + name));
+      document.querySelectorAll('.acao-card').forEach((c) => c.classList.toggle('active', c.dataset.go === name));
+      const el = document.getElementById('pane-' + name);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.querySelectorAll('.saude-tab').forEach((btn) => {
+      btn.onclick = () => goPane(btn.dataset.pane);
+    });
+    document.querySelectorAll('.acao-card').forEach((btn) => {
+      btn.onclick = () => goPane(btn.dataset.go);
+    });
 
     function badgeStatus(st) {
       if (st === 'ativo') return '<span class="badge" style="background:#dcfce7;color:#166534">Ativo</span>';
@@ -99,18 +275,48 @@
       return '<span class="badge" style="background:#ffedd5;color:#9a3412">Sem confirmação</span>';
     }
 
-    function render(p) {
-      const t = p.totais || {};
-      document.getElementById('kpis').innerHTML = `
-        <div class="panel stat"><div class="label">Na fila</div><div class="value">${t.naFila || 0}</div></div>
-        <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${t.atendidosHoje || 0}</div></div>
-        <div class="panel stat"><div class="label">Espera média</div><div class="value">${t.tempoMedioMin || 0}<span style="font-size:0.9rem"> min</span></div></div>
-        <div class="panel stat"><div class="label">Alertas</div><div class="value">${(p.alertas || []).length}</div>
-          <div class="hint">Plantões ok ${t.plantoesOk || 0}/${t.plantoesTotal || 0}</div></div>`;
+    function filaClass(n) {
+      if (n >= 20) return 'danger';
+      if (n >= 10) return 'warn';
+      return '';
+    }
 
-      const alertas = p.alertas || [];
-      document.getElementById('alertas').innerHTML = alertas.length
-        ? alertas.map((a) => `<div class="saude-alert ${a.tipo || ''}"><strong>${a.unidade}</strong> — ${a.mensagem}</div>`).join('')
+    function fillSelects(p) {
+      const opts = (p.unidades || []).map((u) => `<option value="${u.id}">${u.nome}</option>`).join('');
+      const pl = document.getElementById('plUnidade');
+      const av = document.getElementById('avUnidade');
+      const curPl = pl.value;
+      const curAv = av.value;
+      pl.innerHTML = opts;
+      av.innerHTML = '<option value="">Rede municipal</option>' + opts;
+      if (curPl) pl.value = curPl;
+      if (curAv) av.value = curAv;
+    }
+
+    function render(p) {
+      painelAtual = p;
+      const t = p.totais || {};
+      document.getElementById('tabAlertas').textContent = String((p.alertas || []).length);
+      fillSelects(p);
+
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">Na fila</div><div class="value">${t.naFila || 0}</div>
+          <div class="hint">Espera média ${t.tempoMedioMin || 0} min</div></div>
+        <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${t.atendidosHoje || 0}</div>
+          <div class="hint">Meta ok ${t.metaOk || 0}/${t.plantoesTotal || 0}</div></div>
+        <div class="panel stat"><div class="label">Plantões ok</div><div class="value">${t.plantoesOk || 0}/${t.plantoesTotal || 0}</div>
+          <div class="hint">Turnos vagos ${t.turnosVagos || 0}</div></div>
+        <div class="panel stat"><div class="label">Alertas</div><div class="value">${(p.alertas || []).length}</div>
+          <div class="hint">Avisos ${(p.avisos || []).length}</div></div>`;
+
+      document.getElementById('plStatus').innerHTML = (p.unidades || []).map((u) => `
+        <div class="item">
+          <div class="item-head"><strong>${u.nome}</strong> ${badgeStatus(u.plantao?.status)}</div>
+          <div class="meta">${u.plantao?.profissional || 'Sem profissional registrado'} · ${u.plantao?.cargo || '—'}</div>
+        </div>`).join('');
+
+      document.getElementById('alertas').innerHTML = (p.alertas || []).length
+        ? p.alertas.map((a) => `<div class="saude-alert ${a.tipo || ''}"><strong>${a.unidade}</strong> — ${a.mensagem}</div>`).join('')
         : '<p class="muted">Nenhum alerta no momento.</p>';
 
       document.getElementById('historico').innerHTML = (p.historico || []).length
@@ -123,53 +329,151 @@
           </div>`).join('')
         : '<p class="muted">Sem histórico ainda.</p>';
 
-      document.getElementById('unidades').innerHTML = (p.unidades || []).map((u) => `
-        <div class="item">
+      document.getElementById('avisosLista').innerHTML = (p.avisos || []).length
+        ? p.avisos.map((a) => `
+          <div class="item">
+            <div class="item-head"><strong>${a.unidade || 'Rede'}</strong>
+              <span class="badge">${a.nivel || 'info'}</span>
+            </div>
+            <div>${a.texto}</div>
+            <div class="meta">${a.criadoEm || ''}</div>
+          </div>`).join('')
+        : '<p class="muted">Nenhum aviso enviado ainda.</p>';
+
+      document.getElementById('visaoUnidades').innerHTML = (p.unidades || []).map((u) => `
+        <div class="unidade-card ${u.critico ? 'critico' : ''}">
           <div class="item-head">
             <strong>${u.nome}</strong>
-            ${u.critico ? '<span class="badge" style="background:#fee2e2;color:#991b1b">Alerta</span>' : ''}
+            ${u.critico ? '<span class="badge" style="background:#fee2e2;color:#991b1b">Alerta</span>' : '<span class="badge" style="background:#dcfce7;color:#166534">Ok</span>'}
           </div>
-          <div class="meta">${u.bairro || '—'} · ${u.tipo || 'unidade'}</div>
-          <p style="margin:0.45rem 0 0;font-size:0.88rem">
-            Plantão: ${u.plantao?.profissional
-              ? `<strong>${u.plantao.profissional}</strong> ${badgeStatus(u.plantao.status)}`
-              : '<em>não registrado</em>'}
+          <div class="mini-grid">
+            <div class="mini-stat"><span>Na fila</span><strong class="fila-big ${filaClass(u.naFila || 0)}" style="font-size:1.35rem">${u.naFila || 0}</strong></div>
+            <div class="mini-stat"><span>Espera</span><strong>${u.tempoMedioMin || 0} min</strong></div>
+            <div class="mini-stat"><span>Atendidos</span><strong>${u.atendidosHoje || 0}</strong></div>
+          </div>
+          <p style="margin:0.65rem 0 0;font-size:0.88rem">
+            Plantão: ${u.plantao?.profissional ? `<strong>${u.plantao.profissional}</strong> ${badgeStatus(u.plantao.status)}` : '<em>não registrado</em>'}
           </p>
-          ${(u.alertas || []).length ? `<div class="meta" style="color:#b91c1c">${u.alertas.join(' · ')}</div>` : ''}
+          <div style="margin-top:0.45rem">
+            ${(u.escala || []).map((s) =>
+              `<span class="turno-pill ${s.status || 'vago'}">${TURNO_LABEL[s.turno] || s.turno}: ${s.profissional || 'vago'}</span>`
+            ).join('')}
+          </div>
+        </div>`).join('') || '<p class="muted">Sem unidades.</p>';
+
+      document.getElementById('unidades').innerHTML = (p.unidades || []).map((u) => `
+        <div class="unidade-card ${u.critico ? 'critico' : ''}">
+          <div class="item-head">
+            <strong>${u.nome}</strong>
+            <span class="fila-big ${filaClass(u.naFila || 0)}">${u.naFila || 0}</span>
+          </div>
+          <div class="meta">pessoas na fila · espera ~${u.tempoMedioMin || 0} min · atendidos ${u.atendidosHoje || 0}</div>
           <div class="fila-controls">
             <span class="meta">Fila</span>
             <input type="number" min="0" value="${u.naFila || 0}" data-fila="${u.id}" />
             <span class="meta">Espera (min)</span>
             <input type="number" min="0" value="${u.tempoMedioMin || 0}" data-espera="${u.id}" />
-            <button class="btn btn-sm" type="button" data-save="${u.id}">Salvar fila</button>
+            <button class="btn btn-sm btn-primary" type="button" data-save="${u.id}">Salvar fila</button>
             <button class="btn btn-sm" type="button" data-atender="${u.id}">Atendeu 1</button>
             <button class="btn btn-sm" type="button" data-mais="${u.id}">+1 na fila</button>
           </div>
-        </div>`).join('') || '<p class="muted">Sem unidades cadastradas.</p>';
+        </div>`).join('');
 
       document.getElementById('escalaBox').innerHTML = (p.unidades || []).map((u) => `
-        <div class="item" style="margin-bottom:0.65rem">
+        <div class="unidade-card">
           <div class="item-head"><strong>${u.nome}</strong></div>
-          <div style="margin-top:0.45rem">
-            ${(u.escala || []).map((slot) => `
-              <div style="display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center;margin-bottom:0.45rem">
-                <span class="turno-pill ${slot.status || 'vago'}">${TURNO_LABEL[slot.turno] || slot.turno}</span>
-                <input style="flex:1;min-width:140px;margin:0" data-esc-nome="${u.id}|${slot.turno}"
-                  value="${slot.profissional || ''}" placeholder="Nome do profissional" />
-                <input style="width:140px;margin:0" data-esc-esp="${u.id}|${slot.turno}"
-                  value="${slot.especialidade || ''}" placeholder="Especialidade" />
-                <select data-esc-st="${u.id}|${slot.turno}">
-                  <option value="confirmado" ${slot.status === 'confirmado' ? 'selected' : ''}>Confirmado</option>
-                  <option value="previsto" ${slot.status === 'previsto' ? 'selected' : ''}>Previsto</option>
-                  <option value="vago" ${slot.status === 'vago' ? 'selected' : ''}>Vago</option>
-                </select>
-                <button class="btn btn-sm" type="button" data-esc-save="${u.id}|${slot.turno}">Salvar</button>
-              </div>`).join('') || '<p class="muted">Sem escala</p>'}
-          </div>
+          ${(u.escala || []).map((slot) => `
+            <div class="escala-row">
+              <span class="turno-pill ${slot.status || 'vago'}">${TURNO_LABEL[slot.turno] || slot.turno}</span>
+              <input style="flex:1;min-width:140px" data-esc-nome="${u.id}|${slot.turno}" value="${slot.profissional || ''}" placeholder="Nome do profissional" />
+              <input style="width:140px" data-esc-esp="${u.id}|${slot.turno}" value="${slot.especialidade || ''}" placeholder="Especialidade" />
+              <select data-esc-st="${u.id}|${slot.turno}">
+                <option value="confirmado" ${slot.status === 'confirmado' ? 'selected' : ''}>Confirmado</option>
+                <option value="previsto" ${slot.status === 'previsto' ? 'selected' : ''}>Previsto</option>
+                <option value="vago" ${slot.status === 'vago' ? 'selected' : ''}>Vago</option>
+              </select>
+              <button class="btn btn-sm btn-primary" type="button" data-esc-save="${u.id}|${slot.turno}">Salvar</button>
+            </div>`).join('')}
         </div>`).join('');
+
+      document.getElementById('statusBox').innerHTML = (p.unidades || []).map((u) => {
+        const st = u.statusOperacional || {};
+        return `
+        <div class="unidade-card">
+          <div class="item-head"><strong>${u.nome}</strong></div>
+          <div class="form-row" style="align-items:end">
+            <div>
+              <label class="meta">Situação</label>
+              <select data-st-sit="${u.id}">
+                <option value="normal" ${st.situacao === 'normal' ? 'selected' : ''}>Normal</option>
+                <option value="atencao" ${st.situacao === 'atencao' ? 'selected' : ''}>Atenção</option>
+                <option value="critico" ${st.situacao === 'critico' ? 'selected' : ''}>Crítico</option>
+              </select>
+            </div>
+            <div>
+              <label class="meta">Insumos</label>
+              <select data-st-ins="${u.id}">
+                <option value="ok" ${st.insumos === 'ok' ? 'selected' : ''}>Ok</option>
+                <option value="baixo" ${st.insumos === 'baixo' ? 'selected' : ''}>Baixo</option>
+                <option value="critico" ${st.insumos === 'critico' ? 'selected' : ''}>Crítico</option>
+              </select>
+            </div>
+            <div>
+              <label class="meta">Ambulância</label>
+              <select data-st-amb="${u.id}">
+                <option value="n/a" ${st.ambulancia === 'n/a' ? 'selected' : ''}>N/A</option>
+                <option value="disponivel" ${st.ambulancia === 'disponivel' ? 'selected' : ''}>Disponível</option>
+                <option value="em_uso" ${st.ambulancia === 'em_uso' ? 'selected' : ''}>Em uso</option>
+                <option value="indisponivel" ${st.ambulancia === 'indisponivel' ? 'selected' : ''}>Indisponível</option>
+              </select>
+            </div>
+            <div style="flex:1;min-width:180px">
+              <label class="meta">Observação</label>
+              <input data-st-obs="${u.id}" value="${(st.observacao || '').replace(/"/g, '&quot;')}" placeholder="Ex.: falta de soro" />
+            </div>
+            <button class="btn btn-sm btn-primary" type="button" data-st-save="${u.id}">Salvar status</button>
+          </div>
+        </div>`;
+      }).join('');
 
       bindActions();
     }
+
+    async function plantaoAcao(acao) {
+      try {
+        const r = await api('/api/saude/plantao', {
+          method: 'POST',
+          body: JSON.stringify({
+            unidadeId: document.getElementById('plUnidade').value,
+            profissional: document.getElementById('plNome').value,
+            cargo: document.getElementById('plCargo').value,
+            acao,
+          }),
+        });
+        toast(acao === 'encerrar' ? 'Plantão encerrado' : 'Plantão atualizado');
+        render(r.painel);
+      } catch (e) { toast(e.message); }
+    }
+
+    document.getElementById('plIniciar').onclick = () => plantaoAcao('iniciar');
+    document.getElementById('plCheckin').onclick = () => plantaoAcao('checkin');
+    document.getElementById('plEncerrar').onclick = () => plantaoAcao('encerrar');
+
+    document.getElementById('avEnviar').onclick = async () => {
+      try {
+        const r = await api('/api/saude/aviso', {
+          method: 'POST',
+          body: JSON.stringify({
+            unidadeId: document.getElementById('avUnidade').value || null,
+            nivel: document.getElementById('avNivel').value,
+            texto: document.getElementById('avTexto').value,
+          }),
+        });
+        document.getElementById('avTexto').value = '';
+        toast('Aviso enviado ao Gabinete');
+        render(r.painel);
+      } catch (e) { toast(e.message); }
+    };
 
     function bindActions() {
       document.querySelectorAll('[data-save]').forEach((btn) => {
@@ -228,6 +532,25 @@
           } catch (e) { toast(e.message); }
         };
       });
+      document.querySelectorAll('[data-st-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.stSave;
+          try {
+            const p = await api('/api/saude/status', {
+              method: 'POST',
+              body: JSON.stringify({
+                unidadeId: id,
+                situacao: document.querySelector(`[data-st-sit="${id}"]`)?.value,
+                insumos: document.querySelector(`[data-st-ins="${id}"]`)?.value,
+                ambulancia: document.querySelector(`[data-st-amb="${id}"]`)?.value,
+                observacao: document.querySelector(`[data-st-obs="${id}"]`)?.value,
+              }),
+            });
+            toast('Status salvo — Gabinete atualizado');
+            render(p);
+          } catch (e) { toast(e.message); }
+        };
+      });
     }
 
     async function load() {
@@ -237,10 +560,11 @@
     async function boot() {
       const cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Saúde', cfg, { lock: true });
-      document.getElementById('linkPlantao').href = cityLink('/plantao.html');
-      document.title = `Painel da Saúde · ${cfg.produto || cfg.cidade || ''}`;
+      document.title = `Secretaria de Saúde · ${cfg.produto || cfg.cidade || ''}`;
       rewriteCityLinks();
       await load();
+      const aba = new URLSearchParams(location.search).get('aba') || location.hash.replace('#', '');
+      if (aba) goPane(aba);
     }
 
     document.getElementById('btnRefresh').onclick = () => load().catch((e) => toast(e.message));

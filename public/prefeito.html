@@ -24,6 +24,24 @@
       padding:0.75rem 1rem; border-radius:12px; margin-bottom:0.85rem;
       background:#fff5f5; border:1px solid #fecaca; color:#7f1d1d; font-size:0.88rem; font-weight:600;
     }
+    .saude-modulos {
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0.55rem;
+      margin:0 0 0.85rem; grid-column:1/-1;
+    }
+    .saude-mod {
+      background:#ecfdf5; border:1px solid #99f6e4; border-radius:12px; padding:0.7rem 0.8rem;
+    }
+    .saude-mod span { display:block; font-size:0.68rem; font-weight:800; color:#0f766e; text-transform:uppercase; letter-spacing:.03em; }
+    .saude-mod strong { font-size:1.25rem; color:#134e4a; }
+    .saude-mod small { display:block; color:#64748b; font-size:0.72rem; margin-top:0.15rem; }
+    .turno-pill {
+      display:inline-flex; align-items:center; padding:0.22rem 0.5rem; border-radius:999px;
+      font-size:0.7rem; font-weight:800; background:#f1f5f9; margin:0.15rem 0.15rem 0 0;
+    }
+    .turno-pill.vago { background:#fee2e2; color:#991b1b; }
+    .turno-pill.confirmado { background:#dcfce7; color:#166534; }
+    .turno-pill.previsto { background:#e0f2fe; color:#075985; }
+    @media (max-width:900px) { .saude-modulos { grid-template-columns:1fr 1fr; } }
     .visita-backdrop {
       position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:9998;
       display:flex; align-items:center; justify-content:center; padding:1rem;
@@ -97,7 +115,7 @@
 
     <div class="eixo-tabs" id="tabs">
       <button type="button" class="eixo-tab active" data-eixo="cidade">Cidade<small>Ruas, obras, limpeza</small></button>
-      <button type="button" class="eixo-tab" data-eixo="saude">Saúde<small>Hospital, UBS, visita</small></button>
+      <button type="button" class="eixo-tab" data-eixo="saude">Saúde<small>Escala · fila · plantão</small></button>
       <button type="button" class="eixo-tab" data-eixo="eventos">Eventos<small>Agenda e estrutura</small></button>
     </div>
 
@@ -395,12 +413,12 @@
       const box = document.getElementById('acoesEixo');
       if (eixo === 'saude') {
         box.innerHTML = `
-          <a class="btn btn-sm btn-primary" href="${cityLink('/saude.html')}">Painel da Saúde</a>
+          <a class="btn btn-sm btn-primary" href="${cityLink('/saude.html')}">Abrir Painel operacional da Saúde</a>
           <a class="btn btn-sm" href="${cityLink('/plantao.html')}">Saúde registra plantão →</a>
           <button class="btn btn-sm" id="btnVisita" type="button">Visita surpresa</button>`;
         document.getElementById('btnVisita').onclick = visitaSurpresa;
         tituloDec.textContent = 'Saúde — olho do Gabinete';
-        subtituloDec.textContent = 'Aqui você só acompanha. Quem registra plantão, escala e fila é a Secretaria de Saúde.';
+        subtituloDec.textContent = 'Abaixo: fila, escala, alertas e histórico. Quem digita é a Secretaria (login saude).';
       } else if (eixo === 'eventos') {
         box.innerHTML = '';
         tituloDec.textContent = 'Eventos — agenda e estrutura';
@@ -418,7 +436,14 @@
         const criticos = (saudeHoje.unidades || []).filter(u => u.critico);
         const alertas = saudeHoje.alertas || [];
         const turnoL = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
+        const t = saudeHoje.totais || {};
         box.innerHTML = `
+          <div class="saude-modulos">
+            <div class="saude-mod"><span>Fila</span><strong>${t.naFila || 0}</strong><small>espera ~${t.tempoMedioMin || 0} min</small></div>
+            <div class="saude-mod"><span>Plantão</span><strong>${t.plantoesOk || 0}/${t.plantoesTotal || 0}</strong><small>unidades cobertas</small></div>
+            <div class="saude-mod"><span>Escala</span><strong>${t.turnosVagos || 0}</strong><small>turnos vagos</small></div>
+            <div class="saude-mod"><span>Alertas</span><strong>${alertas.length}</strong><small>${t.unidadesCriticas || 0} unidade(s) crítica(s)</small></div>
+          </div>
           ${criticos.length ? `
             <div class="saude-alert-banner" style="grid-column:1/-1">
               ${criticos.length} unidade(s) em alerta agora:
@@ -426,20 +451,30 @@
               — cobre a secretaria ou faça visita surpresa
             </div>` : ''}
           ${(alertas.length) ? `
-            <div class="panel" style="grid-column:1/-1">
-              <h3 style="margin-bottom:0.55rem">Alertas</h3>
-              ${alertas.map(a => `<div class="meta" style="margin-bottom:0.35rem;color:#7f1d1d"><strong>${a.unidade}</strong> — ${a.mensagem}</div>`).join('')}
+            <div class="panel" style="grid-column:1/-1;border-color:#fecaca;background:#fffafa">
+              <h3 style="margin-bottom:0.55rem;color:#7f1d1d">Alertas da Saúde</h3>
+              ${alertas.map(a => `<div class="meta" style="margin-bottom:0.45rem;color:#7f1d1d;font-weight:600"><strong>${a.unidade}</strong> — ${a.mensagem}</div>`).join('')}
             </div>` : ''}
-          <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.35rem">Hoje na Saúde</h3>
+          ${((saudeHoje.avisos || []).length) ? `
+            <div class="panel" style="grid-column:1/-1;border-color:#fde68a;background:#fffbeb">
+              <h3 style="margin-bottom:0.55rem;color:#92400e">Avisos da Secretaria</h3>
+              ${saudeHoje.avisos.slice(0, 6).map(a => `
+                <div class="item" style="margin-bottom:0.35rem">
+                  <div class="item-head"><strong>${a.unidade || 'Rede'}</strong><span class="badge">${a.nivel || 'info'}</span></div>
+                  <div>${a.texto}</div>
+                </div>`).join('')}
+            </div>` : ''}
+          <div class="panel" style="grid-column:1/-1;border-color:#99f6e4">
+            <h3 style="margin-bottom:0.35rem">Unidades · plantão · escala · fila · status</h3>
             <p class="muted" style="margin-bottom:0.85rem">
-              Cobertura de plantão, fila e escala (preenchidas pela Saúde) · atualizado ${fmtDate(saudeHoje.atualizadoEm)}.
-              O Gabinete não digita — só visualiza e cobra.
+              Preenchido pela Secretaria de Saúde · atualizado ${fmtDate(saudeHoje.atualizadoEm)}.
+              Gabinete só visualiza e cobra.
             </p>
             <div class="list">
               ${saudeHoje.unidades.map(u => {
                 const meta = u.metaAtendimentos || 1;
                 const pct = Math.min(100, Math.round(((u.atendidosHoje || 0) / meta) * 100));
+                const st = u.statusOperacional || {};
                 return `
                 <div class="item">
                   <div class="item-head">
@@ -452,8 +487,10 @@
                     <span class="muted" style="font-size:0.72rem;min-width:4.5rem">Meta ${pct}%</span>
                     <div class="bar"><i style="width:${pct}%"></i></div>
                   </div>
-                  <div class="meta">
-                    Fila <strong>${u.naFila}</strong> · Atendidos ${u.atendidosHoje}/${u.metaAtendimentos || '—'} · Espera ~${u.tempoMedioMin} min
+                  <div class="meta" style="font-size:0.95rem;margin-top:0.35rem">
+                    Fila <strong style="font-size:1.15rem">${u.naFila}</strong>
+                    · Atendidos ${u.atendidosHoje}/${u.metaAtendimentos || '—'}
+                    · Espera ~${u.tempoMedioMin} min
                   </div>
                   <div class="meta">
                     Plantão:
@@ -464,12 +501,17 @@
                         : '<strong style="color:#c0392b">Sem confirmação de plantão</strong>'}
                   </div>
                   <div class="meta">
-                    Escala:
-                    ${(u.escala || []).map(s =>
-                      `${turnoL[s.turno] || s.turno}: ${s.profissional || 'vago'}`
-                    ).join(' · ') || '—'}
+                    Status: <strong>${st.situacao || 'normal'}</strong>
+                    · Insumos ${st.insumos || 'ok'}
+                    · Ambulância ${st.ambulancia || 'n/a'}
+                    ${st.observacao ? ` · ${st.observacao}` : ''}
                   </div>
-                  ${(u.alertas || []).length ? `<div class="meta" style="color:#b91c1c">${u.alertas.join(' · ')}</div>` : ''}
+                  <div style="margin-top:0.35rem">
+                    ${(u.escala || []).map(s =>
+                      `<span class="turno-pill ${s.status || 'vago'}">${turnoL[s.turno] || s.turno}: ${s.profissional || 'vago'}</span>`
+                    ).join('') || '<span class="meta">Sem escala</span>'}
+                  </div>
+                  ${(u.alertas || []).length ? `<div class="meta" style="color:#b91c1c;margin-top:0.35rem">${u.alertas.join(' · ')}</div>` : ''}
                   ${u.critico ? `
                     <div class="actions">
                       <button class="btn btn-sm btn-warn" onclick="cobrarUnidade('${u.id}','${u.nome.replace(/'/g, '')}')">Cobrar secretaria</button>
@@ -481,13 +523,14 @@
           </div>
           ${(saudeHoje.historico || []).length ? `
           <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.55rem">Histórico recente</h3>
+            <h3 style="margin-bottom:0.55rem">Histórico de cobertura</h3>
             <div class="list">
-              ${saudeHoje.historico.slice(0, 5).map(h => `
+              ${saudeHoje.historico.slice(0, 7).map(h => `
                 <div class="item">
                   <div class="item-head"><strong>${h.data}</strong>
                     <span class="meta">${h.cobertos}/${h.unidades} cobertos · ${h.faltas} falha(s)</span>
                   </div>
+                  <div class="meta">${(h.profissionais || []).map(x => x.profissional).filter(Boolean).join(' · ') || '—'}</div>
                 </div>`).join('')}
             </div>
           </div>` : ''}`;
