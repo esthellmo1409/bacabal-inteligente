@@ -1099,6 +1099,9 @@ async function handleAPI(req, res, pathname, url) {
     }
 
     if (!cat) return sendJSON(res, 400, { error: 'Categoria inválida' });
+    if (cat.interno || cat.id === 'visita_surpresa') {
+      return sendJSON(res, 400, { error: 'Esta categoria é interna do Gabinete — escolha outro tipo de problema' });
+    }
     const temFoto = !!(body.foto || (Array.isArray(body.fotosAntes) && body.fotosAntes.length) || (Array.isArray(body.fotos) && body.fotos.length));
     if (!body.descricao && !temFoto) {
       return sendJSON(res, 400, { error: 'Informe descrição ou foto' });

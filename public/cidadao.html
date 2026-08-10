@@ -4,22 +4,84 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cidadão · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles.css?v=cidadao-enrich1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    .citizen-quick {
+      display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.85rem;
+    }
+    .citizen-quick a, .citizen-quick button {
+      font-size: 0.78rem; font-weight: 700; border-radius: 999px;
+      padding: 0.35rem 0.8rem; border: 1px solid var(--line);
+      background: #fff; color: var(--ink); text-decoration: none; cursor: pointer;
+    }
+    .citizen-quick a:hover, .citizen-quick button:hover {
+      border-color: var(--brand); color: var(--brand);
+    }
+    .citizen-filters {
+      display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 0.75rem;
+    }
+    .citizen-filters button {
+      font: inherit; font-size: 0.75rem; font-weight: 700;
+      border-radius: 999px; padding: 0.3rem 0.7rem;
+      border: 1px solid var(--line); background: #fff; color: var(--muted); cursor: pointer;
+    }
+    .citizen-filters button.active {
+      background: var(--brand); border-color: var(--brand); color: #fff;
+    }
+    .citizen-legend {
+      display: grid; gap: 0.45rem; margin: 0;
+    }
+    .citizen-legend li {
+      list-style: none; display: flex; gap: 0.55rem; align-items: flex-start;
+      font-size: 0.82rem; line-height: 1.35; color: var(--muted);
+    }
+    .citizen-legend strong { color: var(--ink); min-width: 5.5rem; }
+    .citizen-faq details {
+      border-bottom: 1px solid var(--line); padding: 0.65rem 0;
+    }
+    .citizen-faq details:last-child { border-bottom: 0; }
+    .citizen-faq summary {
+      cursor: pointer; font-weight: 700; font-size: 0.9rem; color: var(--ink);
+    }
+    .citizen-faq p {
+      margin: 0.45rem 0 0; font-size: 0.84rem; color: var(--muted); line-height: 1.45;
+    }
+    .citizen-stats {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+    .citizen-stat {
+      background: #f8fafc; border: 1px solid var(--line); border-radius: 12px;
+      padding: 0.65rem 0.7rem; text-align: center;
+    }
+    .citizen-stat strong { display: block; font-size: 1.15rem; color: var(--royal); }
+    .citizen-stat span { font-size: 0.7rem; color: var(--muted); font-weight: 600; }
+    @media (max-width: 640px) {
+      .citizen-stats { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body class="ops-body">
   <div class="wrap">
     <div id="top"></div>
     <div class="citizen-hero">
       <div>
-        <p class="page-kicker">Cidadão · Bacabal Conecta</p>
+        <p class="page-kicker" id="heroKicker">Cidadão · Bacabal Conecta</p>
         <h1 class="display">Registre o problema</h1>
-        <p class="muted" style="margin:0.35rem 0 0;max-width:36rem">Foto, local e protocolo na hora. Acompanhe sem ligar de novo.</p>
+        <p class="muted" style="margin:0.35rem 0 0;max-width:36rem">
+          Foto, local e protocolo na hora. Acompanhe sem ligar de novo — a secretaria recebe na fila.
+        </p>
         <div class="citizen-steps">
           <span>1 · Tipo</span>
           <span>2 · Foto</span>
           <span>3 · Dados</span>
           <span>4 · Protocolo</span>
+        </div>
+        <div class="citizen-quick">
+          <a id="linkMapa" href="/mapa.html">Ver mapa da cidade</a>
+          <a id="linkFluxo" href="/fluxo.html">Como funciona</a>
+          <button type="button" id="btnIrAcompanhar">Acompanhar protocolo</button>
         </div>
       </div>
     </div>
@@ -27,9 +89,14 @@
     <div id="sucesso" class="success-box" style="display:none"></div>
 
     <div class="grid-2">
-      <div class="panel">
-        <h3 style="margin-bottom:0.85rem">Novo chamado</h3>
+      <div class="panel" id="painelNovo">
+        <h3 style="margin-bottom:0.35rem">Novo chamado</h3>
+        <p class="muted" style="margin:0 0 0.85rem;font-size:0.84rem">
+          Escolha o tipo, tire foto e marque o local. O sistema gera o protocolo na hora.
+        </p>
+
         <label>Tipo de problema</label>
+        <div class="citizen-filters" id="catFilters"></div>
         <div class="cats" id="cats"></div>
         <div id="tipoEscolhido" class="tipo-escolhido" style="display:none"></div>
 
@@ -61,13 +128,16 @@
       </div>
 
       <div>
-        <div class="panel" style="margin-bottom:1rem">
-          <h3 style="margin-bottom:0.85rem">Acompanhar protocolo</h3>
+        <div class="panel" style="margin-bottom:1rem" id="painelAcompanhar">
+          <h3 style="margin-bottom:0.35rem">Acompanhar protocolo</h3>
+          <p class="muted" style="margin:0 0 0.85rem;font-size:0.84rem">
+            Digite o número ou busque pelo WhatsApp usado no registro.
+          </p>
           <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
             <input id="protocolo" placeholder="Ex.: 20261001" style="margin:0;flex:1;min-width:140px" />
             <button class="btn" id="buscar" type="button">Buscar</button>
           </div>
-          <p class="muted" style="margin:0.65rem 0 0;font-size:0.8rem">Ou busque pelos seus protocolos recentes / telefone.</p>
+          <p class="muted" style="margin:0.65rem 0 0;font-size:0.8rem">Protocolos recentes neste aparelho</p>
           <div id="meus" class="chip-row" style="margin-top:0.65rem"></div>
           <div style="display:flex;gap:0.5rem;margin-top:0.65rem;flex-wrap:wrap">
             <input id="telBusca" placeholder="Seu WhatsApp" style="margin:0;flex:1;min-width:140px" />
@@ -75,9 +145,53 @@
           </div>
           <div id="resultado" style="margin-top:1rem"></div>
         </div>
-        <div class="panel">
-          <h3 style="margin-bottom:0.75rem">Local no mapa</h3>
+
+        <div class="panel" style="margin-bottom:1rem">
+          <h3 style="margin-bottom:0.55rem">Situação da cidade</h3>
+          <div class="citizen-stats" id="cityStats">
+            <div class="citizen-stat"><strong>—</strong><span>Abertos</span></div>
+            <div class="citizen-stat"><strong>—</strong><span>Em execução</span></div>
+            <div class="citizen-stat"><strong>—</strong><span>Concluídos</span></div>
+          </div>
+          <h4 style="margin:0 0 0.45rem;font-size:0.92rem">Perto de você</h4>
+          <div id="perto" class="list"><p class="muted">Carregando…</p></div>
+        </div>
+
+        <div class="panel" style="margin-bottom:1rem">
+          <h3 style="margin-bottom:0.55rem">Andamento do chamado</h3>
+          <ul class="citizen-legend">
+            <li><strong>Novo</strong> Registrado — secretaria já recebe na fila</li>
+            <li><strong>Encaminhado</strong> Equipe designada para o local</li>
+            <li><strong>Em execução</strong> Serviço em andamento na rua</li>
+            <li><strong>Conferência</strong> Foto do “depois” em validação</li>
+            <li><strong>Concluído</strong> Resolvido — você pode avaliar</li>
+          </ul>
+        </div>
+
+        <div class="panel" style="margin-bottom:1rem">
+          <h3 style="margin-bottom:0.35rem">Local no mapa</h3>
+          <p class="muted" style="margin:0 0 0.65rem;font-size:0.8rem">Arraste o pino ou toque no mapa para ajustar.</p>
           <div id="map" class="map"></div>
+        </div>
+
+        <div class="panel citizen-faq">
+          <h3 style="margin-bottom:0.35rem">Dúvidas frequentes</h3>
+          <details open>
+            <summary>Preciso de cadastro para abrir chamado?</summary>
+            <p>Não. Informe nome, local e (opcional) WhatsApp. Guarde o protocolo para acompanhar.</p>
+          </details>
+          <details>
+            <summary>O que acontece depois que eu envio?</summary>
+            <p>O chamado vai direto para a secretaria responsável (Obras, Iluminação, Limpeza, Saúde…). Você acompanha o status por aqui.</p>
+          </details>
+          <details>
+            <summary>Posso mandar mais de uma foto?</summary>
+            <p>Sim, até 5. A primeira vira capa. Ângulos diferentes ajudam a equipe a achar o local.</p>
+          </details>
+          <details>
+            <summary>Como compartilho o protocolo?</summary>
+            <p>Depois de buscar o chamado, use “Copiar protocolo” ou “WhatsApp” para enviar o link de acompanhamento.</p>
+          </details>
         </div>
       </div>
     </div>
@@ -89,7 +203,7 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=fotos5"></script>
+  <script src="/app.js?v=cidadao-enrich1"></script>
   <script src="/map.js"></script>
   <script>
     if (new URLSearchParams(location.search).get('cidade')) {
@@ -103,6 +217,33 @@
     let urgencia = null;
     let lat = -4.2917, lng = -44.7917;
     let map, marker;
+    let allCats = [];
+    let filtroGrupo = 'todos';
+    let cfgGlobal = null;
+
+    const CAT_INTERNA = (c) => !!(c && (c.interno || c.id === 'visita_surpresa'));
+
+    const GRUPOS = [
+      { id: 'todos', label: 'Todos' },
+      { id: 'rua', label: 'Rua / Obras', secs: ['obras', 'transito', 'defesa_civil'] },
+      { id: 'luz', label: 'Iluminação', secs: ['iluminacao'] },
+      { id: 'limpeza', label: 'Limpeza / Verde', secs: ['limpeza', 'meio_ambiente'] },
+      { id: 'saude', label: 'Saúde', secs: ['saude'] },
+      { id: 'eventos', label: 'Eventos', secs: ['eventos'] },
+      { id: 'outros', label: 'Outros', secs: ['ouvidoria'] },
+    ];
+
+    function catsPublicas() {
+      return (allCats || []).filter((c) => !CAT_INTERNA(c));
+    }
+
+    function catsFiltradas() {
+      const list = catsPublicas();
+      if (filtroGrupo === 'todos') return list;
+      const g = GRUPOS.find((x) => x.id === filtroGrupo);
+      if (!g || !g.secs) return list;
+      return list.filter((c) => g.secs.includes(c.secretaria) || (filtroGrupo === 'saude' && c.eixo === 'saude') || (filtroGrupo === 'eventos' && c.eixo === 'eventos'));
+    }
 
     function renderFotoGal() {
       const gal = document.getElementById('fotoGal');
@@ -152,7 +293,6 @@
       renderFotoGal();
       document.getElementById('foto').value = '';
 
-      // IA analisa a capa (1ª foto)
       const capa = fotosAntes[0];
       box.textContent = 'IA analisando a foto…';
       try {
@@ -165,10 +305,12 @@
         });
         urgencia = ia.urgencia;
         box.innerHTML = `<strong style="color:var(--brand)">IA ${ia.confianca}%</strong> — ${ia.label} · urgência ${ia.urgencia}. ${ia.aviso}`;
-        categoria = ia.categoria;
-        document.querySelectorAll('.cat').forEach(el => {
-          el.classList.toggle('selected', el.dataset.id === ia.categoria);
-        });
+        if (ia.categoria && !CAT_INTERNA({ id: ia.categoria })) {
+          categoria = ia.categoria;
+          document.querySelectorAll('.cat').forEach((el) => {
+            el.classList.toggle('selected', el.dataset.id === ia.categoria);
+          });
+        }
         const desc = document.getElementById('descricao');
         if (!desc.value.trim()) desc.value = ia.descricaoSugerida;
       } catch (err) {
@@ -180,16 +322,63 @@
       const box = document.getElementById('meus');
       const list = meusProtocolos();
       if (!list.length) {
-        box.innerHTML = '';
+        box.innerHTML = '<span class="muted" style="font-size:0.8rem">Nenhum protocolo salvo neste aparelho ainda.</span>';
         return;
       }
-      box.innerHTML = list.map(p =>
+      box.innerHTML = list.map((p) =>
         `<button type="button" class="chip" data-p="${p}">${p}</button>`
       ).join('');
-      box.querySelectorAll('.chip').forEach(el => {
+      box.querySelectorAll('.chip').forEach((el) => {
         el.onclick = () => {
           document.getElementById('protocolo').value = el.dataset.p;
           document.getElementById('buscar').click();
+        };
+      });
+    }
+
+    function renderCatFilters() {
+      const box = document.getElementById('catFilters');
+      box.innerHTML = GRUPOS.map((g) =>
+        `<button type="button" data-g="${g.id}" class="${filtroGrupo === g.id ? 'active' : ''}">${g.label}</button>`
+      ).join('');
+      box.querySelectorAll('button').forEach((btn) => {
+        btn.onclick = () => {
+          filtroGrupo = btn.dataset.g;
+          renderCatFilters();
+          renderCats();
+        };
+      });
+    }
+
+    function renderCats() {
+      const cats = document.getElementById('cats');
+      const list = catsFiltradas();
+      if (!list.length) {
+        cats.innerHTML = '<p class="muted">Nenhum tipo neste filtro.</p>';
+        return;
+      }
+      cats.innerHTML = list.map((c) => `
+        <div class="cat ${categoria === c.id ? 'selected' : ''}" data-id="${c.id}" role="button" aria-pressed="${categoria === c.id}">
+          <span class="icon">${c.icon || '📋'}</span>
+          <span class="name">${c.label}</span>
+        </div>
+      `).join('');
+      cats.querySelectorAll('.cat').forEach((el) => {
+        el.onclick = () => {
+          cats.querySelectorAll('.cat').forEach((x) => {
+            x.classList.remove('selected');
+            x.setAttribute('aria-pressed', 'false');
+          });
+          el.classList.add('selected');
+          el.setAttribute('aria-pressed', 'true');
+          categoria = el.dataset.id;
+          const nome = el.querySelector('.name')?.textContent || categoria;
+          const box = document.getElementById('tipoEscolhido');
+          box.style.display = 'block';
+          box.innerHTML = `<strong>Tipo selecionado:</strong> ${nome} — continue com a descrição e a foto abaixo.`;
+          toast('Tipo: ' + nome);
+          document.getElementById('blocoDescricao').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => document.getElementById('descricao').focus(), 350);
         };
       });
     }
@@ -206,7 +395,7 @@
     }
 
     function timelineCidadao(historico) {
-      const chave = (historico || []).filter(h =>
+      const chave = (historico || []).filter((h) =>
         ['novo', 'encaminhado', 'em_execucao', 'aguardando_aprovacao', 'concluido'].includes(h.status)
       );
       const visto = new Set();
@@ -219,7 +408,7 @@
       if (!limpo.length) return '';
       return `
         <div class="meta" style="margin-top:0.85rem"><strong>Andamento</strong></div>
-        ${timelineHtml(limpo.map(h => ({
+        ${timelineHtml(limpo.map((h) => ({
           ...h,
           nota: ({
             novo: 'Chamado registrado',
@@ -230,6 +419,16 @@
           })[h.status] || '',
         })))}
       `;
+    }
+
+    function linkAcompanhar(protocolo) {
+      return `${location.origin}${cityLink('/cidadao.html')}&protocolo=${encodeURIComponent(protocolo)}`;
+    }
+
+    function waShareUrl(c) {
+      const cidade = (cfgGlobal && (cfgGlobal.cidade || cfgGlobal.produto)) || 'Prefeitura';
+      const texto = `Protocolo ${c.protocolo} — ${c.titulo || 'chamado'} (${cidade}). Acompanhe: ${linkAcompanhar(c.protocolo)}`;
+      return 'https://wa.me/?text=' + encodeURIComponent(texto);
     }
 
     function renderChamado(c) {
@@ -266,6 +465,8 @@
           ${antesDepoisHtml(c)}
           <div class="actions">
             <button class="btn btn-sm" type="button" onclick="copyText('${c.protocolo}')">Copiar protocolo</button>
+            <a class="btn btn-sm btn-primary" target="_blank" rel="noopener" href="${waShareUrl(c)}">WhatsApp</a>
+            <button class="btn btn-sm" type="button" onclick="copyText('${linkAcompanhar(c.protocolo)}')">Copiar link</button>
           </div>
           ${timelineCidadao(c.historico)}
           ${concluido ? `
@@ -287,44 +488,90 @@
       if (typeof bindFotoThumbs === 'function') bindFotoThumbs(box);
     }
 
+    function distKm(aLat, aLng, bLat, bLng) {
+      const toRad = (d) => (d * Math.PI) / 180;
+      const R = 6371;
+      const dLat = toRad(bLat - aLat);
+      const dLng = toRad(bLng - aLng);
+      const x = Math.sin(dLat / 2) ** 2
+        + Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLng / 2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(x));
+    }
+
+    async function loadCityPulse() {
+      const box = document.getElementById('perto');
+      const stats = document.getElementById('cityStats');
+      try {
+        const list = await api('/api/chamados');
+        const abertos = list.filter((c) => ['novo', 'encaminhado', 'em_analise'].includes(c.status)).length;
+        const exec = list.filter((c) => ['em_execucao', 'aguardando_aprovacao'].includes(c.status)).length;
+        const ok = list.filter((c) => c.status === 'concluido').length;
+        stats.innerHTML = `
+          <div class="citizen-stat"><strong>${abertos}</strong><span>Abertos</span></div>
+          <div class="citizen-stat"><strong>${exec}</strong><span>Em execução</span></div>
+          <div class="citizen-stat"><strong>${ok}</strong><span>Concluídos</span></div>
+        `;
+
+        const perto = list
+          .filter((c) => c.lat && c.lng && c.status !== 'concluido' && c.status !== 'cancelado')
+          .map((c) => ({ ...c, d: distKm(lat, lng, Number(c.lat), Number(c.lng)) }))
+          .sort((a, b) => a.d - b.d)
+          .slice(0, 5);
+
+        if (!perto.length) {
+          box.innerHTML = '<p class="muted">Nenhum chamado aberto próximo no momento.</p>';
+          return;
+        }
+        box.innerHTML = perto.map((c) => `
+          <div class="item" style="cursor:pointer" data-focus="${c.lat},${c.lng}">
+            <div class="item-head">
+              <strong>${c.titulo || c.categoria || 'Chamado'}</strong>
+              ${badge(c.status)}
+            </div>
+            <div class="meta">${c.bairro || '—'} · ~${c.d < 1 ? Math.round(c.d * 1000) + ' m' : c.d.toFixed(1) + ' km'}</div>
+          </div>
+        `).join('');
+        box.querySelectorAll('[data-focus]').forEach((el) => {
+          el.onclick = () => {
+            const [la, ln] = el.dataset.focus.split(',').map(Number);
+            if (la && ln) {
+              marker.setLatLng([la, ln]);
+              map.setView([la, ln], 16);
+              document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          };
+        });
+      } catch (_) {
+        stats.innerHTML = `
+          <div class="citizen-stat"><strong>—</strong><span>Abertos</span></div>
+          <div class="citizen-stat"><strong>—</strong><span>Em execução</span></div>
+          <div class="citizen-stat"><strong>—</strong><span>Concluídos</span></div>
+        `;
+        box.innerHTML = '<p class="muted">Não foi possível carregar a situação agora.</p>';
+      }
+    }
+
     async function init() {
       const cfg = await loadCityBrand();
+      cfgGlobal = cfg;
       document.getElementById('top').innerHTML = topbar('Cidadão', cfg);
       document.title = (cfg.produto || cfg.cidade) + ' · Cidadão';
+      document.getElementById('heroKicker').textContent =
+        'Cidadão · ' + (cfg.produto || cfg.cidade || 'Cidade Conecta');
+      document.getElementById('linkMapa').href = cityLink('/mapa.html');
+      document.getElementById('linkFluxo').href = cityLink('/fluxo.html');
+      rewriteCityLinks();
 
       lat = cfg.lat; lng = cfg.lng;
 
       const bairroSel = document.getElementById('bairro');
-      bairroSel.innerHTML = (cfg.bairros || ['Centro']).map(b =>
+      bairroSel.innerHTML = (cfg.bairros || ['Centro']).map((b) =>
         `<option>${b}</option>`
       ).join('');
 
-      const cats = document.getElementById('cats');
-      cats.innerHTML = cfg.categorias.map(c => `
-        <div class="cat" data-id="${c.id}">
-          <span class="icon">${c.icon}</span>
-          <span class="name">${c.label}</span>
-        </div>
-      `).join('');
-      cats.querySelectorAll('.cat').forEach(el => {
-        el.onclick = () => {
-          cats.querySelectorAll('.cat').forEach(x => {
-            x.classList.remove('selected');
-            x.setAttribute('aria-pressed', 'false');
-          });
-          el.classList.add('selected');
-          el.setAttribute('aria-pressed', 'true');
-          categoria = el.dataset.id;
-          const nome = el.querySelector('.name')?.textContent || categoria;
-          const box = document.getElementById('tipoEscolhido');
-          box.style.display = 'block';
-          box.innerHTML = `<strong>Tipo selecionado:</strong> ${nome} — continue com a descrição e a foto abaixo.`;
-          toast('Tipo: ' + nome);
-          const desc = document.getElementById('descricao');
-          document.getElementById('blocoDescricao').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          setTimeout(() => desc.focus(), 350);
-        };
-      });
+      allCats = (cfg.categorias || []).filter((c) => !CAT_INTERNA(c));
+      renderCatFilters();
+      renderCats();
 
       map = L.map('map').setView([lat, lng], 16);
       MapBI.basemaps(map, 'hybrid');
@@ -334,26 +581,32 @@
         lat = p.lat; lng = p.lng;
         document.getElementById('gpsHint').textContent =
           `Localização: ${lat.toFixed(5)}, ${lng.toFixed(5)} (ajustável no mapa)`;
+        loadCityPulse();
       });
-      map.on('click', e => {
+      map.on('click', (e) => {
         lat = e.latlng.lat; lng = e.latlng.lng;
         marker.setLatLng(e.latlng);
         document.getElementById('gpsHint').textContent =
           `Localização: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        loadCityPulse();
       });
 
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
+        navigator.geolocation.getCurrentPosition((pos) => {
           lat = pos.coords.latitude;
           lng = pos.coords.longitude;
           marker.setLatLng([lat, lng]);
           map.setView([lat, lng], 16);
           document.getElementById('gpsHint').textContent =
             `GPS ativo: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+          loadCityPulse();
         }, () => {
           document.getElementById('gpsHint').textContent =
             'GPS indisponível — use o mapa para marcar o local.';
+          loadCityPulse();
         });
+      } else {
+        loadCityPulse();
       }
 
       renderMeus();
@@ -365,12 +618,18 @@
       }
     }
 
+    document.getElementById('btnIrAcompanhar').onclick = () => {
+      document.getElementById('painelAcompanhar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('protocolo').focus();
+    };
+
     document.getElementById('foto').onchange = (e) => {
       addFotosFromFiles(e.target.files).catch((err) => toast(err.message || 'Erro na foto'));
     };
 
     document.getElementById('enviar').onclick = async () => {
       if (!categoria) return toast('Selecione o tipo de problema');
+      if (CAT_INTERNA({ id: categoria })) return toast('Escolha um tipo de problema da lista');
       const descricao = document.getElementById('descricao').value.trim();
       const endereco = document.getElementById('endereco').value.trim();
       const nome = document.getElementById('nome').value.trim();
@@ -382,16 +641,16 @@
       const btn = document.getElementById('enviar');
       await withBusy(btn, 'Enviando chamado…', async () => {
         try {
-          // Reclassifica pelo texto/foto antes de enviar (evita cair em "Outros"/Ouvidoria)
           try {
             const ia = await api('/api/ia/foto', {
               method: 'POST',
               body: JSON.stringify({ foto: fotoData, texto: descricaoFinal }),
             });
-            if (ia?.categoria && (!categoria || categoria === 'outros' || (ia.confianca || 0) >= 55)) {
+            if (ia?.categoria && !CAT_INTERNA({ id: ia.categoria })
+              && (!categoria || categoria === 'outros' || (ia.confianca || 0) >= 55)) {
               categoria = ia.categoria;
               urgencia = ia.urgencia || urgencia;
-              document.querySelectorAll('.cat').forEach(el => {
+              document.querySelectorAll('.cat').forEach((el) => {
                 el.classList.toggle('selected', el.dataset.id === categoria);
               });
             }
@@ -422,7 +681,7 @@
           ok.innerHTML = `
             <strong>Obrigado pela sua colaboração!</strong>
             <p style="margin:0.45rem 0 0.15rem;line-height:1.45">
-              Seu registro ajuda a Prefeitura de ${window.__CITY_NOME || 'sua cidade'} a cuidar da cidade com mais agilidade.
+              Seu registro ajuda a Prefeitura de ${window.__CITY_NOME || (cfgGlobal && cfgGlobal.cidade) || 'sua cidade'} a cuidar da cidade com mais agilidade.
             </p>
             <div class="protocolo-big">${chamado.protocolo}</div>
             <p class="muted" style="margin:0.35rem 0 0.75rem">
@@ -430,6 +689,7 @@
             </p>
             <div class="actions">
               <button class="btn btn-sm btn-primary" type="button" onclick="copyText('${chamado.protocolo}')">Copiar protocolo</button>
+              <a class="btn btn-sm" target="_blank" rel="noopener" href="${waShareUrl(chamado)}">Enviar no WhatsApp</a>
               <a class="btn btn-sm" href="${cityLink('/cidadao.html')}&protocolo=${chamado.protocolo}">Link de acompanhamento</a>
             </div>
           `;
@@ -443,10 +703,11 @@
           renderFotoGal();
           urgencia = null;
           document.getElementById('iaBox').textContent = '';
-          document.querySelectorAll('.cat').forEach(x => x.classList.remove('selected'));
+          document.querySelectorAll('.cat').forEach((x) => x.classList.remove('selected'));
           categoria = null;
 
           renderChamado(chamado);
+          loadCityPulse();
           toast('Protocolo ' + chamado.protocolo);
         } catch (e) {
           toast(e.message);
@@ -464,6 +725,8 @@
           box.innerHTML = '<p class="muted">Nenhum chamado encontrado.</p>';
           return;
         }
+        saveMeuProtocolo(list[0].protocolo);
+        renderMeus();
         renderChamado(list[0]);
       } catch (e) {
         toast(e.message);
@@ -480,9 +743,9 @@
           box.innerHTML = '<p class="muted">Nenhum chamado neste telefone.</p>';
           return;
         }
-        list.slice(0, 8).forEach(c => saveMeuProtocolo(c.protocolo));
+        list.slice(0, 8).forEach((c) => saveMeuProtocolo(c.protocolo));
         renderMeus();
-        box.innerHTML = list.map(c => `
+        box.innerHTML = list.map((c) => `
           <div class="item" style="cursor:pointer" data-p="${c.protocolo}">
             <div class="item-head">
               <strong>${c.titulo}</strong>
@@ -491,7 +754,7 @@
             <div class="meta">${c.protocolo} · ${c.bairro} · ${fmtDate(c.criadoEm)}</div>
           </div>
         `).join('');
-        box.querySelectorAll('[data-p]').forEach(el => {
+        box.querySelectorAll('[data-p]').forEach((el) => {
           el.onclick = () => {
             document.getElementById('protocolo').value = el.dataset.p;
             document.getElementById('buscar').click();
@@ -502,7 +765,7 @@
       }
     };
 
-    document.getElementById('protocolo').addEventListener('keydown', e => {
+    document.getElementById('protocolo').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') document.getElementById('buscar').click();
     });
 
@@ -517,7 +780,7 @@
       } catch (e) { toast(e.message); }
     };
 
-    init().catch(e => toast(e.message));
+    init().catch((e) => toast(e.message));
   </script>
 </body>
 </html>

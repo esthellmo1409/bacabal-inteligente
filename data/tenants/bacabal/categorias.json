@@ -144,7 +144,8 @@
     "label": "Visita surpresa do Gabinete",
     "secretaria": "saude",
     "icon": "👁️",
-    "eixo": "saude"
+    "eixo": "saude",
+    "interno": true
   },
   {
     "id": "estrutura_evento",
