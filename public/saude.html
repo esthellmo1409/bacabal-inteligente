@@ -574,14 +574,22 @@
 
       document.getElementById('chamadosBox').innerHTML = (p.reclamacoes || []).length
         ? p.reclamacoes.map((c) => `
-          <div class="item">
+          <div class="item" data-chamado-id="${c.id}">
             <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span></div>
             <div>${c.titulo || c.categoria || 'Chamado'}</div>
-            <div class="meta">${c.bairro || '—'} · ${c.categoria || ''} · ${c.prioridade || ''}</div>
+            <div class="meta">${c.bairro || '—'} · ${c.categoria || ''} · ${c.prioridade || ''}
+              ${c.criadoEm ? '· cidadão chamou ' + new Date(c.criadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</div>
+            ${c.foto || c.fotoAntes ? `<img src="${c.foto || c.fotoAntes}" alt="" style="max-width:100%;max-height:140px;border-radius:10px;margin:.45rem 0;object-fit:cover;cursor:pointer" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : ''}
+            ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : ''}
           </div>`).join('')
         : '<p class="muted">Nenhum chamado aberto da Saúde no momento.</p>';
 
       bindActions();
+      if (typeof bindIaObraAssist === 'function') {
+        bindIaObraAssist(document.getElementById('chamadosBox'), (id) =>
+          (painelAtual?.reclamacoes || []).find((c) => c.id === id)
+        );
+      }
     }
 
     async function plantaoAcao(acao) {

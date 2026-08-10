@@ -232,7 +232,7 @@ function ensureDemoChamado(slug = 'bacabal') {
     titulo: cat.label || 'Buraco / Tapa-buraco',
     descricao: 'Buraco profundo na via pública, asfalto quebrado. Risco para veículos e pedestres.',
     bairro: 'Centro',
-    endereco: 'Rua 11, próximo ao meio da quadra',
+    endereco: 'Rua Djalma, próximo ao meio da quadra',
     lat: (cfg.lat || -4.2917) + 0.003,
     lng: (cfg.lng || -44.7917) - 0.002,
     prioridade: 'alta',
@@ -247,14 +247,17 @@ function ensureDemoChamado(slug = 'bacabal') {
 
   if (idx < 0) {
     // Encaminhado: aparece na secretaria E na rota do campo
+    // Cidadão "chamou" de manhã — horário fixo da demo para a narrativa do Gabinete
+    const chamadoEm = new Date();
+    chamadoEm.setHours(7, 42, 0, 0);
     chamados.unshift(normalizeChamado({
       ...base,
       status: 'encaminhado',
       historico: [
-        { em: now, status: 'novo', nota: 'Chamado aberto pelo cidadão com foto' },
+        { em: chamadoEm.toISOString(), status: 'novo', nota: 'Chamado aberto pelo cidadão com foto' },
         { em: now, status: 'encaminhado', nota: 'Encaminhado à equipe de campo' },
       ],
-      criadoEm: now,
+      criadoEm: chamadoEm.toISOString(),
     }));
   } else {
     const prev = chamados[idx];
@@ -270,6 +273,11 @@ function ensureDemoChamado(slug = 'bacabal') {
     prev.endereco = base.endereco;
     prev.prioridade = 'alta';
     prev.demoFixo = 'buraco-foto';
+    if (!prev.criadoEm) {
+      const chamadoEm = new Date();
+      chamadoEm.setHours(7, 42, 0, 0);
+      prev.criadoEm = chamadoEm.toISOString();
+    }
     // Mantém vivo para demo: se concluído/cancelado/aprovação, reabre encaminhado (só foto do problema)
     if (prev.status === 'concluido' || prev.status === 'cancelado' || prev.status === 'aguardando_aprovacao') {
       prev.status = 'encaminhado';

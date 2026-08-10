@@ -676,9 +676,12 @@
                   <div class="item-head">
                     <strong>${p.titulo}</strong>
                     <span class="badge ${p.prioridade === 'alta' ? 'badge-cancelado' : 'badge-em_analise'}">${pontoStatusLabel(p.status)}</span>
+                    ${p.simBuraco || p.demoFixo ? '<span class="badge badge-em_analise">simulação</span>' : ''}
                   </div>
                   <div class="meta">${p.bairro} · ${p.rua}${p.prazoHoje ? ' · prazo ' + p.prazoHoje : ''}</div>
+                  ${p.cidadaoChamouEm ? `<div class="meta" style="color:#9a3412;font-weight:700">Cidadão chamou em ${fmtDate(p.cidadaoChamouEm)}${p.protocolo ? ' · ' + p.protocolo : ''}</div>` : ''}
                   ${p.motivoAtraso ? `<div class="meta" style="color:#b91c1c;font-weight:600">${p.motivoAtraso}</div>` : ''}
+                  ${p.foto ? `<img src="${p.foto}" alt="" style="max-width:220px;max-height:120px;border-radius:10px;margin:.4rem 0;object-fit:cover;cursor:pointer" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : ''}
                   ${p.prioridade === 'alta' ? `
                     <div class="actions">
                       <button class="btn btn-sm btn-warn" onclick="cobrarObras('${String(p.titulo || '').replace(/'/g, '')}')">Cobrar secretaria</button>
@@ -737,8 +740,12 @@
             <div class="list">
               ${obrasHoje.chamados.slice(0, 8).map((c) => `
                 <div class="item">
-                  <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span></div>
+                  <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span>
+                    ${c.demoFixo === 'buraco-foto' ? '<span class="badge badge-em_analise">simulação</span>' : ''}
+                  </div>
                   <div class="meta">${c.titulo || c.categoria} · ${c.bairro || ''}</div>
+                  ${c.criadoEm ? `<div class="meta" style="color:#9a3412;font-weight:700">Cidadão chamou em ${fmtDate(c.criadoEm)}</div>` : ''}
+                  ${c.foto || c.fotoAntes ? `<img src="${c.foto || c.fotoAntes}" alt="" style="max-width:180px;max-height:100px;border-radius:8px;margin:.35rem 0;object-fit:cover" />` : ''}
                   <div class="actions">
                     <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
                     <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>

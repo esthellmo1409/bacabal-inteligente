@@ -74,6 +74,34 @@
     }
     .bar-mini { height:8px; border-radius:999px; background:#eee; overflow:hidden; margin:.4rem 0; }
     .bar-mini > i { display:block; height:100%; background:var(--obr); }
+    .foto-buraco {
+      width:100%; max-height:180px; object-fit:cover; border-radius:12px; margin:.55rem 0;
+      border:1px solid #fed7aa; cursor:pointer; background:#fff7ed;
+    }
+    .cidadao-quando {
+      display:inline-flex; align-items:center; gap:.35rem; margin-top:.35rem;
+      padding:.28rem .55rem; border-radius:999px; font-size:.72rem; font-weight:800;
+      background:#ffedd5; color:#9a3412;
+    }
+    .btn-detalhar {
+      display:inline-flex; align-items:center; justify-content:space-between; gap:.5rem;
+      width:100%; margin-top:.55rem; padding:.55rem .75rem;
+      border:1px solid #fdba74; border-radius:10px; background:#fff;
+      font:inherit; font-weight:800; font-size:.85rem; color:#7c2d12; cursor:pointer;
+    }
+    .btn-detalhar:hover { background:#fff7ed; }
+    .btn-detalhar .seta {
+      width:0; height:0;
+      border-left:5px solid transparent; border-right:5px solid transparent;
+      border-top:6px solid #9a3412;
+      transition: transform .15s ease;
+    }
+    .btn-detalhar.open .seta { transform: rotate(180deg); }
+    .detalhe-box {
+      display:none; margin-top:.65rem; padding:.85rem;
+      border:1px solid #fed7aa; border-radius:12px; background:#fffaf5;
+    }
+    .detalhe-box.open { display:block; }
     @media (max-width:900px) { .acao-grid { grid-template-columns:1fr 1fr; } }
     @media (max-width:720px) { .acao-grid { grid-template-columns:1fr; } .obr-hero h1 { font-size:1.3rem; } }
   </style>
@@ -232,24 +260,61 @@
       return `<span class="pill ${st || ''}">${String(st || '—').replace(/_/g, ' ')}</span>`;
     }
 
-    function render(p) {
-      painelAtual = p;
-      const t = p.totais || {};
-      document.getElementById('tabPontos').textContent = String(t.pontosAbertos || 0);
-      document.getElementById('tabChamados').textContent = String(t.osAbertas || 0);
-      document.getElementById('tabAlertas').textContent = String((p.alertas || []).length);
+    function fmtCidadaoChamou(iso) {
+      if (!iso) return '';
+      try {
+        return new Date(iso).toLocaleString('pt-BR', {
+          day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
+        });
+      } catch { return ''; }
+    }
 
-      document.getElementById('kpis').innerHTML = `
-        <div class="panel stat"><div class="label">Pontos abertos</div><div class="value">${t.pontosAbertos || 0}</div>
-          <div class="hint">${t.pontosAlta || 0} prioridade alta</div></div>
-        <div class="panel stat"><div class="label">Rota do dia</div><div class="value">${t.rotaPendentes || 0}</div>
-          <div class="hint">${t.equipesEmCampo || 0} equipe(s) em campo</div></div>
-        <div class="panel stat"><div class="label">Frota livre</div><div class="value">${t.frotaLivre || 0}/${t.frotaTotal || 0}</div>
-          <div class="hint">${t.materiaisBaixos || 0} material(is) baixo(s)</div></div>
-        <div class="panel stat"><div class="label">Obras / OS</div><div class="value">${t.obrasAtrasadas || 0}</div>
-          <div class="hint">${t.obrasAndamento || 0} andamento · ${t.osAbertas || 0} chamado(s)</div></div>`;
+    function chamadoParaIa(c) {
+      if (!c) return null;
+      return {
+        id: c.chamadoId || c.id,
+        protocolo: c.protocolo,
+        titulo: c.tituloChamado || c.titulo,
+        categoria: c.categoria || c.tipo || 'buraco',
+        descricao: c.descricao || '',
+        status: c.status,
+        foto: c.foto || c.fotoAntes || null,
+        fotoAntes: c.foto || c.fotoAntes || null,
+        fotoDepois: c.fotoDepois || null,
+      };
+    }
 
-      document.getElementById('pontosBox').innerHTML = (p.pontosQuentes || []).map((x) => `
+    function cardChamadoHtml(c) {
+      const foto = c.foto || c.fotoAntes;
+      const detalheId = 'ch-' + c.id;
+      return `
+        <div class="unidade-card ${c.demoFixo === 'buraco-foto' ? 'critico' : ''}" data-chamado-id="${c.id}">
+          <div class="item-head">
+            <strong>${c.titulo || c.categoria || 'Chamado'}</strong>
+            ${statusPill(c.status)}
+            ${c.demoFixo === 'buraco-foto' ? '<span class="pill alta">simulação buraco</span>' : ''}
+          </div>
+          <div class="meta">${c.protocolo || c.id} · ${c.bairro || '—'} ${c.endereco ? '· ' + c.endereco : ''}</div>
+          ${c.criadoEm ? `<div class="cidadao-quando">Cidadão chamou em ${fmtCidadaoChamou(c.criadoEm)}</div>` : ''}
+          <button type="button" class="btn-detalhar" data-detalhar="${detalheId}">
+            <span>Detalhar</span><span class="seta" aria-hidden="true"></span>
+          </button>
+          <div class="detalhe-box" id="detalhe-${detalheId}">
+            <div class="meta">${c.cidadao?.nome || 'Cidadão'}${c.cidadao?.telefone ? ' · ' + c.cidadao.telefone : ''}</div>
+            ${foto ? `<img class="foto-buraco" src="${foto}" alt="Foto do problema" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : '<p class="muted">Sem foto anexada.</p>'}
+            ${c.descricao ? `<p class="muted" style="margin:.35rem 0">${c.descricao}</p>` : ''}
+            <div class="form-row" style="margin-bottom:.55rem">
+              <button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>
+            </div>
+            ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(chamadoParaIa(c)) : ''}
+          </div>
+        </div>`;
+    }
+
+    function cardPontoHtml(x) {
+      const detalheId = 'pt-' + x.id;
+      const temDetalhe = !!(x.foto || x.descricao || x.chamadoId || x.cidadaoChamouEm || x.simBuraco);
+      return `
         <div class="unidade-card ${x.prioridade === 'alta' && x.status !== 'concluido' ? 'critico' : ''}">
           <div class="item-head">
             <strong>${x.titulo}</strong>
@@ -275,7 +340,44 @@
             <input style="flex:1;min-width:160px" data-ponto-motivo="${x.id}" value="${(x.motivoAtraso || '').replace(/"/g, '&quot;')}" placeholder="Motivo atraso (opcional)" />
             <button class="btn btn-sm btn-primary" type="button" data-ponto-save="${x.id}">Salvar</button>
           </div>
-        </div>`).join('') || '<p class="muted">Nenhum ponto quente.</p>';
+          ${temDetalhe ? `
+          <button type="button" class="btn-detalhar" data-detalhar="${detalheId}">
+            <span>Detalhar</span><span class="seta" aria-hidden="true"></span>
+          </button>
+          <div class="detalhe-box" id="detalhe-${detalheId}">
+            ${x.cidadaoChamouEm ? `<div class="cidadao-quando">Cidadão chamou em ${fmtCidadaoChamou(x.cidadaoChamouEm)}${x.protocolo ? ' · ' + x.protocolo : ''}</div>` : ''}
+            ${x.cidadao ? `<div class="meta" style="margin-top:.35rem">${x.cidadao.nome || ''}${x.cidadao.telefone ? ' · ' + x.cidadao.telefone : ''}</div>` : ''}
+            ${x.foto ? `<img class="foto-buraco" src="${x.foto}" alt="Foto do problema" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : ''}
+            ${x.descricao ? `<p class="muted" style="margin:.35rem 0">${x.descricao}</p>` : ''}
+            <div class="form-row" style="margin-bottom:.55rem">
+              <button class="btn btn-sm btn-primary" type="button" data-encaminhar-ponto="${x.id}" data-chamado="${x.chamadoId || ''}">
+                Encaminhar pra equipe em campo
+              </button>
+            </div>
+            ${(x.foto || x.descricao) && typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(chamadoParaIa(x)) : ''}
+          </div>` : ''}
+        </div>`;
+    }
+
+    function render(p) {
+      painelAtual = p;
+      const t = p.totais || {};
+      document.getElementById('tabPontos').textContent = String(t.pontosAbertos || 0);
+      document.getElementById('tabChamados').textContent = String(t.osAbertas || 0);
+      document.getElementById('tabAlertas').textContent = String((p.alertas || []).length);
+
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">Pontos abertos</div><div class="value">${t.pontosAbertos || 0}</div>
+          <div class="hint">${t.pontosAlta || 0} prioridade alta</div></div>
+        <div class="panel stat"><div class="label">Rota do dia</div><div class="value">${t.rotaPendentes || 0}</div>
+          <div class="hint">${t.equipesEmCampo || 0} equipe(s) em campo</div></div>
+        <div class="panel stat"><div class="label">Frota livre</div><div class="value">${t.frotaLivre || 0}/${t.frotaTotal || 0}</div>
+          <div class="hint">${t.materiaisBaixos || 0} material(is) baixo(s)</div></div>
+        <div class="panel stat"><div class="label">Obras / OS</div><div class="value">${t.obrasAtrasadas || 0}</div>
+          <div class="hint">${t.obrasAndamento || 0} andamento · ${t.osAbertas || 0} chamado(s)</div></div>`;
+
+      document.getElementById('pontosBox').innerHTML = (p.pontosQuentes || []).map(cardPontoHtml).join('')
+        || '<p class="muted">Nenhum ponto quente.</p>';
 
       document.getElementById('rotaBox').innerHTML = (p.rota || []).length
         ? p.rota.map((r) => `
@@ -350,12 +452,7 @@
         </div>`).join('') || '<p class="muted">Nenhuma obra cadastrada.</p>';
 
       document.getElementById('chamadosBox').innerHTML = (p.chamados || []).length
-        ? p.chamados.map((c) => `
-          <div class="item">
-            <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status}</span></div>
-            <div>${c.titulo || c.categoria}</div>
-            <div class="meta">${c.bairro || '—'} · ${c.prioridade || ''}</div>
-          </div>`).join('')
+        ? p.chamados.map(cardChamadoHtml).join('')
         : '<p class="muted">Nenhum chamado aberto de obras.</p>';
 
       document.getElementById('checklistBox').innerHTML = (p.checklist || []).map((c) => `
@@ -373,9 +470,92 @@
         : '<p class="muted">Nenhum alerta no momento.</p>';
 
       bindActions();
+      if (typeof bindIaObraAssist === 'function') {
+        bindIaObraAssist(document.getElementById('pontosBox'), (id) => {
+          const pt = (painelAtual?.pontosQuentes || []).find((x) => x.chamadoId === id || x.id === id);
+          return chamadoParaIa(pt) || (painelAtual?.chamados || []).find((c) => c.id === id);
+        });
+        bindIaObraAssist(document.getElementById('chamadosBox'), (id) =>
+          (painelAtual?.chamados || []).find((c) => c.id === id)
+        );
+      }
     }
 
     function bindActions() {
+      document.querySelectorAll('[data-detalhar]').forEach((btn) => {
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-detalhar');
+          const box = document.getElementById('detalhe-' + id);
+          if (!box) return;
+          const open = !box.classList.contains('open');
+          box.classList.toggle('open', open);
+          btn.classList.toggle('open', open);
+          btn.querySelector('span:first-child').textContent = open ? 'Ocultar detalhes' : 'Detalhar';
+          if (open && typeof bindIaObraAssist === 'function') {
+            bindIaObraAssist(box, (cid) => {
+              const pt = (painelAtual?.pontosQuentes || []).find((x) => x.chamadoId === cid || x.id === cid);
+              return chamadoParaIa(pt) || (painelAtual?.chamados || []).find((c) => c.id === cid);
+            });
+          }
+        };
+      });
+
+      document.querySelectorAll('[data-encaminhar]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.encaminhar;
+          try {
+            await api('/api/chamados/' + id, {
+              method: 'PATCH',
+              body: JSON.stringify({ status: 'encaminhado', nota: 'Encaminhado à equipe em campo' }),
+            });
+            const pt = (painelAtual?.pontosQuentes || []).find((p) => p.chamadoId === id);
+            if (pt) {
+              render(await api('/api/obras-ops/ponto', {
+                method: 'POST',
+                body: JSON.stringify({ id: pt.id, status: 'em_deslocamento', equipeId: 'EQ-OBR-01' }),
+              }));
+            } else {
+              render(await api('/api/obras-ops/hoje'));
+            }
+            toast('Encaminhado pra equipe em campo');
+          } catch (e) { toast(e.message); }
+        };
+      });
+
+      document.querySelectorAll('[data-encaminhar-ponto]').forEach((btn) => {
+        btn.onclick = async () => {
+          const pontoId = btn.dataset.encaminharPonto;
+          const chamadoId = btn.dataset.chamado;
+          try {
+            if (chamadoId) {
+              await api('/api/chamados/' + chamadoId, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: 'encaminhado', nota: 'Encaminhado à equipe em campo' }),
+              });
+            }
+            render(await api('/api/obras-ops/ponto', {
+              method: 'POST',
+              body: JSON.stringify({
+                id: pontoId,
+                status: 'em_deslocamento',
+                equipeId: 'EQ-OBR-01',
+                motivoAtraso: '',
+              }),
+            }));
+            if (typeof api === 'function') {
+              try {
+                await api('/api/obras-ops/equipe', {
+                  method: 'POST',
+                  body: JSON.stringify({ id: 'EQ-OBR-01', status: 'em_campo', pontoId }),
+                });
+              } catch (_) {}
+            }
+            toast('Equipe em campo acionada');
+            render(await api('/api/obras-ops/hoje'));
+          } catch (e) { toast(e.message); }
+        };
+      });
+
       document.querySelectorAll('[data-ponto-save]').forEach((btn) => {
         btn.onclick = async () => {
           const id = btn.dataset.pontoSave;
