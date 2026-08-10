@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Secretaria de Obras</title>
-  <link rel="stylesheet" href="/styles.css?v=exec-ops1" />
+  <link rel="stylesheet" href="/styles.css?v=org-sec1" />
   <script>
     // Slot ANTES do app.js — evita topbar achar que não há login
     window.BI_OPS_LOCK = true;
@@ -148,10 +148,13 @@
     <div class="panel ops-block" id="secRecentes" style="border:2px solid #fb923c;background:linear-gradient(180deg,#fff7ed,#fff)">
       <div class="ops-section-head">
         <div>
-          <h3 style="margin:0;color:#9a3412;font-size:1.15rem">Chamados mais recentes</h3>
-          <p class="muted" style="margin:.25rem 0 0">Abra <strong>Detalhar</strong>: foto antes/depois, dia e hora do campo, e análise da IA (material, tempo, ferramentas).</p>
+          <h3 style="margin:0;color:#9a3412;font-size:1.15rem">① Chamados recentes</h3>
+          <p class="muted" style="margin:.25rem 0 0">Últimos atualizados — abra <strong>Detalhar</strong> para fotos e execução.</p>
         </div>
-        <button class="btn btn-sm btn-primary" type="button" id="btnVerTodosChamados" data-nav-pane="chamados">Ver toda a fila</button>
+        <div class="cta-row">
+          <button class="btn btn-sm" type="button" data-nav-pane="chamados" data-jump="secAbertos">Abertos</button>
+          <button class="btn btn-sm btn-primary" type="button" data-nav-pane="chamados" data-jump="secConcluidos">Concluídos</button>
+        </div>
       </div>
       <div id="recentesBox" class="list"><p class="muted">Carregando chamados…</p></div>
     </div>
@@ -173,7 +176,9 @@
       <button type="button" class="acao-card" data-go="frota"><strong>Frota</strong><span>Brita, caçamba, retro</span></button>
       <button type="button" class="acao-card" data-go="materiais"><strong>Materiais</strong><span>Brita, asfalto, cimento</span></button>
       <button type="button" class="acao-card" data-go="obras"><strong>Obras grandes</strong><span>% e prazo</span></button>
-      <button type="button" class="acao-card" data-go="chamados"><strong>Chamados</strong><span>Fila da secretaria</span></button>
+      <button type="button" class="acao-card" data-jump="secRecentes"><strong>Recentes</strong><span>Últimos chamados</span></button>
+      <button type="button" class="acao-card" data-go="chamados" data-jump="secAbertos"><strong>Abertos</strong><span>Fila em andamento</span></button>
+      <button type="button" class="acao-card" data-go="chamados" data-jump="secConcluidos"><strong>Concluídos</strong><span>Antes/depois + materiais</span></button>
       <button type="button" class="acao-card" data-go="checklist"><strong>Checklist</strong><span>Rotina do dia</span></button>
       <button type="button" class="acao-card" data-go="alertas"><strong>Alertas</strong><span>O que exige atenção</span></button>
       <button type="button" class="acao-card" data-go="chat"><strong>Gabinete</strong><span>Responder cobranças</span></button>
@@ -260,9 +265,30 @@
     </div>
 
     <div class="pane" id="pane-chamados">
-      <div class="panel">
-        <h3 style="margin-bottom:.35rem">Chamados abertos</h3>
-        <div id="chamadosBox" class="list"></div>
+      <div class="ops-subnav" style="display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .75rem">
+        <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
+        <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
+        <button class="btn btn-sm" type="button" data-jump="secRecentes">Recentes (topo)</button>
+      </div>
+      <div class="panel" id="secAbertos" style="border:2px solid #fdba74;margin-bottom:1rem">
+        <div class="ops-section-head">
+          <div>
+            <h3 style="margin:0;color:#9a3412">② Chamados abertos</h3>
+            <p class="muted" style="margin:.25rem 0 0">Fila em andamento — encaminhar, material, execução.</p>
+          </div>
+          <span class="count" id="countAbertos">0</span>
+        </div>
+        <div id="chamadosAbertosBox" class="list"></div>
+      </div>
+      <div class="panel" id="secConcluidos" style="border:2px solid #86efac;background:linear-gradient(180deg,#f0fdf4,#fff)">
+        <div class="ops-section-head">
+          <div>
+            <h3 style="margin:0;color:#166534">③ Concluídos</h3>
+            <p class="muted" style="margin:.25rem 0 0">Portfólio com antes/depois, kg, pessoas e tempo — só secretaria/gabinete.</p>
+          </div>
+          <span class="count" id="countConcluidos">0</span>
+        </div>
+        <div id="chamadosConcluidosBox" class="list"></div>
       </div>
     </div>
 
@@ -293,7 +319,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=exec-ops1"></script>
+  <script src="/app.js?v=org-sec1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
@@ -342,8 +368,31 @@
       }
     }
 
-    function goPane(name, { scroll = true } = {}) {
+    function flashSecao(el) {
+      if (!el) return;
+      el.classList.add('ops-busca-flash');
+      setTimeout(() => el.classList.remove('ops-busca-flash'), 1600);
+    }
+
+    function goPane(name, { scroll = true, jump } = {}) {
+      if (!name && jump) {
+        const elOnly = document.getElementById(jump);
+        if (elOnly) {
+          elOnly.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          flashSecao(elOnly);
+        }
+        return;
+      }
       if (!name) return;
+      // Recentes fica no topo (fora das abas)
+      if (name === 'recentes') {
+        const el = document.getElementById('secRecentes');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          flashSecao(el);
+        }
+        return;
+      }
       const pane = document.getElementById('pane-' + name);
       if (!pane) {
         if (typeof toast === 'function') toast('Seção não encontrada: ' + name);
@@ -356,23 +405,29 @@
         p.classList.toggle('active', p.id === 'pane-' + name);
       });
       document.querySelectorAll('.acao-card').forEach((c) => {
-        c.classList.toggle('active', c.getAttribute('data-go') === name);
+        const go = c.getAttribute('data-go');
+        const j = c.getAttribute('data-jump');
+        c.classList.toggle('active', go === name || j === jump);
       });
       try {
         const url = new URL(location.href);
         url.searchParams.set('aba', name);
+        if (jump) url.searchParams.set('sec', jump);
+        else url.searchParams.delete('sec');
         history.replaceState(
-          { biOpsLock: 1, t: Date.now(), aba: name },
+          { biOpsLock: 1, t: Date.now(), aba: name, sec: jump || null },
           '',
           url.toString()
         );
         if (typeof opsTravarVoltar === 'function') opsTravarVoltar();
       } catch (_) {}
       if (scroll) {
-        const tabs = document.getElementById('tabs');
-        const target = tabs || pane;
         requestAnimationFrame(() => {
+          const target = (jump && document.getElementById(jump))
+            || document.getElementById('tabs')
+            || pane;
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (jump) flashSecao(document.getElementById(jump));
         });
       }
     }
@@ -380,29 +435,38 @@
     // Clique nos cards e nas abas → abre a seção e rola até ela
     document.addEventListener('click', (e) => {
       const btn = e.target && e.target.closest
-        ? e.target.closest('.acao-card[data-go], .obr-tab[data-pane], [data-nav-pane]')
+        ? e.target.closest('.acao-card[data-go], .acao-card[data-jump], .obr-tab[data-pane], [data-nav-pane], [data-jump]')
         : null;
       if (!btn || !document.body.contains(btn)) return;
+      // evita capturar botões internos de cards de chamado
+      if (btn.closest('.unidade-card') && !btn.classList.contains('acao-card') && !btn.hasAttribute('data-nav-pane') && !btn.closest('.ops-subnav') && !btn.closest('.ops-section-head')) {
+        return;
+      }
       const name = btn.getAttribute('data-pane')
         || btn.getAttribute('data-go')
         || btn.getAttribute('data-nav-pane');
-      if (!name) return;
+      const jump = btn.getAttribute('data-jump') || null;
+      if (!name && !jump) return;
       e.preventDefault();
-      goPane(name, { scroll: true });
+      if (name) goPane(name, { scroll: true, jump });
+      else goPane(null, { scroll: true, jump });
     });
     window.goPane = goPane;
 
     if (typeof opsInitBusca === 'function') {
       opsInitBusca({
-        placeholder: 'Buscar nas Obras: pontos, rota, frota, materiais…',
+        placeholder: 'Buscar: concluídos, recentes, abertos, frota, materiais…',
         items: [
+          { id: 'o-recentes', title: 'Chamados recentes', hint: 'Últimos atualizados (topo)', keywords: 'recentes novo ultimo atualizado', jump: 'secRecentes' },
+          { id: 'o-abertos', title: 'Chamados abertos', hint: 'Fila em andamento', keywords: 'abertos fila andamento pendente protocolo', pane: 'chamados', jump: 'secAbertos' },
+          { id: 'o-concluidos', title: 'Concluídos', hint: 'Antes/depois + materiais', keywords: 'concluidos finalizados prontos resolvidos portfolio', pane: 'chamados', jump: 'secConcluidos' },
           { id: 'o-pontos', title: 'Pontos quentes', hint: 'Buracos, calçada, drenagem', keywords: 'buraco ponto quente', pane: 'pontos' },
           { id: 'o-rota', title: 'Rota do dia', hint: 'Ordem das equipes', keywords: 'rota ordem', pane: 'rota' },
           { id: 'o-eq', title: 'Equipes', hint: 'Campo e base', keywords: 'equipe lider campo', pane: 'equipes' },
           { id: 'o-frota', title: 'Frota', hint: 'Brita, caçamba, retro', keywords: 'caminhao frota veiculo', pane: 'frota' },
-          { id: 'o-mat', title: 'Materiais / estoque', hint: 'Brita, asfalto, cimento', keywords: 'material estoque brita asfalto', pane: 'materiais' },
+          { id: 'o-mat', title: 'Materiais / estoque', hint: 'Brita, asfalto, cimento', keywords: 'material estoque brita asfalto kg', pane: 'materiais' },
           { id: 'o-obras', title: 'Obras grandes', hint: 'Percentual e prazo', keywords: 'obra transparencia prazo', pane: 'obras' },
-          { id: 'o-ch', title: 'Chamados', hint: 'Fila da secretaria', keywords: 'chamado protocolo fila', pane: 'chamados' },
+          { id: 'o-ch', title: 'Área de chamados', hint: 'Abertos + concluídos', keywords: 'chamado protocolo', pane: 'chamados' },
           { id: 'o-chk', title: 'Checklist', hint: 'Rotina do dia', keywords: 'checklist rotina', pane: 'checklist' },
           { id: 'o-al', title: 'Alertas', hint: 'O que exige atenção', keywords: 'alerta critico', pane: 'alertas' },
           { id: 'o-chat', title: 'Gabinete', hint: 'Responder cobranças', keywords: 'chat gabinete cobranca', pane: 'chat' },
@@ -419,6 +483,28 @@
               hint: `${x.status || '—'} · ${x.bairro || ''} · ${x.rua || ''}`,
               keywords: `ponto buraco ${x.titulo} ${x.bairro} ${x.rua} ${x.status}`,
               pane: 'pontos',
+            });
+          });
+          (p.chamados || []).forEach((c) => {
+            const ok = c.status === 'concluido';
+            out.push({
+              id: 'ch-' + c.id,
+              group: 'dado',
+              title: `${c.protocolo || c.id} · ${c.titulo || c.categoria || 'Chamado'}`,
+              hint: `${ok ? 'Concluído' : 'Aberto'} · ${c.bairro || '—'} · ${c.status || ''}`,
+              keywords: `${c.protocolo} ${c.titulo} ${c.bairro} ${c.status} chamado ${ok ? 'concluido finalizado' : 'aberto'}`,
+              pane: 'chamados',
+              jump: ok ? 'secConcluidos' : 'secAbertos',
+              go: () => {
+                goPane('chamados', { scroll: true, jump: ok ? 'secConcluidos' : 'secAbertos' });
+                setTimeout(() => {
+                  const el = document.querySelector(`[data-chamado-id="${c.id}"]`);
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    flashSecao(el);
+                  }
+                }, 350);
+              },
             });
           });
           (p.materiais || []).forEach((m) => {
@@ -463,7 +549,11 @@
           });
           return out;
         },
-        onGo: (it) => goPane(it.pane, { scroll: true }),
+        onGo: (it) => {
+          if (typeof it.go === 'function') return it.go(it);
+          if (it.pane) goPane(it.pane, { scroll: true, jump: it.jump || null });
+          else if (it.jump) goPane(null, { scroll: true, jump: it.jump });
+        },
       });
     }
 
@@ -602,7 +692,9 @@
       const chamadosSorted = [...(p.chamados || [])].sort((a, b) =>
         String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
       );
-      // Se a fila de OS estiver vazia, mostra pontos quentes como “recentes” pra não ficar em branco
+      const chamadosAbertos = chamadosSorted.filter((c) => c.status !== 'concluido');
+      const chamadosConcluidos = chamadosSorted.filter((c) => c.status === 'concluido');
+      // Recentes: últimos atualizados (mistura abertos + concluídos)
       let recentesCards = chamadosSorted.slice(0, 5).map((c) => cardChamadoHtml(c, { recente: true }));
       if (!recentesCards.length) {
         recentesCards = (p.pontosQuentes || [])
@@ -620,9 +712,22 @@
             ? recentesCards.join('')
             : '<p class="muted">Nenhum chamado recente no momento.</p>';
         }
-        document.getElementById('chamadosBox').innerHTML = chamadosSorted.length
-          ? chamadosSorted.map((c) => cardChamadoHtml(c)).join('')
-          : '<p class="muted">Nenhum chamado aberto.</p>';
+        const abertosBox = document.getElementById('chamadosAbertosBox');
+        const concluidosBox = document.getElementById('chamadosConcluidosBox');
+        if (abertosBox) {
+          abertosBox.innerHTML = chamadosAbertos.length
+            ? chamadosAbertos.map((c) => cardChamadoHtml(c)).join('')
+            : '<p class="muted">Nenhum chamado aberto.</p>';
+        }
+        if (concluidosBox) {
+          concluidosBox.innerHTML = chamadosConcluidos.length
+            ? chamadosConcluidos.map((c) => cardChamadoHtml(c)).join('')
+            : '<p class="muted">Nenhum concluído com foto/materiais ainda.</p>';
+        }
+        const ca = document.getElementById('countAbertos');
+        const cc = document.getElementById('countConcluidos');
+        if (ca) ca.textContent = String(chamadosAbertos.length);
+        if (cc) cc.textContent = String(chamadosConcluidos.length);
       }
 
       document.getElementById('rotaBox').innerHTML = (p.rota || []).length
@@ -719,17 +824,20 @@
       if (typeof bindDetalharToggle === 'function') {
         bindDetalharToggle(document.getElementById('recentesBox'), getChamadoOps);
         bindDetalharToggle(document.getElementById('pontosBox'), getChamadoOps);
-        bindDetalharToggle(document.getElementById('chamadosBox'), getChamadoOps);
+        bindDetalharToggle(document.getElementById('chamadosAbertosBox'), getChamadoOps);
+        bindDetalharToggle(document.getElementById('chamadosConcluidosBox'), getChamadoOps);
       }
       if (typeof bindIaObraAssist === 'function') {
         bindIaObraAssist(document.getElementById('recentesBox'), getChamadoOps);
         bindIaObraAssist(document.getElementById('pontosBox'), getChamadoOps);
-        bindIaObraAssist(document.getElementById('chamadosBox'), getChamadoOps);
+        bindIaObraAssist(document.getElementById('chamadosAbertosBox'), getChamadoOps);
+        bindIaObraAssist(document.getElementById('chamadosConcluidosBox'), getChamadoOps);
       }
       if (typeof bindFotoThumbs === 'function') {
         bindFotoThumbs(document.getElementById('recentesBox'));
         bindFotoThumbs(document.getElementById('pontosBox'));
-        bindFotoThumbs(document.getElementById('chamadosBox'));
+        bindFotoThumbs(document.getElementById('chamadosAbertosBox'));
+        bindFotoThumbs(document.getElementById('chamadosConcluidosBox'));
       }
     }
 
@@ -1009,19 +1117,21 @@
         } catch (e) { toast(e.message); }
       };
       document.getElementById('btnRefresh').onclick = () => load().catch((e) => toast(e.message));
-      const btnTodos = document.getElementById('btnVerTodosChamados');
-      if (btnTodos) btnTodos.onclick = () => goPane('chamados');
       await load();
       if (pollTimer) clearInterval(pollTimer);
       pollTimer = setInterval(() => load().catch(() => {}), 12000);
       if (window.Notification && Notification.permission === 'default') {
         Notification.requestPermission().catch(() => {});
       }
-      const aba = new URLSearchParams(location.search).get('aba');
-      if (aba) goPane(aba);
-      const sec = document.getElementById('secRecentes');
-      if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+      const qs = new URLSearchParams(location.search);
+      const aba = qs.get('aba');
+      const sec = qs.get('sec');
+      if (aba) goPane(aba, { scroll: true, jump: sec || null });
+      else if (sec) goPane(null, { scroll: true, jump: sec });
+      else {
+        const top = document.getElementById('secRecentes');
+        if (top) top.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
 
     boot().catch((e) => toast(e.message));
   </script>

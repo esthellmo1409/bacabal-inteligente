@@ -8,7 +8,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gabinete do Prefeito · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css?v=exec-ops1" />
+  <link rel="stylesheet" href="/styles.css?v=org-sec1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -264,7 +264,7 @@
       </div>
     </div>
 
-    <div class="panel" style="margin-top:0;margin-bottom:1rem;background:linear-gradient(135deg,rgba(255,128,0,.08),rgba(57,138,33,.06));border-color:rgba(255,128,0,.25)">
+    <div class="panel" id="gabFilaDecisoes" style="margin-top:0;margin-bottom:1rem;background:linear-gradient(135deg,rgba(255,128,0,.08),rgba(57,138,33,.06));border-color:rgba(255,128,0,.25)">
       <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:start">
         <div>
           <h3 style="margin-bottom:0.35rem" id="tituloDec">Central de decisões</h3>
@@ -272,7 +272,24 @@
         </div>
         <div id="acoesEixo" class="cta-row"></div>
       </div>
-      <div class="list" id="filaDecisoes" style="margin-top:0.85rem"></div>
+      <div class="ops-subnav" style="display:flex;flex-wrap:wrap;gap:.4rem;margin:.65rem 0 .35rem">
+        <button class="btn btn-sm btn-primary" type="button" data-gab-jump="gab-fila-abertos">Pendentes</button>
+        <button class="btn btn-sm" type="button" data-gab-jump="gab-fila-concluidos">Concluídos</button>
+        <button class="btn btn-sm" type="button" data-gab-jump="gab-fila-recentes">Recentes</button>
+        <button class="btn btn-sm" type="button" data-gab-jump="gabChatPanel">Chat</button>
+      </div>
+      <div id="gab-fila-abertos">
+        <h4 style="margin:0.55rem 0 0.35rem;font-size:0.95rem;color:#9a3412">① Pendentes / abertos</h4>
+        <div class="list" id="filaDecisoes"></div>
+      </div>
+      <div id="gab-fila-recentes" style="margin-top:0.85rem">
+        <h4 style="margin:0 0 0.35rem;font-size:0.95rem;color:#c2410c">② Recentes (cidade)</h4>
+        <div class="list" id="filaRecentes"></div>
+      </div>
+      <div id="gab-fila-concluidos" style="margin-top:0.85rem;padding-top:0.65rem;border-top:1px dashed #bbf7d0">
+        <h4 style="margin:0 0 0.35rem;font-size:0.95rem;color:#166534">③ Concluídos (antes/depois)</h4>
+        <div class="list" id="filaConcluidos"></div>
+      </div>
     </div>
 
     <div class="grid-2" id="blocoExtra" style="margin-bottom:1rem"></div>
@@ -302,7 +319,7 @@
         </div>
       </div>
       <div>
-        <div class="panel" style="margin-bottom:1rem">
+        <div class="panel" id="gab-hist-dec" style="margin-bottom:1rem">
           <h3 style="margin-bottom:0.85rem">Histórico de decisões</h3>
           <div id="histDec" class="list"></div>
         </div>
@@ -327,7 +344,7 @@
     window.BI_AUTH_SLOT = 'gabinete';
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=exec-ops1"></script>
+  <script src="/app.js?v=org-sec1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
@@ -627,35 +644,62 @@
       initIaGabinete(cfg);
       if (typeof opsInitBusca === 'function') {
         opsInitBusca({
-          placeholder: 'Buscar no Gabinete: Saúde, Obras, estoque, postes, IA…',
+          placeholder: 'Buscar: concluídos, recentes, pendentes, Obras, estoque…',
           items: [
             { id: 'g-ia', title: 'Assistente de IA', hint: 'Perguntar ou usar atalhos', keywords: 'ia assistente pergunta', jump: 'iaGabinete' },
             { id: 'g-chat', title: 'Falar com secretarias', hint: 'Chat do Gabinete', keywords: 'chat cobranca secretaria', jump: 'gabChatPanel' },
+            { id: 'g-pendentes', title: 'Pendentes / abertos', hint: 'Fila de decisões', keywords: 'pendentes abertos fila decisoes cobrar', jump: 'gab-fila-abertos' },
+            { id: 'g-recentes', title: 'Chamados recentes', hint: 'Últimos da cidade', keywords: 'recentes novos atualizados', jump: 'gab-fila-recentes' },
+            { id: 'g-concluidos', title: 'Concluídos', hint: 'Antes/depois + execução', keywords: 'concluidos finalizados prontos resolvidos portfolio', jump: 'gab-fila-concluidos' },
             { id: 'g-cidade', title: 'Eixo Cidade', hint: 'Limpeza e trânsito', keywords: 'cidade limpeza transito', eixo: 'cidade' },
             { id: 'g-obras', title: 'Eixo Obras', hint: 'Pontos, frota, materiais', keywords: 'obras buraco frota', eixo: 'obras' },
             { id: 'g-ilu', title: 'Eixo Iluminação', hint: 'Postes, rota, LED', keywords: 'iluminacao poste led', eixo: 'iluminacao' },
             { id: 'g-sau', title: 'Eixo Saúde', hint: 'Plantão, leitos, farmácia', keywords: 'saude ubs hospital', eixo: 'saude' },
             { id: 'g-evt', title: 'Eixo Eventos', hint: 'Agenda e estrutura', keywords: 'eventos agenda', eixo: 'eventos' },
             { id: 'g-obr-pt', title: 'Obras · pontos quentes', hint: 'Ir e abrir a seção', keywords: 'ponto quente buraco', eixo: 'obras', jump: 'gab-obr-pontos' },
+            { id: 'g-obr-rec', title: 'Obras · chamados recentes', hint: 'Últimos das Obras', keywords: 'obras recentes', eixo: 'obras', jump: 'gab-obr-recentes' },
+            { id: 'g-obr-abe', title: 'Obras · chamados abertos', hint: 'Fila das Obras', keywords: 'obras abertos fila', eixo: 'obras', jump: 'gab-obr-abertos' },
+            { id: 'g-obr-ok', title: 'Obras · concluídos', hint: 'Antes/depois + materiais', keywords: 'obras concluidos finalizados materiais kg', eixo: 'obras', jump: 'gab-obr-concluidos' },
             { id: 'g-obr-mat', title: 'Obras · materiais / estoque', hint: 'Brita, asfalto…', keywords: 'material estoque brita', eixo: 'obras', jump: 'gab-obr-mat' },
             { id: 'g-obr-frota', title: 'Obras · frota', hint: 'Veículos', keywords: 'frota caminhao', eixo: 'obras', jump: 'gab-obr-frota' },
             { id: 'g-ilu-postes', title: 'Iluminação · postes', hint: 'Apagados e reparo', keywords: 'poste apagado', eixo: 'iluminacao', jump: 'gab-ilu-postes' },
+            { id: 'g-ilu-ch', title: 'Iluminação · chamados', hint: 'Fila e concluídos LED', keywords: 'iluminacao chamados concluidos led', eixo: 'iluminacao', jump: 'gab-ilu-chamados' },
             { id: 'g-ilu-est', title: 'Iluminação · estoque LED', hint: 'Lâmpadas e cabo', keywords: 'estoque led lampada', eixo: 'iluminacao', jump: 'gab-ilu-estoque' },
             { id: 'g-sau-farm', title: 'Saúde · farmácia / estoque', hint: 'Insumos', keywords: 'farmacia estoque medicamento', eixo: 'saude', jump: 'gab-sau-farm' },
             { id: 'g-sau-amb', title: 'Saúde · ambulâncias', hint: 'Frota', keywords: 'ambulancia', eixo: 'saude', jump: 'gab-sau-amb' },
             { id: 'g-sau-lei', title: 'Saúde · leitos', hint: 'Ocupação', keywords: 'leito uti', eixo: 'saude', jump: 'gab-sau-leitos' },
             { id: 'g-map', title: 'Mapa', hint: 'Visualização geográfica', keywords: 'mapa heatmap', jump: 'map' },
+            { id: 'g-hist', title: 'Histórico de decisões', hint: 'Ações do Gabinete', keywords: 'historico decisoes', jump: 'gab-hist-dec' },
           ],
           onGo: async (it) => {
-            if (it.eixo) await setEixo(it.eixo, it.jump);
-            else if (it.jump) {
-              const el = document.getElementById(it.jump);
-              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const flash = (id) => {
+              const el = document.getElementById(id);
+              if (!el) return;
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              el.classList.add('ops-busca-flash');
+              setTimeout(() => el.classList.remove('ops-busca-flash'), 1600);
+            };
+            if (it.eixo) {
+              await setEixo(it.eixo, it.jump);
+              if (it.jump) setTimeout(() => flash(it.jump), 250);
+            } else if (it.jump) {
+              flash(it.jump);
               if (it.jump === 'iaGabinete') document.getElementById('iaGabPergunta')?.focus();
             }
           },
         });
       }
+      document.addEventListener('click', (e) => {
+        const btn = e.target && e.target.closest && e.target.closest('[data-gab-jump]');
+        if (!btn) return;
+        const id = btn.getAttribute('data-gab-jump');
+        const el = document.getElementById(id);
+        if (!el) return;
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        el.classList.add('ops-busca-flash');
+        setTimeout(() => el.classList.remove('ops-busca-flash'), 1600);
+      });
       await load();
     }
 
@@ -948,6 +992,9 @@
             <button type="button" data-jump="gab-obr-equipes">Equipes</button>
             <button type="button" data-jump="gab-obr-frota">Frota</button>
             <button type="button" data-jump="gab-obr-mat">Materiais / estoque</button>
+            <button type="button" data-jump="gab-obr-recentes">Recentes</button>
+            <button type="button" data-jump="gab-obr-abertos">Abertos</button>
+            <button type="button" data-jump="gab-obr-concluidos">Concluídos</button>
             <button type="button" data-jump="gab-obr-check">Checklist</button>
             <button type="button" data-jump="gab-obr-grandes">Obras grandes</button>
           </div>
@@ -1145,18 +1192,42 @@
               }).join('') || '<p class="muted">Sem obras cadastradas.</p>'}
             </div>
           </div>
-          ${((obrasHoje.chamados || []).length) ? `
-          <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.55rem">Chamados das Obras</h3>
+          ${(() => {
+            const lista = [...(obrasHoje.chamados || [])].sort((a, b) =>
+              String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
+            );
+            const abertos = lista.filter((c) => c.status !== 'concluido');
+            const concluidos = lista.filter((c) => c.status === 'concluido');
+            const recentes = lista.slice(0, 5);
+            const cardAcoes = (c) => `
+              <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+              <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>`;
+            return `
+          <div class="panel" style="grid-column:1/-1;border-color:#fb923c" id="gab-obr-recentes">
+            <h3 style="margin-bottom:0.35rem;color:#9a3412">① Chamados recentes (Obras)</h3>
+            <p class="muted" style="margin-bottom:0.55rem">Últimos atualizados — Detalhar para fotos e execução.</p>
             <div class="list">
-              ${obrasHoje.chamados.slice(0, 8).map((c) => cardProblemaGabinete(c, {
-                did: 'obr-ch-' + c.id,
-                acoesHtml: `
-                  <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
-                  <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>`,
-              })).join('')}
+              ${recentes.map((c) => cardProblemaGabinete(c, { did: 'obr-rec-' + c.id, acoesHtml: cardAcoes(c) })).join('')
+                || '<p class="muted">Nenhum chamado recente.</p>'}
             </div>
-          </div>` : ''}`;
+          </div>
+          <div class="panel" style="grid-column:1/-1;border-color:#fdba74" id="gab-obr-abertos">
+            <h3 style="margin-bottom:0.35rem;color:#9a3412">② Chamados abertos (Obras)</h3>
+            <p class="muted" style="margin-bottom:0.55rem">Fila em andamento.</p>
+            <div class="list">
+              ${abertos.map((c) => cardProblemaGabinete(c, { did: 'obr-abe-' + c.id, acoesHtml: cardAcoes(c) })).join('')
+                || '<p class="muted">Nenhum chamado aberto.</p>'}
+            </div>
+          </div>
+          <div class="panel" style="grid-column:1/-1;border-color:#86efac;background:linear-gradient(180deg,#f0fdf4,#fff)" id="gab-obr-concluidos">
+            <h3 style="margin-bottom:0.35rem;color:#166534">③ Concluídos (Obras)</h3>
+            <p class="muted" style="margin-bottom:0.55rem">Antes/depois, kg, pessoas e tempo — visão do Gabinete.</p>
+            <div class="list">
+              ${concluidos.map((c) => cardProblemaGabinete(c, { did: 'obr-ok-' + c.id, acoesHtml: '' })).join('')
+                || '<p class="muted">Nenhum concluído no portfólio ainda.</p>'}
+            </div>
+          </div>`;
+          })()}`;
         bindGabJump(box);
         return;
       }
@@ -1302,18 +1373,23 @@
               }).join('') || '<p class="muted">Sem itens de estoque.</p>'}
             </div>
           </div>
-          ${((iluminacaoHoje.chamados || []).length) ? `
-          <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.55rem">Chamados da Iluminação</h3>
+          <div class="panel" style="grid-column:1/-1;border-color:#fde68a" id="gab-ilu-chamados">
+            <h3 style="margin-bottom:0.35rem">Chamados da Iluminação</h3>
+            <p class="muted" style="margin-bottom:0.55rem">Abertos e concluídos (LED) — Detalhar para execução.</p>
             <div class="list">
-              ${iluminacaoHoje.chamados.slice(0, 8).map((c) => cardProblemaGabinete(c, {
-                did: 'ilu-ch-' + c.id,
-                acoesHtml: `
-                  <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
-                  <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>`,
-              })).join('')}
+              ${(() => {
+                const lista = [...(iluminacaoHoje.chamados || [])];
+                if (!lista.length) return '<p class="muted">Nenhum chamado neste eixo.</p>';
+                return lista.slice(0, 10).map((c) => cardProblemaGabinete(c, {
+                  did: 'ilu-ch-' + c.id,
+                  acoesHtml: c.status !== 'concluido'
+                    ? `<button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+                       <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>`
+                    : '',
+                })).join('');
+              })()}
             </div>
-          </div>` : ''}`;
+          </div>`;
         bindGabJump(box);
         return;
       }
@@ -1735,9 +1811,48 @@
             <button class="btn btn-sm" onclick="decidir('${c.id}','determinar_prazo')">Prazo 3 dias</button>
             <button class="btn btn-sm" onclick="decidir('${c.id}','autorizar_execucao')">Autorizar</button>`,
         })).join('') : '<p class="muted">Nenhuma pendência neste eixo.</p>';
+
+        // Portfólio: recentes + concluídos (pesquisáveis na lupa)
+        let portfolio = [];
+        try {
+          portfolio = await api('/api/chamados');
+          if (!Array.isArray(portfolio)) portfolio = [];
+        } catch (_) { portfolio = []; }
+        const noEixo = (c) => {
+          if (eixo === 'obras') return c.secretaria === 'obras';
+          if (eixo === 'iluminacao') return c.secretaria === 'iluminacao';
+          if (eixo === 'saude') return c.secretaria === 'saude';
+          if (eixo === 'eventos') return c.secretaria === 'eventos';
+          return !['saude', 'eventos', 'iluminacao', 'obras'].includes(c.secretaria);
+        };
+        const sorted = portfolio.filter(noEixo).sort((a, b) =>
+          String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
+        );
+        const recentes = sorted.slice(0, 6);
+        const concluidos = sorted.filter((c) => c.status === 'concluido').slice(0, 8);
+        const elRec = document.getElementById('filaRecentes');
+        const elOk = document.getElementById('filaConcluidos');
+        if (elRec) {
+          elRec.innerHTML = recentes.length
+            ? recentes.map((c) => cardProblemaGabinete(c, {
+              did: 'rec-' + c.id,
+              acoesHtml: c.status !== 'concluido'
+                ? `<button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+                   <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>`
+                : '',
+            })).join('')
+            : '<p class="muted">Nenhum chamado recente neste eixo.</p>';
+        }
+        if (elOk) {
+          elOk.innerHTML = concluidos.length
+            ? concluidos.map((c) => cardProblemaGabinete(c, { did: 'ok-' + c.id })).join('')
+            : '<p class="muted">Nenhum concluído neste eixo ainda.</p>';
+        }
       }
 
       bindGabineteDetalhar(document.getElementById('filaDecisoes'));
+      bindGabineteDetalhar(document.getElementById('filaRecentes'));
+      bindGabineteDetalhar(document.getElementById('filaConcluidos'));
       bindGabineteDetalhar(document.getElementById('blocoExtra'));
 
       document.getElementById('histDec').innerHTML = (g.decisoes || []).length
