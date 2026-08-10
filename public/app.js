@@ -260,6 +260,111 @@ function fmtMaterialLinha(m) {
   return { nome, qtdTxt, detalhe: m.detalhe || '' };
 }
 
+/** Escapa texto pra HTML simples. */
+function escHtml(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
+ * Chat rápido campo ↔ secretaria (por OS).
+ * modo: 'campo' | 'secretaria'
+ */
+function chatCampoSecHtml(c, { tituloPrefix, modo } = {}) {
+  if (!c || !c.id) return '';
+  const msgs = Array.isArray(c.comentarios) ? c.comentarios.filter((m) => m && m.texto) : [];
+  const placeholder = modo === 'secretaria'
+    ? 'Responder à equipe em campo…'
+    : 'Mensagem rápida pra secretaria…';
+  const dePadrao = modo === 'secretaria' ? 'secretaria' : 'campo';
+  const bolhas = msgs.length
+    ? msgs.slice(-12).map((m) => {
+        const lado = (m.de === 'campo' || m.papel === 'campo') ? 'campo' : 'secretaria';
+        const quando = m.em && typeof fmtDate === 'function' ? fmtDate(m.em) : (m.em || '');
+        return `
+          <div class="chat-os-bubble ${lado}">
+            <span class="who">${escHtml(m.por || lado)}${lado === 'campo' ? ' · campo' : ' · secretaria'}</span>
+            <span class="txt">${escHtml(m.texto)}</span>
+            <span class="when">${escHtml(quando)}</span>
+          </div>`;
+      }).join('')
+    : '<p class="muted" style="margin:0;font-size:.82rem">Nenhuma mensagem ainda. Escreva abaixo.</p>';
+  const titulo = `${tituloPrefix || ''}Chat com a ${modo === 'secretaria' ? 'equipe em campo' : 'secretaria'}`.trim();
+  return `
+    <div class="detalhe-ops-sec chat-os-wrap" data-chat-os="${escHtml(c.id)}">
+      <h4 class="detalhe-ops-title">${titulo}</h4>
+      <p class="muted" style="margin:0 0 .45rem;font-size:.78rem">Conversa interna desta OS — não aparece pro cidadão.</p>
+      <div class="chat-os-msgs">${bolhas}</div>
+      <div class="chat-os-compose">
+        <input type="text" maxlength="500" data-chat-os-input placeholder="${placeholder}" />
+        <button type="button" class="btn btn-sm btn-primary" data-chat-os-send data-de="${dePadrao}">Enviar</button>
+      </div>
+    </div>`;
+}
+
+/** Liga envio do chat campo ↔ secretaria. */
+function bindChatCampoSec(root, { onSent } = {}) {
+  const el = root || document;
+  el.querySelectorAll('[data-chat-os-send]').forEach((btn) => {
+    if (btn._chatBound) return;
+    btn._chatBound = true;
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const wrap = btn.closest('[data-chat-os]');
+      if (!wrap) return;
+      const id = wrap.getAttribute('data-chat-os');
+      const input = wrap.querySelector('[data-chat-os-input]');
+      const texto = (input?.value || '').trim();
+      if (!texto) {
+        if (typeof toast === 'function') toast('Escreva a mensagem');
+        return;
+      }
+      try {
+        await withBusy(btn, 'Enviando…', async () => {
+          const c = await api('/api/chamados/' + id + '/comentario', {
+            method: 'POST',
+            body: JSON.stringify({
+              texto,
+              interno: true,
+              de: btn.getAttribute('data-de') || 'campo',
+            }),
+          });
+          if (input) input.value = '';
+          if (typeof toast === 'function') toast('Mensagem enviada');
+          if (typeof onSent === 'function') onSent(c);
+          else if (wrap && typeof chatCampoSecHtml === 'function') {
+            const modo = btn.getAttribute('data-de') === 'secretaria' ? 'secretaria' : 'campo';
+            const fresh = chatCampoSecHtml(c, { modo });
+            const tmp = document.createElement('div');
+            tmp.innerHTML = fresh;
+            const novo = tmp.firstElementChild;
+            if (novo) {
+              wrap.replaceWith(novo);
+              bindChatCampoSec(novo.parentElement || document, { onSent });
+            }
+          }
+        });
+      } catch (err) {
+        if (typeof toast === 'function') toast(err.message || 'Falha ao enviar');
+      }
+    });
+  });
+  el.querySelectorAll('[data-chat-os-input]').forEach((input) => {
+    if (input._chatEnter) return;
+    input._chatEnter = true;
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        input.closest('[data-chat-os]')?.querySelector('[data-chat-os-send]')?.click();
+      }
+    });
+  });
+}
+
 /** Bloco operacional (materiais, pessoas, tempo) — só secretarias/gabinete. */
 function execucaoOpsHtml(c, { tituloPrefix } = {}) {
   if (!c) return '';
@@ -347,6 +452,7 @@ function detalheOperacaoHtml(c, { acoesHtml } = {}) {
   const blocoExec = execucaoOpsHtml(c, { tituloPrefix: `${tit()} ` });
   if (blocoExec) secs.push(blocoExec);
   else n -= 1; // desfaz número reservado se não houver execução
+  secs.push(chatCampoSecHtml(c, { tituloPrefix: `${tit()} `, modo: 'secretaria' }));
   secs.push(`
       <div class="detalhe-ops-sec">
         <h4 class="detalhe-ops-title">${tit()} Analisar obra (IA)</h4>
@@ -389,6 +495,7 @@ function bindDetalharToggle(root, getChamado) {
       } catch (_) {}
       if (open) {
         if (typeof bindFotoThumbs === 'function') bindFotoThumbs(box);
+        if (typeof bindChatCampoSec === 'function') bindChatCampoSec(box);
         if (typeof bindIaObraAssist === 'function') {
           bindIaObraAssist(box, getChamado || ((cid) => null));
         }
@@ -448,6 +555,7 @@ function opsRestaurarDetalhesAbertos(root, getChamado) {
     }
     try { window.__opsDetalheAbertos.add(id); } catch (_) {}
     if (typeof bindFotoThumbs === 'function') bindFotoThumbs(box);
+    if (typeof bindChatCampoSec === 'function') bindChatCampoSec(box);
     if (typeof bindIaObraAssist === 'function') {
       bindIaObraAssist(box, getChamado || ((cid) => null));
     }

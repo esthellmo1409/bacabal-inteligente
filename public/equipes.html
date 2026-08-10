@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>App das Equipes · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css?v=campo-det1" />
+  <link rel="stylesheet" href="/styles.css?v=campo-chat1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script>
     window.BI_OPS_LOCK = true;
@@ -142,7 +142,7 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=campo-det1"></script>
+  <script src="/app.js?v=campo-chat1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
@@ -584,6 +584,12 @@
           <button class="btn btn-sm" id="btnReforco" ${!aceita || enviada ? 'disabled' : ''}>Pedir reforço</button>
         </div>
 
+        <div class="campo-block" style="border-color:#bbf7d0;background:linear-gradient(180deg,#f0fdf4,#fff)">
+          ${typeof chatCampoSecHtml === 'function'
+            ? chatCampoSecHtml(c, { modo: 'campo' })
+            : '<p class="muted">Chat indisponível</p>'}
+        </div>
+
         <button type="button" class="btn-detalhar" data-detalhar="os-ativa-${c.id}">
           <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
         </button>
@@ -664,6 +670,14 @@
         bindDetalharToggle(document.getElementById('osBox'), async (cid) => {
           if (selected && selected.id === cid) return selected;
           return api('/api/chamados/' + cid);
+        });
+      }
+      if (typeof bindChatCampoSec === 'function') {
+        bindChatCampoSec(document.getElementById('osBox'), {
+          onSent: (atual) => {
+            selected = atual;
+            openOS(c.id);
+          },
         });
       }
       // Reabre o Detalhar da OS ativa se o usuário já tinha aberto
