@@ -4,14 +4,16 @@ function getCidade() {
   const params = new URLSearchParams(location.search);
   const fromUrl = params.get('cidade');
   if (fromUrl) {
-    localStorage.setItem('ch_cidade', fromUrl);
-    return fromUrl;
+    const slug = String(fromUrl).trim().toLowerCase();
+    localStorage.setItem('ch_cidade', slug);
+    return slug;
   }
-  return localStorage.getItem('ch_cidade') || CIDADE_PADRAO;
+  const stored = localStorage.getItem('ch_cidade');
+  return (stored ? String(stored).trim().toLowerCase() : '') || CIDADE_PADRAO;
 }
 
 function setCidade(slug) {
-  localStorage.setItem('ch_cidade', slug || CIDADE_PADRAO);
+  localStorage.setItem('ch_cidade', String(slug || CIDADE_PADRAO).trim().toLowerCase());
 }
 
 function withCidade(path) {

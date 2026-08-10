@@ -323,7 +323,7 @@
     window.BI_AUTH_SLOT = 'gabinete';
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-utf-login1"></script>
+  <script src="/app.js?v=ops-login-fix1"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_OPS_LOCK = true;
@@ -553,12 +553,10 @@
       } catch (_) {
         user = ensureOpsUser();
       }
-      const loggedPref = !!(user && (user.papel === 'prefeito' || user.papel === 'admin'))
-        || (typeof hasOpsToken === 'function' && hasOpsToken());
-      if (loggedPref && !user) user = (typeof ensureOpsUser === 'function' ? ensureOpsUser() : null) || user;
+      const loggedPref = !!(user && (user.papel === 'prefeito' || user.papel === 'admin'));
       document.getElementById('top').innerHTML = topbar('Gabinete', cfg, {
         lock: true,
-        user: user || undefined,
+        user: loggedPref ? user : undefined,
       });
       const loginPrefBtn = document.getElementById('loginPref');
       if (loginPrefBtn) {
@@ -750,26 +748,37 @@
     }
 
     async function loginPrefeito() {
+      const btn = document.getElementById('loginPref');
       try {
         window.BI_AUTH_SLOT = 'gabinete';
+        const cidade = (getCidade() || 'bacabal').toString().trim().toLowerCase();
+        setCidade(cidade);
         const r = await api('/api/login', {
           method: 'POST',
-          body: JSON.stringify({ usuario: 'prefeito', senha: 'prefeito123', cidade: getCidade() }),
+          body: JSON.stringify({ usuario: 'prefeito', senha: 'prefeito123', cidade }),
         });
-        localStorage.setItem('bi_token', r.token);
-        localStorage.setItem('bi_user', JSON.stringify(r.user));
-        localStorage.setItem('bi_token_gabinete', r.token);
-        localStorage.setItem('bi_token_gabinete_user', JSON.stringify(r.user));
         if (typeof setSession === 'function') setSession(r.token, r.user);
+        else {
+          localStorage.setItem('bi_token', r.token);
+          localStorage.setItem('bi_user', JSON.stringify(r.user));
+          localStorage.setItem('bi_token_gabinete', r.token);
+          localStorage.setItem('bi_token_gabinete_user', JSON.stringify(r.user));
+        }
         toast('Gabinete autenticado');
-        const isPrefeita = getCidade() === 'bomlugar';
-        loginPref.textContent = isPrefeita ? 'Logado: Prefeita' : 'Logado: Prefeito';
+        const isPrefeita = cidade === 'bomlugar';
+        if (btn) {
+          btn.textContent = isPrefeita ? 'Logado: Prefeita' : 'Logado: Prefeito';
+          btn.disabled = true;
+          btn.classList.remove('btn-primary');
+        }
         const cfg2 = await loadCityBrand();
         document.getElementById('top').innerHTML = topbar('Gabinete', cfg2, {
           lock: true,
           user: r.user,
         });
-      } catch (e) { toast(e.message); }
+      } catch (e) {
+        toast((e.message || 'Falha no login') + ' · cidade: ' + (getCidade() || '?'));
+      }
     }
 
     async function decidir(id, acao, extra = {}) {

@@ -30,9 +30,9 @@
           <option value="admin">Administrador</option>
         </select>
         <label>Usuário</label>
-        <input id="usuario" value="obras" />
+        <input id="usuario" value="obras" autocomplete="username" />
         <label>Senha</label>
-        <input id="senha" type="password" value="obras123" />
+        <input id="senha" type="password" value="obras123" autocomplete="current-password" />
         <button class="btn btn-primary" id="entrar" style="width:100%">Entrar</button>
       </div>
 
@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-gab1"></script>
+  <script src="/app.js?v=ops-login-fix1"></script>
   <script>
     initCidade();
     const senhas = {
@@ -81,8 +81,19 @@
       const btn = document.getElementById('entrar');
       await withBusy(btn, 'Entrando…', async () => {
         try {
-          const cidade = getCidade();
+          const cidade = (getCidade() || 'bacabal').toString().trim().toLowerCase();
+          setCidade(cidade);
           const perfil = document.getElementById('perfil').value;
+          let usuario = document.getElementById('usuario').value.trim() || perfil;
+          let senha = document.getElementById('senha').value;
+          // Contas demo: ignora autofill errado do browser
+          if (senhas[usuario]) senha = senhas[usuario];
+          else if (!senha && senhas[perfil]) {
+            usuario = perfil;
+            senha = senhas[perfil];
+          }
+          document.getElementById('usuario').value = usuario;
+          document.getElementById('senha').value = senha;
           if (perfil === 'campo') window.BI_AUTH_SLOT = 'campo';
           else if (perfil === 'prefeito') window.BI_AUTH_SLOT = 'gabinete';
           else if (perfil === 'admin') window.BI_AUTH_SLOT = undefined;
@@ -90,11 +101,7 @@
 
           const r = await api('/api/login', {
             method: 'POST',
-            body: JSON.stringify({
-              usuario: document.getElementById('usuario').value.trim(),
-              senha: document.getElementById('senha').value,
-              cidade,
-            }),
+            body: JSON.stringify({ usuario, senha, cidade }),
           });
           // Limpa sessões antigas (Gabinete/Campo) pra não misturar token
           if (typeof clearAllSessions === 'function') clearAllSessions();

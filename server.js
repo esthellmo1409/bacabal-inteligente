@@ -931,12 +931,15 @@ async function handleAPI(req, res, pathname, url) {
   // Login plataforma OU município
   if (pathname === '/api/login' && req.method === 'POST') {
     const body = await readBody(req);
-    const cidade = body.cidade || null;
+    const usuario = String(body.usuario || '').trim();
+    const senha = String(body.senha || '');
+    const cidadeRaw = body.cidade != null ? String(body.cidade).trim().toLowerCase() : '';
+    const cidade = cidadeRaw || null;
 
     // Super admin (sem cidade)
     if (!cidade || body.plataforma) {
       const p = platform();
-      const u = (p.usuarios || []).find(x => x.id === body.usuario && x.senha === body.senha);
+      const u = (p.usuarios || []).find(x => x.id === usuario && x.senha === senha);
       if (u) {
         const session = { id: u.id, nome: u.nome, papel: 'platform', cidade: null };
         const token = createSession(session);
@@ -946,11 +949,15 @@ async function handleAPI(req, res, pathname, url) {
     }
 
     if (!cidade) return sendJSON(res, 400, { error: 'Informe a cidade' });
-    if (!getMunicipio(cidade)) return sendJSON(res, 404, { error: 'Município não encontrado' });
+    if (!getMunicipio(cidade)) return sendJSON(res, 404, { error: 'Município não encontrado: ' + cidade });
 
     const users = readTenant(cidade, 'usuarios.json', []);
-    const u = users.find(x => x.id === body.usuario && x.senha === body.senha);
-    if (!u) return sendJSON(res, 401, { error: 'Credenciais inválidas' });
+    const u = users.find(x => String(x.id || '').toLowerCase() === usuario.toLowerCase() && x.senha === senha);
+    if (!u) {
+      return sendJSON(res, 401, {
+        error: `Credenciais inválidas (${cidade}). Demo: prefeito / prefeito123`,
+      });
+    }
     if (u.ativo === false) return sendJSON(res, 403, { error: 'Acesso desativado. Fale com o administrador.' });
 
     const session = {
