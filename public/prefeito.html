@@ -30,7 +30,27 @@
     }
     .saude-mod {
       background:#ecfdf5; border:1px solid #99f6e4; border-radius:12px; padding:0.7rem 0.8rem;
+      cursor:pointer; text-align:left; font:inherit; color:inherit; width:100%;
+      transition: box-shadow .12s ease, transform .12s ease;
     }
+    .saude-mod:hover { box-shadow:0 6px 16px rgba(15,118,110,.12); transform:translateY(-1px); }
+    .saude-mod.alerta { background:#fff5f5; border-color:#fecaca; }
+    .saude-mod.alerta span { color:#b91c1c; }
+    .saude-mod.alerta strong { color:#7f1d1d; }
+    .gab-ops-nav {
+      display:flex; flex-wrap:wrap; gap:0.4rem; margin:0 0 0.85rem;
+    }
+    .gab-ops-nav button {
+      border:1px solid #99f6e4; background:#fff; color:#0f766e; border-radius:999px;
+      padding:0.35rem 0.75rem; font:inherit; font-size:0.78rem; font-weight:800; cursor:pointer;
+    }
+    .gab-ops-nav button:hover { background:#ecfdf5; }
+    .ocup-bar {
+      height:8px; border-radius:999px; background:#e2e8f0; overflow:hidden; margin-top:0.35rem;
+    }
+    .ocup-bar > i { display:block; height:100%; background:#0f766e; }
+    .ocup-bar.alta > i { background:#b45309; }
+    .ocup-bar.critica > i { background:#b91c1c; }
     .saude-mod span { display:block; font-size:0.68rem; font-weight:800; color:#0f766e; text-transform:uppercase; letter-spacing:.03em; }
     .saude-mod strong { font-size:1.25rem; color:#134e4a; }
     .saude-mod small { display:block; color:#64748b; font-size:0.72rem; margin-top:0.15rem; }
@@ -281,7 +301,7 @@
     window.BI_AUTH_SLOT = 'gabinete';
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-gab1"></script>
+  <script src="/app.js?v=ops-gab2"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_OPS_LOCK = true;
@@ -361,6 +381,38 @@
     function bindGabineteDetalhar(root) {
       if (typeof bindDetalharToggle === 'function') bindDetalharToggle(root || document);
       if (typeof bindFotoThumbs === 'function') bindFotoThumbs(root || document);
+    }
+
+    /** Card operacional do Gabinete (ambulância, leito, estoque…) com Detalhar. */
+    function cardOpsDetalhe({ did, titulo, badgeHtml, meta, detalheHtml, acoesHtml, urgente }) {
+      return `
+        <div class="item ${urgente ? 'item-urgente' : ''}" style="${urgente ? 'border-color:#fecaca;background:#fffafa' : ''}">
+          <div class="item-head">
+            <strong>${titulo}</strong>
+            ${badgeHtml || ''}
+          </div>
+          ${meta ? `<div class="meta">${meta}</div>` : ''}
+          ${acoesHtml ? `<div class="actions" style="margin-top:0.4rem">${acoesHtml}</div>` : ''}
+          <button type="button" class="btn-detalhar" data-detalhar="${did}">
+            <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+          </button>
+          <div class="detalhe-box" id="detalhe-${did}">
+            ${detalheHtml || '<p class="muted">Sem detalhes extras.</p>'}
+          </div>
+        </div>`;
+    }
+
+    function statusAmbLabel(s) {
+      return ({
+        disponivel: 'Disponível',
+        em_uso: 'Em uso',
+        oficina: 'Oficina',
+        indisponivel: 'Indisponível',
+      })[s] || String(s || '—').replace(/_/g, ' ');
+    }
+
+    function estoqueLabel(s) {
+      return ({ ok: 'Estoque ok', baixo: 'Estoque baixo', critico: 'Crítico' })[s] || s || '—';
     }
     function pontoStatusLabel(s) {
       return ({
@@ -930,14 +982,25 @@
         const alertas = saudeHoje.alertas || [];
         const turnoL = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
         const t = saudeHoje.totais || {};
+        const farmAlerta = (saudeHoje.farmacia || []).filter((f) => f.estoque === 'baixo' || f.estoque === 'critico');
+        const leitosAlerta = (saudeHoje.leitos || []).filter((l) => l.total > 0 && (l.ocupados / l.total) >= 0.85);
+        const ambAlerta = (saudeHoje.ambulancias || []).filter((a) => a.status === 'oficina' || a.status === 'indisponivel');
+        const chkAlerta = (saudeHoje.checklist || []).filter((c) => (c.itens || []).some((i) => !i.ok));
         box.innerHTML = `
           <div class="saude-modulos">
-            <div class="saude-mod"><span>Fila</span><strong>${t.naFila || 0}</strong><small>espera ~${t.tempoMedioMin || 0} min</small></div>
-            <div class="saude-mod"><span>Plantão</span><strong>${t.plantoesOk || 0}/${t.plantoesTotal || 0}</strong><small>unidades</small></div>
-            <div class="saude-mod"><span>Leitos</span><strong>${t.leitosOcupacaoPct || 0}%</strong><small>ocupação</small></div>
-            <div class="saude-mod"><span>Ambulâncias</span><strong>${t.ambulanciasDisponiveis || 0}/${t.ambulanciasTotal || 0}</strong><small>livres</small></div>
-            <div class="saude-mod"><span>Farmácia</span><strong>${t.farmaciaAlertas || 0}</strong><small>alertas</small></div>
-            <div class="saude-mod"><span>Alertas</span><strong>${alertas.length}</strong><small>checklist ${t.checklistPendentes || 0}</small></div>
+            <button type="button" class="saude-mod" data-jump="gab-sau-unidades"><span>Fila</span><strong>${t.naFila || 0}</strong><small>espera ~${t.tempoMedioMin || 0} min</small></button>
+            <button type="button" class="saude-mod" data-jump="gab-sau-unidades"><span>Plantão</span><strong>${t.plantoesOk || 0}/${t.plantoesTotal || 0}</strong><small>unidades</small></button>
+            <button type="button" class="saude-mod ${leitosAlerta.length ? 'alerta' : ''}" data-jump="gab-sau-leitos"><span>Leitos</span><strong>${t.leitosOcupacaoPct || 0}%</strong><small>${leitosAlerta.length ? leitosAlerta.length + ' quase lotados' : 'ocupação geral'}</small></button>
+            <button type="button" class="saude-mod ${ambAlerta.length ? 'alerta' : ''}" data-jump="gab-sau-amb"><span>Ambulâncias</span><strong>${t.ambulanciasDisponiveis || 0}/${t.ambulanciasTotal || 0}</strong><small>${ambAlerta.length ? ambAlerta.length + ' fora' : 'livres'}</small></button>
+            <button type="button" class="saude-mod ${farmAlerta.length ? 'alerta' : ''}" data-jump="gab-sau-farm"><span>Farmácia</span><strong>${t.farmaciaAlertas || farmAlerta.length || 0}</strong><small>${farmAlerta.length ? 'estoque em atenção' : 'sem alerta'}</small></button>
+            <button type="button" class="saude-mod ${chkAlerta.length || alertas.length ? 'alerta' : ''}" data-jump="gab-sau-check"><span>Checklist</span><strong>${chkAlerta.length || alertas.length}</strong><small>${chkAlerta.length ? 'pendências' : 'rotina ok'}</small></button>
+          </div>
+          <div class="gab-ops-nav">
+            <button type="button" data-jump="gab-sau-amb">Ambulâncias</button>
+            <button type="button" data-jump="gab-sau-leitos">Leitos</button>
+            <button type="button" data-jump="gab-sau-farm">Estoque / farmácia</button>
+            <button type="button" data-jump="gab-sau-check">Checklist</button>
+            <button type="button" data-jump="gab-sau-unidades">Unidades</button>
           </div>
           ${criticos.length ? `
             <div class="saude-alert-banner" style="grid-column:1/-1">
@@ -959,32 +1022,122 @@
                   <div>${a.texto}</div>
                 </div>`).join('')}
             </div>` : ''}
-          <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.55rem">Ambulâncias · leitos · farmácia · checklist</h3>
+          <div class="panel" style="grid-column:1/-1" id="gab-sau-amb">
+            <h3 style="margin-bottom:0.35rem">Ambulâncias</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Resumo na frente — Detalhar mostra base, condutor e o que cobrar.</p>
             <div class="list">
-              ${(saudeHoje.ambulancias || []).map(a => `
-                <div class="item"><div class="item-head"><strong>${a.placa}</strong><span class="badge">${a.status}</span></div>
-                <div class="meta">${a.motorista || '—'} · base ${a.base || '—'}</div></div>`).join('') || '<p class="muted">Sem ambulâncias</p>'}
+              ${(saudeHoje.ambulancias || []).map((a) => {
+                const urg = a.status === 'oficina' || a.status === 'indisponivel';
+                return cardOpsDetalhe({
+                  did: 'amb-' + a.id,
+                  titulo: a.placa,
+                  badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : a.status === 'em_uso' ? 'badge-em_analise' : 'badge-concluido'}">${statusAmbLabel(a.status)}</span>`,
+                  meta: `${a.motorista || '—'} · base ${a.base || '—'}`,
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('','Frota ambulância ${a.placa}')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Status:</strong> ${statusAmbLabel(a.status)}</div>
+                    <div class="meta"><strong>Condutor:</strong> ${a.motorista || 'não informado'}</div>
+                    <div class="meta"><strong>Base:</strong> ${a.base || '—'}</div>
+                    <div class="meta"><strong>Atualizado:</strong> ${a.atualizadoEm ? fmtDate(a.atualizadoEm) : '—'}</div>
+                    <p class="muted" style="margin:0.55rem 0 0">${
+                      a.status === 'disponivel' ? 'Pronta para despacho.'
+                        : a.status === 'em_uso' ? 'Em atendimento — acompanhe retorno com a Saúde.'
+                          : 'Fora de operação — cobre previsão de liberação.'
+                    }</p>`,
+                });
+              }).join('') || '<p class="muted">Sem ambulâncias.</p>'}
             </div>
-            <div class="list" style="margin-top:0.65rem">
-              ${(saudeHoje.leitos || []).map(l => {
+          </div>
+          <div class="panel" style="grid-column:1/-1" id="gab-sau-leitos">
+            <h3 style="margin-bottom:0.35rem">Leitos / ocupação</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Ocupação em destaque — Detalhar mostra livres e risco de lotação.</p>
+            <div class="list">
+              ${(saudeHoje.leitos || []).map((l) => {
                 const pct = l.total ? Math.round((l.ocupados / l.total) * 100) : 0;
-                return `<div class="item"><div class="item-head"><strong>${l.nome}</strong><span class="meta">${l.ocupados}/${l.total} · ${pct}%</span></div></div>`;
-              }).join('') || ''}
+                const livres = Math.max(0, (l.total || 0) - (l.ocupados || 0));
+                const urg = pct >= 90;
+                const alta = pct >= 85;
+                const barCls = urg ? 'critica' : alta ? 'alta' : '';
+                return cardOpsDetalhe({
+                  did: 'lei-' + l.id,
+                  titulo: l.nome,
+                  badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : alta ? 'badge-em_analise' : 'badge-concluido'}">${l.ocupados}/${l.total} · ${pct}%</span>`,
+                  meta: `${livres} livre(s)${urg ? ' · atenção: quase lotado' : ''}`,
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('','Leitos ${String(l.nome || '').replace(/'/g, '')} ${pct}%')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Ocupados:</strong> ${l.ocupados} de ${l.total}</div>
+                    <div class="meta"><strong>Livres:</strong> ${livres}</div>
+                    <div class="meta"><strong>Ocupação:</strong> ${pct}%</div>
+                    <div class="ocup-bar ${barCls}"><i style="width:${pct}%"></i></div>
+                    <p class="muted" style="margin:0.55rem 0 0">${
+                      urg ? 'Risco alto — confirme regulação com a Saúde.'
+                        : alta ? 'Ocupação elevada — acompanhe a curva do dia.'
+                          : 'Capacidade confortável no momento.'
+                    }</p>`,
+                });
+              }).join('') || '<p class="muted">Sem leitos.</p>'}
             </div>
-            <div class="list" style="margin-top:0.65rem">
-              ${(saudeHoje.farmacia || []).map(f => `
-                <div class="item"><div class="item-head"><strong>${f.nome}</strong><span class="badge">${f.estoque}</span></div>
-                <div class="meta">${f.unidadeNome || ''} ${f.observacao ? '· ' + f.observacao : ''}</div></div>`).join('') || ''}
+          </div>
+          <div class="panel" style="grid-column:1/-1;border-color:${farmAlerta.length ? '#fecaca' : '#99f6e4'}" id="gab-sau-farm">
+            <h3 style="margin-bottom:0.35rem">Estoque / farmácia</h3>
+            <p class="muted" style="margin-bottom:0.75rem">
+              ${farmAlerta.length
+                ? `<strong style="color:#b91c1c">${farmAlerta.length} item(ns) baixo/crítico</strong> — Detalhar + cobrar reposição.`
+                : 'Itens críticos da rede. Detalhar mostra unidade e observação.'}
+            </p>
+            <div class="list">
+              ${(saudeHoje.farmacia || []).map((f) => {
+                const urg = f.estoque === 'critico' || f.estoque === 'baixo';
+                return cardOpsDetalhe({
+                  did: 'farm-' + f.id,
+                  titulo: f.nome,
+                  badgeHtml: `<span class="badge ${f.estoque === 'critico' ? 'badge-cancelado' : f.estoque === 'baixo' ? 'badge-em_analise' : 'badge-concluido'}">${estoqueLabel(f.estoque)}</span>`,
+                  meta: `${f.unidadeNome || 'Rede'}${f.observacao ? ' · ' + f.observacao : ''}`,
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('${f.unidadeId || ''}','Estoque: ${String(f.nome || '').replace(/'/g, '')}')">Cobrar reposição</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Situação:</strong> ${estoqueLabel(f.estoque)}</div>
+                    <div class="meta"><strong>Unidade:</strong> ${f.unidadeNome || '—'}</div>
+                    <div class="meta"><strong>Observação:</strong> ${f.observacao || 'sem nota'}</div>
+                    <p class="muted" style="margin:0.55rem 0 0">${
+                      f.estoque === 'critico' ? 'Prioridade máxima — peça previsão de entrega.'
+                        : f.estoque === 'baixo' ? 'Acompanhe pedido de reposição e prazo.'
+                          : 'Estoque estável no momento.'
+                    }</p>`,
+                });
+              }).join('') || '<p class="muted">Sem itens de farmácia.</p>'}
             </div>
-            <div class="list" style="margin-top:0.65rem">
-              ${(saudeHoje.checklist || []).map(c => {
-                const ok = (c.itens || []).filter(i => i.ok).length;
+          </div>
+          <div class="panel" style="grid-column:1/-1" id="gab-sau-check">
+            <h3 style="margin-bottom:0.35rem">Checklist das unidades</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Resumo do dia — Detalhar lista o que ficou pendente.</p>
+            <div class="list">
+              ${(saudeHoje.checklist || []).map((c) => {
+                const ok = (c.itens || []).filter((i) => i.ok).length;
                 const tot = (c.itens || []).length;
-                const faltando = (c.itens || []).filter(i => !i.ok).map(i => i.label).join(', ');
-                return `<div class="item"><div class="item-head"><strong>${c.unidadeNome}</strong><span class="meta">${ok}/${tot} ok</span></div>
-                  ${faltando ? `<div class="meta" style="color:#b91c1c">Pendente: ${faltando}</div>` : '<div class="meta">Checklist completo</div>'}</div>`;
-              }).join('') || ''}
+                const faltando = (c.itens || []).filter((i) => !i.ok);
+                const urg = faltando.length > 0;
+                return cardOpsDetalhe({
+                  did: 'chk-' + (c.id || c.unidadeId),
+                  titulo: c.unidadeNome || c.unidadeId || 'Unidade',
+                  badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : 'badge-concluido'}">${ok}/${tot} ok</span>`,
+                  meta: urg ? `Pendente: ${faltando.map((i) => i.label).join(', ')}` : 'Checklist completo',
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('${c.unidadeId || ''}','${String(c.unidadeNome || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `<div class="list">${(c.itens || []).map((it) => `
+                    <div class="meta" style="margin:0.25rem 0"><strong>${it.ok ? '✓' : '✗'}</strong> ${it.label}${it.ok ? '' : ' <span style="color:#b91c1c">(pendente)</span>'}</div>`).join('') || '<p class="muted">Sem itens.</p>'}</div>`,
+                });
+              }).join('') || '<p class="muted">Sem checklist no dia.</p>'}
             </div>
           </div>
           ${((saudeHoje.reclamacoes || []).length) ? `
@@ -996,7 +1149,7 @@
               })).join('')}
             </div>
           </div>` : ''}
-          <div class="panel" style="grid-column:1/-1;border-color:#99f6e4">
+          <div class="panel" style="grid-column:1/-1;border-color:#99f6e4" id="gab-sau-unidades">
             <h3 style="margin-bottom:0.35rem">Unidades · plantão · escala · fila · status</h3>
             <p class="muted" style="margin-bottom:0.85rem">
               Preenchido pela Secretaria de Saúde · atualizado ${fmtDate(saudeHoje.atualizadoEm)}.
@@ -1066,6 +1219,12 @@
                 </div>`).join('')}
             </div>
           </div>` : ''}`;
+        box.querySelectorAll('[data-jump]').forEach((btn) => {
+          btn.onclick = () => {
+            const el = document.getElementById(btn.getAttribute('data-jump'));
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          };
+        });
       } else if (eixo === 'eventos') {
         box.innerHTML = `
           <div class="panel" style="grid-column:1/-1">
@@ -1088,11 +1247,26 @@
       const pendente = (lastFila?.fila || []).find(c => c.unidadeId === unidadeId)
         || (lastFila?.fila || [])[0];
       if (!pendente) {
-        toast('Sem chamado aberto — use visita surpresa ou abra protocolo na Saúde');
+        // Sem chamado: manda no chat da Saúde
+        try {
+          chatSec = 'saude';
+          await api('/api/gabinete/chat', {
+            method: 'POST',
+            body: JSON.stringify({
+              secretaria: 'saude',
+              texto: `Cobrança do Gabinete: ${nome || 'unidade'}. Preciso de retorno hoje.`,
+              de: 'gabinete',
+            }),
+          });
+          toast('Cobrança enviada no chat da Saúde');
+          await loadChat?.();
+        } catch (e) {
+          toast(e.message || 'Sem chamado aberto — use visita surpresa ou o chat');
+        }
         return;
       }
       await decidir(pendente.id, 'cobrar', {
-        nota: `Cobrança do Gabinete sobre unidade ${nome}: verificar fila, plantão e atendimento.`,
+        nota: `Cobrança do Gabinete sobre ${nome}: verificar fila, plantão, estoque e atendimento.`,
       });
     }
 
