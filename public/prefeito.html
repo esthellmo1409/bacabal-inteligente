@@ -413,12 +413,10 @@
       const box = document.getElementById('acoesEixo');
       if (eixo === 'saude') {
         box.innerHTML = `
-          <a class="btn btn-sm btn-primary" href="${cityLink('/saude.html')}">Abrir Painel operacional da Saúde</a>
-          <a class="btn btn-sm" href="${cityLink('/plantao.html')}">Saúde registra plantão →</a>
-          <button class="btn btn-sm" id="btnVisita" type="button">Visita surpresa</button>`;
+          <button class="btn btn-sm btn-primary" id="btnVisita" type="button">Visita surpresa</button>`;
         document.getElementById('btnVisita').onclick = visitaSurpresa;
         tituloDec.textContent = 'Saúde — olho do Gabinete';
-        subtituloDec.textContent = 'Abaixo: fila, escala, alertas e histórico. Quem digita é a Secretaria (login saude).';
+        subtituloDec.textContent = 'Só visualiza plantão, fila, escala e alertas. Quem registra o médico é a Secretaria de Saúde (login saude) — o Gabinete não digita nome.';
       } else if (eixo === 'eventos') {
         box.innerHTML = '';
         tituloDec.textContent = 'Eventos — agenda e estrutura';
