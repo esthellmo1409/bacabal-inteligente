@@ -1390,24 +1390,98 @@ html[data-cidade="bomlugar"] .landing-footer-inner .footer-social a {
   }
   .landing-brand strong { font-size: 0.8rem; }
   .landing-nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 0.15rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
   }
-  .landing-nav a {
-    display: inline-flex;
-    font-size: 0.78rem;
-    padding: 0.4rem 0.55rem;
+  /* Mobile: pílulas como antes — esconde links secundários */
+  .landing-nav a:not(.nav-protocolo):not(.nav-cidadao-link):not(.nav-admin-link) {
+    display: none;
+  }
+  .landing-nav .nav-protocolo {
+    display: inline-flex !important;
+    grid-column: 1 / -1;
+    order: -1;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.7rem 0.85rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--pmb-green-deep) !important;
+    border: 0;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+  }
+  .landing-nav .nav-protocolo:hover {
+    background: #f4fff0;
+    color: var(--pmb-green-deep) !important;
   }
   .landing-nav .nav-protocolo-label-full { display: none; }
   .landing-nav .nav-protocolo-label-short { display: inline; }
+  .landing-nav .nav-cidadao-link {
+    display: inline-flex !important;
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0.65rem 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    border-radius: 999px;
+    background: var(--pmb-orange);
+    color: #fff !important;
+    border: 0;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  }
+  .landing-nav .nav-cidadao-link:hover {
+    background: var(--pmb-orange-deep);
+    color: #fff !important;
+  }
   .landing-nav .nav-admin-link {
-    margin-left: 0.15rem;
+    display: inline-flex !important;
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+    margin-left: 0;
+    padding: 0.65rem 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--pmb-green-deep) !important;
+    border: 0;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  }
+  .landing-nav .nav-admin-link:hover {
+    background: #f4fff0;
+    color: var(--pmb-green-deep) !important;
+  }
+  html[data-cidade="bomlugar"] .landing-nav .nav-protocolo {
+    color: #03327A !important;
+  }
+  html[data-cidade="bomlugar"] .landing-nav .nav-protocolo:hover {
+    background: #eef3fb;
+    color: #022456 !important;
+  }
+  html[data-cidade="bomlugar"] .landing-nav .nav-cidadao-link {
+    background: #03327A;
+    box-shadow: 0 4px 12px rgba(3, 50, 122, 0.22);
+  }
+  html[data-cidade="bomlugar"] .landing-nav .nav-cidadao-link:hover {
+    background: #022456;
+  }
+  html[data-cidade="bomlugar"] .landing-nav .nav-admin-link {
+    color: #B71C1C !important;
+    border: 1.5px solid #B71C1C;
+    box-shadow: none;
+  }
+  html[data-cidade="bomlugar"] .landing-nav .nav-admin-link:hover {
+    background: #B71C1C;
+    color: #fff !important;
   }
   .landing-nav .label-full { display: none; }
   .landing-nav .label-short { display: inline; }

@@ -240,7 +240,101 @@
     @media (max-width: 720px) {
       body { cursor: default; }
       .hud { opacity: 1; pointer-events: auto; }
-      .copy { bottom: 5.5rem; }
+
+      .bg {
+        inset: 0;
+        transform: none;
+        background-size: cover;
+        background-position: center 28%;
+        filter: saturate(1.05) contrast(1.04);
+      }
+      .scene.on .bg {
+        animation-name: ken-mobile;
+      }
+      @keyframes ken-mobile {
+        from { transform: scale(1.05); }
+        to { transform: scale(1); }
+      }
+
+      .veil {
+        background:
+          linear-gradient(90deg, rgba(4,10,18,.72) 0%, rgba(4,10,18,.35) 55%, rgba(4,10,18,.45) 100%),
+          linear-gradient(0deg, rgba(4,10,18,.82) 0%, transparent 48%);
+      }
+      .scene.center .veil {
+        background:
+          linear-gradient(180deg, rgba(4,10,18,.42) 0%, rgba(3,50,122,.22) 45%, rgba(4,10,18,.82) 100%);
+      }
+
+      .copy {
+        left: 1rem;
+        right: 1rem;
+        bottom: 5.75rem;
+        max-width: none;
+      }
+      .scene.center .copy {
+        top: auto;
+        bottom: 5.75rem;
+        left: 1rem;
+        right: 1rem;
+        width: auto;
+        max-width: none;
+        transform: none;
+        translate: none;
+        text-align: left;
+      }
+      .scene.center .kicker { justify-content: flex-start; }
+      .scene.center .line { margin-left: 0; margin-right: 0; max-width: none; }
+
+      .kicker {
+        font-size: 0.62rem;
+        letter-spacing: 0.12em;
+        margin-bottom: 0.45rem;
+      }
+      .kicker::before { width: 18px; }
+
+      h1, .title {
+        font-size: clamp(1.35rem, 6.8vw, 1.85rem);
+        line-height: 1.12;
+        letter-spacing: -0.03em;
+        text-shadow: 0 8px 24px rgba(0,0,0,.55);
+      }
+
+      .line {
+        margin-top: 0.55rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        max-width: none;
+      }
+
+      .brand-open {
+        gap: 0.65rem;
+        margin-bottom: 0.65rem;
+        align-items: center;
+      }
+      .brand-open[style*="center"] {
+        justify-content: flex-start !important;
+      }
+      .brand-open img {
+        width: 44px;
+      }
+      .brand-open strong {
+        font-size: 1.05rem;
+      }
+      .brand-open span {
+        font-size: 0.68rem;
+      }
+
+      .chip {
+        margin-top: 0.7rem;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.75rem;
+      }
+
+      .topbar {
+        font-size: 0.62rem;
+        padding: 0.55rem 0.85rem;
+      }
     }
   </style>
 </head>
