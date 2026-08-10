@@ -202,17 +202,32 @@ html[data-cidade="bomlugar"] .landing-nav a:hover {
   color: #022456;
 }
 
+/* Header branco: Protocolo e Admin NÃO podem ficar com texto branco */
+html[data-cidade="bomlugar"] .landing-nav .nav-protocolo {
+  color: #03327A !important;
+  background: #eef3fb;
+  border: 1px solid rgba(3, 50, 122, 0.28);
+  font-weight: 800;
+}
+
+html[data-cidade="bomlugar"] .landing-nav .nav-protocolo:hover {
+  background: #dce6f6;
+  color: #022456 !important;
+  border-color: #03327A;
+}
+
 html[data-cidade="bomlugar"] .landing-nav .nav-admin-link {
-  color: #03327A;
-  border-color: rgba(3, 50, 122, 0.4);
-  background: transparent;
-  box-shadow: none;
+  color: #fff !important;
+  background: #B71C1C;
+  border-color: #B71C1C;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(183, 28, 28, 0.22);
 }
 
 html[data-cidade="bomlugar"] .landing-nav .nav-admin-link:hover {
-  background: rgba(3, 50, 122, 0.08);
-  color: #022456;
-  border-color: #03327A;
+  background: #8E1515;
+  border-color: #8E1515;
+  color: #fff !important;
 }
 
 html[data-cidade="bomlugar"] .hero-carousel {
@@ -1553,10 +1568,13 @@ html[data-cidade="bomlugar"] .landing-footer-inner .footer-social a {
     color: var(--pmb-green-deep) !important;
   }
   html[data-cidade="bomlugar"] .landing-nav .nav-protocolo {
+    background: #fff !important;
     color: #03327A !important;
+    border: 1.5px solid #03327A;
+    box-shadow: 0 4px 14px rgba(3, 50, 122, 0.16);
   }
   html[data-cidade="bomlugar"] .landing-nav .nav-protocolo:hover {
-    background: #eef3fb;
+    background: #eef3fb !important;
     color: #022456 !important;
   }
   html[data-cidade="bomlugar"] .landing-nav .nav-cidadao-link {
@@ -1567,12 +1585,13 @@ html[data-cidade="bomlugar"] .landing-footer-inner .footer-social a {
     background: #022456;
   }
   html[data-cidade="bomlugar"] .landing-nav .nav-admin-link {
-    color: #B71C1C !important;
-    border: 1.5px solid #B71C1C;
-    box-shadow: none;
+    background: #B71C1C !important;
+    color: #fff !important;
+    border: 0;
+    box-shadow: 0 4px 14px rgba(183, 28, 28, 0.25);
   }
   html[data-cidade="bomlugar"] .landing-nav .nav-admin-link:hover {
-    background: #B71C1C;
+    background: #8E1515 !important;
     color: #fff !important;
   }
   .landing-nav .label-full { display: none; }
