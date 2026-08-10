@@ -31,6 +31,9 @@ const SESSIONS = new Map(); // legado em memória
 const SESSION_SECRET = process.env.SESSION_SECRET || 'bacabal-inteligente-demo-secret-v1';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const USING_VOLUME = !!process.env.RAILWAY_VOLUME_MOUNT_PATH || !!process.env.RAILWAY_VOLUME_NAME;
+if (!process.env.SESSION_SECRET && (USING_VOLUME || process.env.NODE_ENV === 'production')) {
+  console.warn('  AVISO: SESSION_SECRET padrão — defina SESSION_SECRET no ambiente de produção');
+}
 
 function copyDirSync(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -147,6 +150,7 @@ const {
 } = require('./lib/avancado.js');
 const {
   normalizeStatus, normalizeChamado, isPendente, detectarDuplicidade, STATUS,
+  sanitizeChamadoPublico, isPapelOps,
 } = require('./lib/plataforma.js');
 const { handleModulos, migrateTenant } = require('./lib/rotas-modulos.js');
 
@@ -393,18 +397,24 @@ function ensureDemoAprovacao(slug = 'bacabal') {
   writeTenant(slug, 'chamados.json', chamados);
 }
 
-/** Zera fila + notificações + WhatsApp (apresentação) e deixa o seed recriar só o demo de IA. */
+/** Zera fila + notificações + WhatsApp (apresentação) — só com DEMO_RESET=1. */
 function limparChamadosParaDemo(slug = 'bacabal') {
   if (!getMunicipio(slug) && !fs.existsSync(tenantPath(slug, 'chamados.json'))) return;
   const marker = path.join(DATA_DIR, `.limpar-chamados-${slug}-20260807a`);
   if (fs.existsSync(marker)) {
-    // Mantém só o demo da foto do problema (IA de material) — remove aprovação e o resto
+    // Mantém demos (buraco-foto + cenários) — remove lixo avulso só se DEMO_RESET
+    if (process.env.DEMO_RESET !== '1') return;
     const list = readTenant(slug, 'chamados.json', []);
     const limpa = list.filter((c) =>
       c.demoFixo === 'buraco-foto'
       || (c.demoFixo && String(c.demoFixo).startsWith('cenario-'))
     );
     if (limpa.length !== list.length) writeTenant(slug, 'chamados.json', limpa);
+    return;
+  }
+  // Primeira vez: só cria marker — NÃO apaga volume em produção
+  if (process.env.DEMO_RESET !== '1' && USING_VOLUME) {
+    try { fs.writeFileSync(marker, new Date().toISOString()); } catch (_) { /* ok */ }
     return;
   }
   writeTenant(slug, 'chamados.json', []);
@@ -425,6 +435,14 @@ function seedDemosIa() {
     ensureDemoChamado('bomlugar');
   } catch (e) {
     console.warn('ensureDemoChamado:', e.message);
+  }
+  try {
+    if (typeof ensureDemoAprovacao === 'function') {
+      ensureDemoAprovacao('bacabal');
+      ensureDemoAprovacao('bomlugar');
+    }
+  } catch (e) {
+    console.warn('ensureDemoAprovacao:', e.message);
   }
   // Portfólio: concluídos + aguardando + em andamento (antes/depois + materiais)
   try {
@@ -833,12 +851,6 @@ function ensureDemoPortfolio(slug = 'bacabal') {
 
 // Exporta para rotas /api/demo/*
 global.ensureDemoPortfolio = ensureDemoPortfolio;
-
-try {
-  seedDemosIa();
-} catch (e) {
-  console.warn('ensureDemoChamado:', e.message);
-}
 
 function listMunicipios() {
   return readJSON(path.join(DATA_DIR, 'municipios.json'), []);
@@ -1368,7 +1380,7 @@ async function handleAPI(req, res, pathname, url) {
     const u = users.find(x => String(x.id || '').toLowerCase() === usuario.toLowerCase() && x.senha === senha);
     if (!u) {
       return sendJSON(res, 401, {
-        error: `Credenciais inválidas (${cidade}). Demo: prefeito / prefeito123`,
+        error: `Credenciais inválidas (${cidade}). Verifique usuário e senha.`,
       });
     }
     if (u.ativo === false) return sendJSON(res, 403, { error: 'Acesso desativado. Fale com o administrador.' });
@@ -1489,16 +1501,9 @@ async function handleAPI(req, res, pathname, url) {
     }
 
     // Cidadão / público: só status, fotos e tempo — sem materiais/equipe/custo
-    const papelOps = user && ['secretaria', 'admin', 'prefeito', 'platform', 'campo', 'equipe'].includes(user.papel);
+    const papelOps = isPapelOps(user?.papel);
     if (!papelOps) {
-      list = list.map((c) => {
-        const {
-          materiais, execucao, custo, horasTrabalhadas,
-          cobrancas, alertaGabineteAtivo, cienteGabineteEm,
-          ...publico
-        } = c;
-        return publico;
-      });
+      list = list.map((c) => sanitizeChamadoPublico(c));
     }
 
     list.sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));

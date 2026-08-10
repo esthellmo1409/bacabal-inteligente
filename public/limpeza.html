@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Limpeza Urbana</title>
+  <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
+  <script>
+    window.BI_OPS_LOCK = true;
+    window.BI_AUTH_SLOT = 'secretaria';
+  </script>
+  <style>
+    :root {
+      --limp: #047857;
+      --limp-soft: #ecfdf5;
+      --limp-line: #6ee7b7;
+      --ink-soft: #064e3b;
+    }
+    body.ops-body { background: linear-gradient(180deg, #ecfdf5 0%, #f8fafc 240px, #f8fafc 100%); }
+    .limp-hero {
+      display:flex; justify-content:space-between; align-items:end; gap:1rem; flex-wrap:wrap;
+      margin-bottom:1rem; padding:1.05rem 1.2rem; border-radius:16px;
+      background: linear-gradient(135deg, #047857, #065f46 55%, #064e3b);
+      color:#fff; box-shadow:0 10px 28px rgba(4,120,87,.28);
+    }
+    .limp-hero .page-kicker { color:#a7f3d0; margin:0 0 .2rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.72rem; }
+    .limp-hero h1 { margin:0 0 .25rem; color:#fff; font-size:1.6rem; }
+    .limp-hero .muted { color:#d1fae5; margin:0; }
+    .limp-hero .btn { background:#fff; color:#065f46; border:none; font-weight:800; }
+    .hint-box {
+      margin-bottom:.85rem; padding:.75rem .95rem; border-radius:12px;
+      background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; font-size:.88rem; font-weight:600;
+    }
+    .ops-subnav { display:flex; flex-wrap:wrap; gap:.4rem; margin:0 0 .75rem; }
+    .btn-detalhar {
+      display:inline-flex; align-items:center; justify-content:space-between; gap:.5rem;
+      width:100%; margin-top:.55rem; padding:.55rem .75rem;
+      border:1px solid var(--limp-line); border-radius:10px; background:#fff;
+      font:inherit; font-weight:800; font-size:.85rem; color:var(--ink-soft); cursor:pointer;
+    }
+    .btn-detalhar .seta {
+      width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent;
+      border-top:6px solid var(--limp); transition: transform .15s ease;
+    }
+    .btn-detalhar.open .seta { transform: rotate(180deg); }
+    .detalhe-box { display:none; margin-top:.65rem; padding:.85rem; border:1px solid var(--limp-line); border-radius:12px; background:var(--limp-soft); }
+    .detalhe-box.open { display:block; }
+  </style>
+</head>
+<body class="ops-body">
+  <div class="wrap-wide">
+    <div id="top"></div>
+    <div id="opsBuscaMount"></div>
+
+    <div class="hint-box">
+      Esta é a <strong>Limpeza Urbana</strong>. Aqui você opera coleta, varrição e acúmulo de lixo.
+      O Gabinete só acompanha.
+    </div>
+
+    <div class="limp-hero">
+      <div>
+        <p class="page-kicker">Secretaria de Limpeza</p>
+        <h1 class="display">Central operacional</h1>
+        <p class="muted">Recentes · abertos · concluídos — com foto, materiais e execução</p>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-sm" id="btnRefresh" type="button">Atualizar</button>
+      </div>
+    </div>
+
+    <div class="grid-3" id="kpis" style="margin-bottom:1rem"></div>
+
+    <div class="panel ops-block" id="secRecentes" style="border:2px solid #6ee7b7;background:linear-gradient(180deg,#ecfdf5,#fff);margin-bottom:1rem">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0;color:#064e3b;font-size:1.15rem">① Chamados recentes</h3>
+          <p class="muted" style="margin:.25rem 0 0">Últimos atualizados — abra <strong>Detalhar</strong> para fotos e execução.</p>
+        </div>
+        <div class="cta-row">
+          <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
+          <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
+        </div>
+      </div>
+      <div id="recentesBox" class="list"><p class="muted">Carregando…</p></div>
+    </div>
+
+    <div class="ops-subnav">
+      <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
+      <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
+      <button class="btn btn-sm" type="button" data-jump="secRecentes">Recentes</button>
+      <button class="btn btn-sm" type="button" data-jump="chatGabBox">Gabinete</button>
+    </div>
+
+    <div class="panel" id="secAbertos" style="border:2px solid #fcd34d;margin-bottom:1rem">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0;color:#9a3412">② Chamados abertos</h3>
+          <p class="muted" style="margin:.25rem 0 0">Fila em andamento — encaminhar e acompanhar execução.</p>
+        </div>
+        <span class="count" id="countAbertos">0</span>
+      </div>
+      <div id="chamadosAbertosBox" class="list"></div>
+    </div>
+
+    <div class="panel" id="secConcluidos" style="border:2px solid #86efac;background:linear-gradient(180deg,#f0fdf4,#fff);margin-bottom:1rem">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0;color:#166534">③ Concluídos</h3>
+          <p class="muted" style="margin:.25rem 0 0">Portfólio com antes/depois, materiais e tempo.</p>
+        </div>
+        <span class="count" id="countConcluidos">0</span>
+      </div>
+      <div id="chamadosConcluidosBox" class="list"></div>
+    </div>
+
+    <div class="panel" id="chatGabBox">
+      <h3 style="margin:0 0 .25rem">Gabinete</h3>
+      <p class="muted" style="margin:0 0 .75rem;font-size:.85rem">Mensagens do prefeito para a Limpeza</p>
+      <div id="secChatMsgs" class="list" style="max-height:260px;overflow:auto;background:#ecfdf5;border-radius:12px;padding:.75rem;margin-bottom:.65rem"></div>
+      <div style="display:flex;gap:.45rem;flex-wrap:wrap">
+        <input id="secChatInput" style="flex:1;min-width:180px;margin:0" placeholder="Responder ao Gabinete…" maxlength="500" />
+        <button class="btn btn-primary" type="button" id="secChatSend">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=audit-fix1"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
+  </script>
+
+  <script>
+    window.BI_OPS_LOCK = true;
+    window.BI_AUTH_SLOT = 'secretaria';
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+
+    let user = null;
+    let todosChamados = [];
+    let pollTimer = null;
+
+    function flashSecao(el) {
+      if (!el) return;
+      el.classList.add('ops-busca-flash');
+      setTimeout(() => el.classList.remove('ops-busca-flash'), 1600);
+    }
+
+    function goPane(_name, { jump } = {}) {
+      if (!jump) return;
+      const el = document.getElementById(jump);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        flashSecao(el);
+      }
+    }
+    window.goPane = goPane;
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target?.closest?.('[data-jump]');
+      if (!btn || !document.body.contains(btn)) return;
+      if (btn.closest('.item') && !btn.hasAttribute('data-jump')) return;
+      const jump = btn.getAttribute('data-jump');
+      if (!jump) return;
+      e.preventDefault();
+      goPane(null, { jump });
+    });
+
+    function cardChamadoHtml(c, { recente } = {}) {
+      const did = (recente ? 'limp-rec-' : 'limp-') + c.id;
+      const acoesHtml = `
+        <button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>
+        <button class="btn btn-sm" type="button" data-status="${c.id}" data-st="em_execucao">Em execução</button>
+        <button class="btn btn-sm btn-primary" type="button" data-status="${c.id}" data-st="concluido">Concluir</button>
+      `;
+      return `
+        <div class="item" data-chamado-id="${c.id}">
+          <div class="item-head">
+            <strong>${c.protocolo || c.id}</strong>
+            <span class="badge">${typeof statusLabel === 'function' ? statusLabel(c.status) : (c.status || '')}</span>
+            ${typeof opsTemCobrancaPendente === 'function' && opsTemCobrancaPendente(c) ? '<span class="badge badge-cancelado">Gabinete</span>' : ''}
+          </div>
+          <div>${c.titulo || c.categoria || 'Chamado'}</div>
+          <div class="meta">${c.bairro || '—'} ${c.endereco ? '· ' + c.endereco : ''}
+            ${c.criadoEm ? '· cidadão ' + new Date(c.criadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}
+          </div>
+          <button type="button" class="btn-detalhar" data-detalhar="${did}">
+            <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+          </button>
+          <div class="detalhe-box" id="detalhe-${did}">
+            ${typeof detalheOperacaoHtml === 'function'
+              ? detalheOperacaoHtml(c, { acoesHtml })
+              : ''}
+          </div>
+        </div>`;
+    }
+
+    function render(list) {
+      todosChamados = Array.isArray(list) ? list : [];
+      const sorted = [...todosChamados].sort((a, b) =>
+        String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
+      );
+      const abertos = sorted.filter((c) => c.status !== 'concluido' && c.status !== 'cancelado');
+      const concluidos = sorted.filter((c) => c.status === 'concluido');
+      const recentes = sorted.slice(0, 5);
+      const andamento = abertos.filter((c) =>
+        ['em_analise', 'encaminhado', 'em_execucao', 'aguardando_material', 'aguardando_aprovacao'].includes(c.status)
+      ).length;
+
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">Abertos</div><div class="value">${abertos.length}</div>
+          <div class="hint">${andamento} em tratamento</div></div>
+        <div class="panel stat"><div class="label">Concluídos</div><div class="value">${concluidos.length}</div>
+          <div class="hint">portfólio</div></div>
+        <div class="panel stat"><div class="label">Total</div><div class="value">${sorted.length}</div>
+          <div class="hint">filtro da secretaria</div></div>`;
+
+      const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
+      if (!detalheEmUso) {
+        document.getElementById('recentesBox').innerHTML = recentes.length
+          ? recentes.map((c) => cardChamadoHtml(c, { recente: true })).join('')
+          : '<p class="muted">Nenhum chamado recente.</p>';
+        document.getElementById('chamadosAbertosBox').innerHTML = abertos.length
+          ? abertos.map((c) => cardChamadoHtml(c)).join('')
+          : '<p class="muted">Nenhum chamado aberto de limpeza.</p>';
+        document.getElementById('chamadosConcluidosBox').innerHTML = concluidos.length
+          ? concluidos.map((c) => cardChamadoHtml(c)).join('')
+          : '<p class="muted">Nenhum concluído ainda.</p>';
+        document.getElementById('countAbertos').textContent = String(abertos.length);
+        document.getElementById('countConcluidos').textContent = String(concluidos.length);
+
+        const getC = (id) => todosChamados.find((c) => c.id === id);
+        if (typeof bindDetalharToggle === 'function') {
+          bindDetalharToggle(document.getElementById('recentesBox'), getC);
+          bindDetalharToggle(document.getElementById('chamadosAbertosBox'), getC);
+          bindDetalharToggle(document.getElementById('chamadosConcluidosBox'), getC);
+        }
+        if (typeof bindIaObraAssist === 'function') {
+          bindIaObraAssist(document.getElementById('recentesBox'), getC);
+          bindIaObraAssist(document.getElementById('chamadosAbertosBox'), getC);
+          bindIaObraAssist(document.getElementById('chamadosConcluidosBox'), getC);
+        }
+        if (typeof bindFotoThumbs === 'function') {
+          bindFotoThumbs(document.getElementById('recentesBox'));
+          bindFotoThumbs(document.getElementById('chamadosAbertosBox'));
+          bindFotoThumbs(document.getElementById('chamadosConcluidosBox'));
+        }
+      }
+
+      document.querySelectorAll('[data-encaminhar]').forEach((btn) => {
+        if (btn._eBound) return;
+        btn._eBound = true;
+        btn.onclick = async () => {
+          try {
+            await api('/api/chamados/' + btn.dataset.encaminhar, {
+              method: 'PATCH',
+              body: JSON.stringify({ status: 'encaminhado', nota: 'Encaminhado à equipe em campo' }),
+            });
+            toast('Encaminhado pra equipe em campo');
+            await load();
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-status]').forEach((btn) => {
+        if (btn._sBound) return;
+        btn._sBound = true;
+        btn.onclick = async () => {
+          try {
+            await api('/api/chamados/' + btn.dataset.status, {
+              method: 'PATCH',
+              body: JSON.stringify({ status: btn.dataset.st }),
+            });
+            toast('Status: ' + (typeof statusLabel === 'function' ? statusLabel(btn.dataset.st) : btn.dataset.st));
+            await load();
+          } catch (e) { toast(e.message); }
+        };
+      });
+    }
+
+    async function loadChat() {
+      const box = document.getElementById('secChatMsgs');
+      if (!box) return [];
+      try {
+        const r = await api('/api/gabinete/chat?secretaria=limpeza');
+        const msgs = r.thread?.mensagens || [];
+        box.innerHTML = msgs.length
+          ? msgs.map((m) => `
+            <div class="item" style="background:${m.de === 'gabinete' ? '#e8eef8' : '#fff'};margin-bottom:.4rem">
+              <div class="item-head"><strong>${m.autor || m.de}</strong>
+                <span class="meta">${m.criadoEm ? new Date(m.criadoEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+              </div>
+              <div>${m.texto}</div>
+            </div>`).join('')
+          : '<p class="muted">Nenhuma mensagem do Gabinete ainda.</p>';
+        box.scrollTop = box.scrollHeight;
+        opsCheckChatAlerta?.(msgs, {
+          storageKey: 'bi_som_limpeza',
+          label: 'Limpeza',
+          goChat: "try{document.getElementById('chatGabBox')?.scrollIntoView({behavior:'smooth'});}catch(_){ }opsHideAlerta();opsStopAlarm();",
+        });
+        return msgs;
+      } catch (_) {
+        return [];
+      }
+    }
+
+    async function load() {
+      const list = await api('/api/chamados');
+      render(list);
+      opsCheckCobrancasAlerta?.(list || [], {
+        storageKey: 'bi_som_limpeza',
+        onCiencia: () => load().catch(() => {}),
+      });
+      await loadChat().catch(() => []);
+    }
+
+    if (typeof opsInitBusca === 'function') {
+      opsInitBusca({
+        placeholder: 'Buscar: recentes, abertos, concluídos, protocolo…',
+        items: [
+          { id: 'l-recentes', title: 'Chamados recentes', hint: 'Últimos atualizados', keywords: 'recentes novo ultimo atualizado', jump: 'secRecentes' },
+          { id: 'l-abertos', title: 'Chamados abertos', hint: 'Fila em andamento', keywords: 'abertos fila andamento pendente', jump: 'secAbertos' },
+          { id: 'l-concluidos', title: 'Concluídos', hint: 'Antes/depois + materiais', keywords: 'concluidos finalizados prontos resolvidos', jump: 'secConcluidos' },
+          { id: 'l-chat', title: 'Gabinete', hint: 'Responder cobranças', keywords: 'chat gabinete cobranca', jump: 'chatGabBox' },
+        ],
+        getExtraItems: () => (todosChamados || []).map((c) => {
+          const ok = c.status === 'concluido';
+          return {
+            id: 'ch-' + c.id,
+            group: 'dado',
+            title: `${c.protocolo || c.id} · ${c.titulo || c.categoria || 'Chamado'}`,
+            hint: `${ok ? 'Concluído' : 'Aberto'} · ${c.bairro || '—'} · ${c.status || ''}`,
+            keywords: `${c.protocolo} ${c.titulo} ${c.bairro} ${c.status} chamado ${ok ? 'concluido' : 'aberto'}`,
+            jump: ok ? 'secConcluidos' : 'secAbertos',
+            go: () => {
+              goPane(null, { jump: ok ? 'secConcluidos' : 'secAbertos' });
+              setTimeout(() => {
+                const el = document.querySelector(`[data-chamado-id="${c.id}"]`);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  flashSecao(el);
+                }
+              }, 350);
+            },
+          };
+        }),
+        onGo: (it) => {
+          if (typeof it.go === 'function') return it.go(it);
+          if (it.jump) goPane(null, { jump: it.jump });
+        },
+      });
+    }
+
+    async function boot() {
+      const cfg = await loadCityBrand();
+      user = typeof ensureOpsUser === 'function' ? ensureOpsUser() : getSessionUser();
+      if (!user && !hasOpsToken()) {
+        toast('Faça login na Limpeza');
+        location.href = cityLink('/login.html');
+        return;
+      }
+      // Força branding Limpeza (mesmo se token genérico de secretaria)
+      const secOk = !user?.secretaria || user.secretaria === 'limpeza' || user.id === 'limpeza'
+        || user.papel === 'admin' || user.papel === 'prefeito';
+      if (user && !secOk) {
+        toast('Esta tela é da Limpeza Urbana');
+        location.href = cityLink('/login.html');
+        return;
+      }
+      document.getElementById('top').innerHTML = topbar('Limpeza Urbana', cfg, { lock: true, user, som: true });
+      if (typeof opsWireSomToggle === 'function') opsWireSomToggle('bi_som_limpeza');
+      document.title = `Limpeza Urbana · ${cfg.produto || cfg.cidade || ''}`;
+      rewriteCityLinks();
+
+      document.getElementById('secChatSend').onclick = async () => {
+        const input = document.getElementById('secChatInput');
+        const texto = input.value.trim();
+        if (!texto) return;
+        try {
+          await api('/api/gabinete/chat', {
+            method: 'POST',
+            body: JSON.stringify({ secretaria: 'limpeza', texto, de: 'secretaria', autoAck: false }),
+          });
+          input.value = '';
+          await loadChat();
+        } catch (e) { toast(e.message); }
+      };
+      document.getElementById('btnRefresh').onclick = () => load().catch((e) => toast(e.message));
+
+      await load();
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(() => load().catch(() => {}), 12000);
+      if (window.Notification && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+      const sec = new URLSearchParams(location.search).get('sec');
+      if (sec) goPane(null, { jump: sec });
+    }
+
+    boot().catch((e) => toast(e.message));
+  </script>
+</body>
+</html>

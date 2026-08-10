@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Iluminação Pública</title>
-  <link rel="stylesheet" href="/styles.css?v=exec-ops1" />
+  <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -115,6 +115,20 @@
       </div>
     </div>
 
+    <div class="panel ops-block" id="secRecentes" style="border:2px solid #fcd34d;background:linear-gradient(180deg,#fffbeb,#fff);margin-bottom:1rem">
+      <div class="ops-section-head">
+        <div>
+          <h3 style="margin:0;color:#92400e;font-size:1.15rem">① Chamados recentes</h3>
+          <p class="muted" style="margin:.25rem 0 0">Últimos atualizados — abra <strong>Detalhar</strong> para fotos e execução.</p>
+        </div>
+        <div class="cta-row">
+          <button class="btn btn-sm" type="button" data-nav-pane="chamados" data-jump="secAbertos">Abertos</button>
+          <button class="btn btn-sm btn-primary" type="button" data-nav-pane="chamados" data-jump="secConcluidos">Concluídos</button>
+        </div>
+      </div>
+      <div id="recentesBox" class="list"><p class="muted">Carregando chamados…</p></div>
+    </div>
+
     <div class="grid-4" id="kpis"></div>
 
     <div class="acao-grid">
@@ -122,7 +136,9 @@
       <button type="button" class="acao-card" data-go="rota"><strong>Rota do dia</strong><span>Ordem da cesta aérea</span></button>
       <button type="button" class="acao-card" data-go="frota"><strong>Frota</strong><span>Cestas e utilitário</span></button>
       <button type="button" class="acao-card" data-go="estoque"><strong>Estoque LED</strong><span>Lâmpadas e materiais</span></button>
-      <button type="button" class="acao-card" data-go="chamados"><strong>Chamados</strong><span>Fila da iluminação</span></button>
+      <button type="button" class="acao-card" data-jump="secRecentes"><strong>Recentes</strong><span>Últimos chamados</span></button>
+      <button type="button" class="acao-card" data-go="chamados" data-jump="secAbertos"><strong>Abertos</strong><span>Fila em andamento</span></button>
+      <button type="button" class="acao-card" data-go="chamados" data-jump="secConcluidos"><strong>Concluídos</strong><span>Antes/depois + materiais</span></button>
       <button type="button" class="acao-card" data-go="alertas"><strong>Alertas</strong><span>O que exige atenção</span></button>
       <button type="button" class="acao-card" data-go="qr"><strong>Poste QR</strong><span>Link rápido do cidadão</span></button>
       <button type="button" class="acao-card" data-go="chat"><strong>Gabinete</strong><span>Responder cobranças</span></button>
@@ -191,11 +207,31 @@
     </div>
 
     <div class="pane" id="pane-chamados">
-      <div class="panel">
-        <h3 style="margin-bottom:.35rem">Chamados abertos</h3>
-        <div id="iaHelpIlu"></div>
-        <p class="muted" style="margin-bottom:.85rem">Fila da iluminação — Detalhar abre foto + ajuda da IA</p>
-        <div id="chamadosBox" class="list"></div>
+      <div id="iaHelpIlu"></div>
+      <div class="ops-subnav" style="display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .75rem">
+        <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
+        <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
+        <button class="btn btn-sm" type="button" data-jump="secRecentes">Recentes (topo)</button>
+      </div>
+      <div class="panel" id="secAbertos" style="border:2px solid #fcd34d;margin-bottom:1rem">
+        <div class="ops-section-head">
+          <div>
+            <h3 style="margin:0;color:#92400e">② Chamados abertos</h3>
+            <p class="muted" style="margin:.25rem 0 0">Fila em andamento — encaminhar, material, execução.</p>
+          </div>
+          <span class="count" id="countAbertos">0</span>
+        </div>
+        <div id="chamadosAbertosBox" class="list"></div>
+      </div>
+      <div class="panel" id="secConcluidos" style="border:2px solid #86efac;background:linear-gradient(180deg,#f0fdf4,#fff)">
+        <div class="ops-section-head">
+          <div>
+            <h3 style="margin:0;color:#166534">③ Concluídos</h3>
+            <p class="muted" style="margin:.25rem 0 0">Portfólio com antes/depois, materiais e tempo — só secretaria/gabinete.</p>
+          </div>
+          <span class="count" id="countConcluidos">0</span>
+        </div>
+        <div id="chamadosConcluidosBox" class="list"></div>
       </div>
     </div>
 
@@ -231,7 +267,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=exec-ops1"></script>
+  <script src="/app.js?v=audit-fix1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
@@ -262,28 +298,92 @@
       });
     }
 
-    function goPane(name) {
+    function flashSecao(el) {
+      if (!el) return;
+      el.classList.add('ops-busca-flash');
+      setTimeout(() => el.classList.remove('ops-busca-flash'), 1600);
+    }
+
+    function goPane(name, { scroll = true, jump } = {}) {
+      if (!name && jump) {
+        const elOnly = document.getElementById(jump);
+        if (elOnly) {
+          elOnly.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          flashSecao(elOnly);
+        }
+        return;
+      }
+      if (!name) return;
+      if (name === 'recentes') {
+        const el = document.getElementById('secRecentes');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          flashSecao(el);
+        }
+        return;
+      }
+      const pane = document.getElementById('pane-' + name);
+      if (!pane) {
+        if (typeof toast === 'function') toast('Seção não encontrada: ' + name);
+        return;
+      }
       document.querySelectorAll('.ilu-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
       document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('active', p.id === 'pane-' + name));
-      document.querySelectorAll('.acao-card').forEach((c) => c.classList.toggle('active', c.dataset.go === name));
-      const el = document.getElementById('pane-' + name);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.acao-card').forEach((c) => {
+        const go = c.getAttribute('data-go');
+        const j = c.getAttribute('data-jump');
+        c.classList.toggle('active', go === name || j === jump);
+      });
+      try {
+        const url = new URL(location.href);
+        url.searchParams.set('aba', name);
+        if (jump) url.searchParams.set('sec', jump);
+        else url.searchParams.delete('sec');
+        history.replaceState({ biOpsLock: 1, t: Date.now(), aba: name, sec: jump || null }, '', url.toString());
+        if (typeof opsTravarVoltar === 'function') opsTravarVoltar();
+      } catch (_) {}
+      if (scroll) {
+        requestAnimationFrame(() => {
+          const target = (jump && document.getElementById(jump))
+            || document.getElementById('tabs')
+            || pane;
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (jump) flashSecao(document.getElementById(jump));
+        });
+      }
     }
     window.goPane = goPane;
 
-    document.querySelectorAll('.ilu-tab, .acao-card').forEach((btn) => {
-      btn.onclick = () => goPane(btn.dataset.pane || btn.dataset.go);
+    document.addEventListener('click', (e) => {
+      const btn = e.target && e.target.closest
+        ? e.target.closest('.acao-card[data-go], .acao-card[data-jump], .ilu-tab[data-pane], [data-nav-pane], [data-jump]')
+        : null;
+      if (!btn || !document.body.contains(btn)) return;
+      if (btn.closest('.unidade-card') && !btn.classList.contains('acao-card') && !btn.hasAttribute('data-nav-pane') && !btn.closest('.ops-subnav') && !btn.closest('.ops-section-head')) {
+        return;
+      }
+      const name = btn.getAttribute('data-pane')
+        || btn.getAttribute('data-go')
+        || btn.getAttribute('data-nav-pane');
+      const jump = btn.getAttribute('data-jump') || null;
+      if (!name && !jump) return;
+      e.preventDefault();
+      if (name) goPane(name, { scroll: true, jump });
+      else goPane(null, { scroll: true, jump });
     });
 
     if (typeof opsInitBusca === 'function') {
       opsInitBusca({
-        placeholder: 'Buscar na Iluminação: poste, rota, frota, estoque LED…',
+        placeholder: 'Buscar: concluídos, recentes, abertos, poste, estoque LED…',
         items: [
+          { id: 'i-recentes', title: 'Chamados recentes', hint: 'Últimos atualizados (topo)', keywords: 'recentes novo ultimo atualizado', jump: 'secRecentes' },
+          { id: 'i-abertos', title: 'Chamados abertos', hint: 'Fila em andamento', keywords: 'abertos fila andamento pendente protocolo', pane: 'chamados', jump: 'secAbertos' },
+          { id: 'i-concluidos', title: 'Concluídos', hint: 'Antes/depois + materiais', keywords: 'concluidos finalizados prontos resolvidos portfolio', pane: 'chamados', jump: 'secConcluidos' },
           { id: 'i-postes', title: 'Postes', hint: 'Apagados, reparo, sem energia', keywords: 'poste apagado luz', pane: 'postes' },
           { id: 'i-rota', title: 'Rota da noite', hint: 'Ordem de atendimento', keywords: 'rota noite equipe', pane: 'rota' },
           { id: 'i-frota', title: 'Frota / cestas', hint: 'Veículos da iluminação', keywords: 'cesta frota veiculo', pane: 'frota' },
           { id: 'i-est', title: 'Estoque LED', hint: 'Lâmpadas e materiais', keywords: 'estoque led lampada cabo', pane: 'estoque' },
-          { id: 'i-ch', title: 'Chamados', hint: 'Fila da iluminação', keywords: 'chamado protocolo', pane: 'chamados' },
+          { id: 'i-ch', title: 'Área de chamados', hint: 'Abertos + concluídos', keywords: 'chamado protocolo', pane: 'chamados' },
           { id: 'i-al', title: 'Alertas', hint: 'O que exige atenção', keywords: 'alerta critico', pane: 'alertas' },
           { id: 'i-qr', title: 'QR do poste', hint: 'Abrir página do poste', keywords: 'qr codigo', pane: 'qr' },
           { id: 'i-chat', title: 'Gabinete', hint: 'Responder cobranças', keywords: 'chat gabinete cobranca', pane: 'chat' },
@@ -300,6 +400,28 @@
               hint: `${x.status || '—'} · ${x.bairro || ''} · ${x.endereco || ''}`,
               keywords: `poste ${x.codigo} ${x.status} ${x.bairro} ${x.endereco}`,
               pane: 'postes',
+            });
+          });
+          (p.chamados || []).forEach((c) => {
+            const ok = c.status === 'concluido';
+            out.push({
+              id: 'ch-' + c.id,
+              group: 'dado',
+              title: `${c.protocolo || c.id} · ${c.titulo || c.categoria || 'Chamado'}`,
+              hint: `${ok ? 'Concluído' : 'Aberto'} · ${c.bairro || '—'} · ${c.status || ''}`,
+              keywords: `${c.protocolo} ${c.titulo} ${c.bairro} ${c.status} chamado ${ok ? 'concluido finalizado' : 'aberto'}`,
+              pane: 'chamados',
+              jump: ok ? 'secConcluidos' : 'secAbertos',
+              go: () => {
+                goPane('chamados', { scroll: true, jump: ok ? 'secConcluidos' : 'secAbertos' });
+                setTimeout(() => {
+                  const el = document.querySelector(`[data-chamado-id="${c.id}"]`);
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    flashSecao(el);
+                  }
+                }, 350);
+              },
             });
           });
           (p.estoque || []).forEach((e) => {
@@ -324,7 +446,11 @@
           });
           return out;
         },
-        onGo: (it) => goPane(it.pane),
+        onGo: (it) => {
+          if (typeof it.go === 'function') return it.go(it);
+          if (it.pane) goPane(it.pane, { scroll: true, jump: it.jump || null });
+          else if (it.jump) goPane(null, { scroll: true, jump: it.jump });
+        },
       });
     }
 
@@ -414,13 +540,17 @@
         </div>`;
       }).join('');
 
-      const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
-      if (!detalheEmUso) {
-        document.getElementById('chamadosBox').innerHTML = (p.chamados || []).length
-          ? p.chamados.map((c) => {
-            const did = 'ilu-' + c.id;
-            const acoesHtml = `<button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>`;
-            return `
+      const chamadosSorted = [...(p.chamados || [])].sort((a, b) =>
+        String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
+      );
+      const chamadosAbertos = chamadosSorted.filter((c) => c.status !== 'concluido');
+      const chamadosConcluidos = chamadosSorted.filter((c) => c.status === 'concluido');
+      const recentes = chamadosSorted.slice(0, 5);
+
+      function cardChamadoHtml(c, { recente } = {}) {
+        const did = (recente ? 'ilu-rec-' : 'ilu-') + c.id;
+        const acoesHtml = `<button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>`;
+        return `
             <div class="item" data-chamado-id="${c.id}">
               <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status}</span>
                 ${typeof opsTemCobrancaPendente === 'function' && opsTemCobrancaPendente(c) ? '<span class="badge badge-cancelado">Gabinete</span>' : ''}
@@ -435,8 +565,32 @@
                   : (typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : '')}
               </div>
             </div>`;
-          }).join('')
-          : '<p class="muted">Nenhum chamado aberto de iluminação.</p>';
+      }
+
+      const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
+      if (!detalheEmUso) {
+        const recentesEl = document.getElementById('recentesBox');
+        if (recentesEl) {
+          recentesEl.innerHTML = recentes.length
+            ? recentes.map((c) => cardChamadoHtml(c, { recente: true })).join('')
+            : '<p class="muted">Nenhum chamado recente de iluminação.</p>';
+        }
+        const abertosBox = document.getElementById('chamadosAbertosBox');
+        const concluidosBox = document.getElementById('chamadosConcluidosBox');
+        if (abertosBox) {
+          abertosBox.innerHTML = chamadosAbertos.length
+            ? chamadosAbertos.map((c) => cardChamadoHtml(c)).join('')
+            : '<p class="muted">Nenhum chamado aberto de iluminação.</p>';
+        }
+        if (concluidosBox) {
+          concluidosBox.innerHTML = chamadosConcluidos.length
+            ? chamadosConcluidos.map((c) => cardChamadoHtml(c)).join('')
+            : '<p class="muted">Nenhum concluído ainda.</p>';
+        }
+        const ca = document.getElementById('countAbertos');
+        const cc = document.getElementById('countConcluidos');
+        if (ca) ca.textContent = String(chamadosAbertos.length);
+        if (cc) cc.textContent = String(chamadosConcluidos.length);
       }
 
       const iaHelp = document.getElementById('iaHelpIlu');
@@ -450,16 +604,17 @@
 
       bindActions();
       syncQr();
+      const getChamadoIlu = (id) => (painelAtual?.chamados || []).find((c) => c.id === id);
       if (!detalheEmUso) {
         if (typeof bindDetalharToggle === 'function') {
-          bindDetalharToggle(document.getElementById('chamadosBox'), (id) =>
-            (painelAtual?.chamados || []).find((c) => c.id === id)
-          );
+          bindDetalharToggle(document.getElementById('recentesBox'), getChamadoIlu);
+          bindDetalharToggle(document.getElementById('chamadosAbertosBox'), getChamadoIlu);
+          bindDetalharToggle(document.getElementById('chamadosConcluidosBox'), getChamadoIlu);
         }
         if (typeof bindIaObraAssist === 'function') {
-          bindIaObraAssist(document.getElementById('chamadosBox'), (id) =>
-            (painelAtual?.chamados || []).find((c) => c.id === id)
-          );
+          bindIaObraAssist(document.getElementById('recentesBox'), getChamadoIlu);
+          bindIaObraAssist(document.getElementById('chamadosAbertosBox'), getChamadoIlu);
+          bindIaObraAssist(document.getElementById('chamadosConcluidosBox'), getChamadoIlu);
         }
       }
       document.querySelectorAll('[data-encaminhar]').forEach((btn) => {
@@ -636,7 +791,13 @@
         Notification.requestPermission().catch(() => {});
       }
       const aba = new URLSearchParams(location.search).get('aba');
-      if (aba) goPane(aba);
+      const sec = new URLSearchParams(location.search).get('sec');
+      if (aba) goPane(aba, { scroll: true, jump: sec || null });
+      else if (sec) goPane(null, { scroll: true, jump: sec });
+      else {
+        const top = document.getElementById('secRecentes');
+        if (top) top.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     boot().catch((e) => toast(e.message));

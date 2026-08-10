@@ -15,7 +15,7 @@
       <div class="flag-bar" style="margin:0 auto 1rem"><span></span><span></span><span></span></div>
       <p class="eyebrow">Área administrativa</p>
       <h1 class="display" style="font-size:clamp(1.6rem,4vw,2rem);margin-bottom:0.35rem">Acesso restrito</h1>
-      <p class="muted" style="margin-bottom:1.25rem;font-weight:500;letter-spacing:-0.015em">Somente servidores autorizados da Prefeitura de Bacabal</p>
+      <p class="muted" id="loginCityHint" style="margin-bottom:1.25rem;font-weight:500;letter-spacing:-0.015em">Somente servidores autorizados da prefeitura</p>
 
       <div style="text-align:left">
         <label>Perfil</label>
@@ -65,6 +65,9 @@
       const cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Login', cfg);
       rewriteCityLinks();
+      const hint = document.getElementById('loginCityHint');
+      const cidadeNome = cfg?.cidade || (getCidade() === 'bomlugar' ? 'Bom Lugar' : 'Bacabal');
+      if (hint) hint.textContent = `Somente servidores autorizados da Prefeitura de ${cidadeNome}`;
       if (cfg && (cfg.slug === 'bomlugar' || getCidade() === 'bomlugar')) {
         const opt = document.querySelector('#perfil option[value="prefeito"]');
         if (opt) opt.textContent = 'Gabinete da Prefeita';
@@ -132,6 +135,8 @@
             location.href = cityLink('/saude.html');
           } else if (r.user.secretaria === 'iluminacao' || r.user.id === 'iluminacao') {
             location.href = cityLink('/iluminacao.html');
+          } else if (r.user.secretaria === 'limpeza' || r.user.id === 'limpeza') {
+            location.href = cityLink('/limpeza.html');
           } else if (r.user.secretaria === 'obras' || r.user.id === 'obras') {
             location.href = cityLink('/obras-ops.html');
           } else {

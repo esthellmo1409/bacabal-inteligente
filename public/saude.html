@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Secretaria de Saúde</title>
-  <link rel="stylesheet" href="/styles.css?v=ops-busca1" />
+  <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -134,7 +134,8 @@
       <button type="button" class="acao-card" data-go="leitos"><strong>Leitos</strong><span>Ocupação hospitalar</span></button>
       <button type="button" class="acao-card" data-go="farmacia"><strong>Farmácia</strong><span>Insumos críticos</span></button>
       <button type="button" class="acao-card" data-go="checklist"><strong>Checklist</strong><span>Abertura da unidade</span></button>
-      <button type="button" class="acao-card" data-go="chamados"><strong>Chamados</strong><span>Reclamações da Saúde</span></button>
+      <button type="button" class="acao-card" data-go="chamados" data-jump="secAbertos"><strong>Abertos</strong><span>Reclamações em andamento</span></button>
+      <button type="button" class="acao-card" data-go="chamados" data-jump="secConcluidos"><strong>Concluídos</strong><span>Resolvidos da Saúde</span></button>
       <button type="button" class="acao-card" data-go="avisos"><strong>Avisos</strong><span>Falar com o Gabinete</span></button>
     </div>
 
@@ -262,11 +263,30 @@
     </div>
 
     <div class="pane" id="pane-chamados">
-      <div class="panel">
-        <h3 style="margin-bottom:0.35rem">Chamados / reclamações da Saúde</h3>
-        <div id="iaHelpSaude"></div>
-        <p class="muted" style="margin-bottom:0.85rem">Demora, falta de médico, superlotação — abra <strong>Detalhar</strong> para a IA ajudar no plano</p>
-        <div id="chamadosBox" class="list"></div>
+      <div id="iaHelpSaude"></div>
+      <div class="ops-subnav" style="display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .75rem">
+        <button class="btn btn-sm" type="button" data-jump="secAbertos">Abertos</button>
+        <button class="btn btn-sm btn-primary" type="button" data-jump="secConcluidos">Concluídos</button>
+      </div>
+      <div class="panel" id="secAbertos" style="border:2px solid #99f6e4;margin-bottom:1rem">
+        <div class="ops-section-head">
+          <div>
+            <h3 style="margin:0;color:#115e59">Chamados abertos</h3>
+            <p class="muted" style="margin:.25rem 0 0">Demora, falta de médico, superlotação — abra <strong>Detalhar</strong> para a IA.</p>
+          </div>
+          <span class="count" id="countAbertos">0</span>
+        </div>
+        <div id="chamadosAbertosBox" class="list"></div>
+      </div>
+      <div class="panel" id="secConcluidos" style="border:2px solid #86efac;background:linear-gradient(180deg,#f0fdf4,#fff)">
+        <div class="ops-section-head">
+          <div>
+            <h3 style="margin:0;color:#166534">Concluídos</h3>
+            <p class="muted" style="margin:.25rem 0 0">Reclamações resolvidas da Saúde.</p>
+          </div>
+          <span class="count" id="countConcluidos">0</span>
+        </div>
+        <div id="chamadosConcluidosBox" class="list"></div>
       </div>
     </div>
 
@@ -333,7 +353,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-back-dbl2"></script>
+  <script src="/app.js?v=audit-fix1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
@@ -365,39 +385,90 @@
       });
     }
 
-    function goPane(name) {
+    function flashSecao(el) {
+      if (!el) return;
+      el.classList.add('ops-busca-flash');
+      setTimeout(() => el.classList.remove('ops-busca-flash'), 1600);
+    }
+
+    function goPane(name, { scroll = true, jump } = {}) {
+      if (!name && jump) {
+        const elOnly = document.getElementById(jump);
+        if (elOnly) {
+          elOnly.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          flashSecao(elOnly);
+        }
+        return;
+      }
+      if (!name) return;
+      const pane = document.getElementById('pane-' + name);
+      if (!pane) {
+        if (typeof toast === 'function') toast('Seção não encontrada: ' + name);
+        return;
+      }
       document.querySelectorAll('.saude-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
       document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('active', p.id === 'pane-' + name));
-      document.querySelectorAll('.acao-card').forEach((c) => c.classList.toggle('active', c.dataset.go === name));
-      const el = document.getElementById('pane-' + name);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.acao-card').forEach((c) => {
+        const go = c.getAttribute('data-go');
+        const j = c.getAttribute('data-jump');
+        c.classList.toggle('active', go === name || j === jump);
+      });
+      try {
+        const url = new URL(location.href);
+        url.searchParams.set('aba', name);
+        if (jump) url.searchParams.set('sec', jump);
+        else url.searchParams.delete('sec');
+        history.replaceState({ biOpsLock: 1, t: Date.now(), aba: name, sec: jump || null }, '', url.toString());
+        if (typeof opsTravarVoltar === 'function') opsTravarVoltar();
+      } catch (_) {}
+      if (scroll) {
+        requestAnimationFrame(() => {
+          const target = (jump && document.getElementById(jump))
+            || document.getElementById('tabs')
+            || pane;
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (jump) flashSecao(document.getElementById(jump));
+        });
+      }
     }
     window.goPane = goPane;
 
-    document.querySelectorAll('.saude-tab').forEach((btn) => {
-      btn.onclick = () => goPane(btn.dataset.pane);
-    });
-    document.querySelectorAll('.acao-card').forEach((btn) => {
-      btn.onclick = () => goPane(btn.dataset.go);
+    document.addEventListener('click', (e) => {
+      const btn = e.target && e.target.closest
+        ? e.target.closest('.acao-card[data-go], .acao-card[data-jump], .saude-tab[data-pane], [data-jump]')
+        : null;
+      if (!btn || !document.body.contains(btn)) return;
+      if (btn.closest('.unidade-card') && !btn.classList.contains('acao-card') && !btn.closest('.ops-subnav') && !btn.closest('.ops-section-head')) {
+        return;
+      }
+      const name = btn.getAttribute('data-pane') || btn.getAttribute('data-go');
+      const jump = btn.getAttribute('data-jump') || null;
+      if (!name && !jump) return;
+      e.preventDefault();
+      if (name) goPane(name, { scroll: true, jump });
+      else goPane(null, { scroll: true, jump });
     });
 
     if (typeof opsInitBusca === 'function') {
       opsInitBusca({
-        placeholder: 'Buscar na Saúde: plantão, leitos, farmácia, ambulância…',
+        placeholder: 'Buscar na Saúde: plantão, leitos, farmácia, abertos, concluídos…',
         items: [
-          { id: 's-plantao', title: 'Plantão', hint: 'Registrar médico de plantão', keywords: 'medico doutor checkin', pane: 'plantao' },
-          { id: 's-escala', title: 'Escala', hint: 'Turnos manhã / tarde / noite', keywords: 'turno escala', pane: 'escala' },
-          { id: 's-fila', title: 'Fila', hint: 'Espera e atendidos', keywords: 'espera atendimento', pane: 'fila' },
-          { id: 's-amb', title: 'Ambulâncias', hint: 'Frota e status', keywords: 'ambulancia frota veiculo', pane: 'ambulancia' },
-          { id: 's-lei', title: 'Leitos', hint: 'Ocupação hospitalar', keywords: 'uti enfermaria pediatria', pane: 'leitos' },
-          { id: 's-farm', title: 'Farmácia / estoque', hint: 'Insumos críticos', keywords: 'estoque medicamento soro', pane: 'farmacia' },
-          { id: 's-chk', title: 'Checklist', hint: 'Abertura da unidade', keywords: 'rotina pendencia', pane: 'checklist' },
-          { id: 's-ch', title: 'Chamados', hint: 'Reclamações da Saúde', keywords: 'protocolo reclamacao', pane: 'chamados' },
-          { id: 's-st', title: 'Status operacional', hint: 'Situação das unidades', keywords: 'status insumos', pane: 'status' },
-          { id: 's-av', title: 'Avisos / Gabinete', hint: 'Falar com o prefeito', keywords: 'aviso chat gabinete', pane: 'avisos' },
-          { id: 's-al', title: 'Alertas', hint: 'Alertas do dia', keywords: 'alerta critico', pane: 'alertas' },
-          { id: 's-hi', title: 'Histórico', hint: 'Cobertura anterior', keywords: 'historico cobertura', pane: 'historico' },
-          { id: 's-vg', title: 'Visão geral', hint: 'Resumo completo', keywords: 'visao resumo geral', pane: 'visao' },
+          { id: 's-plantao', title: 'Plantão', hint: 'Registrar médico de plantão', keywords: 'medico doutor checkin', pane: 'plantao', jump: 'pane-plantao' },
+          { id: 's-escala', title: 'Escala', hint: 'Turnos manhã / tarde / noite', keywords: 'turno escala', pane: 'escala', jump: 'pane-escala' },
+          { id: 's-fila', title: 'Fila', hint: 'Espera e atendidos', keywords: 'espera atendimento', pane: 'fila', jump: 'pane-fila' },
+          { id: 's-amb', title: 'Ambulâncias', hint: 'Frota e status', keywords: 'ambulancia frota veiculo', pane: 'ambulancia', jump: 'pane-ambulancia' },
+          { id: 's-lei', title: 'Leitos', hint: 'Ocupação hospitalar', keywords: 'uti enfermaria pediatria', pane: 'leitos', jump: 'pane-leitos' },
+          { id: 's-farm', title: 'Farmácia / estoque', hint: 'Insumos críticos', keywords: 'estoque medicamento soro', pane: 'farmacia', jump: 'pane-farmacia' },
+          { id: 's-chk', title: 'Checklist', hint: 'Abertura da unidade', keywords: 'rotina pendencia', pane: 'checklist', jump: 'pane-checklist' },
+          { id: 's-abertos', title: 'Chamados abertos', hint: 'Reclamações em andamento', keywords: 'abertos fila andamento pendente protocolo reclamacao', pane: 'chamados', jump: 'secAbertos' },
+          { id: 's-concluidos', title: 'Concluídos', hint: 'Reclamações resolvidas', keywords: 'concluidos finalizados prontos resolvidos', pane: 'chamados', jump: 'secConcluidos' },
+          { id: 's-ch', title: 'Área de chamados', hint: 'Abertos + concluídos', keywords: 'chamado protocolo reclamacao', pane: 'chamados' },
+          { id: 's-st', title: 'Status operacional', hint: 'Situação das unidades', keywords: 'status insumos', pane: 'status', jump: 'pane-status' },
+          { id: 's-av', title: 'Avisos / Gabinete', hint: 'Falar com o prefeito', keywords: 'aviso chat gabinete', pane: 'avisos', jump: 'pane-avisos' },
+          { id: 's-al', title: 'Alertas', hint: 'Alertas do dia', keywords: 'alerta critico', pane: 'alertas', jump: 'pane-alertas' },
+          { id: 's-hi', title: 'Histórico', hint: 'Cobertura anterior', keywords: 'historico cobertura', pane: 'historico', jump: 'pane-historico' },
+          { id: 's-vg', title: 'Visão geral', hint: 'Resumo completo', keywords: 'visao resumo geral', pane: 'visao', jump: 'pane-visao' },
+          { id: 's-chat', title: 'Chat Gabinete', hint: 'Conversa com o prefeito', keywords: 'chat gabinete cobranca', jump: 'chatGabBox' },
         ],
         getExtraItems: () => {
           const p = painelAtual;
@@ -443,9 +514,35 @@
               pane: 'fila',
             });
           });
+          (p.reclamacoes || []).forEach((c) => {
+            const ok = c.status === 'concluido';
+            out.push({
+              id: 'ch-' + c.id,
+              group: 'dado',
+              title: `${c.protocolo || c.id} · ${c.titulo || c.categoria || 'Chamado'}`,
+              hint: `${ok ? 'Concluído' : 'Aberto'} · ${c.bairro || '—'} · ${c.status || ''}`,
+              keywords: `${c.protocolo} ${c.titulo} ${c.bairro} ${c.status} chamado ${ok ? 'concluido finalizado' : 'aberto'}`,
+              pane: 'chamados',
+              jump: ok ? 'secConcluidos' : 'secAbertos',
+              go: () => {
+                goPane('chamados', { scroll: true, jump: ok ? 'secConcluidos' : 'secAbertos' });
+                setTimeout(() => {
+                  const el = document.querySelector(`[data-chamado-id="${c.id}"]`);
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    flashSecao(el);
+                  }
+                }, 350);
+              },
+            });
+          });
           return out;
         },
-        onGo: (it) => goPane(it.pane),
+        onGo: (it) => {
+          if (typeof it.go === 'function') return it.go(it);
+          if (it.pane) goPane(it.pane, { scroll: true, jump: it.jump || null });
+          else if (it.jump) goPane(null, { scroll: true, jump: it.jump });
+        },
       });
     }
 
@@ -702,13 +799,16 @@
           <button class="btn btn-sm btn-primary" type="button" data-chk-save="${c.unidadeId}" style="margin-top:0.45rem">Salvar checklist</button>
         </div>`).join('') || '<p class="muted">Sem checklist.</p>';
 
-      const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
-      if (!detalheEmUso) {
-        document.getElementById('chamadosBox').innerHTML = (p.reclamacoes || []).length
-          ? p.reclamacoes.map((c) => {
-            const did = 'sau-' + c.id;
-            const acoesHtml = `<button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>`;
-            return `
+      const reclSorted = [...(p.reclamacoes || [])].sort((a, b) =>
+        String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
+      );
+      const reclAbertos = reclSorted.filter((c) => c.status !== 'concluido');
+      const reclConcluidos = reclSorted.filter((c) => c.status === 'concluido');
+
+      function cardReclamacaoHtml(c) {
+        const did = 'sau-' + c.id;
+        const acoesHtml = `<button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>`;
+        return `
             <div class="item" data-chamado-id="${c.id}">
               <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span>
                 ${typeof opsTemCobrancaPendente === 'function' && opsTemCobrancaPendente(c) ? '<span class="badge badge-cancelado">Gabinete</span>' : ''}
@@ -725,8 +825,26 @@
                   : (typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : '')}
               </div>
             </div>`;
-          }).join('')
-          : '<p class="muted">Nenhum chamado aberto da Saúde no momento.</p>';
+      }
+
+      const detalheEmUso = typeof opsUiDetalheEmUso === 'function' && opsUiDetalheEmUso(document);
+      if (!detalheEmUso) {
+        const abertosBox = document.getElementById('chamadosAbertosBox');
+        const concluidosBox = document.getElementById('chamadosConcluidosBox');
+        if (abertosBox) {
+          abertosBox.innerHTML = reclAbertos.length
+            ? reclAbertos.map(cardReclamacaoHtml).join('')
+            : '<p class="muted">Nenhum chamado aberto da Saúde no momento.</p>';
+        }
+        if (concluidosBox) {
+          concluidosBox.innerHTML = reclConcluidos.length
+            ? reclConcluidos.map(cardReclamacaoHtml).join('')
+            : '<p class="muted">Nenhum concluído ainda.</p>';
+        }
+        const ca = document.getElementById('countAbertos');
+        const cc = document.getElementById('countConcluidos');
+        if (ca) ca.textContent = String(reclAbertos.length);
+        if (cc) cc.textContent = String(reclConcluidos.length);
       }
 
       const iaHelp = document.getElementById('iaHelpSaude');
@@ -735,16 +853,15 @@
       }
 
       bindActions();
+      const getRecl = (id) => (painelAtual?.reclamacoes || []).find((c) => c.id === id);
       if (!detalheEmUso) {
         if (typeof bindDetalharToggle === 'function') {
-          bindDetalharToggle(document.getElementById('chamadosBox'), (id) =>
-            (painelAtual?.reclamacoes || []).find((c) => c.id === id)
-          );
+          bindDetalharToggle(document.getElementById('chamadosAbertosBox'), getRecl);
+          bindDetalharToggle(document.getElementById('chamadosConcluidosBox'), getRecl);
         }
         if (typeof bindIaObraAssist === 'function') {
-          bindIaObraAssist(document.getElementById('chamadosBox'), (id) =>
-            (painelAtual?.reclamacoes || []).find((c) => c.id === id)
-          );
+          bindIaObraAssist(document.getElementById('chamadosAbertosBox'), getRecl);
+          bindIaObraAssist(document.getElementById('chamadosConcluidosBox'), getRecl);
         }
       }
       document.querySelectorAll('[data-encaminhar]').forEach((btn) => {
@@ -1019,7 +1136,9 @@
         Notification.requestPermission().catch(() => {});
       }
       const aba = new URLSearchParams(location.search).get('aba') || location.hash.replace('#', '');
-      if (aba) goPane(aba);
+      const sec = new URLSearchParams(location.search).get('sec');
+      if (aba) goPane(aba, { scroll: true, jump: sec || null });
+      else if (sec) goPane(null, { scroll: true, jump: sec });
     }
 
     document.getElementById('btnRefresh').onclick = () => load().catch((e) => toast(e.message));

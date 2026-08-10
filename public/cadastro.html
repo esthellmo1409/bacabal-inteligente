@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
   <script>
-    window.BI_OPS_LOCK = true;
+    window.BI_ALLOW_BACK = true;
+    window.BI_OPS_LOCK = false;
   </script>
 
   <meta charset="UTF-8" />
@@ -34,7 +35,8 @@
   </div>
   <script src="/app.js?v=ops-back-dbl2"></script>
   <script>
-    window.BI_OPS_LOCK = true;
+    window.BI_ALLOW_BACK = true;
+    window.BI_OPS_LOCK = false;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
   </script>
 

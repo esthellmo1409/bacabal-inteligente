@@ -8,7 +8,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gabinete do Prefeito · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css?v=org-sec1" />
+  <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -245,6 +245,9 @@
     <div class="grid-4" id="kpis"></div>
 
     <div class="panel" style="margin-top:1rem;margin-bottom:1rem" id="gabChatPanel">
+      <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:start;margin-bottom:0.75rem">
+        <div>
+          <h3 style="margin:0 0 0.25rem">Falar com as secretarias</h3>
           <p class="muted" style="margin:0;font-size:0.85rem">Conversa direta com quem está no painel de cada secretaria</p>
         </div>
       </div>
@@ -344,7 +347,7 @@
     window.BI_AUTH_SLOT = 'gabinete';
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=no-custo1"></script>
+  <script src="/app.js?v=audit-fix1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
