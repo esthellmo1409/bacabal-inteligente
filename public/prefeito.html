@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gabinete do Prefeito ? Bacabal Conecta</title>
+  <title>Gabinete do Prefeito · Bacabal Conecta</title>
   <link rel="stylesheet" href="/styles.css?v=ops-busca1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
@@ -187,10 +187,10 @@
 
     <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap">
       <div>
-        <p class="page-kicker">Gabinete ? Bacabal Conecta</p>
+        <p class="page-kicker">Gabinete · Bacabal Conecta</p>
         <div class="flag-bar"><span></span><span></span><span></span></div>
         <h1 class="display" style="font-size:1.85rem">Gabinete do Prefeito</h1>
-        <p class="muted">Uma tela s? ? Cidade ? Sa?de ? Eventos ? decidir, cobrar e priorizar</p>
+        <p class="muted">Uma tela só · Cidade · Saúde · Eventos — decidir, cobrar e priorizar</p>
       </div>
       <div class="cta-row">
         <button class="btn btn-sm" id="refresh">Atualizar</button>
@@ -208,20 +208,20 @@
       </div>
       <div class="ia-gabinete-opcoes" id="iaGabOpcoes" hidden>
         <button type="button" class="btn btn-sm btn-primary" data-ia-gab="plataforma">Analisar a cidade na plataforma</button>
-        <button type="button" class="btn btn-sm" data-ia-gab="cidade">Como est? a cidade hoje?</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="cidade">Como está a cidade hoje?</button>
         <button type="button" class="btn btn-sm" data-ia-gab="projetos">Projetos e obras</button>
-        <button type="button" class="btn btn-sm" data-ia-gab="reunioes">Reuni?es e agenda</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="reunioes">Reuniões e agenda</button>
         <button type="button" class="btn btn-sm" data-ia-gab="priorizar">O que priorizar agora?</button>
-        <button type="button" class="btn btn-sm" data-ia-gab="saude">Sa?de em resumo</button>
-        <button type="button" class="btn btn-sm" data-ia-gab="iluminacao">Ilumina??o em resumo</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="saude">Saúde em resumo</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="iluminacao">Iluminação em resumo</button>
         <button type="button" class="btn btn-sm" data-ia-gab="obras">Obras em resumo</button>
         <div class="ia-gabinete-ask">
           <label for="iaGabPergunta">Ou escreva sua pergunta</label>
           <div class="ia-gabinete-ask-row">
-            <textarea id="iaGabPergunta" rows="2" maxlength="500" placeholder="Ex.: Como est? o estoque de LED? O que cobrar na Sa?de hoje? Tem obra atrasada?"></textarea>
+            <textarea id="iaGabPergunta" rows="2" maxlength="500" placeholder="Ex.: Como está o estoque de LED? O que cobrar na Saúde hoje? Tem obra atrasada?"></textarea>
             <button type="button" class="btn btn-primary" id="iaGabAskBtn">Perguntar</button>
           </div>
-          <p class="muted" style="margin:0.35rem 0 0;font-size:0.75rem">Enter envia ? Shift+Enter quebra linha</p>
+          <p class="muted" style="margin:0.35rem 0 0;font-size:0.75rem">Enter envia · Shift+Enter quebra linha</p>
         </div>
       </div>
       <div id="iaGabResposta" class="ia-gabinete-resposta" hidden>
@@ -231,17 +231,17 @@
     </div>
 
     <div class="eixo-tabs" id="tabs">
-      <button type="button" class="eixo-tab active" data-eixo="cidade">Cidade<small>Limpeza ? tr?nsito</small></button>
-      <button type="button" class="eixo-tab" data-eixo="obras">Obras<small>Pontos ? equipes ? frota</small></button>
-      <button type="button" class="eixo-tab" data-eixo="iluminacao">Ilumina??o<small>Postes ? rota ? LED</small></button>
-      <button type="button" class="eixo-tab" data-eixo="saude">Sa?de<small>Escala ? fila ? plant?o</small></button>
+      <button type="button" class="eixo-tab active" data-eixo="cidade">Cidade<small>Limpeza · trânsito</small></button>
+      <button type="button" class="eixo-tab" data-eixo="obras">Obras<small>Pontos · equipes · frota</small></button>
+      <button type="button" class="eixo-tab" data-eixo="iluminacao">Iluminação<small>Postes · rota · LED</small></button>
+      <button type="button" class="eixo-tab" data-eixo="saude">Saúde<small>Escala · fila · plantão</small></button>
       <button type="button" class="eixo-tab" data-eixo="eventos">Eventos<small>Agenda e estrutura</small></button>
     </div>
 
     <div class="grid-4" id="kpis"></div>
 
     <div class="panel" style="margin-top:1rem;margin-bottom:1rem" id="gabChatPanel">
-          <p class="muted" style="margin:0;font-size:0.85rem">Conversa direta com quem est? no painel de cada secretaria</p>
+          <p class="muted" style="margin:0;font-size:0.85rem">Conversa direta com quem está no painel de cada secretaria</p>
         </div>
       </div>
       <div class="chat-gab">
@@ -249,11 +249,11 @@
         <div class="chat-main">
           <div class="chat-head">
             <strong id="chatHeadNome">Selecione uma secretaria</strong>
-            <span id="chatHeadCargo">Escolha o respons?vel ? esquerda</span>
+            <span id="chatHeadCargo">Escolha o responsável à esquerda</span>
           </div>
           <div class="chat-msgs" id="chatMsgs"></div>
           <div class="chat-compose">
-            <input id="chatInput" placeholder="Escreva uma observa??o ou cobran?a?" maxlength="500" />
+            <input id="chatInput" placeholder="Escreva uma observação ou cobrança…" maxlength="500" />
             <button class="btn btn-primary" type="button" id="chatSend">Enviar</button>
           </div>
         </div>
@@ -263,8 +263,8 @@
     <div class="panel" style="margin-top:0;margin-bottom:1rem;background:linear-gradient(135deg,rgba(255,128,0,.08),rgba(57,138,33,.06));border-color:rgba(255,128,0,.25)">
       <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:start">
         <div>
-          <h3 style="margin-bottom:0.35rem" id="tituloDec">Central de decis?es</h3>
-          <p class="muted" style="margin:0" id="subtituloDec">Gabinete decide ? secretaria executa</p>
+          <h3 style="margin-bottom:0.35rem" id="tituloDec">Central de decisões</h3>
+          <p class="muted" style="margin:0" id="subtituloDec">Gabinete decide · secretaria executa</p>
         </div>
         <div id="acoesEixo" class="cta-row"></div>
       </div>
@@ -299,7 +299,7 @@
       </div>
       <div>
         <div class="panel" style="margin-bottom:1rem">
-          <h3 style="margin-bottom:0.85rem">Hist?rico de decis?es</h3>
+          <h3 style="margin-bottom:0.85rem">Histórico de decisões</h3>
           <div id="histDec" class="list"></div>
         </div>
         <div class="panel">
@@ -310,7 +310,7 @@
     </div>
 
     <div class="footer">
-      <span>Cidade ? Obras ? Ilumina??o ? Sa?de ? Eventos no mesmo Gabinete</span>
+      <span>Cidade · Obras · Iluminação · Saúde · Eventos no mesmo Gabinete</span>
       <a id="linkSec" href="/secretaria.html">Secretarias</a>
     </div>
   </div>
@@ -318,12 +318,12 @@
   <div id="visitaRoot"></div>
 
   <script>
-    // Slot do Gabinete ANTES do app.js ? n?o misturar com Obras/Secretaria
+    // Slot do Gabinete ANTES do app.js — não misturar com Obras/Secretaria
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'gabinete';
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-detalhe-hold1"></script>
+  <script src="/app.js?v=ops-utf-login1"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_OPS_LOCK = true;
@@ -355,13 +355,13 @@
       return ({ apagado: 'Apagado', em_reparo: 'Em reparo', sem_energia: 'Sem energia', ok: 'Ok' })[s] || s;
     }
     function frotaStatusLabel(s) {
-      return ({ disponivel: 'Dispon?vel', em_rota: 'Em rota', oficina: 'Oficina' })[s] || s;
+      return ({ disponivel: 'Disponível', em_rota: 'Em rota', oficina: 'Oficina' })[s] || s;
     }
     function rotaStatusLabel(s) {
-      return ({ pendente: 'Pendente', em_atendimento: 'Em atendimento', concluido: 'Conclu?do' })[s] || s;
+      return ({ pendente: 'Pendente', em_atendimento: 'Em atendimento', concluido: 'Concluído' })[s] || s;
     }
 
-    /** Card de problema no Gabinete: resumo na frente, foto s? dentro de Detalhar. */
+    /** Card de problema no Gabinete: resumo na frente, foto só dentro de Detalhar. */
     function cardProblemaGabinete(c, { did, acoesHtml, metaExtra } = {}) {
       const id = did || ('gab-' + (c.id || c.protocolo || Math.random().toString(36).slice(2, 8)));
       const temFoto = !!(c.foto || c.fotoAntes || c.fotoDepois
@@ -369,25 +369,25 @@
       return `
         <div class="item" data-chamado-id="${c.id || ''}">
           <div class="item-head">
-            <strong>${c.protocolo ? c.protocolo + ' ? ' : ''}${c.titulo || c.tituloChamado || c.categoria || 'Problema'}</strong>
+            <strong>${c.protocolo ? c.protocolo + ' · ' : ''}${c.titulo || c.tituloChamado || c.categoria || 'Problema'}</strong>
             ${c.status ? badge(c.status) : (c.statusPonto ? `<span class="badge">${c.statusPonto}</span>` : '')}
             ${c.slaEstourado ? '<span class="badge badge-cancelado">SLA</span>' : ''}
-            ${c.avaliacao ? `<span class="badge badge-em_analise">? ${c.avaliacao.nota}</span>` : ''}
-            ${c.demoFixo === 'buraco-foto' || c.simBuraco ? '<span class="badge badge-em_analise">simula??o</span>' : ''}
+            ${c.avaliacao ? `<span class="badge badge-em_analise">★ ${c.avaliacao.nota}</span>` : ''}
+            ${c.demoFixo === 'buraco-foto' || c.simBuraco ? '<span class="badge badge-em_analise">simulação</span>' : ''}
           </div>
           <div class="meta">
-            ${c.secretariaNome ? c.secretariaNome + ' ? ' : ''}${c.bairro || '?'}${c.rua ? ' ? ' + c.rua : ''}${c.endereco && !c.rua ? ' ? ' + c.endereco : ''}
-            ${c.prioridade ? ' ? ' + prioridadeLabel(c.prioridade) : ''}${c.horasAberto != null ? ' ? ' + c.horasAberto + 'h' : ''}
+            ${c.secretariaNome ? c.secretariaNome + ' · ' : ''}${c.bairro || '—'}${c.rua ? ' · ' + c.rua : ''}${c.endereco && !c.rua ? ' · ' + c.endereco : ''}
+            ${c.prioridade ? ' · ' + prioridadeLabel(c.prioridade) : ''}${c.horasAberto != null ? ' · ' + c.horasAberto + 'h' : ''}
           </div>
           ${metaExtra || ''}
-          ${temFoto ? '<div class="meta" style="font-weight:700;color:#475569">H? foto ? abra Detalhar para ver</div>' : ''}
+          ${temFoto ? '<div class="meta" style="font-weight:700;color:#475569">Há foto — abra Detalhar para ver</div>' : ''}
           ${acoesHtml ? `<div class="actions" style="margin-top:0.4rem">${acoesHtml}</div>` : ''}
           <button type="button" class="btn-detalhar" data-detalhar="${id}">
             <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
           </button>
           <div class="detalhe-box" id="detalhe-${id}">
             ${c.cidadaoChamouEm || c.criadoEm
-              ? `<div class="meta" style="margin-bottom:0.45rem">Cidad?o chamou em ${fmtDate(c.cidadaoChamouEm || c.criadoEm)}</div>`
+              ? `<div class="meta" style="margin-bottom:0.45rem">Cidadão chamou em ${fmtDate(c.cidadaoChamouEm || c.criadoEm)}</div>`
               : ''}
             ${c.descricao ? `<p class="muted" style="margin:0 0 .45rem">${c.descricao}</p>` : ''}
             ${typeof antesDepoisHtml === 'function'
@@ -395,7 +395,7 @@
               : (c.foto || c.fotoAntes
                 ? `<img src="${c.foto || c.fotoAntes}" alt="" style="max-width:100%;max-height:220px;border-radius:10px;object-fit:cover;cursor:pointer" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />`
                 : '<p class="muted">Sem foto.</p>')}
-            ${c.cidadao?.nome ? `<div class="meta">${c.cidadao.nome}${c.cidadao.telefone ? ' ? ' + c.cidadao.telefone : ''}</div>` : ''}
+            ${c.cidadao?.nome ? `<div class="meta">${c.cidadao.nome}${c.cidadao.telefone ? ' · ' + c.cidadao.telefone : ''}</div>` : ''}
           </div>
         </div>`;
     }
@@ -403,7 +403,6 @@
     function bindGabineteDetalhar(root) {
       if (typeof bindDetalharToggle === 'function') bindDetalharToggle(root || document);
       if (typeof bindFotoThumbs === 'function') bindFotoThumbs(root || document);
-      if (typeof opsRestaurarDetalhesAbertos === 'function') opsRestaurarDetalhesAbertos(root || document);
     }
 
     function bindGabJump(root) {
@@ -419,12 +418,12 @@
       return ({
         em_campo: 'Em campo',
         base: 'Na base',
-        disponivel: 'Dispon?vel',
+        disponivel: 'Disponível',
         folga: 'Folga',
-      })[s] || String(s || '?').replace(/_/g, ' ');
+      })[s] || String(s || '—').replace(/_/g, ' ');
     }
 
-    /** Card operacional do Gabinete (ambul?ncia, leito, estoque?) com Detalhar. */
+    /** Card operacional do Gabinete (ambulância, leito, estoque…) com Detalhar. */
     function cardOpsDetalhe({ did, titulo, badgeHtml, meta, detalheHtml, acoesHtml, urgente }) {
       return `
         <div class="item ${urgente ? 'item-urgente' : ''}" style="${urgente ? 'border-color:#fecaca;background:#fffafa' : ''}">
@@ -445,24 +444,24 @@
 
     function statusAmbLabel(s) {
       return ({
-        disponivel: 'Dispon?vel',
+        disponivel: 'Disponível',
         em_uso: 'Em uso',
         oficina: 'Oficina',
-        indisponivel: 'Indispon?vel',
-      })[s] || String(s || '?').replace(/_/g, ' ');
+        indisponivel: 'Indisponível',
+      })[s] || String(s || '—').replace(/_/g, ' ');
     }
 
     function estoqueLabel(s) {
-      return ({ ok: 'Estoque ok', baixo: 'Estoque baixo', critico: 'Cr?tico' })[s] || s || '?';
+      return ({ ok: 'Estoque ok', baixo: 'Estoque baixo', critico: 'Crítico' })[s] || s || '—';
     }
     function pontoStatusLabel(s) {
       return ({
         pendente: 'Pendente',
         em_deslocamento: 'Em deslocamento',
-        em_execucao: 'Em execu??o',
+        em_execucao: 'Em execução',
         aguardando_material: 'Aguardando material',
-        concluido: 'Conclu?do',
-      })[s] || String(s || '?').replace(/_/g, ' ');
+        concluido: 'Concluído',
+      })[s] || String(s || '—').replace(/_/g, ' ');
     }
 
     function fmtChatHora(iso) {
@@ -474,7 +473,7 @@
     function renderChatThread(thread) {
       const c = thread?.contato || {};
       document.getElementById('chatHeadNome').textContent = c.nome || 'Secretaria';
-      document.getElementById('chatHeadCargo').textContent = (c.cargo || '') + ' ? online no painel';
+      document.getElementById('chatHeadCargo').textContent = (c.cargo || '') + ' · online no painel';
       const box = document.getElementById('chatMsgs');
       const msgs = thread?.mensagens || [];
       box.innerHTML = msgs.length
@@ -539,7 +538,7 @@
       window.BI_AUTH_SLOT = 'gabinete';
       cfg = await loadCityBrand();
       let user = typeof ensureOpsUser === 'function' ? ensureOpsUser() : getSessionUser();
-      // Confirma sess?o do prefeito (n?o usa token de Obras)
+      // Confirma sessão do prefeito (não usa token de Obras)
       try {
         if (hasOpsToken()) {
           const me = await api('/api/me');
@@ -554,15 +553,35 @@
       } catch (_) {
         user = ensureOpsUser();
       }
+      const loggedPref = !!(user && (user.papel === 'prefeito' || user.papel === 'admin'))
+        || (typeof hasOpsToken === 'function' && hasOpsToken());
+      if (loggedPref && !user) user = (typeof ensureOpsUser === 'function' ? ensureOpsUser() : null) || user;
       document.getElementById('top').innerHTML = topbar('Gabinete', cfg, {
         lock: true,
         user: user || undefined,
       });
+      const loginPrefBtn = document.getElementById('loginPref');
+      if (loginPrefBtn) {
+        if (loggedPref) {
+          const isPrefeita = cfg.slug === 'bomlugar' || getCidade() === 'bomlugar'
+            || (user && (cfg.prefeita || user.nome || '').toString().toLowerCase().includes('prefeita'));
+          loginPrefBtn.textContent = isPrefeita ? 'Logado: Prefeita' : 'Logado: Prefeito';
+          loginPrefBtn.classList.remove('btn-primary');
+          loginPrefBtn.disabled = true;
+          loginPrefBtn.title = 'Sessão ativa — use Sair no topo para trocar de área';
+        } else {
+          loginPrefBtn.disabled = false;
+          loginPrefBtn.classList.add('btn-primary');
+          loginPrefBtn.textContent = (cfg.slug === 'bomlugar' || getCidade() === 'bomlugar')
+            ? 'Entrar como prefeita'
+            : 'Entrar como prefeito';
+        }
+      }
       document.getElementById('linkSec').href = cityLink('/login.html');
-      document.getElementById('linkSec').textContent = 'Trocar de ?rea (Sair ? login)';
+      document.getElementById('linkSec').textContent = 'Trocar de área (Sair → login)';
       document.getElementById('linkSec').onclick = (e) => {
         e.preventDefault();
-        if (confirm('Sair do Gabinete para entrar em outra ?rea?')) logoutOps('/login.html');
+        if (confirm('Sair do Gabinete para entrar em outra área?')) logoutOps('/login.html');
       };
       document.getElementById('mapLegend').innerHTML = MapBI.legendHtml();
       if (cfg.slug === 'bomlugar' || getCidade() === 'bomlugar') {
@@ -597,24 +616,24 @@
       initIaGabinete(cfg);
       if (typeof opsInitBusca === 'function') {
         opsInitBusca({
-          placeholder: 'Buscar no Gabinete: Sa?de, Obras, estoque, postes, IA?',
+          placeholder: 'Buscar no Gabinete: Saúde, Obras, estoque, postes, IA…',
           items: [
             { id: 'g-ia', title: 'Assistente de IA', hint: 'Perguntar ou usar atalhos', keywords: 'ia assistente pergunta', jump: 'iaGabinete' },
             { id: 'g-chat', title: 'Falar com secretarias', hint: 'Chat do Gabinete', keywords: 'chat cobranca secretaria', jump: 'gabChatPanel' },
-            { id: 'g-cidade', title: 'Eixo Cidade', hint: 'Limpeza e tr?nsito', keywords: 'cidade limpeza transito', eixo: 'cidade' },
+            { id: 'g-cidade', title: 'Eixo Cidade', hint: 'Limpeza e trânsito', keywords: 'cidade limpeza transito', eixo: 'cidade' },
             { id: 'g-obras', title: 'Eixo Obras', hint: 'Pontos, frota, materiais', keywords: 'obras buraco frota', eixo: 'obras' },
-            { id: 'g-ilu', title: 'Eixo Ilumina??o', hint: 'Postes, rota, LED', keywords: 'iluminacao poste led', eixo: 'iluminacao' },
-            { id: 'g-sau', title: 'Eixo Sa?de', hint: 'Plant?o, leitos, farm?cia', keywords: 'saude ubs hospital', eixo: 'saude' },
+            { id: 'g-ilu', title: 'Eixo Iluminação', hint: 'Postes, rota, LED', keywords: 'iluminacao poste led', eixo: 'iluminacao' },
+            { id: 'g-sau', title: 'Eixo Saúde', hint: 'Plantão, leitos, farmácia', keywords: 'saude ubs hospital', eixo: 'saude' },
             { id: 'g-evt', title: 'Eixo Eventos', hint: 'Agenda e estrutura', keywords: 'eventos agenda', eixo: 'eventos' },
-            { id: 'g-obr-pt', title: 'Obras ? pontos quentes', hint: 'Ir e abrir a se??o', keywords: 'ponto quente buraco', eixo: 'obras', jump: 'gab-obr-pontos' },
-            { id: 'g-obr-mat', title: 'Obras ? materiais / estoque', hint: 'Brita, asfalto?', keywords: 'material estoque brita', eixo: 'obras', jump: 'gab-obr-mat' },
-            { id: 'g-obr-frota', title: 'Obras ? frota', hint: 'Ve?culos', keywords: 'frota caminhao', eixo: 'obras', jump: 'gab-obr-frota' },
-            { id: 'g-ilu-postes', title: 'Ilumina??o ? postes', hint: 'Apagados e reparo', keywords: 'poste apagado', eixo: 'iluminacao', jump: 'gab-ilu-postes' },
-            { id: 'g-ilu-est', title: 'Ilumina??o ? estoque LED', hint: 'L?mpadas e cabo', keywords: 'estoque led lampada', eixo: 'iluminacao', jump: 'gab-ilu-estoque' },
-            { id: 'g-sau-farm', title: 'Sa?de ? farm?cia / estoque', hint: 'Insumos', keywords: 'farmacia estoque medicamento', eixo: 'saude', jump: 'gab-sau-farm' },
-            { id: 'g-sau-amb', title: 'Sa?de ? ambul?ncias', hint: 'Frota', keywords: 'ambulancia', eixo: 'saude', jump: 'gab-sau-amb' },
-            { id: 'g-sau-lei', title: 'Sa?de ? leitos', hint: 'Ocupa??o', keywords: 'leito uti', eixo: 'saude', jump: 'gab-sau-leitos' },
-            { id: 'g-map', title: 'Mapa', hint: 'Visualiza??o geogr?fica', keywords: 'mapa heatmap', jump: 'map' },
+            { id: 'g-obr-pt', title: 'Obras · pontos quentes', hint: 'Ir e abrir a seção', keywords: 'ponto quente buraco', eixo: 'obras', jump: 'gab-obr-pontos' },
+            { id: 'g-obr-mat', title: 'Obras · materiais / estoque', hint: 'Brita, asfalto…', keywords: 'material estoque brita', eixo: 'obras', jump: 'gab-obr-mat' },
+            { id: 'g-obr-frota', title: 'Obras · frota', hint: 'Veículos', keywords: 'frota caminhao', eixo: 'obras', jump: 'gab-obr-frota' },
+            { id: 'g-ilu-postes', title: 'Iluminação · postes', hint: 'Apagados e reparo', keywords: 'poste apagado', eixo: 'iluminacao', jump: 'gab-ilu-postes' },
+            { id: 'g-ilu-est', title: 'Iluminação · estoque LED', hint: 'Lâmpadas e cabo', keywords: 'estoque led lampada', eixo: 'iluminacao', jump: 'gab-ilu-estoque' },
+            { id: 'g-sau-farm', title: 'Saúde · farmácia / estoque', hint: 'Insumos', keywords: 'farmacia estoque medicamento', eixo: 'saude', jump: 'gab-sau-farm' },
+            { id: 'g-sau-amb', title: 'Saúde · ambulâncias', hint: 'Frota', keywords: 'ambulancia', eixo: 'saude', jump: 'gab-sau-amb' },
+            { id: 'g-sau-lei', title: 'Saúde · leitos', hint: 'Ocupação', keywords: 'leito uti', eixo: 'saude', jump: 'gab-sau-leitos' },
+            { id: 'g-map', title: 'Mapa', hint: 'Visualização geográfica', keywords: 'mapa heatmap', jump: 'map' },
           ],
           onGo: async (it) => {
             if (it.eixo) await setEixo(it.eixo, it.jump);
@@ -644,7 +663,7 @@
       if (!titleEl || !subEl || !ops) return;
 
       const title = `Oi! Sou a ${produto}, sua assistente de IA.`;
-      const sub = `Ol?, ${cargo}. Clique em um atalho ou escreva sua pergunta abaixo ? eu consulto os dados da plataforma e te respondo.`;
+      const sub = `Olá, ${cargo}. Clique em um atalho ou escreva sua pergunta abaixo — eu consulto os dados da plataforma e te respondo.`;
       titleEl.textContent = '';
       subEl.textContent = '';
       ops.hidden = true;
@@ -724,7 +743,7 @@
         }
       } catch (e) {
         txt.classList.remove('ia-analisando');
-        tit.textContent = 'N?o consegui responder agora';
+        tit.textContent = 'Não consegui responder agora';
         txt.textContent = e.message || 'Erro';
         toast(e.message);
       }
@@ -759,7 +778,7 @@
           method: 'POST',
           body: JSON.stringify({ chamadoId: id, acao, eixo, ...extra }),
         });
-        toast(r.mensagem || 'Decis?o ok');
+        toast(r.mensagem || 'Decisão ok');
         await load();
       } catch (e) { toast(e.message); }
     }
@@ -768,12 +787,12 @@
       if (!lastFila?.unidades?.length) return toast('Sem unidades cadastradas');
       const root = document.getElementById('visitaRoot');
       const checks = [
-        { key: 'atendimentoOk', label: 'Atendimento ao cidad?o', hint: 'Recep??o, informa??o, respeito' },
-        { key: 'filaOk', label: 'Fila / tempo de espera', hint: 'Fila aceit?vel para o hor?rio' },
+        { key: 'atendimentoOk', label: 'Atendimento ao cidadão', hint: 'Recepção, informação, respeito' },
+        { key: 'filaOk', label: 'Fila / tempo de espera', hint: 'Fila aceitável para o horário' },
         { key: 'limpezaOk', label: 'Limpeza e higiene', hint: 'Salas, banheiros, corredores' },
-        { key: 'medicoPresente', label: 'M?dico / equipe no plant?o', hint: 'Profissional presente e identificado' },
-        { key: 'salaEsperaOk', label: 'Sala de espera', hint: 'Organiza??o e capacidade' },
-        { key: 'medicamentoOk', label: 'Medicamento / insumos', hint: 'Farm?cia e materiais b?sicos' },
+        { key: 'medicoPresente', label: 'Médico / equipe no plantão', hint: 'Profissional presente e identificado' },
+        { key: 'salaEsperaOk', label: 'Sala de espera', hint: 'Organização e capacidade' },
+        { key: 'medicamentoOk', label: 'Medicamento / insumos', hint: 'Farmácia e materiais básicos' },
       ];
       const state = Object.fromEntries(checks.map(c => [c.key, true]));
       let unidadeId = lastFila.unidades.find(u => u.id === 'US-HOSP')?.id || lastFila.unidades[0].id;
@@ -784,7 +803,7 @@
           <div class="visita-backdrop" id="visitaBackdrop">
             <div class="visita-modal" role="dialog" aria-modal="true">
               <h3>Visita surpresa</h3>
-              <p class="muted" style="margin:0 0 0.85rem">Checklist do Gabinete ? marca ?N?o? gera cobran?a autom?tica ? Sa?de</p>
+              <p class="muted" style="margin:0 0 0.85rem">Checklist do Gabinete — marca “Não” gera cobrança automática à Saúde</p>
               <label>Unidade</label>
               <select id="visitaUnidade" style="width:100%;margin-bottom:0.5rem">
                 ${lastFila.unidades.map(u => `<option value="${u.id}" ${u.id === unidadeId ? 'selected' : ''}>${u.nome} (${u.tipo})</option>`).join('')}
@@ -798,13 +817,13 @@
                     </div>
                     <div class="visita-toggle" data-key="${c.key}">
                       <button type="button" data-v="1" class="${state[c.key] ? 'on-ok' : ''}">Sim</button>
-                      <button type="button" data-v="0" class="${!state[c.key] ? 'on-no' : ''}">N?o</button>
+                      <button type="button" data-v="0" class="${!state[c.key] ? 'on-no' : ''}">Não</button>
                     </div>
                   </div>
                 `).join('')}
               </div>
-              <label>Observa??o do prefeito</label>
-              <textarea id="visitaObs" rows="3" placeholder="O que viu na unidade?" style="width:100%"></textarea>
+              <label>Observação do prefeito</label>
+              <textarea id="visitaObs" rows="3" placeholder="O que viu na unidade…" style="width:100%"></textarea>
               <div class="actions" style="margin-top:1rem;justify-content:flex-end">
                 <button class="btn btn-sm" type="button" id="visitaCancel">Cancelar</button>
                 <button class="btn btn-sm btn-primary" type="button" id="visitaSave">Registrar visita</button>
@@ -842,7 +861,7 @@
             });
             root.innerHTML = '';
             toast(r.problemas?.length
-              ? `Visita com ${r.problemas.length} pend?ncia(s) ? Sa?de cobrada`
+              ? `Visita com ${r.problemas.length} pendência(s) — Saúde cobrada`
               : 'Visita OK registrada');
             await load();
           } catch (err) { toast(err.message); }
@@ -857,28 +876,28 @@
         box.innerHTML = `
           <button class="btn btn-sm btn-primary" id="btnVisita" type="button">Visita surpresa</button>`;
         document.getElementById('btnVisita').onclick = visitaSurpresa;
-        tituloDec.textContent = 'Sa?de ? olho do Gabinete';
-        subtituloDec.textContent = 'Visualiza plant?o, fila, leitos, ambul?ncias, farm?cia e checklist. Quem preenche ? a Secretaria de Sa?de.';
+        tituloDec.textContent = 'Saúde — olho do Gabinete';
+        subtituloDec.textContent = 'Visualiza plantão, fila, leitos, ambulâncias, farmácia e checklist. Quem preenche é a Secretaria de Saúde.';
       } else if (eixo === 'iluminacao') {
         box.innerHTML = `
-          <button class="btn btn-sm btn-warn" id="btnCobrarIlu" type="button">Cobrar Ilumina??o</button>`;
+          <button class="btn btn-sm btn-warn" id="btnCobrarIlu" type="button">Cobrar Iluminação</button>`;
         document.getElementById('btnCobrarIlu').onclick = () => cobrarIluminacao();
-        tituloDec.textContent = 'Ilumina??o ? olho do Gabinete';
-        subtituloDec.textContent = 'Visualiza postes, rota da noite, frota e estoque LED. Quem opera ? a Secretaria de Ilumina??o.';
+        tituloDec.textContent = 'Iluminação — olho do Gabinete';
+        subtituloDec.textContent = 'Visualiza postes, rota da noite, frota e estoque LED. Quem opera é a Secretaria de Iluminação.';
       } else if (eixo === 'obras') {
         box.innerHTML = `
           <button class="btn btn-sm btn-warn" id="btnCobrarObr" type="button">Cobrar Obras</button>`;
         document.getElementById('btnCobrarObr').onclick = () => cobrarObras();
-        tituloDec.textContent = 'Obras ? olho do Gabinete';
-        subtituloDec.textContent = 'Visualiza pontos quentes, rota, equipes, frota e materiais. Quem opera ? a Secretaria de Obras.';
+        tituloDec.textContent = 'Obras — olho do Gabinete';
+        subtituloDec.textContent = 'Visualiza pontos quentes, rota, equipes, frota e materiais. Quem opera é a Secretaria de Obras.';
       } else if (eixo === 'eventos') {
         box.innerHTML = '';
-        tituloDec.textContent = 'Eventos ? agenda e estrutura';
-        subtituloDec.textContent = 'Priorizar estrutura, seguran?a e limpeza dos eventos da cidade';
+        tituloDec.textContent = 'Eventos — agenda e estrutura';
+        subtituloDec.textContent = 'Priorizar estrutura, segurança e limpeza dos eventos da cidade';
       } else {
         box.innerHTML = '';
-        tituloDec.textContent = 'Cidade ? servi?os urbanos';
-        subtituloDec.textContent = 'Limpeza, tr?nsito e demais servi?os ? priorizar e cobrar secretarias';
+        tituloDec.textContent = 'Cidade — serviços urbanos';
+        subtituloDec.textContent = 'Limpeza, trânsito e demais serviços — priorizar e cobrar secretarias';
       }
     }
 
@@ -898,7 +917,7 @@
             <button type="button" class="obr-mod" data-jump="gab-obr-rota"><span>Rota</span><strong>${t.rotaPendentes || 0}</strong><small>pendentes</small></button>
             <button type="button" class="obr-mod" data-jump="gab-obr-equipes"><span>Equipes</span><strong>${t.equipesEmCampo || 0}</strong><small>em campo</small></button>
             <button type="button" class="obr-mod ${frotaAlerta.length ? 'alerta' : ''}" data-jump="gab-obr-frota"><span>Frota</span><strong>${t.frotaLivre || 0}/${t.frotaTotal || 0}</strong><small>${frotaAlerta.length ? frotaAlerta.length + ' oficina' : 'livres'}</small></button>
-            <button type="button" class="obr-mod ${matAlerta.length ? 'alerta' : ''}" data-jump="gab-obr-mat"><span>Materiais</span><strong>${t.materiaisBaixos || matAlerta.length || 0}</strong><small>${matAlerta.length ? 'abaixo do m?n.' : 'estoque ok'}</small></button>
+            <button type="button" class="obr-mod ${matAlerta.length ? 'alerta' : ''}" data-jump="gab-obr-mat"><span>Materiais</span><strong>${t.materiaisBaixos || matAlerta.length || 0}</strong><small>${matAlerta.length ? 'abaixo do mín.' : 'estoque ok'}</small></button>
             <button type="button" class="obr-mod ${obrasAtrasadas.length || chkFaltando.length ? 'alerta' : ''}" data-jump="gab-obr-grandes"><span>Obras</span><strong>${t.obrasAtrasadas || obrasAtrasadas.length || 0}</strong><small>${chkFaltando.length ? chkFaltando.length + ' check pend.' : 'atrasadas'}</small></button>
           </div>
           <div class="gab-ops-nav obr">
@@ -912,7 +931,7 @@
           </div>
           ${alertas.length ? `
             <div class="obr-alert-banner">
-              ${alertas.length} alerta(s) operacional(is) ? cobre as Obras se precisar de resposta r?pida
+              ${alertas.length} alerta(s) operacional(is) — cobre as Obras se precisar de resposta rápida
             </div>
             <div class="panel" style="grid-column:1/-1;border-color:#fb923c;background:#fff7ed">
               <h3 style="margin-bottom:0.55rem;color:#9a3412">Alertas das Obras</h3>
@@ -921,8 +940,8 @@
           <div class="panel" style="grid-column:1/-1;border-color:#fdba74" id="gab-obr-pontos">
             <h3 style="margin-bottom:0.35rem">Pontos quentes</h3>
             <p class="muted" style="margin-bottom:0.85rem">
-              Preenchido pela Secretaria de Obras ? atualizado ${fmtDate(obrasHoje.atualizadoEm)}.
-              Resumo na frente ? Detalhar para fotos e detalhes.
+              Preenchido pela Secretaria de Obras · atualizado ${fmtDate(obrasHoje.atualizadoEm)}.
+              Resumo na frente — Detalhar para fotos e detalhes.
             </p>
             <div class="list">
               ${pontos.map((p) => cardProblemaGabinete({
@@ -956,32 +975,32 @@
           </div>
           <div class="panel" style="grid-column:1/-1" id="gab-obr-rota">
             <h3 style="margin-bottom:0.35rem">Rota do dia</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Ordem de atendimento ? Detalhar mostra bairro e prioridade.</p>
+            <p class="muted" style="margin-bottom:0.75rem">Ordem de atendimento — Detalhar mostra bairro e prioridade.</p>
             <div class="list">
               ${(obrasHoje.rota || []).map((r) => {
                 const urg = r.status === 'pendente' && r.prioridade === 'alta';
                 return cardOpsDetalhe({
                   did: 'obr-rota-' + (r.pontoId || r.ordem),
-                  titulo: `#${r.ordem} ? ${r.titulo}`,
+                  titulo: `#${r.ordem} · ${r.titulo}`,
                   badgeHtml: `<span class="badge ${r.status === 'concluido' ? 'badge-concluido' : r.status === 'em_atendimento' ? 'badge-em_analise' : 'badge-cancelado'}">${rotaStatusLabel(r.status)}</span>`,
-                  meta: `${r.bairro || '?'} ? ${r.rua || ''}${r.prioridade ? ' ? ' + prioridadeLabel(r.prioridade) : ''}`,
+                  meta: `${r.bairro || '—'} · ${r.rua || ''}${r.prioridade ? ' · ' + prioridadeLabel(r.prioridade) : ''}`,
                   urgente: urg,
                   acoesHtml: urg
                     ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Rota: ${String(r.titulo || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
                     : '',
                   detalheHtml: `
                     <div class="meta"><strong>Status:</strong> ${rotaStatusLabel(r.status)}</div>
-                    <div class="meta"><strong>Bairro:</strong> ${r.bairro || '?'}</div>
-                    <div class="meta"><strong>Rua:</strong> ${r.rua || '?'}</div>
-                    <div class="meta"><strong>Prioridade:</strong> ${r.prioridade ? prioridadeLabel(r.prioridade) : '?'}</div>
-                    <div class="meta"><strong>Equipe:</strong> ${r.equipeId || 'n?o atribu?da'}</div>`,
+                    <div class="meta"><strong>Bairro:</strong> ${r.bairro || '—'}</div>
+                    <div class="meta"><strong>Rua:</strong> ${r.rua || '—'}</div>
+                    <div class="meta"><strong>Prioridade:</strong> ${r.prioridade ? prioridadeLabel(r.prioridade) : '—'}</div>
+                    <div class="meta"><strong>Equipe:</strong> ${r.equipeId || 'não atribuída'}</div>`,
                 });
               }).join('') || '<p class="muted">Sem rota montada.</p>'}
             </div>
           </div>
           <div class="panel" id="gab-obr-equipes">
             <h3 style="margin-bottom:0.35rem">Equipes</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Quem est? em campo agora.</p>
+            <p class="muted" style="margin-bottom:0.75rem">Quem está em campo agora.</p>
             <div class="list">
               ${(obrasHoje.equipes || []).map((e) => {
                 const emCampo = e.status === 'em_campo';
@@ -989,11 +1008,11 @@
                   did: 'obr-eq-' + e.id,
                   titulo: e.nome,
                   badgeHtml: `<span class="badge ${emCampo ? 'badge-em_analise' : e.status === 'disponivel' ? 'badge-concluido' : ''}">${equipeStatusLabel(e.status)}</span>`,
-                  meta: `${e.lider || '?'} ? ${e.veiculoId || 'sem ve?culo'}`,
+                  meta: `${e.lider || '—'} · ${e.veiculoId || 'sem veículo'}`,
                   detalheHtml: `
-                    <div class="meta"><strong>L?der:</strong> ${e.lider || '?'}</div>
+                    <div class="meta"><strong>Líder:</strong> ${e.lider || '—'}</div>
                     <div class="meta"><strong>Status:</strong> ${equipeStatusLabel(e.status)}</div>
-                    <div class="meta"><strong>Ve?culo:</strong> ${e.veiculoId || '?'}</div>
+                    <div class="meta"><strong>Veículo:</strong> ${e.veiculoId || '—'}</div>
                     <div class="meta"><strong>Ponto atual:</strong> ${e.pontoId || 'nenhum'}</div>`,
                 });
               }).join('') || '<p class="muted">Sem equipes.</p>'}
@@ -1001,7 +1020,7 @@
           </div>
           <div class="panel" id="gab-obr-frota">
             <h3 style="margin-bottom:0.35rem">Frota</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Ve?culos livres, em rota e oficina.</p>
+            <p class="muted" style="margin-bottom:0.75rem">Veículos livres, em rota e oficina.</p>
             <div class="list">
               ${(obrasHoje.frota || []).map((f) => {
                 const urg = f.status === 'oficina';
@@ -1009,17 +1028,17 @@
                   did: 'obr-frota-' + f.id,
                   titulo: f.placa,
                   badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : f.status === 'em_rota' ? 'badge-em_analise' : 'badge-concluido'}">${frotaStatusLabel(f.status)}</span>`,
-                  meta: `${f.tipo} ? ${f.motorista || '?'}`,
+                  meta: `${f.tipo} · ${f.motorista || '—'}`,
                   urgente: urg,
                   acoesHtml: urg
                     ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Frota ${f.placa} em oficina')">Cobrar secretaria</button>`
                     : '',
                   detalheHtml: `
-                    <div class="meta"><strong>Tipo:</strong> ${f.tipo || '?'}</div>
+                    <div class="meta"><strong>Tipo:</strong> ${f.tipo || '—'}</div>
                     <div class="meta"><strong>Status:</strong> ${frotaStatusLabel(f.status)}</div>
-                    <div class="meta"><strong>Motorista:</strong> ${f.motorista || '?'}</div>
-                    <div class="meta"><strong>Equipe:</strong> ${f.equipe || '?'}</div>
-                    <p class="muted" style="margin:0.55rem 0 0">${urg ? 'Ve?culo parado ? confirme previs?o de retorno.' : 'Operacional no momento.'}</p>`,
+                    <div class="meta"><strong>Motorista:</strong> ${f.motorista || '—'}</div>
+                    <div class="meta"><strong>Equipe:</strong> ${f.equipe || '—'}</div>
+                    <p class="muted" style="margin:0.55rem 0 0">${urg ? 'Veículo parado — confirme previsão de retorno.' : 'Operacional no momento.'}</p>`,
                 });
               }).join('') || '<p class="muted">Sem frota.</p>'}
             </div>
@@ -1028,8 +1047,8 @@
             <h3 style="margin-bottom:0.35rem">Materiais / estoque</h3>
             <p class="muted" style="margin-bottom:0.75rem">
               ${matAlerta.length
-                ? `<strong style="color:#b91c1c">${matAlerta.length} item(ns) abaixo do m?nimo</strong> ? Detalhar + cobrar reposi??o.`
-                : 'Estoque da base. Detalhar mostra quantidade e m?nimo.'}
+                ? `<strong style="color:#b91c1c">${matAlerta.length} item(ns) abaixo do mínimo</strong> — Detalhar + cobrar reposição.`
+                : 'Estoque da base. Detalhar mostra quantidade e mínimo.'}
             </p>
             <div class="list">
               ${(obrasHoje.materiais || []).map((m) => {
@@ -1039,23 +1058,23 @@
                   did: 'obr-mat-' + m.id,
                   titulo: m.nome,
                   badgeHtml: `<span class="badge ${baixo ? 'badge-cancelado' : 'badge-concluido'}">${m.qtd} ${m.unidade || ''}</span>`,
-                  meta: `M?nimo ${m.minimo}${baixo ? ' ? abaixo do m?nimo' : ''}`,
+                  meta: `Mínimo ${m.minimo}${baixo ? ' · abaixo do mínimo' : ''}`,
                   urgente: baixo,
                   acoesHtml: baixo
-                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Material: ${String(m.nome || '').replace(/'/g, '')} (${m.qtd}/${m.minimo})')">Cobrar reposi??o</button>`
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Material: ${String(m.nome || '').replace(/'/g, '')} (${m.qtd}/${m.minimo})')">Cobrar reposição</button>`
                     : '',
                   detalheHtml: `
                     <div class="meta"><strong>Quantidade:</strong> ${m.qtd} ${m.unidade || ''}</div>
-                    <div class="meta"><strong>M?nimo:</strong> ${m.minimo} ${m.unidade || ''}</div>
+                    <div class="meta"><strong>Mínimo:</strong> ${m.minimo} ${m.unidade || ''}</div>
                     <div class="ocup-bar ${baixo ? 'critica' : ''}"><i style="width:${Math.min(100, pct)}%"></i></div>
-                    <p class="muted" style="margin:0.55rem 0 0">${baixo ? 'Pe?a previs?o de entrega ? secretaria.' : 'Estoque dentro do m?nimo.'}</p>`,
+                    <p class="muted" style="margin:0.55rem 0 0">${baixo ? 'Peça previsão de entrega à secretaria.' : 'Estoque dentro do mínimo.'}</p>`,
                 });
               }).join('') || '<p class="muted">Sem materiais cadastrados.</p>'}
             </div>
           </div>
           <div class="panel" style="grid-column:1/-1" id="gab-obr-check">
             <h3 style="margin-bottom:0.35rem">Checklist do dia</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Rotina operacional ? Detalhar lista cada item.</p>
+            <p class="muted" style="margin-bottom:0.75rem">Rotina operacional — Detalhar lista cada item.</p>
             <div class="list">
               ${(() => {
                 const itens = obrasHoje.checklist || [];
@@ -1072,14 +1091,14 @@
                     ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Checklist: ${chkFaltando.map((i) => i.label).join(', ').replace(/'/g, '')}')">Cobrar secretaria</button>`
                     : '',
                   detalheHtml: `<div class="list">${itens.map((it) => `
-                    <div class="meta" style="margin:0.25rem 0"><strong>${it.ok ? '?' : '?'}</strong> ${it.label}${it.ok ? '' : ' <span style="color:#b91c1c">(pendente)</span>'}</div>`).join('')}</div>`,
+                    <div class="meta" style="margin:0.25rem 0"><strong>${it.ok ? '✓' : '✗'}</strong> ${it.label}${it.ok ? '' : ' <span style="color:#b91c1c">(pendente)</span>'}</div>`).join('')}</div>`,
                 });
               })()}
             </div>
           </div>
           <div class="panel" style="grid-column:1/-1" id="gab-obr-grandes">
-            <h3 style="margin-bottom:0.35rem">Obras grandes (transpar?ncia)</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Andamento e prazo ? Detalhar para percentual e empresa.</p>
+            <h3 style="margin-bottom:0.35rem">Obras grandes (transparência)</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Andamento e prazo — Detalhar para percentual e empresa.</p>
             <div class="list">
               ${(obrasHoje.obras || []).map((o) => {
                 const urg = o.status === 'atrasada';
@@ -1088,7 +1107,7 @@
                   did: 'obr-grande-' + o.id,
                   titulo: o.nome,
                   badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : o.status === 'concluida' ? 'badge-concluido' : 'badge-em_analise'}">${o.status}</span>`,
-                  meta: `${o.bairro || '?'} ? ${pct}% ? prazo ${o.prazo || '?'}`,
+                  meta: `${o.bairro || '—'} · ${pct}% · prazo ${o.prazo || '—'}`,
                   urgente: urg,
                   acoesHtml: urg
                     ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Obra atrasada: ${String(o.nome || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
@@ -1097,9 +1116,9 @@
                     <div class="meta"><strong>Status:</strong> ${o.status}</div>
                     <div class="meta"><strong>Progresso:</strong> ${pct}%</div>
                     <div class="ocup-bar ${urg ? 'critica' : pct >= 70 ? '' : 'alta'}"><i style="width:${pct}%"></i></div>
-                    <div class="meta"><strong>Prazo:</strong> ${o.prazo || '?'}</div>
-                    <div class="meta"><strong>Empresa:</strong> ${o.empresa || '?'}</div>
-                    <div class="meta"><strong>Bairro:</strong> ${o.bairro || '?'}</div>`,
+                    <div class="meta"><strong>Prazo:</strong> ${o.prazo || '—'}</div>
+                    <div class="meta"><strong>Empresa:</strong> ${o.empresa || '—'}</div>
+                    <div class="meta"><strong>Bairro:</strong> ${o.bairro || '—'}</div>`,
                 });
               }).join('') || '<p class="muted">Sem obras cadastradas.</p>'}
             </div>
@@ -1130,10 +1149,10 @@
           <div class="ilu-modulos">
             <button type="button" class="ilu-mod ${(t.apagados || 0) ? 'alerta' : ''}" data-jump="gab-ilu-postes"><span>Apagados</span><strong>${t.apagados || 0}</strong><small>prioridade alta</small></button>
             <button type="button" class="ilu-mod" data-jump="gab-ilu-postes"><span>Em reparo</span><strong>${t.emReparo || 0}</strong><small>equipe em campo</small></button>
-            <button type="button" class="ilu-mod ${(t.semEnergia || 0) ? 'alerta' : ''}" data-jump="gab-ilu-postes"><span>Sem energia</span><strong>${t.semEnergia || 0}</strong><small>poss?vel rede</small></button>
+            <button type="button" class="ilu-mod ${(t.semEnergia || 0) ? 'alerta' : ''}" data-jump="gab-ilu-postes"><span>Sem energia</span><strong>${t.semEnergia || 0}</strong><small>possível rede</small></button>
             <button type="button" class="ilu-mod" data-jump="gab-ilu-rota"><span>Rota noite</span><strong>${t.rotaPendentes || 0}</strong><small>pontos pendentes</small></button>
             <button type="button" class="ilu-mod ${frotaAlerta.length ? 'alerta' : ''}" data-jump="gab-ilu-frota"><span>Frota</span><strong>${t.frotaLivre || 0}/${t.frotaTotal || 0}</strong><small>${frotaAlerta.length ? frotaAlerta.length + ' oficina' : 'cestas livres'}</small></button>
-            <button type="button" class="ilu-mod ${estAlerta.length ? 'alerta' : ''}" data-jump="gab-ilu-estoque"><span>Estoque</span><strong>${t.estoqueBaixo || estAlerta.length || 0}</strong><small>${estAlerta.length ? 'abaixo do m?nimo' : 'LED ok'}</small></button>
+            <button type="button" class="ilu-mod ${estAlerta.length ? 'alerta' : ''}" data-jump="gab-ilu-estoque"><span>Estoque</span><strong>${t.estoqueBaixo || estAlerta.length || 0}</strong><small>${estAlerta.length ? 'abaixo do mínimo' : 'LED ok'}</small></button>
           </div>
           <div class="gab-ops-nav ilu">
             <button type="button" data-jump="gab-ilu-postes">Postes</button>
@@ -1143,18 +1162,18 @@
           </div>
           ${alertas.length ? `
             <div class="ilu-alert-banner">
-              ${alertas.length} alerta(s) operacional(is) ? cobre a Ilumina??o se precisar de resposta r?pida
+              ${alertas.length} alerta(s) operacional(is) — cobre a Iluminação se precisar de resposta rápida
             </div>
             <div class="panel" style="grid-column:1/-1;border-color:#fdba74;background:#fffbeb">
-              <h3 style="margin-bottom:0.55rem;color:#9a3412">Alertas da Ilumina??o</h3>
+              <h3 style="margin-bottom:0.55rem;color:#9a3412">Alertas da Iluminação</h3>
               ${alertas.map((a) => `<div class="meta" style="margin-bottom:0.45rem;color:#9a3412;font-weight:600">${a.mensagem}</div>`).join('')}
             </div>` : ''}
           <div class="panel" style="grid-column:1/-1;border-color:#fde68a" id="gab-ilu-postes">
             <h3 style="margin-bottom:0.35rem">Postes com problema</h3>
             <p class="muted" style="margin-bottom:0.85rem">
-              Preenchido pela Secretaria de Ilumina??o ? atualizado ${fmtDate(iluminacaoHoje.atualizadoEm)}.
-              Resumo na frente ? Detalhar para endere?o e prioridade.
-              ${postesAlta.length ? ` ? <strong style="color:#b91c1c">${postesAlta.length} cr?tico(s)</strong>` : ''}
+              Preenchido pela Secretaria de Iluminação · atualizado ${fmtDate(iluminacaoHoje.atualizadoEm)}.
+              Resumo na frente — Detalhar para endereço e prioridade.
+              ${postesAlta.length ? ` · <strong style="color:#b91c1c">${postesAlta.length} crítico(s)</strong>` : ''}
             </p>
             <div class="list">
               ${postesProblema.map((p) => {
@@ -1163,21 +1182,21 @@
                   did: 'ilu-poste-' + p.id,
                   titulo: `Poste ${p.codigo}`,
                   badgeHtml: `<span class="badge ${p.status === 'apagado' || p.status === 'sem_energia' ? 'badge-cancelado' : 'badge-em_analise'}">${posteStatusLabel(p.status)}</span>`,
-                  meta: `${p.bairro} ? ${p.endereco} ? prioridade ${p.prioridade || '?'}`,
+                  meta: `${p.bairro} · ${p.endereco} · prioridade ${p.prioridade || '—'}`,
                   urgente: urg,
                   acoesHtml: urg
-                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Poste ${p.codigo} ? ${String(p.bairro || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Poste ${p.codigo} — ${String(p.bairro || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
                     : '',
                   detalheHtml: `
                     <div class="meta"><strong>Status:</strong> ${posteStatusLabel(p.status)}</div>
-                    <div class="meta"><strong>Bairro:</strong> ${p.bairro || '?'}</div>
-                    <div class="meta"><strong>Endere?o:</strong> ${p.endereco || '?'}</div>
-                    <div class="meta"><strong>Prioridade:</strong> ${p.prioridade || '?'}</div>
+                    <div class="meta"><strong>Bairro:</strong> ${p.bairro || '—'}</div>
+                    <div class="meta"><strong>Endereço:</strong> ${p.endereco || '—'}</div>
+                    <div class="meta"><strong>Prioridade:</strong> ${p.prioridade || '—'}</div>
                     <div class="meta"><strong>Atualizado:</strong> ${fmtDate(p.atualizadoEm)}</div>
                     <p class="muted" style="margin:0.55rem 0 0">${
-                      p.status === 'sem_energia' ? 'Poss?vel falha de rede ? confirme com a secretaria.'
-                        : p.status === 'apagado' ? 'Poste apagado ? cobre se prioridade alta.'
-                          : 'Equipe em reparo ? acompanhe a rota da noite.'
+                      p.status === 'sem_energia' ? 'Possível falha de rede — confirme com a secretaria.'
+                        : p.status === 'apagado' ? 'Poste apagado — cobre se prioridade alta.'
+                          : 'Equipe em reparo — acompanhe a rota da noite.'
                     }</p>`,
                 });
               }).join('') || '<p class="muted">Nenhum poste com problema agora.</p>'}
@@ -1185,31 +1204,31 @@
           </div>
           <div class="panel" style="grid-column:1/-1" id="gab-ilu-rota">
             <h3 style="margin-bottom:0.35rem">Rota da noite</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Ordem de atendimento ? Detalhar mostra endere?o completo.</p>
+            <p class="muted" style="margin-bottom:0.75rem">Ordem de atendimento — Detalhar mostra endereço completo.</p>
             <div class="list">
               ${(iluminacaoHoje.rota || []).map((r) => {
                 const urg = r.status === 'pendente' && r.prioridade === 'alta';
                 return cardOpsDetalhe({
                   did: 'ilu-rota-' + (r.posteId || r.ordem),
-                  titulo: `#${r.ordem} ? Poste ${r.codigo}`,
+                  titulo: `#${r.ordem} · Poste ${r.codigo}`,
                   badgeHtml: `<span class="badge ${r.status === 'concluido' ? 'badge-concluido' : r.status === 'em_atendimento' ? 'badge-em_analise' : 'badge-cancelado'}">${rotaStatusLabel(r.status)}</span>`,
-                  meta: `${r.bairro} ? ${r.endereco}`,
+                  meta: `${r.bairro} · ${r.endereco}`,
                   urgente: urg,
                   acoesHtml: urg
-                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Rota: Poste ${r.codigo} ? ${String(r.bairro || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Rota: Poste ${r.codigo} — ${String(r.bairro || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
                     : '',
                   detalheHtml: `
                     <div class="meta"><strong>Status:</strong> ${rotaStatusLabel(r.status)}</div>
-                    <div class="meta"><strong>Bairro:</strong> ${r.bairro || '?'}</div>
-                    <div class="meta"><strong>Endere?o:</strong> ${r.endereco || '?'}</div>
-                    <div class="meta"><strong>Prioridade:</strong> ${r.prioridade || '?'}</div>`,
+                    <div class="meta"><strong>Bairro:</strong> ${r.bairro || '—'}</div>
+                    <div class="meta"><strong>Endereço:</strong> ${r.endereco || '—'}</div>
+                    <div class="meta"><strong>Prioridade:</strong> ${r.prioridade || '—'}</div>`,
                 });
               }).join('') || '<p class="muted">Sem rota montada.</p>'}
             </div>
           </div>
           <div class="panel" id="gab-ilu-frota">
             <h3 style="margin-bottom:0.35rem">Frota (cestas)</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Ve?culos livres, em rota e oficina.</p>
+            <p class="muted" style="margin-bottom:0.75rem">Veículos livres, em rota e oficina.</p>
             <div class="list">
               ${(iluminacaoHoje.frota || []).map((f) => {
                 const urg = f.status === 'oficina';
@@ -1217,17 +1236,17 @@
                   did: 'ilu-frota-' + f.id,
                   titulo: f.placa,
                   badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : f.status === 'em_rota' ? 'badge-em_analise' : 'badge-concluido'}">${frotaStatusLabel(f.status)}</span>`,
-                  meta: `${f.tipo} ? ${f.motorista || '?'} ? ${f.equipe || '?'}`,
+                  meta: `${f.tipo} · ${f.motorista || '—'} · ${f.equipe || '—'}`,
                   urgente: urg,
                   acoesHtml: urg
                     ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Frota ${f.placa} em oficina')">Cobrar secretaria</button>`
                     : '',
                   detalheHtml: `
-                    <div class="meta"><strong>Tipo:</strong> ${f.tipo || '?'}</div>
+                    <div class="meta"><strong>Tipo:</strong> ${f.tipo || '—'}</div>
                     <div class="meta"><strong>Status:</strong> ${frotaStatusLabel(f.status)}</div>
-                    <div class="meta"><strong>Motorista:</strong> ${f.motorista || '?'}</div>
-                    <div class="meta"><strong>Equipe:</strong> ${f.equipe || '?'}</div>
-                    <p class="muted" style="margin:0.55rem 0 0">${urg ? 'Cesta parada ? confirme previs?o de retorno.' : 'Operacional no momento.'}</p>`,
+                    <div class="meta"><strong>Motorista:</strong> ${f.motorista || '—'}</div>
+                    <div class="meta"><strong>Equipe:</strong> ${f.equipe || '—'}</div>
+                    <p class="muted" style="margin:0.55rem 0 0">${urg ? 'Cesta parada — confirme previsão de retorno.' : 'Operacional no momento.'}</p>`,
                 });
               }).join('') || '<p class="muted">Sem frota</p>'}
             </div>
@@ -1236,8 +1255,8 @@
             <h3 style="margin-bottom:0.35rem">Estoque LED</h3>
             <p class="muted" style="margin-bottom:0.75rem">
               ${estAlerta.length
-                ? `<strong style="color:#b91c1c">${estAlerta.length} item(ns) abaixo do m?nimo</strong> ? Detalhar + cobrar reposi??o.`
-                : 'Materiais da ilumina??o. Detalhar mostra quantidade e m?nimo.'}
+                ? `<strong style="color:#b91c1c">${estAlerta.length} item(ns) abaixo do mínimo</strong> — Detalhar + cobrar reposição.`
+                : 'Materiais da iluminação. Detalhar mostra quantidade e mínimo.'}
             </p>
             <div class="list">
               ${(iluminacaoHoje.estoque || []).map((e) => {
@@ -1247,23 +1266,23 @@
                   did: 'ilu-est-' + e.id,
                   titulo: e.nome,
                   badgeHtml: `<span class="badge ${baixo ? 'badge-cancelado' : 'badge-concluido'}">${e.qtd} ${e.unidade || 'un'}</span>`,
-                  meta: `M?nimo ${e.minimo}${baixo ? ' ? abaixo do m?nimo' : ''}`,
+                  meta: `Mínimo ${e.minimo}${baixo ? ' · abaixo do mínimo' : ''}`,
                   urgente: baixo,
                   acoesHtml: baixo
-                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Estoque: ${String(e.nome || '').replace(/'/g, '')} (${e.qtd}/${e.minimo})')">Cobrar reposi??o</button>`
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Estoque: ${String(e.nome || '').replace(/'/g, '')} (${e.qtd}/${e.minimo})')">Cobrar reposição</button>`
                     : '',
                   detalheHtml: `
                     <div class="meta"><strong>Quantidade:</strong> ${e.qtd} ${e.unidade || 'un'}</div>
-                    <div class="meta"><strong>M?nimo:</strong> ${e.minimo} ${e.unidade || 'un'}</div>
+                    <div class="meta"><strong>Mínimo:</strong> ${e.minimo} ${e.unidade || 'un'}</div>
                     <div class="ocup-bar ${baixo ? 'critica' : ''}"><i style="width:${Math.min(100, pct)}%"></i></div>
-                    <p class="muted" style="margin:0.55rem 0 0">${baixo ? 'Pe?a previs?o de compra/entrega.' : 'Estoque dentro do m?nimo.'}</p>`,
+                    <p class="muted" style="margin:0.55rem 0 0">${baixo ? 'Peça previsão de compra/entrega.' : 'Estoque dentro do mínimo.'}</p>`,
                 });
               }).join('') || '<p class="muted">Sem itens de estoque.</p>'}
             </div>
           </div>
           ${((iluminacaoHoje.chamados || []).length) ? `
           <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.55rem">Chamados da Ilumina??o</h3>
+            <h3 style="margin-bottom:0.55rem">Chamados da Iluminação</h3>
             <div class="list">
               ${iluminacaoHoje.chamados.slice(0, 8).map((c) => cardProblemaGabinete(c, {
                 did: 'ilu-ch-' + c.id,
@@ -1279,7 +1298,7 @@
       if (eixo === 'saude' && saudeHoje) {
         const criticos = (saudeHoje.unidades || []).filter(u => u.critico);
         const alertas = saudeHoje.alertas || [];
-        const turnoL = { manha: 'Manh?', tarde: 'Tarde', noite: 'Noite' };
+        const turnoL = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
         const t = saudeHoje.totais || {};
         const farmAlerta = (saudeHoje.farmacia || []).filter((f) => f.estoque === 'baixo' || f.estoque === 'critico');
         const leitosAlerta = (saudeHoje.leitos || []).filter((l) => l.total > 0 && (l.ocupados / l.total) >= 0.85);
@@ -1288,29 +1307,29 @@
         box.innerHTML = `
           <div class="saude-modulos">
             <button type="button" class="saude-mod" data-jump="gab-sau-unidades"><span>Fila</span><strong>${t.naFila || 0}</strong><small>espera ~${t.tempoMedioMin || 0} min</small></button>
-            <button type="button" class="saude-mod" data-jump="gab-sau-unidades"><span>Plant?o</span><strong>${t.plantoesOk || 0}/${t.plantoesTotal || 0}</strong><small>unidades</small></button>
-            <button type="button" class="saude-mod ${leitosAlerta.length ? 'alerta' : ''}" data-jump="gab-sau-leitos"><span>Leitos</span><strong>${t.leitosOcupacaoPct || 0}%</strong><small>${leitosAlerta.length ? leitosAlerta.length + ' quase lotados' : 'ocupa??o geral'}</small></button>
-            <button type="button" class="saude-mod ${ambAlerta.length ? 'alerta' : ''}" data-jump="gab-sau-amb"><span>Ambul?ncias</span><strong>${t.ambulanciasDisponiveis || 0}/${t.ambulanciasTotal || 0}</strong><small>${ambAlerta.length ? ambAlerta.length + ' fora' : 'livres'}</small></button>
-            <button type="button" class="saude-mod ${farmAlerta.length ? 'alerta' : ''}" data-jump="gab-sau-farm"><span>Farm?cia</span><strong>${t.farmaciaAlertas || farmAlerta.length || 0}</strong><small>${farmAlerta.length ? 'estoque em aten??o' : 'sem alerta'}</small></button>
-            <button type="button" class="saude-mod ${chkAlerta.length || alertas.length ? 'alerta' : ''}" data-jump="gab-sau-check"><span>Checklist</span><strong>${chkAlerta.length || alertas.length}</strong><small>${chkAlerta.length ? 'pend?ncias' : 'rotina ok'}</small></button>
+            <button type="button" class="saude-mod" data-jump="gab-sau-unidades"><span>Plantão</span><strong>${t.plantoesOk || 0}/${t.plantoesTotal || 0}</strong><small>unidades</small></button>
+            <button type="button" class="saude-mod ${leitosAlerta.length ? 'alerta' : ''}" data-jump="gab-sau-leitos"><span>Leitos</span><strong>${t.leitosOcupacaoPct || 0}%</strong><small>${leitosAlerta.length ? leitosAlerta.length + ' quase lotados' : 'ocupação geral'}</small></button>
+            <button type="button" class="saude-mod ${ambAlerta.length ? 'alerta' : ''}" data-jump="gab-sau-amb"><span>Ambulâncias</span><strong>${t.ambulanciasDisponiveis || 0}/${t.ambulanciasTotal || 0}</strong><small>${ambAlerta.length ? ambAlerta.length + ' fora' : 'livres'}</small></button>
+            <button type="button" class="saude-mod ${farmAlerta.length ? 'alerta' : ''}" data-jump="gab-sau-farm"><span>Farmácia</span><strong>${t.farmaciaAlertas || farmAlerta.length || 0}</strong><small>${farmAlerta.length ? 'estoque em atenção' : 'sem alerta'}</small></button>
+            <button type="button" class="saude-mod ${chkAlerta.length || alertas.length ? 'alerta' : ''}" data-jump="gab-sau-check"><span>Checklist</span><strong>${chkAlerta.length || alertas.length}</strong><small>${chkAlerta.length ? 'pendências' : 'rotina ok'}</small></button>
           </div>
           <div class="gab-ops-nav">
-            <button type="button" data-jump="gab-sau-amb">Ambul?ncias</button>
+            <button type="button" data-jump="gab-sau-amb">Ambulâncias</button>
             <button type="button" data-jump="gab-sau-leitos">Leitos</button>
-            <button type="button" data-jump="gab-sau-farm">Estoque / farm?cia</button>
+            <button type="button" data-jump="gab-sau-farm">Estoque / farmácia</button>
             <button type="button" data-jump="gab-sau-check">Checklist</button>
             <button type="button" data-jump="gab-sau-unidades">Unidades</button>
           </div>
           ${criticos.length ? `
             <div class="saude-alert-banner" style="grid-column:1/-1">
               ${criticos.length} unidade(s) em alerta agora:
-              ${criticos.map(u => u.nome).join(' ? ')}
-              ? cobre a secretaria ou fa?a visita surpresa
+              ${criticos.map(u => u.nome).join(' · ')}
+              — cobre a secretaria ou faça visita surpresa
             </div>` : ''}
           ${(alertas.length) ? `
             <div class="panel" style="grid-column:1/-1;border-color:#fecaca;background:#fffafa">
-              <h3 style="margin-bottom:0.55rem;color:#7f1d1d">Alertas da Sa?de</h3>
-              ${alertas.map(a => `<div class="meta" style="margin-bottom:0.45rem;color:#7f1d1d;font-weight:600"><strong>${a.unidade}</strong> ? ${a.mensagem}</div>`).join('')}
+              <h3 style="margin-bottom:0.55rem;color:#7f1d1d">Alertas da Saúde</h3>
+              ${alertas.map(a => `<div class="meta" style="margin-bottom:0.45rem;color:#7f1d1d;font-weight:600"><strong>${a.unidade}</strong> — ${a.mensagem}</div>`).join('')}
             </div>` : ''}
           ${((saudeHoje.avisos || []).length) ? `
             <div class="panel" style="grid-column:1/-1;border-color:#fde68a;background:#fffbeb">
@@ -1322,8 +1341,8 @@
                 </div>`).join('')}
             </div>` : ''}
           <div class="panel" style="grid-column:1/-1" id="gab-sau-amb">
-            <h3 style="margin-bottom:0.35rem">Ambul?ncias</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Resumo na frente ? Detalhar mostra base, condutor e o que cobrar.</p>
+            <h3 style="margin-bottom:0.35rem">Ambulâncias</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Resumo na frente — Detalhar mostra base, condutor e o que cobrar.</p>
             <div class="list">
               ${(saudeHoje.ambulancias || []).map((a) => {
                 const urg = a.status === 'oficina' || a.status === 'indisponivel';
@@ -1331,28 +1350,28 @@
                   did: 'amb-' + a.id,
                   titulo: a.placa,
                   badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : a.status === 'em_uso' ? 'badge-em_analise' : 'badge-concluido'}">${statusAmbLabel(a.status)}</span>`,
-                  meta: `${a.motorista || '?'} ? base ${a.base || '?'}`,
+                  meta: `${a.motorista || '—'} · base ${a.base || '—'}`,
                   urgente: urg,
                   acoesHtml: urg
-                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('','Frota ambul?ncia ${a.placa}')">Cobrar secretaria</button>`
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('','Frota ambulância ${a.placa}')">Cobrar secretaria</button>`
                     : '',
                   detalheHtml: `
                     <div class="meta"><strong>Status:</strong> ${statusAmbLabel(a.status)}</div>
-                    <div class="meta"><strong>Condutor:</strong> ${a.motorista || 'n?o informado'}</div>
-                    <div class="meta"><strong>Base:</strong> ${a.base || '?'}</div>
-                    <div class="meta"><strong>Atualizado:</strong> ${a.atualizadoEm ? fmtDate(a.atualizadoEm) : '?'}</div>
+                    <div class="meta"><strong>Condutor:</strong> ${a.motorista || 'não informado'}</div>
+                    <div class="meta"><strong>Base:</strong> ${a.base || '—'}</div>
+                    <div class="meta"><strong>Atualizado:</strong> ${a.atualizadoEm ? fmtDate(a.atualizadoEm) : '—'}</div>
                     <p class="muted" style="margin:0.55rem 0 0">${
                       a.status === 'disponivel' ? 'Pronta para despacho.'
-                        : a.status === 'em_uso' ? 'Em atendimento ? acompanhe retorno com a Sa?de.'
-                          : 'Fora de opera??o ? cobre previs?o de libera??o.'
+                        : a.status === 'em_uso' ? 'Em atendimento — acompanhe retorno com a Saúde.'
+                          : 'Fora de operação — cobre previsão de liberação.'
                     }</p>`,
                 });
-              }).join('') || '<p class="muted">Sem ambul?ncias.</p>'}
+              }).join('') || '<p class="muted">Sem ambulâncias.</p>'}
             </div>
           </div>
           <div class="panel" style="grid-column:1/-1" id="gab-sau-leitos">
-            <h3 style="margin-bottom:0.35rem">Leitos / ocupa??o</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Ocupa??o em destaque ? Detalhar mostra livres e risco de lota??o.</p>
+            <h3 style="margin-bottom:0.35rem">Leitos / ocupação</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Ocupação em destaque — Detalhar mostra livres e risco de lotação.</p>
             <div class="list">
               ${(saudeHoje.leitos || []).map((l) => {
                 const pct = l.total ? Math.round((l.ocupados / l.total) * 100) : 0;
@@ -1363,8 +1382,8 @@
                 return cardOpsDetalhe({
                   did: 'lei-' + l.id,
                   titulo: l.nome,
-                  badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : alta ? 'badge-em_analise' : 'badge-concluido'}">${l.ocupados}/${l.total} ? ${pct}%</span>`,
-                  meta: `${livres} livre(s)${urg ? ' ? aten??o: quase lotado' : ''}`,
+                  badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : alta ? 'badge-em_analise' : 'badge-concluido'}">${l.ocupados}/${l.total} · ${pct}%</span>`,
+                  meta: `${livres} livre(s)${urg ? ' · atenção: quase lotado' : ''}`,
                   urgente: urg,
                   acoesHtml: urg
                     ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('','Leitos ${String(l.nome || '').replace(/'/g, '')} ${pct}%')">Cobrar secretaria</button>`
@@ -1372,23 +1391,23 @@
                   detalheHtml: `
                     <div class="meta"><strong>Ocupados:</strong> ${l.ocupados} de ${l.total}</div>
                     <div class="meta"><strong>Livres:</strong> ${livres}</div>
-                    <div class="meta"><strong>Ocupa??o:</strong> ${pct}%</div>
+                    <div class="meta"><strong>Ocupação:</strong> ${pct}%</div>
                     <div class="ocup-bar ${barCls}"><i style="width:${pct}%"></i></div>
                     <p class="muted" style="margin:0.55rem 0 0">${
-                      urg ? 'Risco alto ? confirme regula??o com a Sa?de.'
-                        : alta ? 'Ocupa??o elevada ? acompanhe a curva do dia.'
-                          : 'Capacidade confort?vel no momento.'
+                      urg ? 'Risco alto — confirme regulação com a Saúde.'
+                        : alta ? 'Ocupação elevada — acompanhe a curva do dia.'
+                          : 'Capacidade confortável no momento.'
                     }</p>`,
                 });
               }).join('') || '<p class="muted">Sem leitos.</p>'}
             </div>
           </div>
           <div class="panel" style="grid-column:1/-1;border-color:${farmAlerta.length ? '#fecaca' : '#99f6e4'}" id="gab-sau-farm">
-            <h3 style="margin-bottom:0.35rem">Estoque / farm?cia</h3>
+            <h3 style="margin-bottom:0.35rem">Estoque / farmácia</h3>
             <p class="muted" style="margin-bottom:0.75rem">
               ${farmAlerta.length
-                ? `<strong style="color:#b91c1c">${farmAlerta.length} item(ns) baixo/cr?tico</strong> ? Detalhar + cobrar reposi??o.`
-                : 'Itens cr?ticos da rede. Detalhar mostra unidade e observa??o.'}
+                ? `<strong style="color:#b91c1c">${farmAlerta.length} item(ns) baixo/crítico</strong> — Detalhar + cobrar reposição.`
+                : 'Itens críticos da rede. Detalhar mostra unidade e observação.'}
             </p>
             <div class="list">
               ${(saudeHoje.farmacia || []).map((f) => {
@@ -1397,27 +1416,27 @@
                   did: 'farm-' + f.id,
                   titulo: f.nome,
                   badgeHtml: `<span class="badge ${f.estoque === 'critico' ? 'badge-cancelado' : f.estoque === 'baixo' ? 'badge-em_analise' : 'badge-concluido'}">${estoqueLabel(f.estoque)}</span>`,
-                  meta: `${f.unidadeNome || 'Rede'}${f.observacao ? ' ? ' + f.observacao : ''}`,
+                  meta: `${f.unidadeNome || 'Rede'}${f.observacao ? ' · ' + f.observacao : ''}`,
                   urgente: urg,
                   acoesHtml: urg
-                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('${f.unidadeId || ''}','Estoque: ${String(f.nome || '').replace(/'/g, '')}')">Cobrar reposi??o</button>`
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('${f.unidadeId || ''}','Estoque: ${String(f.nome || '').replace(/'/g, '')}')">Cobrar reposição</button>`
                     : '',
                   detalheHtml: `
-                    <div class="meta"><strong>Situa??o:</strong> ${estoqueLabel(f.estoque)}</div>
-                    <div class="meta"><strong>Unidade:</strong> ${f.unidadeNome || '?'}</div>
-                    <div class="meta"><strong>Observa??o:</strong> ${f.observacao || 'sem nota'}</div>
+                    <div class="meta"><strong>Situação:</strong> ${estoqueLabel(f.estoque)}</div>
+                    <div class="meta"><strong>Unidade:</strong> ${f.unidadeNome || '—'}</div>
+                    <div class="meta"><strong>Observação:</strong> ${f.observacao || 'sem nota'}</div>
                     <p class="muted" style="margin:0.55rem 0 0">${
-                      f.estoque === 'critico' ? 'Prioridade m?xima ? pe?a previs?o de entrega.'
-                        : f.estoque === 'baixo' ? 'Acompanhe pedido de reposi??o e prazo.'
-                          : 'Estoque est?vel no momento.'
+                      f.estoque === 'critico' ? 'Prioridade máxima — peça previsão de entrega.'
+                        : f.estoque === 'baixo' ? 'Acompanhe pedido de reposição e prazo.'
+                          : 'Estoque estável no momento.'
                     }</p>`,
                 });
-              }).join('') || '<p class="muted">Sem itens de farm?cia.</p>'}
+              }).join('') || '<p class="muted">Sem itens de farmácia.</p>'}
             </div>
           </div>
           <div class="panel" style="grid-column:1/-1" id="gab-sau-check">
             <h3 style="margin-bottom:0.35rem">Checklist das unidades</h3>
-            <p class="muted" style="margin-bottom:0.75rem">Resumo do dia ? Detalhar lista o que ficou pendente.</p>
+            <p class="muted" style="margin-bottom:0.75rem">Resumo do dia — Detalhar lista o que ficou pendente.</p>
             <div class="list">
               ${(saudeHoje.checklist || []).map((c) => {
                 const ok = (c.itens || []).filter((i) => i.ok).length;
@@ -1434,14 +1453,14 @@
                     ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarUnidade('${c.unidadeId || ''}','${String(c.unidadeNome || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
                     : '',
                   detalheHtml: `<div class="list">${(c.itens || []).map((it) => `
-                    <div class="meta" style="margin:0.25rem 0"><strong>${it.ok ? '?' : '?'}</strong> ${it.label}${it.ok ? '' : ' <span style="color:#b91c1c">(pendente)</span>'}</div>`).join('') || '<p class="muted">Sem itens.</p>'}</div>`,
+                    <div class="meta" style="margin:0.25rem 0"><strong>${it.ok ? '✓' : '✗'}</strong> ${it.label}${it.ok ? '' : ' <span style="color:#b91c1c">(pendente)</span>'}</div>`).join('') || '<p class="muted">Sem itens.</p>'}</div>`,
                 });
               }).join('') || '<p class="muted">Sem checklist no dia.</p>'}
             </div>
           </div>
           ${((saudeHoje.reclamacoes || []).length) ? `
           <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.55rem">Chamados da Sa?de</h3>
+            <h3 style="margin-bottom:0.55rem">Chamados da Saúde</h3>
             <div class="list">
               ${saudeHoje.reclamacoes.slice(0, 6).map((c) => cardProblemaGabinete(c, {
                 did: 'sau-ch-' + c.id,
@@ -1449,10 +1468,10 @@
             </div>
           </div>` : ''}
           <div class="panel" style="grid-column:1/-1;border-color:#99f6e4" id="gab-sau-unidades">
-            <h3 style="margin-bottom:0.35rem">Unidades ? plant?o ? escala ? fila ? status</h3>
+            <h3 style="margin-bottom:0.35rem">Unidades · plantão · escala · fila · status</h3>
             <p class="muted" style="margin-bottom:0.85rem">
-              Preenchido pela Secretaria de Sa?de ? atualizado ${fmtDate(saudeHoje.atualizadoEm)}.
-              Gabinete s? visualiza e cobra.
+              Preenchido pela Secretaria de Saúde · atualizado ${fmtDate(saudeHoje.atualizadoEm)}.
+              Gabinete só visualiza e cobra.
             </p>
             <div class="list">
               ${saudeHoje.unidades.map(u => {
@@ -1473,29 +1492,29 @@
                   </div>
                   <div class="meta" style="font-size:0.95rem;margin-top:0.35rem">
                     Fila <strong style="font-size:1.15rem">${u.naFila}</strong>
-                    ? Atendidos ${u.atendidosHoje}/${u.metaAtendimentos || '?'}
-                    ? Espera ~${u.tempoMedioMin} min
+                    · Atendidos ${u.atendidosHoje}/${u.metaAtendimentos || '—'}
+                    · Espera ~${u.tempoMedioMin} min
                   </div>
                   <div class="meta">
-                    Plant?o:
+                    Plantão:
                     ${u.plantao?.status === 'ativo'
-                      ? `<strong>${u.plantao.profissional || 'Confirmado'}</strong> ? check-in h? ${u.plantao.minutosDesdeCheckIn ?? '?'} min`
+                      ? `<strong>${u.plantao.profissional || 'Confirmado'}</strong> · check-in há ${u.plantao.minutosDesdeCheckIn ?? '—'} min`
                       : u.plantao?.status === 'checkin_atrasado'
-                        ? `<strong style="color:#c0392b">Check-in atrasado</strong> (${u.plantao.profissional || '?'})`
-                        : '<strong style="color:#c0392b">Sem confirma??o de plant?o</strong>'}
+                        ? `<strong style="color:#c0392b">Check-in atrasado</strong> (${u.plantao.profissional || '—'})`
+                        : '<strong style="color:#c0392b">Sem confirmação de plantão</strong>'}
                   </div>
                   <div class="meta">
                     Status: <strong>${st.situacao || 'normal'}</strong>
-                    ? Insumos ${st.insumos || 'ok'}
-                    ? Ambul?ncia ${st.ambulancia || 'n/a'}
-                    ${st.observacao ? ` ? ${st.observacao}` : ''}
+                    · Insumos ${st.insumos || 'ok'}
+                    · Ambulância ${st.ambulancia || 'n/a'}
+                    ${st.observacao ? ` · ${st.observacao}` : ''}
                   </div>
                   <div style="margin-top:0.35rem">
                     ${(u.escala || []).map(s =>
                       `<span class="turno-pill ${s.status || 'vago'}">${turnoL[s.turno] || s.turno}: ${s.profissional || 'vago'}</span>`
                     ).join('') || '<span class="meta">Sem escala</span>'}
                   </div>
-                  ${(u.alertas || []).length ? `<div class="meta" style="color:#b91c1c;margin-top:0.35rem">${u.alertas.join(' ? ')}</div>` : ''}
+                  ${(u.alertas || []).length ? `<div class="meta" style="color:#b91c1c;margin-top:0.35rem">${u.alertas.join(' · ')}</div>` : ''}
                   ${u.critico ? `
                     <div class="actions">
                       <button class="btn btn-sm btn-warn" onclick="cobrarUnidade('${u.id}','${u.nome.replace(/'/g, '')}')">Cobrar secretaria</button>
@@ -1507,14 +1526,14 @@
           </div>
           ${(saudeHoje.historico || []).length ? `
           <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.55rem">Hist?rico de cobertura</h3>
+            <h3 style="margin-bottom:0.55rem">Histórico de cobertura</h3>
             <div class="list">
               ${saudeHoje.historico.slice(0, 7).map(h => `
                 <div class="item">
                   <div class="item-head"><strong>${h.data}</strong>
-                    <span class="meta">${h.cobertos}/${h.unidades} cobertos ? ${h.faltas} falha(s)</span>
+                    <span class="meta">${h.cobertos}/${h.unidades} cobertos · ${h.faltas} falha(s)</span>
                   </div>
-                  <div class="meta">${(h.profissionais || []).map(x => x.profissional).filter(Boolean).join(' ? ') || '?'}</div>
+                  <div class="meta">${(h.profissionais || []).map(x => x.profissional).filter(Boolean).join(' · ') || '—'}</div>
                 </div>`).join('')}
             </div>
           </div>` : ''}`;
@@ -1528,7 +1547,7 @@
                 <div class="item-head"><strong>${e.nome}</strong>
                   <span class="badge badge-${e.status==='confirmado'?'concluido':'em_analise'}">${e.status}</span>
                 </div>
-                <div class="meta">${e.data} ? ${e.local} ? p?blico ~${e.publicoEstimado || '?'}</div>
+                <div class="meta">${e.data} · ${e.local} · público ~${e.publicoEstimado || '—'}</div>
               </div>`).join('') || '<p class="muted">Sem eventos</p>'}
             </div>
           </div>`;
@@ -1541,26 +1560,26 @@
       const pendente = (lastFila?.fila || []).find(c => c.unidadeId === unidadeId)
         || (lastFila?.fila || [])[0];
       if (!pendente) {
-        // Sem chamado: manda no chat da Sa?de
+        // Sem chamado: manda no chat da Saúde
         try {
           chatSec = 'saude';
           await api('/api/gabinete/chat', {
             method: 'POST',
             body: JSON.stringify({
               secretaria: 'saude',
-              texto: `Cobran?a do Gabinete: ${nome || 'unidade'}. Preciso de retorno hoje.`,
+              texto: `Cobrança do Gabinete: ${nome || 'unidade'}. Preciso de retorno hoje.`,
               de: 'gabinete',
             }),
           });
-          toast('Cobran?a enviada no chat da Sa?de');
+          toast('Cobrança enviada no chat da Saúde');
           await loadChat?.();
         } catch (e) {
-          toast(e.message || 'Sem chamado aberto ? use visita surpresa ou o chat');
+          toast(e.message || 'Sem chamado aberto — use visita surpresa ou o chat');
         }
         return;
       }
       await decidir(pendente.id, 'cobrar', {
-        nota: `Cobran?a do Gabinete sobre ${nome}: verificar fila, plant?o, estoque e atendimento.`,
+        nota: `Cobrança do Gabinete sobre ${nome}: verificar fila, plantão, estoque e atendimento.`,
       });
     }
 
@@ -1574,22 +1593,22 @@
             body: JSON.stringify({
               secretaria: 'iluminacao',
               texto: detalhe
-                ? `Cobran?a do Gabinete: ${detalhe}. Preciso de retorno hoje.`
-                : 'Cobran?a do Gabinete: atualizem postes apagados, rota da noite e estoque LED. Preciso de retorno hoje.',
+                ? `Cobrança do Gabinete: ${detalhe}. Preciso de retorno hoje.`
+                : 'Cobrança do Gabinete: atualizem postes apagados, rota da noite e estoque LED. Preciso de retorno hoje.',
               de: 'gabinete',
             }),
           });
-          toast('Cobran?a enviada no chat da Ilumina??o');
+          toast('Cobrança enviada no chat da Iluminação');
           await loadChat?.();
         } catch (e) {
-          toast(e.message || 'Sem chamado aberto ? use o chat da Ilumina??o');
+          toast(e.message || 'Sem chamado aberto — use o chat da Iluminação');
         }
         return;
       }
       await decidir(pendente.id, 'cobrar', {
         nota: detalhe
-          ? `Cobran?a do Gabinete ? Ilumina??o: ${detalhe}`
-          : 'Cobran?a do Gabinete ? verificar postes, rota da noite e estoque LED.',
+          ? `Cobrança do Gabinete — Iluminação: ${detalhe}`
+          : 'Cobrança do Gabinete — verificar postes, rota da noite e estoque LED.',
       });
     }
 
@@ -1603,22 +1622,22 @@
             body: JSON.stringify({
               secretaria: 'obras',
               texto: detalhe
-                ? `Cobran?a do Gabinete: ${detalhe}. Preciso de retorno hoje.`
-                : 'Cobran?a do Gabinete: atualizem pontos quentes, rota do dia, frota e materiais. Preciso de retorno hoje.',
+                ? `Cobrança do Gabinete: ${detalhe}. Preciso de retorno hoje.`
+                : 'Cobrança do Gabinete: atualizem pontos quentes, rota do dia, frota e materiais. Preciso de retorno hoje.',
               de: 'gabinete',
             }),
           });
-          toast('Cobran?a enviada no chat das Obras');
+          toast('Cobrança enviada no chat das Obras');
           await loadChat?.();
         } catch (e) {
-          toast(e.message || 'Sem chamado aberto ? use o chat das Obras');
+          toast(e.message || 'Sem chamado aberto — use o chat das Obras');
         }
         return;
       }
       await decidir(pendente.id, 'cobrar', {
         nota: detalhe
-          ? `Cobran?a do Gabinete ? Obras: ${detalhe}`
-          : 'Cobran?a do Gabinete ? verificar pontos quentes, rota, frota e materiais.',
+          ? `Cobrança do Gabinete — Obras: ${detalhe}`
+          : 'Cobrança do Gabinete — verificar pontos quentes, rota, frota e materiais.',
       });
     }
     window.cobrarUnidade = cobrarUnidade;
@@ -1645,16 +1664,16 @@
 
       document.getElementById('kpis').innerHTML = eixo === 'saude' && saudeHoje ? `
         <div class="panel stat"><div class="label">Na fila agora</div><div class="value">${saudeHoje.totais.naFila}</div>
-          <div class="hint">Espera m?dia ${saudeHoje.totais.tempoMedioMin} min</div></div>
+          <div class="hint">Espera média ${saudeHoje.totais.tempoMedioMin} min</div></div>
         <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${saudeHoje.totais.atendidosHoje}</div>
           <div class="hint">Meta ok em ${saudeHoje.totais.metaOk || 0}/${saudeHoje.totais.plantoesTotal} unidades</div></div>
-        <div class="panel stat"><div class="label">Reclama??es abertas</div><div class="value">${saudeHoje.totais.reclamacoesAbertas}</div>
-          <div class="hint">${saudeHoje.totais.avaliacoesBaixas} avalia??o(?es) = 2?</div></div>
+        <div class="panel stat"><div class="label">Reclamações abertas</div><div class="value">${saudeHoje.totais.reclamacoesAbertas}</div>
+          <div class="hint">${saudeHoje.totais.avaliacoesBaixas} avaliação(ões) ≤ 2★</div></div>
         <div class="panel stat"><div class="label">Unidades em alerta</div><div class="value">${saudeHoje.totais.unidadesCriticas}</div>
-          <div class="hint">Plant?o ${saudeHoje.totais.plantoesOk}/${saudeHoje.totais.plantoesTotal}</div></div>
+          <div class="hint">Plantão ${saudeHoje.totais.plantoesOk}/${saudeHoje.totais.plantoesTotal}</div></div>
       ` : eixo === 'iluminacao' && iluminacaoHoje ? `
         <div class="panel stat"><div class="label">Postes apagados</div><div class="value">${iluminacaoHoje.totais.apagados}</div>
-          <div class="hint">${iluminacaoHoje.totais.semEnergia} sem energia ? ${iluminacaoHoje.totais.emReparo} em reparo</div></div>
+          <div class="hint">${iluminacaoHoje.totais.semEnergia} sem energia · ${iluminacaoHoje.totais.emReparo} em reparo</div></div>
         <div class="panel stat"><div class="label">Rota da noite</div><div class="value">${iluminacaoHoje.totais.rotaPendentes}</div>
           <div class="hint">pontos ainda pendentes</div></div>
         <div class="panel stat"><div class="label">Frota livre</div><div class="value">${iluminacaoHoje.totais.frotaLivre}/${iluminacaoHoje.totais.frotaTotal}</div>
@@ -1669,17 +1688,17 @@
         <div class="panel stat"><div class="label">Frota livre</div><div class="value">${obrasHoje.totais.frotaLivre}/${obrasHoje.totais.frotaTotal}</div>
           <div class="hint">${obrasHoje.totais.materiaisBaixos} material(is) baixo(s)</div></div>
         <div class="panel stat"><div class="label">Obras atrasadas</div><div class="value">${obrasHoje.totais.obrasAtrasadas}</div>
-          <div class="hint">${obrasHoje.totais.osAbertas} chamado(s) ? ${(obrasHoje.alertas || []).length} alerta(s)</div></div>
+          <div class="hint">${obrasHoje.totais.osAbertas} chamado(s) · ${(obrasHoje.alertas || []).length} alerta(s)</div></div>
       ` : eixo === 'eventos' ? `
-        <div class="panel stat"><div class="label">Pend?ncias eventos</div><div class="value">${g.resumo.totalPendentes}</div></div>
-        <div class="panel stat"><div class="label">Cr?ticos</div><div class="value">${g.resumo.criticos}</div></div>
+        <div class="panel stat"><div class="label">Pendências eventos</div><div class="value">${g.resumo.totalPendentes}</div></div>
+        <div class="panel stat"><div class="label">Críticos</div><div class="value">${g.resumo.criticos}</div></div>
         <div class="panel stat"><div class="label">Na agenda</div><div class="value">${g.resumo.eventosProximos || 0}</div></div>
         <div class="panel stat"><div class="label">Prioridade gabinete</div><div class="value">${g.resumo.destacados}</div></div>
       ` : `
         <div class="panel stat"><div class="label">Pendentes cidade</div><div class="value">${g.resumo.totalPendentes}</div></div>
-        <div class="panel stat"><div class="label">Cr?ticos</div><div class="value">${g.resumo.criticos}</div></div>
+        <div class="panel stat"><div class="label">Críticos</div><div class="value">${g.resumo.criticos}</div></div>
         <div class="panel stat"><div class="label">Prioridade gabinete</div><div class="value">${g.resumo.destacados}</div></div>
-        <div class="panel stat"><div class="label">Resolu??o geral</div><div class="value">${m.taxaResolucao}%</div></div>
+        <div class="panel stat"><div class="label">Resolução geral</div><div class="value">${m.taxaResolucao}%</div></div>
       `;
 
       renderAcoesEixo(g);
@@ -1701,9 +1720,9 @@
 
       document.getElementById('histDec').innerHTML = (g.decisoes || []).length
         ? g.decisoes.slice(0, 8).map(d => `
-          <div class="item"><div class="meta">${fmtDate(d.em)} ? <strong>${d.acao}</strong> ? ${d.detalhe}</div></div>
+          <div class="item"><div class="meta">${fmtDate(d.em)} · <strong>${d.acao}</strong> — ${d.detalhe}</div></div>
         `).join('')
-        : '<p class="muted">Sem decis?es neste eixo ainda.</p>';
+        : '<p class="muted">Sem decisões neste eixo ainda.</p>';
 
       const heat = (m.heatmap || []).filter(p => {
         if (eixo === 'saude') return p.secretaria === 'saude' || ['demora_atendimento','falta_medico','superlotacao','limpeza_ubs','avaliacao_atendimento','visita_surpresa'].includes(p.categoria);
@@ -1782,7 +1801,7 @@
         document.getElementById('chartSecTitle').textContent = 'Pontos por bairro';
       } else {
         g.fila.forEach(c => { porSec[c.secretariaNome] = (porSec[c.secretariaNome] || 0) + 1; });
-        document.getElementById('chartSecTitle').textContent = eixo === 'eventos' ? 'Pend?ncias por tipo' : 'Fila por ?rea';
+        document.getElementById('chartSecTitle').textContent = eixo === 'eventos' ? 'Pendências por tipo' : 'Fila por área';
       }
       const secLabels = Object.keys(porSec);
       const secData = Object.values(porSec);
@@ -1799,32 +1818,32 @@
       }
 
       document.getElementById('mapTitle').textContent =
-        eixo === 'saude' ? 'Mapa da Sa?de'
-          : eixo === 'iluminacao' ? 'Mapa da Ilumina??o'
+        eixo === 'saude' ? 'Mapa da Saúde'
+          : eixo === 'iluminacao' ? 'Mapa da Iluminação'
             : eixo === 'obras' ? 'Mapa das Obras'
               : 'Mapa';
       document.getElementById('sideTitle').textContent = eixo === 'saude'
-        ? 'Reclama??es e avalia??es'
+        ? 'Reclamações e avaliações'
         : eixo === 'iluminacao' ? 'Rota / chamados'
           : eixo === 'obras' ? 'Rota / obras'
-            : eixo === 'eventos' ? 'Agenda / pend?ncias' : 'Pend?ncias da cidade';
+            : eixo === 'eventos' ? 'Agenda / pendências' : 'Pendências da cidade';
 
       if (eixo === 'saude' && saudeHoje) {
         const recs = saudeHoje.reclamacoes || [];
         document.getElementById('sidePanel').innerHTML = recs.length ? recs.map(c => `
           <div class="item">
             <div class="item-head">
-              <strong>${c.protocolo} ? ${c.titulo}</strong>
+              <strong>${c.protocolo} · ${c.titulo}</strong>
               ${badge(c.status)}
             </div>
-            <div class="meta">${c.bairro}${c.unidadeId ? ' ? ' + c.unidadeId : ''}
-              ${c.avaliacao ? ' ? ? ' + c.avaliacao.nota : ''}</div>
+            <div class="meta">${c.bairro}${c.unidadeId ? ' · ' + c.unidadeId : ''}
+              ${c.avaliacao ? ' · ★ ' + c.avaliacao.nota : ''}</div>
             <div class="actions">
               <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
               <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
             </div>
           </div>
-        `).join('') : '<p class="muted">Sem reclama??es abertas na Sa?de.</p>';
+        `).join('') : '<p class="muted">Sem reclamações abertas na Saúde.</p>';
       } else if (eixo === 'iluminacao' && iluminacaoHoje) {
         const rota = iluminacaoHoje.rota || [];
         const chs = iluminacaoHoje.chamados || [];
@@ -1832,7 +1851,7 @@
           <h4 style="margin:0 0 0.45rem;font-size:0.82rem;color:#92400e">Rota da noite</h4>
           ${rota.length ? rota.map((r) => `
             <div class="item">
-              <div class="item-head"><strong>#${r.ordem} ? ${r.codigo}</strong>
+              <div class="item-head"><strong>#${r.ordem} · ${r.codigo}</strong>
                 <span class="badge">${rotaStatusLabel(r.status)}</span>
               </div>
               <div class="meta">${r.bairro}</div>
@@ -1841,7 +1860,7 @@
           ${chs.length ? chs.slice(0, 6).map((c) => `
             <div class="item">
               <div class="item-head"><strong>${c.protocolo || c.id}</strong>${badge(c.status)}</div>
-              <div class="meta">${c.titulo || ''} ? ${c.bairro || ''}</div>
+              <div class="meta">${c.titulo || ''} · ${c.bairro || ''}</div>
               <div class="actions">
                 <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
               </div>
@@ -1856,7 +1875,7 @@
               <div class="item-head"><strong>#${r.ordem}</strong>
                 <span class="badge">${rotaStatusLabel(r.status)}</span>
               </div>
-              <div class="meta">${r.titulo} ? ${r.bairro}</div>
+              <div class="meta">${r.titulo} · ${r.bairro}</div>
             </div>`).join('') : '<p class="muted">Sem rota.</p>'}
           <h4 style="margin:0.85rem 0 0.45rem;font-size:0.82rem;color:#9a3412">Obras grandes</h4>
           ${obrs.length ? obrs.slice(0, 6).map((o) => `
@@ -1864,7 +1883,7 @@
               <div class="item-head"><strong>${o.nome}</strong>
                 <span class="badge">${o.percentual || 0}%</span>
               </div>
-              <div class="meta">${o.status} ? ${o.bairro || ''}</div>
+              <div class="meta">${o.status} · ${o.bairro || ''}</div>
             </div>`).join('') : '<p class="muted">Sem obras.</p>'}`;
       } else if (eixo === 'eventos') {
         document.getElementById('sidePanel').innerHTML = (g.agenda || []).length
@@ -1873,7 +1892,7 @@
               <div class="item-head"><strong>${e.nome}</strong>
                 <span class="badge badge-${e.status==='confirmado'?'concluido':'em_analise'}">${e.status}</span>
               </div>
-              <div class="meta">${e.data} ? ${e.local || '?'}</div>
+              <div class="meta">${e.data} · ${e.local || '—'}</div>
             </div>`).join('')
           : '<p class="muted">Sem eventos na agenda.</p>';
       } else {
@@ -1881,9 +1900,9 @@
           ? g.fila.slice(0, 8).map((c) => `
             <div class="item">
               <div class="item-head"><strong>${c.protocolo}</strong>${badge(c.status)}</div>
-              <div class="meta">${c.secretariaNome} ? ${c.bairro}</div>
+              <div class="meta">${c.secretariaNome} · ${c.bairro}</div>
             </div>`).join('')
-          : '<p class="muted">Sem pend?ncias neste eixo.</p>';
+          : '<p class="muted">Sem pendências neste eixo.</p>';
       }
 
       let points;
@@ -1894,7 +1913,7 @@
             lat: p.lat,
             lng: p.lng,
             status: p.status === 'em_reparo' ? 'em_execucao' : 'novo',
-            categoria: `Poste ${p.codigo} ? ${posteStatusLabel(p.status)}`,
+            categoria: `Poste ${p.codigo} · ${posteStatusLabel(p.status)}`,
             bairro: p.bairro,
             secretaria: 'iluminacao',
             titulo: `Poste ${p.codigo}`,
@@ -1907,7 +1926,7 @@
             lat: p.lat,
             lng: p.lng,
             status: p.status === 'em_execucao' || p.status === 'em_deslocamento' ? 'em_execucao' : 'novo',
-            categoria: `${p.titulo} ? ${pontoStatusLabel(p.status)}`,
+            categoria: `${p.titulo} · ${pontoStatusLabel(p.status)}`,
             bairro: p.bairro,
             secretaria: 'obras',
             titulo: p.titulo,
