@@ -725,9 +725,27 @@ function getSessionUser() {
   try {
     const key = authTokenKey() + '_user';
     let raw = localStorage.getItem(key);
-    // Compat: login antigo gravava em bi_user
-    if (!raw) raw = localStorage.getItem('bi_user');
-    return raw ? JSON.parse(raw) : null;
+    if (raw) {
+      const u = JSON.parse(raw);
+      if (u && (u.nome || u.id || u.papel)) return u;
+    }
+    // Compat legado: só aceita bi_user se bater com a área atual
+    raw = localStorage.getItem('bi_user');
+    if (!raw) return null;
+    const u = JSON.parse(raw);
+    if (!u) return null;
+    const slot = window.BI_AUTH_SLOT;
+    if (!slot) return u;
+    if (slot === 'gabinete') {
+      return (u.papel === 'prefeito' || u.papel === 'admin') ? u : null;
+    }
+    if (slot === 'secretaria') {
+      return (u.papel === 'secretaria' || u.papel === 'admin') ? u : null;
+    }
+    if (slot === 'campo') {
+      return u.papel === 'campo' ? u : null;
+    }
+    return u;
   } catch {
     return null;
   }
@@ -736,8 +754,21 @@ function getSessionUser() {
 function hasOpsToken() {
   const key = authTokenKey();
   if (localStorage.getItem(key)) return true;
-  if (localStorage.getItem('bi_token')) return true;
-  return false;
+  if (!localStorage.getItem('bi_token')) return false;
+  // Legado: bi_token só vale se o usuário for da área atual
+  let u = null;
+  try { u = JSON.parse(localStorage.getItem('bi_user') || 'null'); } catch (_) {}
+  if (!window.BI_AUTH_SLOT) return true;
+  if (window.BI_AUTH_SLOT === 'gabinete') {
+    return !!(u && (u.papel === 'prefeito' || u.papel === 'admin'));
+  }
+  if (window.BI_AUTH_SLOT === 'secretaria') {
+    return !!(u && (u.papel === 'secretaria' || u.papel === 'admin'));
+  }
+  if (window.BI_AUTH_SLOT === 'campo') {
+    return !!(u && u.papel === 'campo');
+  }
+  return !!u;
 }
 
 /** Migra token legado (bi_token) para o slot atual e devolve o usuário. */
@@ -746,7 +777,13 @@ function ensureOpsUser() {
   if (!localStorage.getItem(key) && localStorage.getItem('bi_token')) {
     let user = null;
     try { user = JSON.parse(localStorage.getItem('bi_user') || 'null'); } catch (_) {}
-    setSession(localStorage.getItem('bi_token'), user);
+    const slot = window.BI_AUTH_SLOT;
+    const okMigrate =
+      !slot
+      || (slot === 'gabinete' && user && (user.papel === 'prefeito' || user.papel === 'admin'))
+      || (slot === 'secretaria' && user && (user.papel === 'secretaria' || user.papel === 'admin'))
+      || (slot === 'campo' && user && user.papel === 'campo');
+    if (okMigrate) setSession(localStorage.getItem('bi_token'), user);
   }
   return getSessionUser();
 }

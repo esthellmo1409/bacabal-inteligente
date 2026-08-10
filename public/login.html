@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-sess2"></script>
+  <script src="/app.js?v=ops-gab1"></script>
   <script>
     initCidade();
     const senhas = {
@@ -98,13 +98,21 @@
           });
           // Limpa sessões antigas (Gabinete/Campo) pra não misturar token
           if (typeof clearAllSessions === 'function') clearAllSessions();
+          // Redefine slot depois do clear (clear não mexe no BI_AUTH_SLOT)
+          if (perfil === 'campo') window.BI_AUTH_SLOT = 'campo';
+          else if (perfil === 'prefeito') window.BI_AUTH_SLOT = 'gabinete';
+          else if (perfil === 'admin') window.BI_AUTH_SLOT = undefined;
+          else window.BI_AUTH_SLOT = 'secretaria';
           localStorage.setItem('bi_token', r.token);
           localStorage.setItem('bi_user', JSON.stringify(r.user));
           if (typeof setSession === 'function') setSession(r.token, r.user);
-          // Garante espelho no slot de secretaria (Obras / Iluminação / Saúde)
           if (window.BI_AUTH_SLOT === 'secretaria') {
             localStorage.setItem('bi_token_secretaria', r.token);
             localStorage.setItem('bi_token_secretaria_user', JSON.stringify(r.user));
+          }
+          if (window.BI_AUTH_SLOT === 'gabinete') {
+            localStorage.setItem('bi_token_gabinete', r.token);
+            localStorage.setItem('bi_token_gabinete_user', JSON.stringify(r.user));
           }
           toast('Bem-vindo, ' + r.user.nome);
           if (r.user.papel === 'admin') {
