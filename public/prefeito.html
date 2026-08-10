@@ -25,7 +25,7 @@
       background:#fff5f5; border:1px solid #fecaca; color:#7f1d1d; font-size:0.88rem; font-weight:600;
     }
     .saude-modulos {
-      display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0.55rem;
+      display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:0.55rem;
       margin:0 0 0.85rem; grid-column:1/-1;
     }
     .saude-mod {
@@ -558,7 +558,7 @@
           <button class="btn btn-sm btn-primary" id="btnVisita" type="button">Visita surpresa</button>`;
         document.getElementById('btnVisita').onclick = visitaSurpresa;
         tituloDec.textContent = 'Saúde — olho do Gabinete';
-        subtituloDec.textContent = 'Só visualiza plantão, fila, escala e alertas. Quem registra o médico é a Secretaria de Saúde (login saude) — o Gabinete não digita nome.';
+        subtituloDec.textContent = 'Visualiza plantão, fila, leitos, ambulâncias, farmácia e checklist. Quem preenche é a Secretaria de Saúde.';
       } else if (eixo === 'eventos') {
         box.innerHTML = '';
         tituloDec.textContent = 'Eventos — agenda e estrutura';
@@ -580,9 +580,11 @@
         box.innerHTML = `
           <div class="saude-modulos">
             <div class="saude-mod"><span>Fila</span><strong>${t.naFila || 0}</strong><small>espera ~${t.tempoMedioMin || 0} min</small></div>
-            <div class="saude-mod"><span>Plantão</span><strong>${t.plantoesOk || 0}/${t.plantoesTotal || 0}</strong><small>unidades cobertas</small></div>
-            <div class="saude-mod"><span>Escala</span><strong>${t.turnosVagos || 0}</strong><small>turnos vagos</small></div>
-            <div class="saude-mod"><span>Alertas</span><strong>${alertas.length}</strong><small>${t.unidadesCriticas || 0} unidade(s) crítica(s)</small></div>
+            <div class="saude-mod"><span>Plantão</span><strong>${t.plantoesOk || 0}/${t.plantoesTotal || 0}</strong><small>unidades</small></div>
+            <div class="saude-mod"><span>Leitos</span><strong>${t.leitosOcupacaoPct || 0}%</strong><small>ocupação</small></div>
+            <div class="saude-mod"><span>Ambulâncias</span><strong>${t.ambulanciasDisponiveis || 0}/${t.ambulanciasTotal || 0}</strong><small>livres</small></div>
+            <div class="saude-mod"><span>Farmácia</span><strong>${t.farmaciaAlertas || 0}</strong><small>alertas</small></div>
+            <div class="saude-mod"><span>Alertas</span><strong>${alertas.length}</strong><small>checklist ${t.checklistPendentes || 0}</small></div>
           </div>
           ${criticos.length ? `
             <div class="saude-alert-banner" style="grid-column:1/-1">
@@ -604,6 +606,45 @@
                   <div>${a.texto}</div>
                 </div>`).join('')}
             </div>` : ''}
+          <div class="panel" style="grid-column:1/-1">
+            <h3 style="margin-bottom:0.55rem">Ambulâncias · leitos · farmácia · checklist</h3>
+            <div class="list">
+              ${(saudeHoje.ambulancias || []).map(a => `
+                <div class="item"><div class="item-head"><strong>${a.placa}</strong><span class="badge">${a.status}</span></div>
+                <div class="meta">${a.motorista || '—'} · base ${a.base || '—'}</div></div>`).join('') || '<p class="muted">Sem ambulâncias</p>'}
+            </div>
+            <div class="list" style="margin-top:0.65rem">
+              ${(saudeHoje.leitos || []).map(l => {
+                const pct = l.total ? Math.round((l.ocupados / l.total) * 100) : 0;
+                return `<div class="item"><div class="item-head"><strong>${l.nome}</strong><span class="meta">${l.ocupados}/${l.total} · ${pct}%</span></div></div>`;
+              }).join('') || ''}
+            </div>
+            <div class="list" style="margin-top:0.65rem">
+              ${(saudeHoje.farmacia || []).map(f => `
+                <div class="item"><div class="item-head"><strong>${f.nome}</strong><span class="badge">${f.estoque}</span></div>
+                <div class="meta">${f.unidadeNome || ''} ${f.observacao ? '· ' + f.observacao : ''}</div></div>`).join('') || ''}
+            </div>
+            <div class="list" style="margin-top:0.65rem">
+              ${(saudeHoje.checklist || []).map(c => {
+                const ok = (c.itens || []).filter(i => i.ok).length;
+                const tot = (c.itens || []).length;
+                const faltando = (c.itens || []).filter(i => !i.ok).map(i => i.label).join(', ');
+                return `<div class="item"><div class="item-head"><strong>${c.unidadeNome}</strong><span class="meta">${ok}/${tot} ok</span></div>
+                  ${faltando ? `<div class="meta" style="color:#b91c1c">Pendente: ${faltando}</div>` : '<div class="meta">Checklist completo</div>'}</div>`;
+              }).join('') || ''}
+            </div>
+          </div>
+          ${((saudeHoje.reclamacoes || []).length) ? `
+          <div class="panel" style="grid-column:1/-1">
+            <h3 style="margin-bottom:0.55rem">Chamados da Saúde</h3>
+            <div class="list">
+              ${saudeHoje.reclamacoes.slice(0, 6).map(c => `
+                <div class="item">
+                  <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span></div>
+                  <div class="meta">${c.titulo || c.categoria} · ${c.bairro || ''}</div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}
           <div class="panel" style="grid-column:1/-1;border-color:#99f6e4">
             <h3 style="margin-bottom:0.35rem">Unidades · plantão · escala · fila · status</h3>
             <p class="muted" style="margin-bottom:0.85rem">

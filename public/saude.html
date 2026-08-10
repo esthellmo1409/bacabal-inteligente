@@ -25,7 +25,7 @@
     .saude-hero .muted { color: #ccfbf1; margin: 0; }
     .saude-hero .btn { background: #fff; color: #115e59; border: none; font-weight: 800; }
     .acao-grid {
-      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.55rem; margin-bottom: 1rem;
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.55rem; margin-bottom: 1rem;
     }
     .acao-card {
       border: 1px solid var(--saude-line); background: #fff; border-radius: 14px;
@@ -115,6 +115,7 @@
         <p class="muted">Tudo que o prefeito vê na aba Saúde começa por aqui</p>
       </div>
       <div class="cta-row">
+        <button class="btn btn-sm" id="btnRelatorio" type="button">Enviar resumo ao Gabinete</button>
         <button class="btn btn-sm" id="btnRefresh" type="button">Atualizar</button>
       </div>
     </div>
@@ -122,17 +123,25 @@
     <div class="grid-4" id="kpis"></div>
 
     <div class="acao-grid" id="acoesRapidas">
-      <button type="button" class="acao-card" data-go="plantao"><strong>1. Registrar plantão</strong><span>Nome do médico / profissional de plantão</span></button>
-      <button type="button" class="acao-card" data-go="escala"><strong>2. Preencher escala</strong><span>Manhã · tarde · noite por unidade</span></button>
-      <button type="button" class="acao-card" data-go="fila"><strong>3. Atualizar fila</strong><span>Quantidade na fila e tempo de espera</span></button>
-      <button type="button" class="acao-card" data-go="status"><strong>4. Status da unidade</strong><span>Situação, insumos e ambulância</span></button>
-      <button type="button" class="acao-card" data-go="avisos"><strong>5. Aviso ao Gabinete</strong><span>Mensagem que o prefeito vê na hora</span></button>
+      <button type="button" class="acao-card" data-go="plantao"><strong>Plantão</strong><span>Médico de plantão</span></button>
+      <button type="button" class="acao-card" data-go="fila"><strong>Fila</strong><span>Espera e atendidos</span></button>
+      <button type="button" class="acao-card" data-go="ambulancia"><strong>Ambulâncias</strong><span>Frota e status</span></button>
+      <button type="button" class="acao-card" data-go="leitos"><strong>Leitos</strong><span>Ocupação hospitalar</span></button>
+      <button type="button" class="acao-card" data-go="farmacia"><strong>Farmácia</strong><span>Insumos críticos</span></button>
+      <button type="button" class="acao-card" data-go="checklist"><strong>Checklist</strong><span>Abertura da unidade</span></button>
+      <button type="button" class="acao-card" data-go="chamados"><strong>Chamados</strong><span>Reclamações da Saúde</span></button>
+      <button type="button" class="acao-card" data-go="avisos"><strong>Avisos</strong><span>Falar com o Gabinete</span></button>
     </div>
 
     <div class="saude-tabs" id="tabs" role="tablist">
       <button type="button" class="saude-tab active" data-pane="plantao">Plantão</button>
       <button type="button" class="saude-tab" data-pane="escala">Escala</button>
       <button type="button" class="saude-tab" data-pane="fila">Fila</button>
+      <button type="button" class="saude-tab" data-pane="ambulancia">Ambulâncias</button>
+      <button type="button" class="saude-tab" data-pane="leitos">Leitos</button>
+      <button type="button" class="saude-tab" data-pane="farmacia">Farmácia</button>
+      <button type="button" class="saude-tab" data-pane="checklist">Checklist</button>
+      <button type="button" class="saude-tab" data-pane="chamados">Chamados<span class="count" id="tabChamados">0</span></button>
       <button type="button" class="saude-tab" data-pane="status">Status</button>
       <button type="button" class="saude-tab" data-pane="avisos">Avisos</button>
       <button type="button" class="saude-tab" data-pane="alertas">Alertas<span class="count" id="tabAlertas">0</span></button>
@@ -189,6 +198,46 @@
         <h3 style="margin-bottom:0.35rem">Status operacional da unidade</h3>
         <p class="muted" style="margin-bottom:0.85rem">Situação, estoque/insumos e ambulância</p>
         <div id="statusBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-ambulancia">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Ambulâncias</h3>
+        <p class="muted" style="margin-bottom:0.85rem">Atualize status da frota — o Gabinete acompanha</p>
+        <div id="ambBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-leitos">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Leitos hospitalares</h3>
+        <p class="muted" style="margin-bottom:0.85rem">Ocupação por tipo de leito</p>
+        <div id="leitosBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-farmacia">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Farmácia / insumos críticos</h3>
+        <p class="muted" style="margin-bottom:0.85rem">Marque estoque ok, baixo ou crítico</p>
+        <div id="farmBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-checklist">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Checklist de abertura</h3>
+        <p class="muted" style="margin-bottom:0.85rem">Marque o que está ok em cada unidade hoje</p>
+        <div id="checkBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-chamados">
+      <div class="panel">
+        <h3 style="margin-bottom:0.35rem">Chamados / reclamações da Saúde</h3>
+        <p class="muted" style="margin-bottom:0.85rem">Demora, falta de médico, superlotação e afins</p>
+        <div id="chamadosBox" class="list"></div>
       </div>
     </div>
 
@@ -307,17 +356,19 @@
       painelAtual = p;
       const t = p.totais || {};
       document.getElementById('tabAlertas').textContent = String((p.alertas || []).length);
+      const tabCh = document.getElementById('tabChamados');
+      if (tabCh) tabCh.textContent = String((p.reclamacoes || []).length);
       fillSelects(p);
 
       document.getElementById('kpis').innerHTML = `
         <div class="panel stat"><div class="label">Na fila</div><div class="value">${t.naFila || 0}</div>
           <div class="hint">Espera média ${t.tempoMedioMin || 0} min</div></div>
-        <div class="panel stat"><div class="label">Atendidos hoje</div><div class="value">${t.atendidosHoje || 0}</div>
-          <div class="hint">Meta ok ${t.metaOk || 0}/${t.plantoesTotal || 0}</div></div>
         <div class="panel stat"><div class="label">Plantões ok</div><div class="value">${t.plantoesOk || 0}/${t.plantoesTotal || 0}</div>
-          <div class="hint">Turnos vagos ${t.turnosVagos || 0}</div></div>
+          <div class="hint">Leitos ${t.leitosOcupacaoPct || 0}%</div></div>
+        <div class="panel stat"><div class="label">Ambulâncias</div><div class="value">${t.ambulanciasDisponiveis || 0}/${t.ambulanciasTotal || 0}</div>
+          <div class="hint">disponíveis</div></div>
         <div class="panel stat"><div class="label">Alertas</div><div class="value">${(p.alertas || []).length}</div>
-          <div class="hint">Avisos ${(p.avisos || []).length}</div></div>`;
+          <div class="hint">Farmácia ${t.farmaciaAlertas || 0} · Checklist ${t.checklistPendentes || 0}</div></div>`;
 
       document.getElementById('plStatus').innerHTML = (p.unidades || []).map((u) => `
         <div class="item">
@@ -446,6 +497,90 @@
         </div>`;
       }).join('');
 
+      document.getElementById('ambBox').innerHTML = (p.ambulancias || []).map((a) => `
+        <div class="unidade-card">
+          <div class="item-head"><strong>${a.placa}</strong><span class="badge">${a.status}</span></div>
+          <div class="form-row" style="align-items:end">
+            <div>
+              <label class="meta">Status</label>
+              <select data-amb-st="${a.id}">
+                <option value="disponivel" ${a.status === 'disponivel' ? 'selected' : ''}>Disponível</option>
+                <option value="em_uso" ${a.status === 'em_uso' ? 'selected' : ''}>Em uso</option>
+                <option value="oficina" ${a.status === 'oficina' ? 'selected' : ''}>Oficina</option>
+                <option value="indisponivel" ${a.status === 'indisponivel' ? 'selected' : ''}>Indisponível</option>
+              </select>
+            </div>
+            <div style="flex:1;min-width:140px">
+              <label class="meta">Motorista</label>
+              <input data-amb-mot="${a.id}" value="${(a.motorista || '').replace(/"/g, '&quot;')}" />
+            </div>
+            <div style="min-width:120px">
+              <label class="meta">Base</label>
+              <input data-amb-base="${a.id}" value="${(a.base || '').replace(/"/g, '&quot;')}" />
+            </div>
+            <button class="btn btn-sm btn-primary" type="button" data-amb-save="${a.id}">Salvar</button>
+          </div>
+        </div>`).join('') || '<p class="muted">Sem ambulâncias cadastradas.</p>';
+
+      document.getElementById('leitosBox').innerHTML = (p.leitos || []).map((l) => {
+        const pct = l.total ? Math.round((l.ocupados / l.total) * 100) : 0;
+        return `
+        <div class="unidade-card">
+          <div class="item-head"><strong>${l.nome}</strong><span class="meta">${pct}%</span></div>
+          <div class="form-row" style="align-items:end">
+            <div>
+              <label class="meta">Total</label>
+              <input type="number" min="0" style="width:80px" data-lei-tot="${l.id}" value="${l.total || 0}" />
+            </div>
+            <div>
+              <label class="meta">Ocupados</label>
+              <input type="number" min="0" style="width:80px" data-lei-oc="${l.id}" value="${l.ocupados || 0}" />
+            </div>
+            <button class="btn btn-sm btn-primary" type="button" data-lei-save="${l.id}">Salvar</button>
+          </div>
+        </div>`;
+      }).join('') || '<p class="muted">Sem leitos cadastrados.</p>';
+
+      document.getElementById('farmBox').innerHTML = (p.farmacia || []).map((f) => `
+        <div class="unidade-card">
+          <div class="item-head"><strong>${f.nome}</strong><span class="meta">${f.unidadeNome || ''}</span></div>
+          <div class="form-row" style="align-items:end">
+            <div>
+              <label class="meta">Estoque</label>
+              <select data-farm-st="${f.id}">
+                <option value="ok" ${f.estoque === 'ok' ? 'selected' : ''}>Ok</option>
+                <option value="baixo" ${f.estoque === 'baixo' ? 'selected' : ''}>Baixo</option>
+                <option value="critico" ${f.estoque === 'critico' ? 'selected' : ''}>Crítico</option>
+              </select>
+            </div>
+            <div style="flex:1;min-width:160px">
+              <label class="meta">Observação</label>
+              <input data-farm-obs="${f.id}" value="${(f.observacao || '').replace(/"/g, '&quot;')}" />
+            </div>
+            <button class="btn btn-sm btn-primary" type="button" data-farm-save="${f.id}">Salvar</button>
+          </div>
+        </div>`).join('') || '<p class="muted">Sem itens de farmácia.</p>';
+
+      document.getElementById('checkBox').innerHTML = (p.checklist || []).map((c) => `
+        <div class="unidade-card">
+          <div class="item-head"><strong>${c.unidadeNome}</strong></div>
+          ${(c.itens || []).map((it) => `
+            <label style="display:flex;align-items:center;gap:0.5rem;margin:0.35rem 0;font-size:0.88rem">
+              <input type="checkbox" data-chk="${c.unidadeId}|${it.id}" ${it.ok ? 'checked' : ''} />
+              ${it.label}
+            </label>`).join('')}
+          <button class="btn btn-sm btn-primary" type="button" data-chk-save="${c.unidadeId}" style="margin-top:0.45rem">Salvar checklist</button>
+        </div>`).join('') || '<p class="muted">Sem checklist.</p>';
+
+      document.getElementById('chamadosBox').innerHTML = (p.reclamacoes || []).length
+        ? p.reclamacoes.map((c) => `
+          <div class="item">
+            <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span></div>
+            <div>${c.titulo || c.categoria || 'Chamado'}</div>
+            <div class="meta">${c.bairro || '—'} · ${c.categoria || ''} · ${c.prioridade || ''}</div>
+          </div>`).join('')
+        : '<p class="muted">Nenhum chamado aberto da Saúde no momento.</p>';
+
       bindActions();
     }
 
@@ -561,6 +696,71 @@
           } catch (e) { toast(e.message); }
         };
       });
+      document.querySelectorAll('[data-amb-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.ambSave;
+          try {
+            render(await api('/api/saude/ambulancia', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                status: document.querySelector(`[data-amb-st="${id}"]`)?.value,
+                motorista: document.querySelector(`[data-amb-mot="${id}"]`)?.value,
+                base: document.querySelector(`[data-amb-base="${id}"]`)?.value,
+              }),
+            }));
+            toast('Ambulância atualizada');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-lei-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.leiSave;
+          try {
+            render(await api('/api/saude/leitos', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                total: document.querySelector(`[data-lei-tot="${id}"]`)?.value,
+                ocupados: document.querySelector(`[data-lei-oc="${id}"]`)?.value,
+              }),
+            }));
+            toast('Leitos atualizados');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-farm-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.farmSave;
+          try {
+            render(await api('/api/saude/farmacia', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                estoque: document.querySelector(`[data-farm-st="${id}"]`)?.value,
+                observacao: document.querySelector(`[data-farm-obs="${id}"]`)?.value,
+              }),
+            }));
+            toast('Farmácia atualizada');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-chk-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const unidadeId = btn.dataset.chkSave;
+          const itens = [...document.querySelectorAll(`[data-chk^="${unidadeId}|"]`)].map((el) => {
+            const itemId = el.dataset.chk.split('|')[1];
+            return { id: itemId, ok: el.checked };
+          });
+          try {
+            render(await api('/api/saude/checklist', {
+              method: 'POST',
+              body: JSON.stringify({ unidadeId, itens }),
+            }));
+            toast('Checklist salvo');
+          } catch (e) { toast(e.message); }
+        };
+      });
     }
 
     async function loadChatSaude() {
@@ -606,6 +806,14 @@
     }
 
     document.getElementById('btnRefresh').onclick = () => load().catch((e) => toast(e.message));
+    document.getElementById('btnRelatorio').onclick = async () => {
+      try {
+        const r = await api('/api/saude/relatorio-dia', { method: 'POST', body: '{}' });
+        toast('Resumo enviado ao Gabinete');
+        render(r.painel);
+        goPane('avisos');
+      } catch (e) { toast(e.message); }
+    };
     boot().catch((e) => toast(e.message));
   </script>
 </body>
