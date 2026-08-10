@@ -1,1 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-keep-bacabal="1">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pitch completo · Visão da cidade · Anselmo Carvalho</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="description" content="Uso interno — pitch completo Bacabal Conecta." />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <style>
+    :root {
+      --ink: #121612;
+      --muted: #5a645c;
+      --line: #e0e5df;
+      --bg: #f3f5f2;
+      --paper: #fff;
+      --orange: #e67300;
+      --green: #2f7319;
+      --green-soft: #eef6ea;
+      --orange-soft: #fff7ee;
+      --blue: #1d4f91;
+      --blue-soft: #eef4fb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 1.15rem 1rem 3.5rem; }
+    .print {
+      position: sticky; top: 0; z-index: 5;
+      display: flex; gap: 0.5rem; justify-content: flex-end;
+      padding: 0.55rem 0;
+      background: linear-gradient(180deg, var(--bg) 65%, transparent);
+    }
+    .print button {
+      border: 1px solid var(--line); background: #fff; border-radius: 999px;
+      padding: 0.45rem 0.9rem; font-weight: 700; font-size: 0.82rem; cursor: pointer;
+    }
+    .badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--orange);
+      background: var(--orange-soft); border: 1px solid #ffd7a8; border-radius: 999px;
+      padding: 0.35rem 0.75rem; margin-bottom: 0.65rem;
+    }
+    h1 {
+      font-size: clamp(1.6rem, 4.2vw, 2.15rem);
+      letter-spacing: -0.035em; margin: 0 0 0.4rem; line-height: 1.15;
+    }
+    .lead { color: var(--muted); margin: 0 0 1.15rem; max-width: 40rem; font-size: 1rem; }
+    .hero {
+      background: linear-gradient(145deg, #0f1a12 0%, #2f7319 48%, #e67300 120%);
+      color: #fff; border-radius: 22px; padding: 1.45rem 1.3rem; margin-bottom: 1.1rem;
+      box-shadow: 0 18px 46px rgba(47, 115, 25, 0.28);
+    }
+    .hero .kicker {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; opacity: 0.88; margin-bottom: 0.45rem;
+    }
+    .hero h2 { margin: 0 0 0.45rem; font-size: clamp(1.35rem, 3.5vw, 1.75rem); color: #fff; letter-spacing: -0.03em; }
+    .hero p { margin: 0; opacity: 0.94; max-width: 38rem; }
+    .who {
+      margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid rgba(255,255,255,.25);
+      font-size: 0.92rem;
+    }
+    .who strong { display: block; font-size: 1.05rem; }
+    .hook {
+      border-left: 4px solid var(--orange); background: var(--orange-soft);
+      border-radius: 0 14px 14px 0; padding: 0.9rem 1rem; margin-bottom: 1rem;
+      font-weight: 700; font-size: 1.02rem;
+    }
+    section {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 16px; padding: 1.15rem 1.2rem; margin-bottom: 0.85rem;
+    }
+    section h3 {
+      margin: 0 0 0.55rem; font-size: 1.05rem; color: var(--green); letter-spacing: -0.02em;
+    }
+    section.saude h3 { color: #0b6e4f; }
+    section.eventos h3 { color: #9a3412; }
+    section.gabinete h3 { color: var(--blue); }
+    section.tech h3 { color: #4338ca; }
+    p, li { font-size: 0.93rem; }
+    p { margin: 0 0 0.55rem; color: #2a322c; }
+    ul { margin: 0.25rem 0 0; padding-left: 1.15rem; }
+    li { margin: 0.3rem 0; color: var(--muted); }
+    li strong { color: var(--ink); }
+    .quote {
+      border-left: 4px solid var(--green); background: var(--green-soft);
+      border-radius: 0 12px 12px 0; padding: 0.7rem 0.9rem; margin: 0.7rem 0 0;
+      font-weight: 600; font-size: 0.94rem; color: #1a241c; white-space: pre-wrap;
+    }
+    .quote.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .quote.blue { border-left-color: var(--blue); background: var(--blue-soft); }
+    .grid {
+      display: grid; gap: 0.65rem; margin-top: 0.65rem;
+    }
+    @media (min-width: 700px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .grid .full { grid-column: 1 / -1; }
+    }
+    .card {
+      border: 1px solid var(--line); border-radius: 12px; padding: 0.8rem 0.9rem; background: #fafbf9;
+    }
+    .card h4 { margin: 0 0 0.3rem; font-size: 0.88rem; color: var(--ink); }
+    .card p { margin: 0; font-size: 0.84rem; color: var(--muted); }
+    .pillars {
+      display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.65rem 0 0.2rem;
+    }
+    .pillars span {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+      background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 0.3rem 0.65rem; color: var(--green);
+    }
+    .warn {
+      font-size: 0.8rem; color: var(--muted); margin-top: 1.1rem;
+      padding: 0.75rem 0.9rem; border: 1px dashed var(--line); border-radius: 12px; background: #fff;
+    }
+    @media print {
+      .print { display: none; }
+      body { background: #fff; }
+      .wrap { max-width: none; padding: 0; }
+      section, .hero { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body data-keep-bacabal="1">
+  <div class="wrap">
+    <div class="print">
+      <button type="button" onclick="window.print()">Imprimir / PDF</button>
+    </div>
 
+    <div class="badge">Uso interno · pitch completo · sem link no site</div>
+    <h1>Uma cidade. Uma tela. Todos os módulos.</h1>
+    <p class="lead">
+      Pitch completo para o prefeito: além de Obras — Saúde, Eventos, Gabinete, equipes com GPS,
+      mapa, câmeras, plantão médico e chat entre instituições. Em nome de <strong>Anselmo Carvalho</strong>.
+    </p>
+
+    <div class="hero">
+      <div class="kicker">Bacabal Conecta · visão completa</div>
+      <h2>Do buraco na rua ao plantão da UBS — tudo com protocolo</h2>
+      <p>
+        Até agora o foco da demo foi Obras porque é o mais fácil de mostrar em cinco minutos.
+        A plataforma, porém, foi pensada para agregar a cidade inteira: secretarias, campo,
+        saúde, eventos e o gabinete no mesmo lugar.
+      </p>
+      <div class="who">
+        <strong>Anselmo Carvalho</strong>
+        Quem apresenta a visão completa e propõe a expansão módulo a módulo.
+      </div>
+    </div>
+
+    <div class="hook">
+      “Prefeito, Obras é o começo. O que eu quero mostrar agora é a cidade inteira conectada —
+      Saúde, Eventos, Gabinete, mapa, equipes e comunicação entre instituições — numa só plataforma.”
+    </div>
+
+    <!-- OBRAS -->
+    <section>
+      <h3>1 · Obras e cidade (o que já prova valor)</h3>
+      <p>Base que o senhor já viu: cidadão registra → protocolo → secretaria → campo → foto do depois → concluído.</p>
+      <ul>
+        <li><strong>Protocolo oficial</strong> — acaba o “eu avisei no WhatsApp”.</li>
+        <li><strong>Fila por secretaria</strong> — Obras não mistura com Saúde.</li>
+        <li><strong>Prova do serviço</strong> — antes e depois no mesmo chamado.</li>
+        <li><strong>Mapa da ocorrência</strong> — onde está o problema, por bairro.</li>
+      </ul>
+      <div class="quote">“Obras prova o método. O resto da cidade usa o mesmo método.”</div>
+    </section>
+
+    <!-- SAÚDE -->
+    <section class="saude">
+      <h3>2 · Saúde — vantagens para o prefeito e para a população</h3>
+      <p>Saúde é o tema que mais gera pressão política. A plataforma transforma reclamação e operação em número.</p>
+      <ul>
+        <li><strong>Fila e espera com indicador</strong> — o gabinete vê atendidos, fila e alertas, não só o relato verbal.</li>
+        <li><strong>Médicos e equipes de plantão</strong> — check-in de cobertura: quem está de plantão, em qual unidade, se a escala está furada.</li>
+        <li><strong>Visita surpresa vira cobrança</strong> — o prefeito registra a visita; a secretaria recebe pendência com protocolo.</li>
+        <li><strong>Chamados de saúde com rastreio</strong> — falta de médico, estrutura, demora: tudo com número e responsável.</li>
+        <li><strong>Menos “apagão de informação”</strong> — o que hoje fica no telefone entre secretário e UBS passa a ter histórico.</li>
+      </ul>
+      <div class="quote">“Na Saúde, o senhor não governa no escuro. Vê plantão, fila e cobrança — com prova.”</div>
+      <div class="grid">
+        <div class="card">
+          <h4>Para o cidadão</h4>
+          <p>Sabe que o problema foi registrado. Pode acompanhar. Menos fila de reclamação na porta da prefeitura.</p>
+        </div>
+        <div class="card">
+          <h4>Para a secretaria</h4>
+          <p>Organiza prioridades, responde com registro e mostra ao gabinete o que já foi feito.</p>
+        </div>
+        <div class="card full">
+          <h4>Para o gabinete</h4>
+          <p>Uma aba de Saúde: indicadores do dia, plantão confirmado, alertas e visitas que viram ação — sem ligar dez vezes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENTOS -->
+    <section class="eventos">
+      <h3>3 · Eventos — vantagens (festa, agenda e operação)</h3>
+      <p>Evento mal preparado vira crise na véspera. A plataforma antecipa pendência.</p>
+      <ul>
+        <li><strong>Agenda da cidade</strong> — o que vai acontecer, onde e quando, visível para quem precisa executar.</li>
+        <li><strong>Pendências viram protocolo</strong> — estrutura, segurança, limpeza, som, iluminação: cada item com responsável.</li>
+        <li><strong>Menos surpresa na véspera</strong> — o gabinete cobra o que ainda está aberto antes do dia do evento.</li>
+        <li><strong>Histórico</strong> — o que funcionou e o que falhou fica registrado para o próximo evento.</li>
+      </ul>
+      <div class="quote orange">“Evento deixa de ser improviso. Vira checklist com protocolo — estrutura, segurança e limpeza no mesmo lugar.”</div>
+    </section>
+
+    <!-- GABINETE -->
+    <section class="gabinete">
+      <h3>4 · Gabinete — o prefeito no comando</h3>
+      <p>Uma tela. Três frentes. Decisão com número.</p>
+      <div class="pillars">
+        <span>Cidade / Obras</span>
+        <span>Saúde</span>
+        <span>Eventos</span>
+        <span>Mapa</span>
+        <span>Alertas</span>
+      </div>
+      <ul>
+        <li><strong>Visão unificada</strong> — o senhor não precisa entrar em dez sistemas.</li>
+        <li><strong>Prioriza e cobra</strong> — determina urgência; a secretaria executa; o campo prova.</li>
+        <li><strong>Não vira gargalo</strong> — cada chamado comum segue na secretaria; o gabinete entra no que é político, crítico ou atrasado.</li>
+        <li><strong>TV / painel</strong> — visão operacional para reunião e acompanhamento diário.</li>
+      </ul>
+      <div class="quote blue">“Eu vejo o problema, determino a prioridade, cobro a secretaria e acompanho se foi feito.”</div>
+    </section>
+
+    <!-- MÓDULOS AGREGADOS -->
+    <section>
+      <h3>5 · Agregação de todos os módulos — a cidade numa plataforma</h3>
+      <p>O diferencial não é um módulo isolado. É a agregação:</p>
+      <ul>
+        <li><strong>Cidadão</strong> — foto, GPS, protocolo.</li>
+        <li><strong>Secretarias</strong> — Obras, Saúde, Eventos (e outras no tempo certo).</li>
+        <li><strong>Equipes de campo</strong> — OS na mão, com local.</li>
+        <li><strong>Gabinete</strong> — cobrança e panorama.</li>
+        <li><strong>Mapa</strong> — situação da cidade em tempo quase real.</li>
+        <li><strong>Comunicação institucional</strong> — chat entre órgãos.</li>
+        <li><strong>Cameras e sensores</strong> — visão agregada na mesma plataforma.</li>
+      </ul>
+      <div class="quote">“Não é um app de buraco. É o sistema nervoso da prefeitura: cada braço (secretaria) e a cabeça (gabinete) no mesmo corpo.”</div>
+    </section>
+
+    <!-- TECH / CAMPO / MAPA / CAMERAS / CHAT -->
+    <section class="tech">
+      <h3>6 · Equipes, GPS, mapa, câmeras, plantão e chat</h3>
+
+      <h4 style="margin:0.75rem 0 0.35rem;font-size:0.92rem">Equipes com GPS e localização</h4>
+      <ul>
+        <li>Equipe no campo com ordem de serviço e ponto no mapa.</li>
+        <li>“Cheguei no local” com presença — menos discussão se foi ou não.</li>
+        <li>Rota do dia organizada: o que está encaminhado, em execução e enviado para aprovação.</li>
+      </ul>
+
+      <h4 style="margin:0.75rem 0 0.35rem;font-size:0.92rem">Mapa (visão da cidade · evolução 3D)</h4>
+      <ul>
+        <li><strong>Mapa operacional hoje</strong> — chamados por status, bairro e categoria; visão híbrida (satélite + ruas).</li>
+        <li><strong>Camada de equipes</strong> — onde está a ocorrência e para onde a OS foi.</li>
+        <li><strong>Visão 3D / imersiva (expansão)</strong> — apresentar a cidade com mais profundidade para gabinete, defesa civil e planejamento: mesma base de dados, camada visual mais forte para impressionar e decidir.</li>
+      </ul>
+
+      <h4 style="margin:0.75rem 0 0.35rem;font-size:0.92rem">Câmeras agregadas à plataforma</h4>
+      <ul>
+        <li>Integrar câmeras da cidade (praças, avenidas, pontos críticos) num painel único.</li>
+        <li>Cruzar câmera + chamado: “tem protocolo aberto nesta região?”</li>
+        <li>Apoio a segurança, trânsito e fiscalização — sem sistema paralelo esquecido.</li>
+        <li>Vantagem política: o prefeito mostra controle e presença, com registro.</li>
+      </ul>
+
+      <h4 style="margin:0.75rem 0 0.35rem;font-size:0.92rem">Médicos de plantão</h4>
+      <ul>
+        <li>Confirmação de plantão por unidade.</li>
+        <li>Alerta de buraco na escala antes da população reclamar na porta.</li>
+        <li>Gabinete vê cobertura; secretaria responde com ação rastreável.</li>
+      </ul>
+
+      <h4 style="margin:0.75rem 0 0.35rem;font-size:0.92rem">Chat entre instituições</h4>
+      <ul>
+        <li>Canal oficial entre secretarias, gabinete, campo e saúde — no mesmo ecossistema do protocolo.</li>
+        <li>Menos grupo de WhatsApp sem dono; mais mensagem ligada ao chamado ou à pendência.</li>
+        <li>Histórico institucional: o que foi combinado fica na prefeitura, não no celular de uma pessoa.</li>
+      </ul>
+
+      <div class="quote" style="border-left-color:#4338ca;background:#f5f3ff">“GPS no campo, mapa no gabinete, câmera no ponto crítico, plantão na Saúde e chat entre órgãos — tudo conversando com o mesmo protocolo.”</div>
+    </section>
+
+    <!-- COMO FALAR -->
+    <section>
+      <h3>7 · Como Anselmo apresenta (fala completa ~1,5 min)</h3>
+      <div class="quote orange">“Prefeito, até aqui a gente mostrou Obras porque é o fluxo mais claro: foto, protocolo, campo e conclusão.
+Mas a ferramenta é maior.
+Na Saúde, o senhor vê fila, plantão médico e visita surpresa virando cobrança.
+Nos Eventos, estrutura, segurança e limpeza viram checklist com responsável — antes da festa, não depois do problema.
+No Gabinete, Cidade, Saúde e Eventos numa tela só.
+No campo, equipe com GPS e prova do serviço.
+No mapa, a cidade inteira — e a gente evolui para visão mais rica, inclusive 3D, em cima dos mesmos dados.
+Dá para agregar câmeras da cidade no mesmo painel.
+E as instituições se falam por chat oficial, ligado ao protocolo — não no WhatsApp solto.
+O pedido não é ‘comprar tudo amanhã’. É autorizar a plataforma como base da cidade e expandir módulo a módulo: Obras já prova; Saúde e Eventos entram em seguida; câmeras, mapa avançado e chat fecham a visão completa.”</div>
+    </section>
+
+    <!-- ROTEIRO REUNIÃO -->
+    <section>
+      <h3>8 · Roteiro sugerido da reunião (10–12 min)</h3>
+      <ul>
+        <li><strong>1 min</strong> — Abertura: “Obras foi o piloto de método; agora a visão completa.”</li>
+        <li><strong>2 min</strong> — Recap rápido Obras (só pra lembrar o protocolo).</li>
+        <li><strong>2 min</strong> — Saúde: plantão + fila + visita surpresa.</li>
+        <li><strong>1,5 min</strong> — Eventos: pendência vira protocolo.</li>
+        <li><strong>2 min</strong> — Gabinete + mapa + equipes GPS.</li>
+        <li><strong>1,5 min</strong> — Câmeras + chat institucional + visão 3D como evolução.</li>
+        <li><strong>1 min</strong> — Fechamento: base única + expansão por módulo.</li>
+      </ul>
+    </section>
+
+    <!-- FECHAMENTO -->
+    <section>
+      <h3>9 · Pedido de fechamento (visão completa)</h3>
+      <div class="quote">“Prefeito, o pedido de hoje é reconhecer o Bacabal Conecta como a plataforma base da prefeitura:
+piloto consolidado em Obras, cronograma de Saúde e Eventos no gabinete, e roadmap claro para GPS de equipes, mapa avançado, câmeras e chat entre instituições.
+A gente entrega por etapa, com indicador em cada uma — sem surpresa e sem sistema na gaveta.”</div>
+      <ul>
+        <li>Etapa A — Obras em produção (já demonstrável).</li>
+        <li>Etapa B — Saúde no gabinete (fila, plantão, cobrança).</li>
+        <li>Etapa C — Eventos com checklist e protocolo.</li>
+        <li>Etapa D — Camadas: câmeras, chat institucional, mapa 3D / visão avançada.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>10 · Frases de impacto (decorar)</h3>
+      <div class="quote">“Uma tela. Três prioridades. Resultado com protocolo.”</div>
+      <div class="quote orange">“Obras prova. Saúde pressiona. Eventos antecipa. O gabinete governa.”</div>
+      <div class="quote blue">“Câmera sem protocolo é só vídeo. Protocolo com câmera, GPS e chat é gestão.”</div>
+    </section>
+
+    <p class="warn">
+      Página interna de estratégia (Anselmo Carvalho). Não há botão nem link na home, no menu ou no pitch público.
+      Guarde este endereço. Quem não tiver o link não encontra pelo site.
+    </p>
+  </div>
+</body>
+</html>

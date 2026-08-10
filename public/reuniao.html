@@ -1,1 +1,208 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kit da reunião · Bacabal Conecta</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/home.css" />
+  <link rel="icon" href="/assets/logo-prefeitura.png" />
+  <style>
+    .kit { max-width: 860px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+    .kit-hero {
+      background: linear-gradient(145deg, #1a1a1a 0%, #2f7319 55%, #ff8000 120%);
+      color: #fff; border-radius: 22px; padding: 1.75rem 1.5rem; margin-bottom: 1.25rem;
+    }
+    html[data-cidade="bomlugar"] .kit-hero {
+      background: linear-gradient(145deg, #022456 0%, #03327A 55%, #B71C1C 120%);
+    }
+    html[data-cidade="bomlugar"] .kit-card h3 { color: #03327A; }
+    html[data-cidade="bomlugar"] .phrase {
+      border-left-color: #03327A; background: #eef3fb;
+    }
+    .kit-hero h1 { color:#fff; margin: 0.25rem 0 0.4rem; font-size: clamp(1.6rem, 4vw, 2.1rem); letter-spacing:-0.03em; }
+    .kit-hero p { margin:0; opacity:.92; max-width:38rem; line-height:1.45; }
+    .kit-kicker { font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
+    .kit-grid { display:grid; gap:1rem; margin-bottom:1rem; }
+    @media(min-width:720px){ .kit-grid{ grid-template-columns:1fr 1fr; } .kit-span{ grid-column:1/-1; } }
+    .kit-card {
+      background:#fff; border:1px solid var(--line); border-radius:16px; padding:1.1rem 1.2rem;
+      box-shadow: var(--shadow);
+    }
+    .kit-card h3 { margin:0 0 .45rem; font-size:1.02rem; color: var(--pmb-green, #2f7319); }
+    .kit-card ol, .kit-card ul { margin:.35rem 0 0; padding-left:1.15rem; color:var(--muted); font-size:.92rem; line-height:1.5; }
+    .kit-card p { margin:0; color:var(--muted); font-size:.92rem; line-height:1.45; }
+    .cred {
+      display:grid; gap:.45rem; margin-top:.55rem;
+      font-family: ui-monospace, Consolas, monospace; font-size:.86rem;
+    }
+    .cred div {
+      display:flex; justify-content:space-between; gap:.75rem; flex-wrap:wrap;
+      background:#f4f6f5; border-radius:10px; padding:.55rem .7rem; color:#222;
+    }
+    .cred span { color:#666; font-weight:600; }
+    .phrase {
+      border-left:4px solid #ff8000; background:#fff8f0; border-radius:0 12px 12px 0;
+      padding:.85rem 1rem; margin:1rem 0; font-weight:600; color:#1a1a1a;
+    }
+    .actions { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:1rem; }
+    .status-ok { color:#2f7319; font-weight:700; }
+    .status-bad { color:#b42318; font-weight:700; }
+    #prepMsg { margin-top:.6rem; font-size:.9rem; }
+  </style>
+</head>
+<body class="landing" style="background:#f7f8f9">
+  <div class="kit">
+    <div id="top"></div>
 
+    <div class="kit-hero">
+      <div class="kit-kicker">Dia da reunião · checklist</div>
+      <h1>Pronto para o prefeito</h1>
+      <p>
+        Use esta página na manhã da reunião. Em 2 minutos o cenário fica limpo
+        e você sabe exatamente o que abrir na tela.
+      </p>
+      <div class="actions">
+        <button class="btn-hero btn-hero-primary" type="button" id="btnPrep" style="background:#fff;color:#1a1a1a;border:0;cursor:pointer">
+          Preparar cenário agora
+        </button>
+        <a class="btn-hero btn-hero-ghost" data-city-href="/prefeito.html" style="border-color:#fff;color:#fff">Abrir Gabinete</a>
+      </div>
+      <p id="prepMsg"></p>
+    </div>
+
+    <div class="phrase">
+      Frase de fechamento: “Uma tela. Suas três prioridades. Resultado com protocolo.”
+    </div>
+
+    <div class="kit-grid">
+      <div class="kit-card">
+        <h3>1. Antes de sair de casa</h3>
+        <ol>
+          <li>PC ligado, carregador, internet estável</li>
+          <li>Servidor + túnel no ar (ou URL publicada)</li>
+          <li>Clicar <strong>Preparar cenário agora</strong></li>
+          <li>Ensaiar 1× o roteiro de 5 min</li>
+          <li>Celular com a mesma URL (plano B / cidadão)</li>
+        </ol>
+      </div>
+
+      <div class="kit-card">
+        <h3>2. Na sala (5 minutos)</h3>
+        <ol>
+          <li>Gabinete → aba <strong>Saúde</strong> (fila + plantão)</li>
+          <li><strong>Visita surpresa</strong> → cobrança</li>
+          <li>Outra aba: Secretaria <code>saude / saude123</code> → alerta</li>
+          <li>Aba <strong>Eventos</strong> (agenda)</li>
+          <li>Aba <strong>Cidade</strong> → priorizar 1 chamado</li>
+        </ol>
+      </div>
+
+      <div class="kit-card">
+        <h3>Logins (só demo)</h3>
+        <div class="cred">
+          <div><span>Prefeito</span> prefeito / prefeito123</div>
+          <div><span>Saúde</span> saude / saude123</div>
+          <div><span>Eventos</span> eventos / evento123</div>
+          <div><span>Obras</span> obras / obras123</div>
+        </div>
+      </div>
+
+      <div class="kit-card">
+        <h3>Links essenciais</h3>
+        <ul>
+          <li><a data-city-href="/apresentacao.html">Hub da apresentação</a></li>
+          <li><a data-city-href="/pitch.html">Pitch (1 tela)</a></li>
+          <li><a data-city-href="/carta-prefeito.html">Carta ao prefeito</a></li>
+          <li><a data-city-href="/tutorial-ia.html">Tutorial com IA (novo)</a></li>
+          <li><a data-city-href="/tutorial.html">Tutorial clássico (Obras)</a></li>
+          <li><a data-city-href="/manual.html">Manual por setor (ensinar equipes)</a></li>
+          <li><a data-city-href="/fluxo.html">Demonstração em slides</a></li>
+          <li><a id="linkTvKit" href="/tv.html" target="_blank" rel="noopener">Clipe TV</a></li>
+          <li><a data-city-href="/prefeito.html">Gabinete do prefeito</a></li>
+          <li><a data-city-href="/secretaria.html">Painel da secretaria</a></li>
+          <li><a data-city-href="/plantao.html">Check-in de plantão</a></li>
+          <li><a data-city-href="/cidadao.html">App do cidadão</a></li>
+          <li><a data-city-href="/demo.html">Demo guiada</a></li>
+          <li><a data-city-href="/modulos.html">Módulos</a></li>
+        </ul>
+      </div>
+
+      <div class="kit-card kit-span">
+        <h3>O que pedir no final (sem vender módulo)</h3>
+        <p>
+          “Podemos fazer um piloto de 90 dias começando pela Saúde —
+          o senhor já acompanha de perto — e medir fila, plantão e tempo de resposta.
+          Se fizer sentido, ativamos Cidade e Eventos no mesmo painel.”
+        </p>
+        <p style="margin-top:.65rem">
+          Pedido concreto: <strong>1 reunião de alinhamento com Saúde + TI</strong> na semana seguinte.
+        </p>
+      </div>
+
+      <div class="kit-card kit-span">
+        <h3>Plano B se a internet cair</h3>
+        <ol>
+          <li>Abrir <code>http://localhost:4000/reuniao.html</code> no próprio PC</li>
+          <li>Hotspot do celular → notebook acessa localhost (ou rede local)</li>
+          <li>Mostrar print/gravação do ensaio se tudo falhar</li>
+        </ol>
+        <p id="linkStatus" style="margin-top:.7rem"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script>
+    initCidade();
+    loadCityBrand().then(cfg => {
+      const slug = (cfg && cfg.slug) || getCidade();
+      document.getElementById('top').innerHTML = topbar('Reunião', cfg);
+      document.querySelectorAll('[data-city-href]').forEach((a) => {
+        a.href = cityLink(a.getAttribute('data-city-href'));
+      });
+      const tv = document.getElementById('linkTvKit');
+      if (tv) {
+        if (slug === 'bomlugar') {
+          tv.href = '/tv-bomlugar.html';
+          tv.textContent = 'Clipe TV Bom Lugar';
+        } else {
+          tv.href = '/tv.html';
+          tv.textContent = 'Clipe TV Bacabal';
+        }
+      }
+    });
+
+    document.getElementById('btnPrep').onclick = async () => {
+      const msg = document.getElementById('prepMsg');
+      const btn = document.getElementById('btnPrep');
+      btn.disabled = true;
+      msg.textContent = 'Preparando cenário…';
+      msg.className = '';
+      try {
+        const r = await api('/api/demo/preparar', { method: 'POST', body: '{}' });
+        msg.className = 'status-ok';
+        const n = Array.isArray(r && r.criados) ? r.criados.length : 0;
+        msg.textContent = 'Cenário pronto' + (n ? ` · ${n} chamados de hoje` : '') + '. Pode abrir o Gabinete.';
+      } catch (e) {
+        msg.className = 'status-bad';
+        msg.textContent = 'Falha ao preparar: ' + (e.message || e);
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    (function status() {
+      const el = document.getElementById('linkStatus');
+      const host = location.host;
+      if (host.includes('trycloudflare.com')) {
+        el.innerHTML = '<span class="status-ok">Link público ativo:</span> ' + location.origin;
+      } else if (host.includes('localhost') || host.includes('127.0.0.1')) {
+        el.innerHTML = '<span class="status-bad">Você está no localhost.</span> No dia da reunião, use o link Cloudflare ou a URL publicada e compartilhe no celular.';
+      } else {
+        el.innerHTML = '<span class="status-ok">Hospedagem pública:</span> ' + location.origin;
+      }
+    })();
+  </script>
+</body>
+</html>
