@@ -14,6 +14,15 @@ const MapBI = (() => {
   };
 
   function statusLabel(s) {
+    if (typeof window !== 'undefined' && window.BI_PUBLIC_STATUS) {
+      if (typeof statusLabelPublico === 'function') return statusLabelPublico(s);
+      return ({
+        novo: 'Recebido', aberto: 'Recebido', em_analise: 'Em análise',
+        encaminhado: 'Encaminhado à equipe', em_execucao: 'Em execução', em_andamento: 'Em execução',
+        aguardando_material: 'Em execução', aguardando_aprovacao: 'Quase pronto',
+        concluido: 'Concluído', cancelado: 'Cancelado',
+      })[s] || s;
+    }
     return ({
       novo: 'Novo',
       aberto: 'Novo',
@@ -29,6 +38,20 @@ const MapBI = (() => {
   }
 
   function statusAction(s) {
+    if (typeof window !== 'undefined' && window.BI_PUBLIC_STATUS) {
+      return ({
+        novo: 'Chamado recebido pela prefeitura.',
+        aberto: 'Chamado recebido pela prefeitura.',
+        em_analise: 'Secretaria está analisando o caso.',
+        encaminhado: 'Já foi encaminhado para a equipe de campo.',
+        em_execucao: 'Equipe na rua resolvendo o serviço.',
+        em_andamento: 'Equipe na rua resolvendo o serviço.',
+        aguardando_material: 'Equipe na rua resolvendo o serviço.',
+        aguardando_aprovacao: 'Serviço quase pronto — conferência final.',
+        concluido: 'Serviço concluído e registrado no protocolo.',
+        cancelado: 'Chamado cancelado.',
+      })[s] || 'Situação em acompanhamento.';
+    }
     return ({
       novo: 'Aguardando a secretaria pegar o chamado.',
       aberto: 'Aguardando a secretaria pegar o chamado.',
@@ -41,6 +64,13 @@ const MapBI = (() => {
       concluido: 'Serviço concluído e registrado no protocolo.',
       cancelado: 'Chamado cancelado.',
     })[s] || 'Situação em acompanhamento.';
+  }
+
+  function statusColor(s) {
+    const id = (typeof window !== 'undefined' && window.BI_PUBLIC_STATUS && typeof statusPublicoId === 'function')
+      ? statusPublicoId(s)
+      : (({ aberto: 'novo', em_andamento: 'em_execucao' })[s] || s);
+    return STATUS_COLOR[id] || STATUS_COLOR[s] || '#2163e8';
   }
 
   function esc(v) {
@@ -190,7 +220,7 @@ const MapBI = (() => {
     return `
       <div class="bi-popup">
         ${foto ? `<div class="bi-popup-foto"><img src="${esc(foto)}" alt="Foto da ocorrência" /></div>` : ''}
-        <div class="bi-popup-badge" style="background:${STATUS_COLOR[p.status] || '#2163e8'}">${statusLabel(p.status)}</div>
+        <div class="bi-popup-badge" style="background:${statusColor(p.status)}">${statusLabel(p.status)}</div>
         ${pri ? `<span class="bi-popup-pri">${pri}</span>` : ''}
         <strong>${titulo}</strong>
         <div class="bi-popup-meta">${bairro}${protocolo ? ' · Prot. ' + protocolo : ''}${sec ? ' · ' + sec : ''}</div>
@@ -202,7 +232,7 @@ const MapBI = (() => {
   }
 
   function markerIcon(p, enlarged) {
-    const color = STATUS_COLOR[p.status] || '#2163e8';
+    const color = statusColor(p.status);
     const urgent = p.prioridade === 'urgente' || p.prioridade === 'alta';
     const size = enlarged ? 18 : (urgent ? 14 : 11);
     const pulse = urgent && p.status !== 'concluido' && p.status !== 'cancelado';

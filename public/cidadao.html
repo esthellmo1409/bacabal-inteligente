@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cidadão · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css?v=audit-fix1" />
+  <link rel="stylesheet" href="/styles.css?v=cid-status1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script>window.BI_PUBLIC_STATUS = true;</script>
   <style>
     .citizen-quick {
       display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.85rem;
@@ -160,10 +161,11 @@
         <div class="panel" style="margin-bottom:1rem">
           <h3 style="margin-bottom:0.55rem">Andamento do chamado</h3>
           <ul class="citizen-legend">
-            <li><strong>Novo</strong> Registrado — secretaria já recebe na fila</li>
-            <li><strong>Encaminhado</strong> Equipe designada para o local</li>
+            <li><strong>Recebido</strong> Registrado — secretaria já recebe na fila</li>
+            <li><strong>Em análise</strong> Secretaria está avaliando o caso</li>
+            <li><strong>Encaminhado à equipe</strong> Equipe designada para o local</li>
             <li><strong>Em execução</strong> Serviço em andamento na rua</li>
-            <li><strong>Conferência</strong> Foto do “depois” em validação</li>
+            <li><strong>Quase pronto</strong> Conferência final antes de concluir</li>
             <li><strong>Concluído</strong> Resolvido — você pode avaliar</li>
           </ul>
         </div>
@@ -203,8 +205,8 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=audit-fix1"></script>
-  <script src="/map.js"></script>
+  <script src="/app.js?v=cid-status1"></script>
+  <script src="/map.js?v=cid-status1"></script>
   <script>
     if (new URLSearchParams(location.search).get('cidade')) {
       setCidade(new URLSearchParams(location.search).get('cidade'));
@@ -412,9 +414,11 @@
           ...h,
           nota: ({
             novo: 'Chamado registrado',
+            em_analise: 'Em análise na secretaria',
             encaminhado: 'Encaminhado à equipe',
             em_execucao: 'Equipe em campo',
-            aguardando_aprovacao: 'Serviço feito — em conferência',
+            aguardando_material: 'Equipe em campo',
+            aguardando_aprovacao: 'Quase pronto — conferência final',
             concluido: 'Obra finalizada',
           })[h.status] || '',
         })))}
@@ -439,7 +443,7 @@
         <div class="item" style="${concluido ? 'border-color:rgba(12,188,135,.45);box-shadow:0 0 0 1px rgba(12,188,135,.2)' : ''}">
           <div class="item-head">
             <strong>${c.titulo}</strong>
-            ${badge(c.status)}
+            ${badgePublico(c.status)}
           </div>
           <div class="meta">
             Protocolo <strong>${c.protocolo}</strong>
@@ -530,7 +534,7 @@
           <div class="item" style="cursor:pointer" data-focus="${c.lat},${c.lng}">
             <div class="item-head">
               <strong>${c.titulo || c.categoria || 'Chamado'}</strong>
-              ${badge(c.status)}
+              ${badgePublico(c.status)}
             </div>
             <div class="meta">${c.bairro || '—'} · ~${c.d < 1 ? Math.round(c.d * 1000) + ' m' : c.d.toFixed(1) + ' km'}</div>
           </div>
@@ -753,7 +757,7 @@
           <div class="item" style="cursor:pointer" data-p="${c.protocolo}">
             <div class="item-head">
               <strong>${c.titulo}</strong>
-              ${badge(c.status)}
+              ${badgePublico(c.status)}
             </div>
             <div class="meta">${c.protocolo} · ${c.bairro} · ${fmtDate(c.criadoEm)}</div>
           </div>

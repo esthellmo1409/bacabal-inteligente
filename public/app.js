@@ -195,9 +195,45 @@ function statusLabel(s) {
   })[s] || s;
 }
 
+/** Status “público” — esconde jargão interno (material / aprovação). */
+function statusPublicoId(s) {
+  const n = ({ aberto: 'novo', em_andamento: 'em_execucao' })[s] || s;
+  return ({
+    novo: 'novo',
+    em_analise: 'em_analise',
+    encaminhado: 'encaminhado',
+    em_execucao: 'em_execucao',
+    aguardando_material: 'em_execucao',
+    aguardando_aprovacao: 'em_execucao',
+    concluido: 'concluido',
+    cancelado: 'cancelado',
+  })[n] || n;
+}
+
+function statusLabelPublico(s) {
+  return ({
+    novo: 'Recebido',
+    aberto: 'Recebido',
+    em_analise: 'Em análise',
+    encaminhado: 'Encaminhado à equipe',
+    em_execucao: 'Em execução',
+    em_andamento: 'Em execução',
+    aguardando_material: 'Em execução',
+    aguardando_aprovacao: 'Quase pronto',
+    concluido: 'Concluído',
+    cancelado: 'Cancelado',
+  })[s] || statusLabel(s);
+}
+
 function badge(status) {
   const s = ({ aberto: 'novo', em_andamento: 'em_execucao' })[status] || status;
   return `<span class="badge badge-${s}">${statusLabel(status)}</span>`;
+}
+
+/** Badge do portal do cidadão / mapa público. */
+function badgePublico(status) {
+  const css = statusPublicoId(status);
+  return `<span class="badge badge-${css}">${statusLabelPublico(status)}</span>`;
 }
 
 /** Galeria de miniaturas (clique amplia). */
@@ -656,11 +692,17 @@ function prioridadeLabel(p) {
 
 function timelineHtml(historico) {
   if (!historico?.length) return '<p class="muted">Sem histórico.</p>';
+  const labelFn = (typeof window !== 'undefined' && window.BI_PUBLIC_STATUS && typeof statusLabelPublico === 'function')
+    ? statusLabelPublico
+    : statusLabel;
+  const cssFn = (typeof window !== 'undefined' && window.BI_PUBLIC_STATUS && typeof statusPublicoId === 'function')
+    ? statusPublicoId
+    : (s) => ({ aberto: 'novo', em_andamento: 'em_execucao' })[s] || s;
   return `<div class="timeline">${historico.map(h => `
     <div class="timeline-item">
-      <div class="timeline-dot badge-${h.status || 'aberto'}"></div>
+      <div class="timeline-dot badge-${cssFn(h.status || 'aberto')}"></div>
       <div>
-        <strong>${statusLabel(h.status)}</strong>
+        <strong>${labelFn(h.status)}</strong>
         <div class="meta">${fmtDate(h.em)}${h.por ? ' · ' + h.por : ''}</div>
         <div class="muted">${h.nota || ''}</div>
       </div>
