@@ -323,6 +323,16 @@ const MapBI = (() => {
   }
 
   function legendHtml() {
+    if (typeof window !== 'undefined' && window.BI_PUBLIC_STATUS) {
+      return `
+      <div class="bi-legend">
+        <span><i style="background:#2163e8"></i> Recebido</span>
+        <span><i style="background:#c99700"></i> Análise</span>
+        <span><i style="background:#8e44ad"></i> Encaminhado</span>
+        <span><i style="background:#f07800"></i> Em execução</span>
+        <span><i style="background:#2f8a28"></i> Concluído</span>
+      </div>`;
+    }
     return `
       <div class="bi-legend">
         <span><i style="background:#2163e8"></i> Novo</span>
