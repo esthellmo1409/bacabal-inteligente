@@ -100,6 +100,8 @@
             location.href = cityLink('/prefeito.html');
           } else if (r.user.papel === 'campo') {
             location.href = cityLink('/equipes.html');
+          } else if (r.user.secretaria === 'saude' || r.user.id === 'saude') {
+            location.href = cityLink('/saude.html');
           } else {
             location.href = cityLink('/secretaria.html');
           }

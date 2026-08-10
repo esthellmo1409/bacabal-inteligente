@@ -1,0 +1,26 @@
+[
+  {
+    "id": "US-HOSP",
+    "nome": "Hospital Municipal de Bom Lugar",
+    "tipo": "hospital",
+    "bairro": "Centro",
+    "lat": -4.372,
+    "lng": -45.033
+  },
+  {
+    "id": "US-UBS1",
+    "nome": "UBS Centro",
+    "tipo": "ubs",
+    "bairro": "Centro",
+    "lat": -4.3705,
+    "lng": -45.031
+  },
+  {
+    "id": "US-UBS2",
+    "nome": "UBS Bairro Novo",
+    "tipo": "ubs",
+    "bairro": "Bairro Novo",
+    "lat": -4.375,
+    "lng": -45.028
+  }
+]

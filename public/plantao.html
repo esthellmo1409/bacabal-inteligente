@@ -31,7 +31,7 @@
         <button class="btn btn-sm" id="encerrar" type="button">Encerrar</button>
       </div>
       <p class="muted" style="margin-top:0.75rem;font-size:0.8rem">
-        Demo: saude / saude123 · depois veja no Gabinete → aba Saúde
+        Demo: saude / saude123 · Painel completo: <a id="linkSaudePainel" href="/saude.html">Painel da Saúde</a>
       </p>
     </div>
 
@@ -50,6 +50,8 @@
     async function boot() {
       const cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Plantão', cfg, { lock: true });
+      const linkPainel = document.getElementById('linkSaudePainel');
+      if (linkPainel) linkPainel.href = cityLink('/saude.html');
       document.getElementById('linkGab').href = cityLink('/login.html');
       document.getElementById('linkGab').textContent = 'Trocar para Gabinete (Sair)';
       document.getElementById('linkGab').onclick = (e) => {

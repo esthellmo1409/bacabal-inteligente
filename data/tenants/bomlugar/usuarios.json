@@ -61,5 +61,13 @@
     "senha": "ouvidoria123",
     "papel": "secretaria",
     "secretaria": "ouvidoria"
+  },
+  {
+    "id": "saude",
+    "nome": "Equipe Saúde",
+    "senha": "saude123",
+    "papel": "secretaria",
+    "secretaria": "saude",
+    "perfil": "secretaria"
   }
 ]

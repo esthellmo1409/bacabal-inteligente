@@ -1,0 +1,25 @@
+{
+  "data": "2026-08-09",
+  "demoPitch": true,
+  "atualizadoEm": "2026-08-09T22:00:00.000Z",
+  "unidades": {
+    "US-HOSP": {
+      "naFila": 18,
+      "atendidosHoje": 67,
+      "tempoMedioMin": 85,
+      "metaAtendimentos": 100
+    },
+    "US-UBS1": {
+      "naFila": 7,
+      "atendidosHoje": 35,
+      "tempoMedioMin": 32,
+      "metaAtendimentos": 50
+    },
+    "US-UBS2": {
+      "naFila": 11,
+      "atendidosHoje": 19,
+      "tempoMedioMin": 48,
+      "metaAtendimentos": 45
+    }
+  }
+}

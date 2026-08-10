@@ -395,12 +395,12 @@
       const box = document.getElementById('acoesEixo');
       if (eixo === 'saude') {
         box.innerHTML = `
-          <a class="btn btn-sm btn-primary" href="${cityLink('/plantao.html')}">Saúde registra plantão →</a>
-          <a class="btn btn-sm" href="${cityLink('/secretaria.html')}">Fila da Saúde</a>
+          <a class="btn btn-sm btn-primary" href="${cityLink('/saude.html')}">Painel da Saúde</a>
+          <a class="btn btn-sm" href="${cityLink('/plantao.html')}">Saúde registra plantão →</a>
           <button class="btn btn-sm" id="btnVisita" type="button">Visita surpresa</button>`;
         document.getElementById('btnVisita').onclick = visitaSurpresa;
         tituloDec.textContent = 'Saúde — olho do Gabinete';
-        subtituloDec.textContent = 'Aqui você só acompanha. Quem registra o médico de plantão é a Secretaria de Saúde.';
+        subtituloDec.textContent = 'Aqui você só acompanha. Quem registra plantão, escala e fila é a Secretaria de Saúde.';
       } else if (eixo === 'eventos') {
         box.innerHTML = '';
         tituloDec.textContent = 'Eventos — agenda e estrutura';
@@ -416,18 +416,25 @@
       const box = document.getElementById('blocoExtra');
       if (eixo === 'saude' && saudeHoje) {
         const criticos = (saudeHoje.unidades || []).filter(u => u.critico);
+        const alertas = saudeHoje.alertas || [];
+        const turnoL = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
         box.innerHTML = `
           ${criticos.length ? `
             <div class="saude-alert-banner" style="grid-column:1/-1">
               ${criticos.length} unidade(s) em alerta agora:
-              ${criticos.map(u => u.nome.split(' ')[0] === 'Hospital' ? 'Hospital' : u.nome).join(' · ')}
+              ${criticos.map(u => u.nome).join(' · ')}
               — cobre a secretaria ou faça visita surpresa
+            </div>` : ''}
+          ${(alertas.length) ? `
+            <div class="panel" style="grid-column:1/-1">
+              <h3 style="margin-bottom:0.55rem">Alertas</h3>
+              ${alertas.map(a => `<div class="meta" style="margin-bottom:0.35rem;color:#7f1d1d"><strong>${a.unidade}</strong> — ${a.mensagem}</div>`).join('')}
             </div>` : ''}
           <div class="panel" style="grid-column:1/-1">
             <h3 style="margin-bottom:0.35rem">Hoje na Saúde</h3>
             <p class="muted" style="margin-bottom:0.85rem">
-              Cobertura de plantão (preenchida pela Saúde) · fila e alertas · atualizado ${fmtDate(saudeHoje.atualizadoEm)}.
-              O Gabinete não digita o nome do médico — só visualiza e cobra.
+              Cobertura de plantão, fila e escala (preenchidas pela Saúde) · atualizado ${fmtDate(saudeHoje.atualizadoEm)}.
+              O Gabinete não digita — só visualiza e cobra.
             </p>
             <div class="list">
               ${saudeHoje.unidades.map(u => {
@@ -456,6 +463,12 @@
                         ? `<strong style="color:#c0392b">Check-in atrasado</strong> (${u.plantao.profissional || '—'})`
                         : '<strong style="color:#c0392b">Sem confirmação de plantão</strong>'}
                   </div>
+                  <div class="meta">
+                    Escala:
+                    ${(u.escala || []).map(s =>
+                      `${turnoL[s.turno] || s.turno}: ${s.profissional || 'vago'}`
+                    ).join(' · ') || '—'}
+                  </div>
                   ${(u.alertas || []).length ? `<div class="meta" style="color:#b91c1c">${u.alertas.join(' · ')}</div>` : ''}
                   ${u.critico ? `
                     <div class="actions">
@@ -465,7 +478,19 @@
                 </div>`;
               }).join('')}
             </div>
-          </div>`;
+          </div>
+          ${(saudeHoje.historico || []).length ? `
+          <div class="panel" style="grid-column:1/-1">
+            <h3 style="margin-bottom:0.55rem">Histórico recente</h3>
+            <div class="list">
+              ${saudeHoje.historico.slice(0, 5).map(h => `
+                <div class="item">
+                  <div class="item-head"><strong>${h.data}</strong>
+                    <span class="meta">${h.cobertos}/${h.unidades} cobertos · ${h.faltas} falha(s)</span>
+                  </div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}`;
       } else if (eixo === 'eventos') {
         box.innerHTML = `
           <div class="panel" style="grid-column:1/-1">
