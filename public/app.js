@@ -269,7 +269,7 @@ function execucaoOpsHtml(c, { tituloPrefix } = {}) {
   const tempo = ex.tempoServicoHoras != null ? ex.tempoServicoHoras : (c.horasTrabalhadas || null);
   const tempoMedio = ex.tempoMedioHistoricoHoras != null ? ex.tempoMedioHistoricoHoras : null;
   const dias = ex.diasAteConclusao != null ? ex.diasAteConclusao : null;
-  const temAlgo = mats.length || pessoas || tempo || ex.equipeNome || c.custo;
+  const temAlgo = mats.length || pessoas || tempo || ex.equipeNome;
   if (!temAlgo) return '';
 
   const cards = [];
@@ -284,9 +284,6 @@ function execucaoOpsHtml(c, { tituloPrefix } = {}) {
   }
   if (dias != null) {
     cards.push(`<div class="ops-metric"><span class="ops-metric-val">${dias}d</span><span class="ops-metric-lbl">abertura → conclusão</span></div>`);
-  }
-  if (c.custo) {
-    cards.push(`<div class="ops-metric"><span class="ops-metric-val">R$ ${Number(c.custo).toLocaleString('pt-BR')}</span><span class="ops-metric-lbl">custo estimado</span></div>`);
   }
 
   const metaLinhas = [];
