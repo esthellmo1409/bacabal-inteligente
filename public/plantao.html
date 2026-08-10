@@ -9,26 +9,29 @@
 <body>
   <div class="wrap">
     <div id="top"></div>
-    <h1 class="display" style="font-size:1.7rem;margin-bottom:0.35rem">Check-in de plantão</h1>
-    <p class="muted" style="margin-bottom:1rem">
-      Confirma cobertura do plantão — não é “provar que está acordado”.
-      O Gabinete vê se a unidade está coberta.
-    </p>
+    <h1 class="display" style="font-size:1.7rem;margin-bottom:0.35rem">Plantão da Saúde</h1>
+    <div class="panel" style="margin-bottom:1rem;background:rgba(14,165,233,.08);border-color:rgba(14,165,233,.3)">
+      <strong>Quem preenche:</strong> Secretaria de Saúde / unidade<br />
+      <strong>Quem só vê:</strong> Gabinete do prefeito (aba Saúde)<br />
+      <span class="muted" style="display:block;margin-top:0.45rem;font-size:0.88rem">
+        Registre aqui o nome do médico ou profissional de plantão. O Gabinete acompanha cobertura — não digita esta informação.
+      </span>
+    </div>
 
     <div class="panel" style="margin-bottom:1rem">
       <label>Unidade</label>
       <select id="unidade"></select>
-      <label>Nome do profissional</label>
+      <label>Nome do médico / profissional de plantão</label>
       <input id="nome" placeholder="Ex.: Dra. Ana Paula" />
       <label>Cargo / função</label>
       <input id="cargo" placeholder="Ex.: Clínica geral" value="Plantão" />
       <div class="actions" style="margin-top:0.75rem">
-        <button class="btn btn-primary" id="iniciar" type="button">Iniciar plantão</button>
+        <button class="btn btn-primary" id="iniciar" type="button">Registrar plantão</button>
         <button class="btn" id="checkin" type="button">Check-in (estou em plantão)</button>
         <button class="btn btn-sm" id="encerrar" type="button">Encerrar</button>
       </div>
       <p class="muted" style="margin-top:0.75rem;font-size:0.8rem">
-        Demo secretaria: saude / saude123 · ou use sem login
+        Demo: saude / saude123 · depois veja no Gabinete → aba Saúde
       </p>
     </div>
 

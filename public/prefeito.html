@@ -395,12 +395,12 @@
       const box = document.getElementById('acoesEixo');
       if (eixo === 'saude') {
         box.innerHTML = `
-          <a class="btn btn-sm" href="${cityLink('/plantao.html')}">Check-in plantão</a>
+          <a class="btn btn-sm btn-primary" href="${cityLink('/plantao.html')}">Saúde registra plantão →</a>
           <a class="btn btn-sm" href="${cityLink('/secretaria.html')}">Fila da Saúde</a>
-          <button class="btn btn-sm btn-primary" id="btnVisita" type="button">Visita surpresa</button>`;
+          <button class="btn btn-sm" id="btnVisita" type="button">Visita surpresa</button>`;
         document.getElementById('btnVisita').onclick = visitaSurpresa;
         tituloDec.textContent = 'Saúde — olho do Gabinete';
-        subtituloDec.textContent = 'Fila · plantão · reclamação · visita surpresa · cobrança';
+        subtituloDec.textContent = 'Aqui você só acompanha. Quem registra o médico de plantão é a Secretaria de Saúde.';
       } else if (eixo === 'eventos') {
         box.innerHTML = '';
         tituloDec.textContent = 'Eventos — agenda e estrutura';
@@ -426,7 +426,8 @@
           <div class="panel" style="grid-column:1/-1">
             <h3 style="margin-bottom:0.35rem">Hoje na Saúde</h3>
             <p class="muted" style="margin-bottom:0.85rem">
-              Atendimentos, fila e cobertura de plantão · atualizado ${fmtDate(saudeHoje.atualizadoEm)}
+              Cobertura de plantão (preenchida pela Saúde) · fila e alertas · atualizado ${fmtDate(saudeHoje.atualizadoEm)}.
+              O Gabinete não digita o nome do médico — só visualiza e cobra.
             </p>
             <div class="list">
               ${saudeHoje.unidades.map(u => {
