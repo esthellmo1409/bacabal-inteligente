@@ -18,6 +18,9 @@
       <button class="btn btn-primary" id="loginBtn" style="width:100%">Entrar</button>
     </div>
     <div id="appView" style="display:none">
+      <div class="cta-row" style="margin-bottom:1rem">
+        <a class="btn btn-sm btn-primary" id="linkAcessos" href="/acessos.html">Gerenciar acessos e senhas</a>
+      </div>
       <div class="grid-2">
         <div class="panel">
           <h3>Perfis de acesso</h3>
@@ -29,22 +32,28 @@
         </div>
       </div>
       <div class="panel" style="margin-top:1rem">
-        <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap">
           <h3>Logs / auditoria</h3>
           <button class="btn btn-sm" id="backup">Backup automático agora</button>
         </div>
         <div id="logs" class="list" style="margin-top:0.75rem"></div>
       </div>
-      <p class="muted" style="margin-top:1rem">Super plataforma: <a href="/admin.html">admin.html</a> (tenants)</p>
+      <p class="muted" style="margin-top:1rem">
+        Gabinete (visão da cidade) é o perfil <strong>prefeito</strong> — área separada.
+        Super plataforma: <a id="linkPlatform" href="/admin.html">admin.html</a> (tenants).
+      </p>
     </div>
   </div>
-  <script src="/app.js?v=ops-lock1"></script>
+  <script src="/app.js?v=admin-sep1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     async function bootBrand() {
       const cfg = await loadCityBrand();
       document.getElementById('top').innerHTML = topbar('Administração', cfg, { lock: true });
+      const a = document.getElementById('linkAcessos');
+      if (a) a.href = cityLink('/acessos.html');
+      rewriteCityLinks();
     }
     bootBrand();
 
@@ -71,7 +80,14 @@
           method: 'POST',
           body: JSON.stringify({ usuario: usuario.value.trim(), senha: senha.value, cidade: getCidade() }),
         });
+        if (r.user.papel !== 'admin') {
+          if (typeof clearAllSessions === 'function') clearAllSessions();
+          else localStorage.removeItem('bi_token');
+          toast('Somente o Administrador municipal acessa esta área');
+          return;
+        }
         localStorage.setItem('bi_token', r.token);
+        if (typeof setSession === 'function') setSession(r.token, r.user);
         await show();
       } catch (e) { toast(e.message); }
     };

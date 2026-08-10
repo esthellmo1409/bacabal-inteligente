@@ -94,7 +94,9 @@
           if (typeof setSession === 'function') setSession(r.token, r.user);
           else localStorage.setItem('bi_user', JSON.stringify(r.user));
           toast('Bem-vindo, ' + r.user.nome);
-          if (r.user.papel === 'prefeito' || r.user.papel === 'admin') {
+          if (r.user.papel === 'admin') {
+            location.href = cityLink('/admin-sistema.html');
+          } else if (r.user.papel === 'prefeito') {
             location.href = cityLink('/prefeito.html');
           } else if (r.user.papel === 'campo') {
             location.href = cityLink('/equipes.html');
