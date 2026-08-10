@@ -134,6 +134,7 @@ Vila Nova</textarea>
     };
 
     document.getElementById('sair').onclick = () => {
+      if (typeof opsPermitirSaida === 'function') opsPermitirSaida();
       localStorage.removeItem('bi_token');
       location.reload();
     };

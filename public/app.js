@@ -872,6 +872,7 @@ function logoutOps(dest) {
 /**
  * Trava saída da página (todas as áreas ops/admin).
  * Só libera ao clicar em Sair (logoutOps / logout).
+ * Cobre Voltar 1x, 2x, 3x… em sequência rápida.
  */
 const _opsBackLock = {
   on: false,
@@ -881,12 +882,16 @@ const _opsBackLock = {
   pageShowHandler: null,
   unloadHandler: null,
   pulse: null,
+  burst: null,
+  burstUntil: 0,
+  lastToast: 0,
   msg: 'Para sair, clique em Sair no topo',
   patchedHistory: false,
 };
 
 function opsLiberarVoltar() {
   _opsBackLock.on = false;
+  _opsBackLock.burstUntil = 0;
   if (_opsBackLock.handler) {
     window.removeEventListener('popstate', _opsBackLock.handler);
     _opsBackLock.handler = null;
@@ -907,6 +912,10 @@ function opsLiberarVoltar() {
     clearInterval(_opsBackLock.pulse);
     _opsBackLock.pulse = null;
   }
+  if (_opsBackLock.burst) {
+    clearInterval(_opsBackLock.burst);
+    _opsBackLock.burst = null;
+  }
 }
 
 /** Libera a trava sem limpar sessão (Sair customizado de uma página). */
@@ -924,6 +933,38 @@ function opsPushBackLock(n) {
   }
 }
 
+/** Após Voltar: dispara rajada rápida para cobrir 2º/3º clique. */
+function opsBackLockBurst(ms) {
+  _opsBackLock.burstUntil = Date.now() + (ms || 2500);
+  opsPushBackLock(40);
+  try { queueMicrotask(() => opsPushBackLock(20)); } catch (_) { opsPushBackLock(20); }
+  setTimeout(() => opsPushBackLock(20), 0);
+  setTimeout(() => opsPushBackLock(20), 30);
+  setTimeout(() => opsPushBackLock(20), 80);
+  setTimeout(() => opsPushBackLock(20), 160);
+  if (_opsBackLock.burst) return;
+  _opsBackLock.burst = setInterval(() => {
+    if (!_opsBackLock.on || _opsBackLock.allowLeave) {
+      clearInterval(_opsBackLock.burst);
+      _opsBackLock.burst = null;
+      return;
+    }
+    if (Date.now() > _opsBackLock.burstUntil) {
+      clearInterval(_opsBackLock.burst);
+      _opsBackLock.burst = null;
+      return;
+    }
+    opsPushBackLock(8);
+  }, 40);
+}
+
+function opsBackLockToast() {
+  const now = Date.now();
+  if (now - _opsBackLock.lastToast < 900) return;
+  _opsBackLock.lastToast = now;
+  if (typeof toast === 'function') toast(_opsBackLock.msg);
+}
+
 function opsPatchHistoryApi() {
   if (_opsBackLock.patchedHistory) return;
   _opsBackLock.patchedHistory = true;
@@ -931,16 +972,16 @@ function opsPatchHistoryApi() {
   const origGo = history.go.bind(history);
   history.back = function () {
     if (_opsBackLock.on && !_opsBackLock.allowLeave) {
-      opsPushBackLock(12);
-      if (typeof toast === 'function') toast(_opsBackLock.msg);
+      opsBackLockBurst(2500);
+      opsBackLockToast();
       return;
     }
     return origBack();
   };
   history.go = function (delta) {
     if (_opsBackLock.on && !_opsBackLock.allowLeave && typeof delta === 'number' && delta < 0) {
-      opsPushBackLock(12);
-      if (typeof toast === 'function') toast(_opsBackLock.msg);
+      opsBackLockBurst(2500);
+      opsBackLockToast();
       return;
     }
     return origGo(delta);
@@ -953,30 +994,31 @@ function opsTravarVoltar(opts = {}) {
   _opsBackLock.allowLeave = false;
   opsPatchHistoryApi();
 
-  // Já ativo: reforça (force empurra mais estados)
+  // Já ativo: reforça
   if (_opsBackLock.on) {
-    opsPushBackLock(opts.force ? 15 : 6);
+    opsPushBackLock(opts.force ? 30 : 12);
     return;
   }
   _opsBackLock.on = true;
 
-  // Pilha grossa — Voltar várias vezes ainda fica nesta página
-  opsPushBackLock(25);
+  // Pilha inicial grossa
+  opsPushBackLock(50);
 
   _opsBackLock.handler = () => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
-    opsPushBackLock(15);
-    if (typeof toast === 'function') toast(_opsBackLock.msg);
+    // Primeiro: reempilha na hora (antes de qualquer await/toast)
+    opsBackLockBurst(3000);
+    opsBackLockToast();
   };
   window.addEventListener('popstate', _opsBackLock.handler);
 
   _opsBackLock.pageShowHandler = (e) => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
-    opsPushBackLock(e && e.persisted ? 15 : 8);
+    // Voltou do bfcache / outro doc — reconstrói a pilha
+    opsBackLockBurst(e && e.persisted ? 3000 : 1500);
   };
   window.addEventListener('pageshow', _opsBackLock.pageShowHandler);
 
-  // Confirmação nativa ao tentar sair (alguns browsers no Voltar)
   _opsBackLock.unloadHandler = (e) => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
     e.preventDefault();
@@ -985,12 +1027,13 @@ function opsTravarVoltar(opts = {}) {
   };
   window.addEventListener('beforeunload', _opsBackLock.unloadHandler);
 
-  // Pulso rápido: mantém o topo do histórico nesta URL
+  // Pulso contínuo (cobre clique duplo entre popstates)
   _opsBackLock.pulse = setInterval(() => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
-    if (!history.state || !history.state.biOpsLock) opsPushBackLock(8);
-    else opsPushBackLock(1);
-  }, 700);
+    const hot = Date.now() < _opsBackLock.burstUntil;
+    if (!history.state || !history.state.biOpsLock) opsPushBackLock(hot ? 20 : 10);
+    else opsPushBackLock(hot ? 4 : 1);
+  }, 280);
 
   _opsBackLock.clickHandler = (e) => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
@@ -1004,7 +1047,7 @@ function opsTravarVoltar(opts = {}) {
     if (url.pathname === location.pathname) return;
     e.preventDefault();
     e.stopPropagation();
-    if (typeof toast === 'function') toast(_opsBackLock.msg);
+    opsBackLockToast();
   };
   document.addEventListener('click', _opsBackLock.clickHandler, true);
 }
