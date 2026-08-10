@@ -473,11 +473,23 @@ function ensureDemoPortfolio(slug = 'bacabal') {
       fotoAntes: A('demo-buraco-antes.jpg'),
       fotoDepois: A('demo-buraco-depois.jpg'),
       materiais: [
-        { nome: 'Brita 1', qtd: 1.5, unidade: 'm³' },
-        { nome: 'Asfalto frio', qtd: 0.4, unidade: 't' },
+        { nome: 'Brita 1', qtd: 1800, unidade: 'kg', detalhe: '≈ 1,5 m³' },
+        { nome: 'Asfalto frio', qtd: 400, unidade: 'kg', detalhe: '≈ 0,4 t' },
+        { nome: 'Emulsão asfáltica', qtd: 25, unidade: 'kg' },
       ],
       horasTrabalhadas: 3.5,
       custo: 680,
+      execucao: {
+        pessoas: 4,
+        equipeNome: 'Equipe Asfalto 01',
+        lider: 'José Carlos',
+        tempoServicoHoras: 3.5,
+        tempoMedioHistoricoHoras: 4.2,
+        diasAteConclusao: 7,
+        veiculo: 'Caminhão brita NMA-1A23',
+        ferramentas: ['pá', 'soquete', 'placa vibratória'],
+        resumo: 'Tapa-buraco: brita + asfalto frio compactado',
+      },
       avaliacao: { nota: 5, comentario: 'Resolveu rápido, rua ficou boa', em: diasAtras(2) },
       criadoEm: diasAtras(9),
       diasHist: [9, 8, 7, 6, 2],
@@ -506,12 +518,24 @@ function ensureDemoPortfolio(slug = 'bacabal') {
       fotoAntes: A('demo-calcada-antes.jpg'),
       fotoDepois: A('demo-calcada-depois.jpg'),
       materiais: [
-        { nome: 'Cimento', qtd: 8, unidade: 'sc' },
-        { nome: 'Areia', qtd: 1.2, unidade: 'm³' },
-        { nome: 'Concreto usinado', qtd: 0.8, unidade: 'm³' },
+        { nome: 'Cimento', qtd: 400, unidade: 'kg', detalhe: '8 sacos de 50 kg' },
+        { nome: 'Areia', qtd: 1600, unidade: 'kg', detalhe: '≈ 1,2 m³' },
+        { nome: 'Concreto usinado', qtd: 1900, unidade: 'kg', detalhe: '≈ 0,8 m³' },
+        { nome: 'Malha de aço', qtd: 12, unidade: 'kg' },
       ],
       horasTrabalhadas: 6,
       custo: 1450,
+      execucao: {
+        pessoas: 5,
+        equipeNome: 'Equipe Calçada',
+        lider: 'Ana Paula',
+        tempoServicoHoras: 6,
+        tempoMedioHistoricoHoras: 5.5,
+        diasAteConclusao: 13,
+        veiculo: 'Utilitário NMA-3C67',
+        ferramentas: ['betoneira', 'desempenadeira', 'régua'],
+        resumo: 'Demolição pontual + concreto novo + acabamento',
+      },
       avaliacao: { nota: 5, comentario: 'Calçada nova, ótimo', em: diasAtras(1) },
       criadoEm: diasAtras(14),
       diasHist: [14, 12, 10, 8, 1],
@@ -540,11 +564,23 @@ function ensureDemoPortfolio(slug = 'bacabal') {
       fotoAntes: A('demo-meiofio-antes.jpg'),
       fotoDepois: A('demo-meiofio-depois.jpg'),
       materiais: [
-        { nome: 'Concreto usinado', qtd: 1.1, unidade: 'm³' },
-        { nome: 'Brita 1', qtd: 0.5, unidade: 'm³' },
+        { nome: 'Concreto usinado', qtd: 2600, unidade: 'kg', detalhe: '≈ 1,1 m³' },
+        { nome: 'Brita 1', qtd: 600, unidade: 'kg', detalhe: '≈ 0,5 m³' },
+        { nome: 'Cimento', qtd: 150, unidade: 'kg', detalhe: '3 sacos' },
       ],
       horasTrabalhadas: 5,
       custo: 980,
+      execucao: {
+        pessoas: 3,
+        equipeNome: 'Equipe Drenagem',
+        lider: 'Roberto Lima',
+        tempoServicoHoras: 5,
+        tempoMedioHistoricoHoras: 4.8,
+        diasAteConclusao: 14,
+        veiculo: 'Caçamba NMA-2B45',
+        ferramentas: ['marreta', 'forma de madeira', 'nível'],
+        resumo: 'Reconstrução de meio-fio com concreto moldado',
+      },
       avaliacao: { nota: 4, comentario: 'Ficou bom', em: diasAtras(4) },
       criadoEm: diasAtras(18),
       diasHist: [18, 16, 12, 10, 4],
@@ -573,11 +609,23 @@ function ensureDemoPortfolio(slug = 'bacabal') {
       fotoAntes: A('demo-poste-antes.jpg'),
       fotoDepois: A('demo-poste-depois.jpg'),
       materiais: [
-        { nome: 'Lâmpada LED 100W', qtd: 1, unidade: 'un' },
-        { nome: 'Reator / driver LED', qtd: 1, unidade: 'un' },
+        { nome: 'Lâmpada LED 100W', qtd: 1, unidade: 'un', detalhe: '≈ 0,8 kg' },
+        { nome: 'Reator / driver LED', qtd: 1, unidade: 'un', detalhe: '≈ 1,2 kg' },
+        { nome: 'Cabo PP 2,5 mm', qtd: 3, unidade: 'm' },
       ],
       horasTrabalhadas: 1.5,
       custo: 220,
+      execucao: {
+        pessoas: 2,
+        equipeNome: 'Equipe Cesta 01',
+        lider: 'Paulo Luz',
+        tempoServicoHoras: 1.5,
+        tempoMedioHistoricoHoras: 1.8,
+        diasAteConclusao: 3,
+        veiculo: 'Cesta aérea',
+        ferramentas: ['multímetro', 'chave isolada', 'EPIs'],
+        resumo: 'Troca de LED + driver no poste',
+      },
       criadoEm: diasAtras(3),
       diasHist: [3, 2, 1, 0],
       histNotas: [
@@ -603,7 +651,21 @@ function ensureDemoPortfolio(slug = 'bacabal') {
       cidadao: { nome: 'Juliana Castro', telefone: '(99) 98555-6677', email: '' },
       fotoAntes: A('demo-lixo-antes.jpg'),
       fotoDepois: null,
-      materiais: [],
+      materiais: [
+        { nome: 'Sacos de entulho (previsto)', qtd: 10, unidade: 'un' },
+      ],
+      horasTrabalhadas: 0,
+      execucao: {
+        pessoas: 3,
+        equipeNome: 'Equipe Limpeza 02',
+        lider: 'Marcos Silva',
+        tempoServicoHoras: null,
+        tempoMedioHistoricoHoras: 2.5,
+        diasAteConclusao: null,
+        veiculo: 'Caçamba',
+        ferramentas: ['pá', 'ancinho'],
+        resumo: 'Remoção de entulho em andamento',
+      },
       criadoEm: diasAtras(1),
       diasHist: [1, 1, 0],
       histNotas: [
@@ -629,9 +691,21 @@ function ensureDemoPortfolio(slug = 'bacabal') {
       fotoAntes: A('demo-buraco-antes.jpg'),
       fotoDepois: null,
       materiais: [
-        { nome: 'Asfalto frio (previsto)', qtd: 1.0, unidade: 't' },
-        { nome: 'Brita 1 (previsto)', qtd: 2.0, unidade: 'm³' },
+        { nome: 'Asfalto frio (previsto)', qtd: 1000, unidade: 'kg', detalhe: '≈ 1,0 t' },
+        { nome: 'Brita 1 (previsto)', qtd: 2400, unidade: 'kg', detalhe: '≈ 2,0 m³' },
       ],
+      horasTrabalhadas: 0,
+      execucao: {
+        pessoas: 4,
+        equipeNome: 'Equipe Asfalto 01',
+        lider: 'José Carlos',
+        tempoServicoHoras: null,
+        tempoMedioHistoricoHoras: 5.0,
+        diasAteConclusao: null,
+        veiculo: 'Caminhão brita (previsto)',
+        ferramentas: ['placa vibratória'],
+        resumo: 'Aguardando liberação de asfalto frio na base',
+      },
       criadoEm: diasAtras(5),
       diasHist: [5, 4, 2],
       histNotas: [
@@ -658,10 +732,22 @@ function ensureDemoPortfolio(slug = 'bacabal') {
       fotoDepois: A('demo-lixo-depois.jpg'),
       materiais: [
         { nome: 'Sacos de entulho', qtd: 12, unidade: 'un' },
+        { nome: 'Entulho removido', qtd: 850, unidade: 'kg' },
         { nome: 'Horas caçamba', qtd: 2, unidade: 'h' },
       ],
       horasTrabalhadas: 2,
       custo: 350,
+      execucao: {
+        pessoas: 3,
+        equipeNome: 'Equipe Limpeza 01',
+        lider: 'Carla Souza',
+        tempoServicoHoras: 2,
+        tempoMedioHistoricoHoras: 2.2,
+        diasAteConclusao: 5,
+        veiculo: 'Caçamba',
+        ferramentas: ['pá', 'ancinho', 'EPIs'],
+        resumo: 'Remoção completa do ponto irregular',
+      },
       avaliacao: { nota: 5, comentario: 'Limparam tudo', em: diasAtras(6) },
       criadoEm: diasAtras(11),
       diasHist: [11, 10, 9, 8, 6],
@@ -716,6 +802,7 @@ function ensureDemoPortfolio(slug = 'bacabal') {
       materiais: s.materiais || [],
       horasTrabalhadas: s.horasTrabalhadas || 0,
       custo: s.custo || 0,
+      execucao: s.execucao || null,
       avaliacao: s.avaliacao || null,
       demoFixo: s.demoFixo,
       historico,
@@ -1399,6 +1486,19 @@ async function handleAPI(req, res, pathname, url) {
     const user = currentUser(req);
     if (user && user.papel === 'secretaria' && user.secretaria && user.cidade === slug) {
       list = list.filter(c => c.secretaria === user.secretaria);
+    }
+
+    // Cidadão / público: só status, fotos e tempo — sem materiais/equipe/custo
+    const papelOps = user && ['secretaria', 'admin', 'prefeito', 'platform', 'campo', 'equipe'].includes(user.papel);
+    if (!papelOps) {
+      list = list.map((c) => {
+        const {
+          materiais, execucao, custo, horasTrabalhadas,
+          cobrancas, alertaGabineteAtivo, cienteGabineteEm,
+          ...publico
+        } = c;
+        return publico;
+      });
     }
 
     list.sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));

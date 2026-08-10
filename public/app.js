@@ -245,6 +245,75 @@ function campoEnviouEm(c) {
  * Conteúdo do "Detalhar" — organizado para operar:
  * 1) linha do tempo  2) fotos antes/depois  3) IA  4) ações
  */
+/** Formata item de material (kg, un, m³…) para secretarias/gabinete. */
+function fmtMaterialLinha(m) {
+  if (typeof m === 'string') return { nome: m, qtdTxt: '', detalhe: '' };
+  const nome = m.nome || m.id || 'Item';
+  let qtdTxt = '';
+  if (m.qtd != null) {
+    const n = Number(m.qtd);
+    const q = Number.isFinite(n)
+      ? (n % 1 === 0 ? String(n) : n.toLocaleString('pt-BR', { maximumFractionDigits: 1 }))
+      : String(m.qtd);
+    qtdTxt = `${q}${m.unidade ? ' ' + m.unidade : ''}`;
+  }
+  return { nome, qtdTxt, detalhe: m.detalhe || '' };
+}
+
+/** Bloco operacional (materiais, pessoas, tempo) — só secretarias/gabinete. */
+function execucaoOpsHtml(c, { tituloPrefix } = {}) {
+  if (!c) return '';
+  const ex = c.execucao || {};
+  const mats = Array.isArray(c.materiais) ? c.materiais : [];
+  const pessoas = ex.pessoas != null ? ex.pessoas : null;
+  const tempo = ex.tempoServicoHoras != null ? ex.tempoServicoHoras : (c.horasTrabalhadas || null);
+  const tempoMedio = ex.tempoMedioHistoricoHoras != null ? ex.tempoMedioHistoricoHoras : null;
+  const dias = ex.diasAteConclusao != null ? ex.diasAteConclusao : null;
+  const temAlgo = mats.length || pessoas || tempo || ex.equipeNome || c.custo;
+  if (!temAlgo) return '';
+
+  const cards = [];
+  if (pessoas != null) {
+    cards.push(`<div class="ops-metric"><span class="ops-metric-val">${pessoas}</span><span class="ops-metric-lbl">pessoa${pessoas === 1 ? '' : 's'} no serviço</span></div>`);
+  }
+  if (tempo != null && Number(tempo) > 0) {
+    cards.push(`<div class="ops-metric"><span class="ops-metric-val">${Number(tempo).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}h</span><span class="ops-metric-lbl">tempo de execução</span></div>`);
+  }
+  if (tempoMedio != null) {
+    cards.push(`<div class="ops-metric"><span class="ops-metric-val">${Number(tempoMedio).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}h</span><span class="ops-metric-lbl">tempo médio (histórico)</span></div>`);
+  }
+  if (dias != null) {
+    cards.push(`<div class="ops-metric"><span class="ops-metric-val">${dias}d</span><span class="ops-metric-lbl">abertura → conclusão</span></div>`);
+  }
+  if (c.custo) {
+    cards.push(`<div class="ops-metric"><span class="ops-metric-val">R$ ${Number(c.custo).toLocaleString('pt-BR')}</span><span class="ops-metric-lbl">custo estimado</span></div>`);
+  }
+
+  const metaLinhas = [];
+  if (ex.equipeNome) metaLinhas.push(`<div class="meta"><strong>Equipe:</strong> ${ex.equipeNome}${ex.lider ? ' · líder ' + ex.lider : ''}</div>`);
+  if (ex.veiculo) metaLinhas.push(`<div class="meta"><strong>Veículo:</strong> ${ex.veiculo}</div>`);
+  if (Array.isArray(ex.ferramentas) && ex.ferramentas.length) {
+    metaLinhas.push(`<div class="meta"><strong>Ferramentas:</strong> ${ex.ferramentas.join(', ')}</div>`);
+  }
+  if (ex.resumo) metaLinhas.push(`<div class="meta"><strong>Resumo:</strong> ${ex.resumo}</div>`);
+
+  const titulo = `${tituloPrefix || ''}Execução do serviço`.trim();
+  return `
+    <div class="detalhe-ops-sec detalhe-ops-exec">
+      <h4 class="detalhe-ops-title">${titulo} <span class="ops-interno-tag">interno · secretaria/gabinete</span></h4>
+      ${cards.length ? `<div class="ops-metrics">${cards.join('')}</div>` : ''}
+      ${metaLinhas.join('')}
+      ${mats.length ? `
+        <div class="meta" style="margin-top:.55rem;font-weight:700;color:#334155">Materiais utilizados</div>
+        <ul class="detalhe-ops-mats">
+          ${mats.map((m) => {
+            const { nome, qtdTxt, detalhe } = fmtMaterialLinha(m);
+            return `<li><strong>${nome}</strong>${qtdTxt ? ' — <span class="ops-qtd">' + qtdTxt + '</span>' : ''}${detalhe ? ' <span class="muted">(' + detalhe + ')</span>' : ''}</li>`;
+          }).join('')}
+        </ul>` : ''}
+    </div>`;
+}
+
 function detalheOperacaoHtml(c, { acoesHtml } = {}) {
   if (!c) return '';
   const cidadaoEm = c.criadoEm ? fmtDate(c.criadoEm) : '—';
@@ -254,50 +323,47 @@ function detalheOperacaoHtml(c, { acoesHtml } = {}) {
     : (c.status === 'encaminhado' || c.status === 'em_execucao'
       ? 'Equipe em campo — foto do depois ainda não chegou'
       : 'Ainda não enviou a foto do depois');
-  return `
-    <div class="detalhe-ops">
+  let n = 1;
+  const tit = () => `${n++} ·`;
+  const secs = [];
+  secs.push(`
       <div class="detalhe-ops-sec">
-        <h4 class="detalhe-ops-title">1 · Linha do tempo</h4>
+        <h4 class="detalhe-ops-title">${tit()} Linha do tempo</h4>
         <div class="detalhe-ops-timeline">
           <div><strong>Cidadão chamou</strong><span>${cidadaoEm}</span></div>
           <div><strong>Equipe em campo</strong><span>${campoTxt}</span></div>
           <div><strong>Status agora</strong><span>${statusLabel(c.status)}</span></div>
         </div>
-      </div>
+      </div>`);
+  secs.push(`
       <div class="detalhe-ops-sec">
-        <h4 class="detalhe-ops-title">2 · Fotos (antes / depois)</h4>
+        <h4 class="detalhe-ops-title">${tit()} Fotos (antes / depois)</h4>
         ${antesDepoisHtml(c, { forcarDupla: true }) || '<p class="muted" style="margin:0">Sem foto anexada ainda.</p>'}
-      </div>
+      </div>`);
+  secs.push(`
       <div class="detalhe-ops-sec">
-        <h4 class="detalhe-ops-title">3 · Relato</h4>
+        <h4 class="detalhe-ops-title">${tit()} Relato</h4>
         <p class="muted" style="margin:0 0 .35rem">${c.descricao || 'Sem descrição.'}</p>
         <div class="meta">${c.cidadao?.nome || 'Cidadão'}${c.cidadao?.telefone ? ' · ' + c.cidadao.telefone : ''}
           ${c.endereco ? ' · ' + c.endereco : ''} · ${c.bairro || ''}</div>
-      </div>
-      ${Array.isArray(c.materiais) && c.materiais.length ? `
+      </div>`);
+  const blocoExec = execucaoOpsHtml(c, { tituloPrefix: `${tit()} ` });
+  if (blocoExec) secs.push(blocoExec);
+  else n -= 1; // desfaz número reservado se não houver execução
+  secs.push(`
       <div class="detalhe-ops-sec">
-        <h4 class="detalhe-ops-title">4 · Materiais utilizados</h4>
-        <ul class="detalhe-ops-mats">
-          ${c.materiais.map((m) => {
-            const nome = typeof m === 'string' ? m : (m.nome || m.id || 'Item');
-            const qtd = typeof m === 'object' && m.qtd != null ? ` — ${m.qtd}${m.unidade ? ' ' + m.unidade : ''}` : '';
-            return `<li><strong>${nome}</strong>${qtd}</li>`;
-          }).join('')}
-        </ul>
-        ${c.horasTrabalhadas ? `<div class="meta" style="margin-top:.35rem">Tempo de execução: ~${c.horasTrabalhadas}h</div>` : ''}
-        ${c.custo ? `<div class="meta">Custo estimado: R$ ${Number(c.custo).toLocaleString('pt-BR')}</div>` : ''}
-      </div>` : ''}
-      <div class="detalhe-ops-sec">
-        <h4 class="detalhe-ops-title">${Array.isArray(c.materiais) && c.materiais.length ? '5' : '4'} · Analisar obra (IA)</h4>
+        <h4 class="detalhe-ops-title">${tit()} Analisar obra (IA)</h4>
         <p class="muted" style="margin:0 0 .45rem;font-size:.82rem">A IA sugere material, quantidade, tempo e ferramentas para a equipe.</p>
         ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : ''}
-      </div>
-      ${acoesHtml ? `
+      </div>`);
+  if (acoesHtml) {
+    secs.push(`
       <div class="detalhe-ops-sec">
-        <h4 class="detalhe-ops-title">${Array.isArray(c.materiais) && c.materiais.length ? '6' : '5'} · Ações</h4>
+        <h4 class="detalhe-ops-title">${tit()} Ações</h4>
         <div class="actions">${acoesHtml}</div>
-      </div>` : ''}
-    </div>`;
+      </div>`);
+  }
+  return `<div class="detalhe-ops">${secs.join('')}</div>`;
 }
 
 /** IDs de Detalhar abertos — sobrevivem ao poll/re-render. */

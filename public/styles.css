@@ -444,6 +444,52 @@ a:hover { text-decoration: underline; }
 .detalhe-ops-mats li {
   font-size: 0.88rem; color: #334155; line-height: 1.35;
 }
+.ops-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.45rem;
+  margin: 0.35rem 0 0.55rem;
+}
+.ops-metric {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.55rem 0.6rem;
+  text-align: center;
+}
+.ops-metric-val {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+.ops-metric-lbl {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #64748b;
+  line-height: 1.25;
+}
+.ops-qtd { font-weight: 800; color: #1e3a8a; }
+.ops-interno-tag {
+  display: inline-block;
+  margin-left: 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #64748b;
+  background: #f1f5f9;
+  border-radius: 999px;
+  padding: 0.15rem 0.45rem;
+  vertical-align: middle;
+}
+.citizen-tempo {
+  font-size: 0.9rem;
+  color: #0f172a;
+}
 .ops-section-head {
   display: flex;
   justify-content: space-between;

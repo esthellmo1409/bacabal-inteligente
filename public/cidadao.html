@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cidadão · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css?v=cidadao-enrich1" />
+  <link rel="stylesheet" href="/styles.css?v=exec-ops1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     .citizen-quick {
@@ -203,7 +203,7 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-cenarios1"></script>
+  <script src="/app.js?v=exec-ops1"></script>
   <script src="/map.js"></script>
   <script>
     if (new URLSearchParams(location.search).get('cidade')) {
@@ -454,6 +454,9 @@
                 Seu chamado foi resolvido ${duracaoTexto(c)}.
                 Confira abaixo como estava (antes) e como ficou (depois).
               </p>
+              <div class="citizen-tempo" style="margin-top:0.55rem">
+                <strong>Tempo de resolução:</strong> ${duracaoTexto(c).replace(/^em /, '') || '—'}
+              </div>
             </div>
           ` : ''}
           ${aguarda ? `
@@ -463,6 +466,7 @@
             </div>
           ` : ''}
           ${antesDepoisHtml(c)}
+          ${(concluido || aguarda) ? '<p class="muted" style="margin:0.55rem 0 0;font-size:0.8rem">Detalhes de materiais e equipe ficam só com a secretaria e o gabinete.</p>' : ''}
           <div class="actions">
             <button class="btn btn-sm" type="button" onclick="copyText('${c.protocolo}')">Copiar protocolo</button>
             <a class="btn btn-sm btn-primary" target="_blank" rel="noopener" href="${waShareUrl(c)}">WhatsApp</a>
