@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>App das Equipes · Bacabal Conecta</title>
-  <link rel="stylesheet" href="/styles.css?v=campo-ops2" />
+  <link rel="stylesheet" href="/styles.css?v=campo-det1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script>
     window.BI_OPS_LOCK = true;
@@ -113,7 +113,7 @@
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem">
           <div>
             <h3 style="margin:0">OS recentes</h3>
-            <p class="muted" style="margin:0.25rem 0 0;font-size:0.85rem">Encaminhadas pela secretaria — foto em destaque pra saber o que fazer.</p>
+            <p class="muted" style="margin:0.25rem 0 0;font-size:0.85rem">Resumo na frente — abra <strong>Detalhar</strong> para fotos e execução.</p>
           </div>
           <span class="muted" id="recentesHint" style="font-size:0.8rem"></span>
         </div>
@@ -133,7 +133,7 @@
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.75rem">
           <div>
             <h3 style="margin:0">Serviços concluídos</h3>
-            <p class="muted" style="margin:0.25rem 0 0;font-size:0.85rem">Com antes e depois — o que a equipe já entregou e a secretaria aprovou.</p>
+            <p class="muted" style="margin:0.25rem 0 0;font-size:0.85rem">Resumo na frente — <strong>Detalhar</strong> mostra antes/depois.</p>
           </div>
           <span class="muted" id="concluidosHint" style="font-size:0.8rem"></span>
         </div>
@@ -142,7 +142,7 @@
     </div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=campo-ops2"></script>
+  <script src="/app.js?v=campo-det1"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
@@ -330,12 +330,53 @@
       }
     }
 
-    function cardRecente(p) {
+    function cardOsHtml(p, { recente, rota, concluido } = {}) {
+      const did = (concluido ? 'campo-ok-' : recente ? 'campo-rec-' : rota ? 'campo-rota-' : 'campo-') + p.id;
       const foto = p.foto || p.fotoAntes;
       const pri = p.prioridade || 'media';
       const isNovo = p.status === 'encaminhado' || p.status === 'em_execucao';
+      const acoesHtml = `
+        <button class="btn btn-sm btn-primary" type="button" data-open="${p.id}">Abrir OS</button>
+        <a class="btn btn-sm" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}">Navegar GPS</a>
+        ${p.status === 'encaminhado' ? `<button class="btn btn-sm" type="button" data-quick-aceitar="${p.id}">Aceitar</button>` : ''}
+      `;
+      const detalheExtra = typeof detalheOperacaoHtml === 'function'
+        ? detalheOperacaoHtml(p, { acoesHtml })
+        : `
+          <p class="muted">${(p.descricao || '').slice(0, 280)}</p>
+          ${antesDepoisHtml(p)}
+          <div class="actions">${acoesHtml}</div>`;
+
+      if (rota) {
+        return `
+        <div class="item" data-chamado-id="${p.id}">
+          <div class="item-head"><strong>${p.ordem}. ${p.titulo}</strong>${badge(p.status)}</div>
+          <div class="meta">${p.protocolo} · ${p.bairro || '—'} · ~${p.etaMin || '—'} min</div>
+          <button type="button" class="btn-detalhar" data-detalhar="${did}">
+            <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+          </button>
+          <div class="detalhe-box" id="detalhe-${did}">${detalheExtra}</div>
+        </div>`;
+      }
+
+      if (concluido) {
+        return `
+        <div class="item" data-chamado-id="${p.id}">
+          <div class="item-head">
+            <strong>${p.titulo} · ${p.protocolo}</strong>
+            ${badge('concluido')}
+          </div>
+          <div class="meta">${p.bairro || '—'} · finalizado ${tempoRelativo(p.atualizadoEm || p.criadoEm)} · ${fmtDate(p.atualizadoEm || p.criadoEm)}</div>
+          <p class="muted" style="margin:0.35rem 0 0">${(p.descricao || '').slice(0, 100)}${(p.descricao || '').length > 100 ? '…' : ''}</p>
+          <button type="button" class="btn-detalhar" data-detalhar="${did}">
+            <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+          </button>
+          <div class="detalhe-box" id="detalhe-${did}">${detalheExtra}</div>
+        </div>`;
+      }
+
       return `
-        <div class="item chamado-card chamado-card-recente" style="cursor:pointer;${isNovo ? 'border-color:rgba(46,125,50,.45);box-shadow:0 0 0 1px rgba(46,125,50,.18)' : ''}" data-open="${p.id}">
+        <div class="item chamado-card chamado-card-recente" style="${isNovo ? 'border-color:rgba(46,125,50,.45);box-shadow:0 0 0 1px rgba(46,125,50,.18)' : ''}" data-chamado-id="${p.id}">
           <div class="chamado-card-body">
             <div class="chamado-card-foto ${foto ? '' : 'sem-foto'}">
               ${foto
@@ -350,39 +391,23 @@
                 ${p.status === 'encaminhado' ? '<span class="badge badge-em_analise">Nova OS</span>' : ''}
               </div>
               <div class="meta">${p.bairro || '—'} · ${tempoRelativo(p.atualizadoEm || p.criadoEm)}</div>
-              <p class="muted" style="margin:0.35rem 0">${(p.descricao || '').slice(0, 120)}${(p.descricao || '').length > 120 ? '…' : ''}</p>
-              ${iaObraAssistHtml(p)}
-              <div class="actions">
-                <button class="btn btn-sm btn-primary" data-open="${p.id}">Abrir OS</button>
-                <a class="btn btn-sm" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}">Navegar GPS</a>
-                ${p.status === 'encaminhado' ? `<button class="btn btn-sm" data-quick-aceitar="${p.id}">Aceitar</button>` : ''}
-              </div>
+              <p class="muted" style="margin:0.35rem 0 0">${(p.descricao || '').slice(0, 100)}${(p.descricao || '').length > 100 ? '…' : ''}</p>
+              <button type="button" class="btn-detalhar" data-detalhar="${did}">
+                <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+              </button>
+              <div class="detalhe-box" id="detalhe-${did}">${detalheExtra}</div>
             </div>
           </div>
         </div>`;
     }
 
-    function cardConcluido(p) {
-      return `
-        <div class="item" style="cursor:pointer" data-open="${p.id}">
-          <div class="item-head">
-            <strong>${p.titulo} · ${p.protocolo}</strong>
-            ${badge('concluido')}
-          </div>
-          <div class="meta">${p.bairro || '—'} · finalizado ${tempoRelativo(p.atualizadoEm || p.criadoEm)} · ${fmtDate(p.atualizadoEm || p.criadoEm)}</div>
-          <p class="muted" style="margin:0.35rem 0">${(p.descricao || '').slice(0, 140)}${(p.descricao || '').length > 140 ? '…' : ''}</p>
-          ${antesDepoisHtml(p)}
-          <div class="actions">
-            <button class="btn btn-sm" data-open="${p.id}">Ver detalhes</button>
-          </div>
-        </div>`;
-    }
+    function cardRecente(p) { return cardOsHtml(p, { recente: true }); }
+    function cardConcluido(p) { return cardOsHtml(p, { concluido: true }); }
 
     async function load() {
       const data = await api('/api/rota?lat=' + cfg.lat + '&lng=' + cfg.lng +
         (user.secretaria ? '&secretaria=' + user.secretaria : ''));
       const recentes = data.recentes || [...(data.rota || [])].reverse().slice(0, 5);
-      window.__campoChamados = [...(data.rota || []), ...recentes];
       const key = recentes.map(p => p.id + ':' + (p.atualizadoEm || '')).join('|');
 
       document.getElementById('kpis').innerHTML = `
@@ -454,47 +479,51 @@
       const iaFalando = typeof opsUiDetalheEmUso === 'function'
         ? opsUiDetalheEmUso(document.getElementById('appView'))
         : !!document.querySelector('[data-ia-obra][data-typing="1"]');
+      const concluidos = data.concluidos || [];
+      window.__campoChamados = [...(data.rota || []), ...recentes, ...concluidos];
+      const byId = Object.fromEntries(window.__campoChamados.map(p => [p.id, p]));
+      const getC = (id) => byId[id] || window.__campoChamados.find((x) => x.id === id);
+
       if (!iaFalando) {
         document.getElementById('recentes').innerHTML = recentes.length
           ? recentes.map(cardRecente).join('')
           : '<p class="muted">Nenhuma OS recente. Aguarde a secretaria encaminhar.</p>';
 
-        document.getElementById('lista').innerHTML = data.rota.map(p => `
-        <div class="item" style="cursor:pointer" data-open="${p.id}">
-          <div class="item-head"><strong>${p.ordem}. ${p.titulo}</strong>${badge(p.status)}</div>
-          <div class="meta">${p.protocolo} · ${p.bairro} · ~${p.etaMin} min</div>
-          <div class="actions">
-            <button class="btn btn-sm btn-primary" data-open="${p.id}">Abrir</button>
-            <a class="btn btn-sm" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}">Navegar GPS</a>
-          </div>
-        </div>`).join('') || '<p class="muted">Sem OS pendentes</p>';
+        document.getElementById('lista').innerHTML = (data.rota || []).length
+          ? data.rota.map((p) => cardOsHtml(p, { rota: true })).join('')
+          : '<p class="muted">Sem OS pendentes</p>';
 
-        const concluidos = data.concluidos || [];
         document.getElementById('concluidosHint').textContent = concluidos.length
-          ? concluidos.length + ' recentes · com antes e depois'
+          ? concluidos.length + ' recentes · abra Detalhar para antes/depois'
           : '';
         document.getElementById('concluidos').innerHTML = concluidos.length
           ? concluidos.map(cardConcluido).join('')
           : '<p class="muted">Nenhum serviço concluído ainda. Quando a Obras aprovar a foto, aparece aqui.</p>';
 
-        const byId = Object.fromEntries([...(data.rota || []), ...(data.recentes || [])].map(p => [p.id, p]));
-        bindIaObraAssist(document.getElementById('appView'), (id) => byId[id] || api('/api/chamados/' + id));
+        if (typeof bindDetalharToggle === 'function') {
+          bindDetalharToggle(document.getElementById('recentes'), getC);
+          bindDetalharToggle(document.getElementById('lista'), getC);
+          bindDetalharToggle(document.getElementById('concluidos'), getC);
+        }
+        if (typeof bindIaObraAssist === 'function') {
+          bindIaObraAssist(document.getElementById('appView'), (id) => getC(id) || api('/api/chamados/' + id));
+        }
       } else {
-        const concluidos = data.concluidos || [];
         document.getElementById('concluidosHint').textContent = concluidos.length
-          ? concluidos.length + ' recentes · com antes e depois'
+          ? concluidos.length + ' recentes · abra Detalhar para antes/depois'
           : '';
       }
       document.querySelectorAll('[data-open]').forEach(el => {
         el.onclick = (e) => {
-          if (e.target.tagName === 'A' || e.target.classList.contains('foto-zoom') || e.target.closest('.antes-depois')) return;
-          if (e.target.closest('[data-quick-aceitar]')) return;
+          e.preventDefault();
+          e.stopPropagation();
           const id = el.getAttribute('data-open');
           if (id) openOS(id);
         };
       });
       document.querySelectorAll('[data-quick-aceitar]').forEach((btn) => {
         btn.onclick = async (e) => {
+          e.preventDefault();
           e.stopPropagation();
           try {
             await api('/api/chamados/' + btn.dataset.quickAceitar + '/os', {
@@ -536,10 +565,8 @@
           </div>
           <a class="btn btn-sm btn-primary" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lng}">Navegar GPS</a>
         </div>
-        <p class="muted" style="margin:.55rem 0">${c.descricao || ''}</p>
-        <p class="meta" style="margin:0 0 .55rem">Toque na foto para ampliar. Ao enviar o <strong>depois</strong>, a secretaria avalia e finaliza.</p>
-        ${antesDepoisHtml(c)}
-        ${iaObraAssistHtml(c)}
+        <p class="muted" style="margin:.55rem 0 0">${(c.descricao || '').slice(0, 160)}${(c.descricao || '').length > 160 ? '…' : ''}</p>
+        <p class="meta" style="margin:.35rem 0 .55rem">Use o fluxo abaixo. Fotos, material e checklist ficam em <strong>Detalhar</strong>.</p>
 
         <div class="campo-steps">
           ${step('aceitar', '1. Aceitar', aceita ? 'OK' : 'Pegar OS', aceita, !aceita)}
@@ -557,66 +584,74 @@
           <button class="btn btn-sm" id="btnReforco" ${!aceita || enviada ? 'disabled' : ''}>Pedir reforço</button>
         </div>
 
-        <div class="campo-block">
-          <h4>Checklist no local</h4>
-          <div class="campo-check">
-            <label><input type="checkbox" id="chkEpi" ${chk.epi ? 'checked' : ''}/> EPI ok</label>
-            <label><input type="checkbox" id="chkSinal" ${chk.sinalizacao ? 'checked' : ''}/> Sinalização</label>
-            <label><input type="checkbox" id="chkTransito" ${chk.transito ? 'checked' : ''}/> Trânsito seguro</label>
-            <label><input type="checkbox" id="chkFotoAntes" ${chk.fotoAntes || (c.fotosAntes && c.fotosAntes.length) || c.fotoAntes ? 'checked' : ''}/> Foto antes</label>
-          </div>
-          <button class="btn btn-sm" id="btnChecklist" type="button">Salvar checklist</button>
-        </div>
+        <button type="button" class="btn-detalhar" data-detalhar="os-ativa-${c.id}">
+          <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
+        </button>
+        <div class="detalhe-box" id="detalhe-os-ativa-${c.id}">
+          ${antesDepoisHtml(c)}
+          ${iaObraAssistHtml(c)}
 
-        <div class="campo-block">
-          <h4>Fotos do serviço</h4>
-          <div class="actions" style="margin:0">
-            <button class="btn btn-sm" id="antes">+ Foto ANTES (até 5)</button>
-            <button class="btn btn-sm" id="depois">+ Foto DEPOIS (até 5)</button>
+          <div class="campo-block">
+            <h4>Checklist no local</h4>
+            <div class="campo-check">
+              <label><input type="checkbox" id="chkEpi" ${chk.epi ? 'checked' : ''}/> EPI ok</label>
+              <label><input type="checkbox" id="chkSinal" ${chk.sinalizacao ? 'checked' : ''}/> Sinalização</label>
+              <label><input type="checkbox" id="chkTransito" ${chk.transito ? 'checked' : ''}/> Trânsito seguro</label>
+              <label><input type="checkbox" id="chkFotoAntes" ${chk.fotoAntes || (c.fotosAntes && c.fotosAntes.length) || c.fotoAntes ? 'checked' : ''}/> Foto antes</label>
+            </div>
+            <button class="btn btn-sm" id="btnChecklist" type="button">Salvar checklist</button>
           </div>
-          <input type="file" id="fAntes" accept="image/*" capture="environment" multiple style="display:none" />
-          <input type="file" id="fDepois" accept="image/*" capture="environment" multiple style="display:none" />
-          <p class="muted" style="font-size:0.8rem;margin:0.55rem 0 0">Várias fotos por fase. A primeira vira capa.</p>
-        </div>
 
-        <div class="campo-block">
-          <h4>Material usado</h4>
-          <div class="campo-chips">
-            ${['Asfalto frio', 'Brita 1', 'Areia', 'Cimento', 'Concreto', 'LED 100W', 'Cabo', 'Saco de lixo'].map((m) =>
-              `<button type="button" class="campo-chip" data-mat-preset="${m}">${m}</button>`).join('')}
+          <div class="campo-block">
+            <h4>Fotos do serviço</h4>
+            <div class="actions" style="margin:0">
+              <button class="btn btn-sm" id="antes">+ Foto ANTES (até 5)</button>
+              <button class="btn btn-sm" id="depois">+ Foto DEPOIS (até 5)</button>
+            </div>
+            <input type="file" id="fAntes" accept="image/*" capture="environment" multiple style="display:none" />
+            <input type="file" id="fDepois" accept="image/*" capture="environment" multiple style="display:none" />
+            <p class="muted" style="font-size:0.8rem;margin:0.55rem 0 0">Várias fotos por fase. A primeira vira capa.</p>
           </div>
-          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-            <input id="matNome" placeholder="Outro material…" style="margin:0;flex:1" />
-            <input id="matQtd" type="number" value="1" min="0.1" step="0.1" style="margin:0;max-width:80px" />
-            <button class="btn btn-sm" id="addMat">Registrar</button>
-          </div>
-          ${mats.length ? `<p class="muted" style="margin:.55rem 0 0;font-size:.8rem">Já registrado: ${mats.map((m) => `${m.nome} x${m.qtd}`).join(' · ')}</p>` : ''}
-        </div>
 
-        <div class="campo-block">
-          <h4>Equipe no serviço</h4>
-          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
-            <label class="muted" style="margin:0">Pessoas</label>
-            <input id="pessoas" type="number" min="1" max="20" value="${os.pessoas || 3}" style="margin:0;width:72px" />
-            <button class="btn btn-sm" id="btnPessoas">Salvar</button>
-            <label class="muted" style="margin:0 0 0 .5rem">Horas</label>
-            <input id="horas" type="number" step="0.5" value="${c.horasTrabalhadas || 2}" style="margin:0;width:80px" />
-            <button class="btn btn-sm" id="addHoras">Salvar horas</button>
+          <div class="campo-block">
+            <h4>Material usado</h4>
+            <div class="campo-chips">
+              ${['Asfalto frio', 'Brita 1', 'Areia', 'Cimento', 'Concreto', 'LED 100W', 'Cabo', 'Saco de lixo'].map((m) =>
+                `<button type="button" class="campo-chip" data-mat-preset="${m}">${m}</button>`).join('')}
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+              <input id="matNome" placeholder="Outro material…" style="margin:0;flex:1" />
+              <input id="matQtd" type="number" value="1" min="0.1" step="0.1" style="margin:0;max-width:80px" />
+              <button class="btn btn-sm" id="addMat">Registrar</button>
+            </div>
+            ${mats.length ? `<p class="muted" style="margin:.55rem 0 0;font-size:.8rem">Já registrado: ${mats.map((m) => `${m.nome} x${m.qtd}`).join(' · ')}</p>` : ''}
           </div>
-        </div>
 
-        <div class="campo-block">
-          <h4>Ocorrência / observação</h4>
-          <div class="campo-chips">
-            ${[['chuva', 'Chuva'], ['buraco_maior', 'Buraco maior'], ['precisa_retro', 'Precisa retro'], ['rede', 'Rede/interferência'], ['transito', 'Trânsito intenso']].map(([v, l]) =>
-              `<button type="button" class="campo-chip" data-ocor="${v}">${l}</button>`).join('')}
+          <div class="campo-block">
+            <h4>Equipe no serviço</h4>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+              <label class="muted" style="margin:0">Pessoas</label>
+              <input id="pessoas" type="number" min="1" max="20" value="${os.pessoas || 3}" style="margin:0;width:72px" />
+              <button class="btn btn-sm" id="btnPessoas">Salvar</button>
+              <label class="muted" style="margin:0 0 0 .5rem">Horas</label>
+              <input id="horas" type="number" step="0.5" value="${c.horasTrabalhadas || 2}" style="margin:0;width:80px" />
+              <button class="btn btn-sm" id="addHoras">Salvar horas</button>
+            </div>
           </div>
-          <textarea id="obsCampo" rows="2" placeholder="Detalhe pra secretaria…" style="width:100%;margin:0 0 .45rem">${os.obsCampo || ''}</textarea>
-          <div class="cta-row">
-            <button class="btn btn-sm" id="btnObs">Salvar observação</button>
-            <button class="btn btn-sm" id="btnOcorAvistar">Registrar ocorrência + avisar</button>
+
+          <div class="campo-block">
+            <h4>Ocorrência / observação</h4>
+            <div class="campo-chips">
+              ${[['chuva', 'Chuva'], ['buraco_maior', 'Buraco maior'], ['precisa_retro', 'Precisa retro'], ['rede', 'Rede/interferência'], ['transito', 'Trânsito intenso']].map(([v, l]) =>
+                `<button type="button" class="campo-chip" data-ocor="${v}">${l}</button>`).join('')}
+            </div>
+            <textarea id="obsCampo" rows="2" placeholder="Detalhe pra secretaria…" style="width:100%;margin:0 0 .45rem">${os.obsCampo || ''}</textarea>
+            <div class="cta-row">
+              <button class="btn btn-sm" id="btnObs">Salvar observação</button>
+              <button class="btn btn-sm" id="btnOcorAvistar">Registrar ocorrência + avisar</button>
+            </div>
+            ${os.ultimaOcorrencia ? `<p class="muted" style="margin:.45rem 0 0;font-size:.8rem">Última: ${os.ultimaOcorrencia.tipo}${os.ultimaOcorrencia.texto ? ' — ' + os.ultimaOcorrencia.texto : ''}</p>` : ''}
           </div>
-          ${os.ultimaOcorrencia ? `<p class="muted" style="margin:.45rem 0 0;font-size:.8rem">Última: ${os.ultimaOcorrencia.tipo}${os.ultimaOcorrencia.texto ? ' — ' + os.ultimaOcorrencia.texto : ''}</p>` : ''}
         </div>
 
         ${c.status === 'aguardando_aprovacao'
@@ -625,6 +660,26 @@
         }
       `;
       document.getElementById('osBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (typeof bindDetalharToggle === 'function') {
+        bindDetalharToggle(document.getElementById('osBox'), async (cid) => {
+          if (selected && selected.id === cid) return selected;
+          return api('/api/chamados/' + cid);
+        });
+      }
+      // Reabre o Detalhar da OS ativa se o usuário já tinha aberto
+      try {
+        const did = 'os-ativa-' + c.id;
+        if (window.__opsDetalheAbertos && window.__opsDetalheAbertos.has(did)) {
+          const box = document.getElementById('detalhe-' + did);
+          const btn = document.querySelector(`[data-detalhar="${did}"]`);
+          if (box) box.classList.add('open');
+          if (btn) {
+            btn.classList.add('open');
+            const label = btn.querySelector('[data-detalhar-label]');
+            if (label) label.textContent = 'Ocultar detalhes';
+          }
+        }
+      } catch (_) {}
       if (typeof bindFotoThumbs === 'function') bindFotoThumbs(document.getElementById('osBox'));
       bindIaObraAssist(document.getElementById('osBox'), async (cid) => {
         if (selected && selected.id === cid) return selected;
