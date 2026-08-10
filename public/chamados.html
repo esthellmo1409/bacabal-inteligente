@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <script>
+    window.BI_OPS_LOCK = true;
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gestão de Chamados · Bacabal Conecta</title>
@@ -46,7 +50,12 @@
       <div class="panel" id="detalhe"><p class="muted">Selecione um chamado</p></div>
     </div>
   </div>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=ops-back-all1"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
+  </script>
+
   <script>
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     let cfg, selected = null, user = null;

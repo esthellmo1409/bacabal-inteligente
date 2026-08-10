@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <script>
+    window.BI_OPS_LOCK = true;
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plantão da Saúde</title>
@@ -14,5 +18,11 @@
 </head>
 <body>
   <p style="font-family:system-ui;padding:2rem">Abrindo a Central operacional da Saúde…</p>
+  <script src="/app.js?v=ops-back-all1"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
+  </script>
+
 </body>
 </html>

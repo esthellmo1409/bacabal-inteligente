@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <script>
+    window.BI_OPS_LOCK = true;
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Módulos extras · Bacabal Conecta</title>
@@ -13,7 +17,12 @@
     <p class="muted" style="margin-bottom:1rem">Diferenciais para expandir o contrato modular</p>
     <div class="grid-3" id="grid"></div>
   </div>
-  <script src="/app.js"></script>
+  <script src="/app.js?v=ops-back-all1"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
+  </script>
+
   <script>
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
     const links = {

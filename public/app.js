@@ -870,12 +870,8 @@ function logoutOps(dest) {
 }
 
 /**
- * Trava saída da página: Voltar do browser e links que saem da área.
+ * Trava saída da página (todas as áreas ops/admin).
  * Só libera ao clicar em Sair (logoutOps / logout).
- *
- * Importante (MPA): o Voltar pode ir para OUTRO HTML (ex.: login). Por isso
- * empilhamos vários estados na MESMA URL e, a cada popstate, reempilhamos
- * imediatamente — o documento não chega a trocar.
  */
 const _opsBackLock = {
   on: false,
@@ -883,8 +879,10 @@ const _opsBackLock = {
   handler: null,
   clickHandler: null,
   pageShowHandler: null,
+  unloadHandler: null,
   pulse: null,
   msg: 'Para sair, clique em Sair no topo',
+  patchedHistory: false,
 };
 
 function opsLiberarVoltar() {
@@ -901,10 +899,20 @@ function opsLiberarVoltar() {
     window.removeEventListener('pageshow', _opsBackLock.pageShowHandler);
     _opsBackLock.pageShowHandler = null;
   }
+  if (_opsBackLock.unloadHandler) {
+    window.removeEventListener('beforeunload', _opsBackLock.unloadHandler);
+    _opsBackLock.unloadHandler = null;
+  }
   if (_opsBackLock.pulse) {
     clearInterval(_opsBackLock.pulse);
     _opsBackLock.pulse = null;
   }
+}
+
+/** Libera a trava sem limpar sessão (Sair customizado de uma página). */
+function opsPermitirSaida() {
+  _opsBackLock.allowLeave = true;
+  opsLiberarVoltar();
 }
 
 function opsPushBackLock(n) {
@@ -916,46 +924,79 @@ function opsPushBackLock(n) {
   }
 }
 
+function opsPatchHistoryApi() {
+  if (_opsBackLock.patchedHistory) return;
+  _opsBackLock.patchedHistory = true;
+  const origBack = history.back.bind(history);
+  const origGo = history.go.bind(history);
+  history.back = function () {
+    if (_opsBackLock.on && !_opsBackLock.allowLeave) {
+      opsPushBackLock(12);
+      if (typeof toast === 'function') toast(_opsBackLock.msg);
+      return;
+    }
+    return origBack();
+  };
+  history.go = function (delta) {
+    if (_opsBackLock.on && !_opsBackLock.allowLeave && typeof delta === 'number' && delta < 0) {
+      opsPushBackLock(12);
+      if (typeof toast === 'function') toast(_opsBackLock.msg);
+      return;
+    }
+    return origGo(delta);
+  };
+}
+
 function opsTravarVoltar(opts = {}) {
   if (window.BI_ALLOW_BACK) return;
   if (opts.msg) _opsBackLock.msg = opts.msg;
   _opsBackLock.allowLeave = false;
+  opsPatchHistoryApi();
 
-  // Já ativo: só reforça a pilha (ex.: depois de replaceState da aba)
+  // Já ativo: reforça (force empurra mais estados)
   if (_opsBackLock.on) {
-    opsPushBackLock(3);
+    opsPushBackLock(opts.force ? 15 : 6);
     return;
   }
   _opsBackLock.on = true;
 
-  // Muitos estados = precisa apertar Voltar muitas vezes seguidas para escapar
-  opsPushBackLock(8);
+  // Pilha grossa — Voltar várias vezes ainda fica nesta página
+  opsPushBackLock(25);
 
   _opsBackLock.handler = () => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
-    // Reempilha na hora — impede cair no HTML anterior (login/início)
-    opsPushBackLock(5);
+    opsPushBackLock(15);
     if (typeof toast === 'function') toast(_opsBackLock.msg);
   };
   window.addEventListener('popstate', _opsBackLock.handler);
 
   _opsBackLock.pageShowHandler = (e) => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
-    if (e && e.persisted) opsPushBackLock(5);
+    opsPushBackLock(e && e.persisted ? 15 : 8);
   };
   window.addEventListener('pageshow', _opsBackLock.pageShowHandler);
 
-  // Reforço periódico (replaceState de abas / race do Voltar)
+  // Confirmação nativa ao tentar sair (alguns browsers no Voltar)
+  _opsBackLock.unloadHandler = (e) => {
+    if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  };
+  window.addEventListener('beforeunload', _opsBackLock.unloadHandler);
+
+  // Pulso rápido: mantém o topo do histórico nesta URL
   _opsBackLock.pulse = setInterval(() => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
-    if (!history.state || !history.state.biOpsLock) opsPushBackLock(2);
-  }, 1500);
+    if (!history.state || !history.state.biOpsLock) opsPushBackLock(8);
+    else opsPushBackLock(1);
+  }, 700);
 
   _opsBackLock.clickHandler = (e) => {
     if (!_opsBackLock.on || _opsBackLock.allowLeave) return;
     const a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
     if (!a) return;
-    if (a.classList.contains('nav-logout') || /sair/i.test((a.textContent || '').trim())) return;
+    if (a.classList.contains('nav-logout') || /^\s*sair\s*$/i.test((a.textContent || '').trim())) return;
     const href = a.getAttribute('href') || '';
     if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
     let url;
@@ -973,19 +1014,17 @@ function opsGoto(href) {
   if (typeof toast === 'function') toast(_opsBackLock.msg || 'Para sair, clique em Sair no topo');
 }
 
-// Liga a trava cedo (antes do boot async) em qualquer página ops
+// Liga a trava cedo em qualquer página ops
 (function opsBackLockBoot() {
   function arm() {
     if (window.BI_ALLOW_BACK) return;
-    if (window.BI_OPS_LOCK || window.BI_AUTH_SLOT) opsTravarVoltar();
+    if (window.BI_OPS_LOCK || window.BI_AUTH_SLOT) opsTravarVoltar({ force: true });
   }
   arm();
   if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', arm);
-    } else {
-      arm();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arm);
+    else arm();
+    window.addEventListener('load', () => arm());
   }
 })();
 
