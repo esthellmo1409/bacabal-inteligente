@@ -1396,6 +1396,28 @@ async function handleAPI(req, res, pathname, url) {
         };
       } catch (_) { return null; }
     })();
+    const obrasPainel = (() => {
+      try {
+        const data = readTenant(slug, 'obras-ops-hoje.json', null);
+        if (!data) return null;
+        const pontos = data.pontosQuentes || [];
+        return {
+          totais: {
+            pontosAbertos: pontos.filter((p) => p.status !== 'concluido').length,
+            pontosAlta: pontos.filter((p) => p.prioridade === 'alta' && p.status !== 'concluido').length,
+            equipesEmCampo: (data.equipes || []).filter((e) => e.status === 'em_campo').length,
+            frotaLivre: (data.frota || []).filter((f) => f.status === 'disponivel').length,
+            frotaTotal: (data.frota || []).length,
+            materiaisBaixos: (data.materiais || []).filter((m) => (m.qtd || 0) < (m.minimo || 0)).length,
+            rotaPendentes: (data.rota || []).filter((r) => r.status !== 'concluido').length,
+            obrasAtrasadas: obras.filter((o) => o.status === 'atrasada').length,
+            osAbertas: chamados.filter((c) => c.secretaria === 'obras' && !['concluido', 'cancelado'].includes(c.status)).length,
+          },
+          pontosQuentes: pontos,
+          alertas: [],
+        };
+      } catch (_) { return null; }
+    })();
     const out = assistenteGabinete({
       opcao: body.opcao || body.option || 'ajuda',
       chamados,
@@ -1404,6 +1426,7 @@ async function handleAPI(req, res, pathname, url) {
       cidade: cfg.cidade || slug,
       cargo,
       iluminacaoPainel,
+      obrasPainel,
     });
     return sendJSON(res, 200, out);
   }

@@ -50,6 +50,22 @@
       background:#fff7ed; border:1px solid #fdba74; color:#9a3412; font-size:0.88rem; font-weight:600;
       grid-column:1/-1;
     }
+    .obr-modulos {
+      display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:0.55rem;
+      margin:0 0 0.85rem; grid-column:1/-1;
+    }
+    .obr-mod {
+      background:#fff7ed; border:1px solid #fdba74; border-radius:12px; padding:0.7rem 0.8rem;
+    }
+    .obr-mod span { display:block; font-size:0.68rem; font-weight:800; color:#c2410c; text-transform:uppercase; letter-spacing:.03em; }
+    .obr-mod strong { font-size:1.25rem; color:#7c2d12; }
+    .obr-mod small { display:block; color:#64748b; font-size:0.72rem; margin-top:0.15rem; }
+    .obr-alert-banner {
+      display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;
+      padding:0.75rem 1rem; border-radius:12px; margin-bottom:0.85rem;
+      background:#fff7ed; border:1px solid #fb923c; color:#9a3412; font-size:0.88rem; font-weight:600;
+      grid-column:1/-1;
+    }
     .turno-pill {
       display:inline-flex; align-items:center; padding:0.22rem 0.5rem; border-radius:999px;
       font-size:0.7rem; font-weight:800; background:#f1f5f9; margin:0.15rem 0.15rem 0 0;
@@ -58,7 +74,7 @@
     .turno-pill.confirmado { background:#dcfce7; color:#166534; }
     .turno-pill.previsto { background:#e0f2fe; color:#075985; }
     @media (max-width:900px) {
-      .saude-modulos, .ilu-modulos { grid-template-columns:1fr 1fr; }
+      .saude-modulos, .ilu-modulos, .obr-modulos { grid-template-columns:1fr 1fr; }
     }
     .visita-backdrop {
       position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:9998;
@@ -161,6 +177,7 @@
         <button type="button" class="btn btn-sm" data-ia-gab="priorizar">O que priorizar agora?</button>
         <button type="button" class="btn btn-sm" data-ia-gab="saude">Saúde em resumo</button>
         <button type="button" class="btn btn-sm" data-ia-gab="iluminacao">Iluminação em resumo</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="obras">Obras em resumo</button>
       </div>
       <div id="iaGabResposta" class="ia-gabinete-resposta" hidden>
         <strong id="iaGabResTitulo" style="display:block;margin-bottom:0.35rem"></strong>
@@ -169,7 +186,8 @@
     </div>
 
     <div class="eixo-tabs" id="tabs">
-      <button type="button" class="eixo-tab active" data-eixo="cidade">Cidade<small>Ruas, obras, limpeza</small></button>
+      <button type="button" class="eixo-tab active" data-eixo="cidade">Cidade<small>Limpeza · trânsito</small></button>
+      <button type="button" class="eixo-tab" data-eixo="obras">Obras<small>Pontos · equipes · frota</small></button>
       <button type="button" class="eixo-tab" data-eixo="iluminacao">Iluminação<small>Postes · rota · LED</small></button>
       <button type="button" class="eixo-tab" data-eixo="saude">Saúde<small>Escala · fila · plantão</small></button>
       <button type="button" class="eixo-tab" data-eixo="eventos">Eventos<small>Agenda e estrutura</small></button>
@@ -250,7 +268,7 @@
     </div>
 
     <div class="footer">
-      <span>Cidade · Iluminação · Saúde · Eventos no mesmo Gabinete</span>
+      <span>Cidade · Obras · Iluminação · Saúde · Eventos no mesmo Gabinete</span>
       <a id="linkSec" href="/secretaria.html">Secretarias</a>
     </div>
   </div>
@@ -280,8 +298,9 @@
     function eixoParaSecretaria() {
       if (eixo === 'saude') return 'saude';
       if (eixo === 'iluminacao') return 'iluminacao';
+      if (eixo === 'obras') return 'obras';
       if (eixo === 'eventos') return 'eventos';
-      return chatSec && !['saude', 'eventos', 'iluminacao'].includes(chatSec) ? chatSec : 'obras';
+      return chatSec && !['saude', 'eventos', 'iluminacao', 'obras'].includes(chatSec) ? chatSec : 'limpeza';
     }
 
     function posteStatusLabel(s) {
@@ -292,6 +311,15 @@
     }
     function rotaStatusLabel(s) {
       return ({ pendente: 'Pendente', em_atendimento: 'Em atendimento', concluido: 'Concluído' })[s] || s;
+    }
+    function pontoStatusLabel(s) {
+      return ({
+        pendente: 'Pendente',
+        em_deslocamento: 'Em deslocamento',
+        em_execucao: 'Em execução',
+        aguardando_material: 'Aguardando material',
+        concluido: 'Concluído',
+      })[s] || String(s || '—').replace(/_/g, ' ');
     }
 
     function fmtChatHora(iso) {
@@ -596,19 +624,130 @@
         document.getElementById('btnCobrarIlu').onclick = () => cobrarIluminacao();
         tituloDec.textContent = 'Iluminação — olho do Gabinete';
         subtituloDec.textContent = 'Visualiza postes, rota da noite, frota e estoque LED. Quem opera é a Secretaria de Iluminação.';
+      } else if (eixo === 'obras') {
+        box.innerHTML = `
+          <button class="btn btn-sm btn-warn" id="btnCobrarObr" type="button">Cobrar Obras</button>`;
+        document.getElementById('btnCobrarObr').onclick = () => cobrarObras();
+        tituloDec.textContent = 'Obras — olho do Gabinete';
+        subtituloDec.textContent = 'Visualiza pontos quentes, rota, equipes, frota e materiais. Quem opera é a Secretaria de Obras.';
       } else if (eixo === 'eventos') {
         box.innerHTML = '';
         tituloDec.textContent = 'Eventos — agenda e estrutura';
         subtituloDec.textContent = 'Priorizar estrutura, segurança e limpeza dos eventos da cidade';
       } else {
         box.innerHTML = '';
-        tituloDec.textContent = 'Cidade — ruas e serviços';
-        subtituloDec.textContent = 'Obras, limpeza e serviços urbanos — priorizar e cobrar secretarias';
+        tituloDec.textContent = 'Cidade — serviços urbanos';
+        subtituloDec.textContent = 'Limpeza, trânsito e demais serviços — priorizar e cobrar secretarias';
       }
     }
 
-    function renderExtra(g, saudeHoje, iluminacaoHoje) {
+    function renderExtra(g, saudeHoje, iluminacaoHoje, obrasHoje) {
       const box = document.getElementById('blocoExtra');
+      if (eixo === 'obras' && obrasHoje) {
+        const t = obrasHoje.totais || {};
+        const alertas = obrasHoje.alertas || [];
+        const pontos = (obrasHoje.pontosQuentes || []).filter((p) => p.status !== 'concluido');
+        box.innerHTML = `
+          <div class="obr-modulos">
+            <div class="obr-mod"><span>Pontos</span><strong>${t.pontosAbertos || 0}</strong><small>${t.pontosAlta || 0} alta</small></div>
+            <div class="obr-mod"><span>Rota</span><strong>${t.rotaPendentes || 0}</strong><small>pendentes</small></div>
+            <div class="obr-mod"><span>Equipes</span><strong>${t.equipesEmCampo || 0}</strong><small>em campo</small></div>
+            <div class="obr-mod"><span>Frota</span><strong>${t.frotaLivre || 0}/${t.frotaTotal || 0}</strong><small>livres</small></div>
+            <div class="obr-mod"><span>Materiais</span><strong>${t.materiaisBaixos || 0}</strong><small>abaixo do mín.</small></div>
+            <div class="obr-mod"><span>Obras</span><strong>${t.obrasAtrasadas || 0}</strong><small>atrasadas</small></div>
+          </div>
+          ${alertas.length ? `
+            <div class="obr-alert-banner">
+              ${alertas.length} alerta(s) operacional(is) — cobre as Obras se precisar de resposta rápida
+            </div>
+            <div class="panel" style="grid-column:1/-1;border-color:#fb923c;background:#fff7ed">
+              <h3 style="margin-bottom:0.55rem;color:#9a3412">Alertas das Obras</h3>
+              ${alertas.map((a) => `<div class="meta" style="margin-bottom:0.45rem;color:#9a3412;font-weight:600">${a.mensagem}</div>`).join('')}
+            </div>` : ''}
+          <div class="panel" style="grid-column:1/-1;border-color:#fdba74">
+            <h3 style="margin-bottom:0.35rem">Pontos quentes</h3>
+            <p class="muted" style="margin-bottom:0.85rem">
+              Preenchido pela Secretaria de Obras · atualizado ${fmtDate(obrasHoje.atualizadoEm)}.
+              Gabinete só visualiza e cobra.
+            </p>
+            <div class="list">
+              ${pontos.map((p) => `
+                <div class="item">
+                  <div class="item-head">
+                    <strong>${p.titulo}</strong>
+                    <span class="badge ${p.prioridade === 'alta' ? 'badge-cancelado' : 'badge-em_analise'}">${pontoStatusLabel(p.status)}</span>
+                  </div>
+                  <div class="meta">${p.bairro} · ${p.rua}${p.prazoHoje ? ' · prazo ' + p.prazoHoje : ''}</div>
+                  ${p.motivoAtraso ? `<div class="meta" style="color:#b91c1c;font-weight:600">${p.motivoAtraso}</div>` : ''}
+                  ${p.prioridade === 'alta' ? `
+                    <div class="actions">
+                      <button class="btn btn-sm btn-warn" onclick="cobrarObras('${String(p.titulo || '').replace(/'/g, '')}')">Cobrar secretaria</button>
+                    </div>` : ''}
+                </div>`).join('') || '<p class="muted">Nenhum ponto quente aberto.</p>'}
+            </div>
+          </div>
+          <div class="panel">
+            <h3 style="margin-bottom:0.55rem">Rota do dia</h3>
+            <div class="list">
+              ${(obrasHoje.rota || []).map((r) => `
+                <div class="item">
+                  <div class="item-head"><strong>#${r.ordem} · ${r.titulo}</strong>
+                    <span class="badge">${rotaStatusLabel(r.status)}</span>
+                  </div>
+                  <div class="meta">${r.bairro} · ${r.rua}</div>
+                </div>`).join('') || '<p class="muted">Sem rota montada.</p>'}
+            </div>
+          </div>
+          <div class="panel">
+            <h3 style="margin-bottom:0.55rem">Equipes · frota · materiais</h3>
+            <div class="list">
+              ${(obrasHoje.equipes || []).map((e) => `
+                <div class="item"><div class="item-head"><strong>${e.nome}</strong><span class="badge">${String(e.status || '').replace(/_/g, ' ')}</span></div>
+                <div class="meta">${e.lider || '—'} · ${e.veiculoId || 'sem veículo'}</div></div>`).join('') || ''}
+            </div>
+            <div class="list" style="margin-top:0.65rem">
+              ${(obrasHoje.frota || []).map((f) => `
+                <div class="item"><div class="item-head"><strong>${f.placa}</strong><span class="badge">${frotaStatusLabel(f.status)}</span></div>
+                <div class="meta">${f.tipo} · ${f.motorista || '—'}</div></div>`).join('') || ''}
+            </div>
+            <div class="list" style="margin-top:0.65rem">
+              ${(obrasHoje.materiais || []).map((m) => {
+                const baixo = (m.qtd || 0) < (m.minimo || 0);
+                return `<div class="item"><div class="item-head"><strong>${m.nome}</strong>
+                  <span class="badge ${baixo ? 'badge-cancelado' : 'badge-concluido'}">${m.qtd} ${m.unidade || ''}</span></div>
+                  <div class="meta">Mínimo ${m.minimo}${baixo ? ' · abaixo do mínimo' : ''}</div></div>`;
+              }).join('') || ''}
+            </div>
+          </div>
+          <div class="panel" style="grid-column:1/-1">
+            <h3 style="margin-bottom:0.55rem">Obras grandes (transparência)</h3>
+            <div class="list">
+              ${(obrasHoje.obras || []).map((o) => `
+                <div class="item">
+                  <div class="item-head"><strong>${o.nome}</strong>
+                    <span class="badge ${o.status === 'atrasada' ? 'badge-cancelado' : o.status === 'concluida' ? 'badge-concluido' : 'badge-em_analise'}">${o.status}</span>
+                  </div>
+                  <div class="meta">${o.bairro || '—'} · ${o.percentual || 0}% · prazo ${o.prazo || '—'} · ${o.empresa || ''}</div>
+                </div>`).join('') || '<p class="muted">Sem obras cadastradas.</p>'}
+            </div>
+          </div>
+          ${((obrasHoje.chamados || []).length) ? `
+          <div class="panel" style="grid-column:1/-1">
+            <h3 style="margin-bottom:0.55rem">Chamados das Obras</h3>
+            <div class="list">
+              ${obrasHoje.chamados.slice(0, 8).map((c) => `
+                <div class="item">
+                  <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span></div>
+                  <div class="meta">${c.titulo || c.categoria} · ${c.bairro || ''}</div>
+                  <div class="actions">
+                    <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+                    <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
+                  </div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}`;
+        return;
+      }
       if (eixo === 'iluminacao' && iluminacaoHoje) {
         const t = iluminacaoHoje.totais || {};
         const alertas = iluminacaoHoje.alertas || [];
@@ -895,22 +1034,48 @@
           : 'Cobrança do Gabinete — verificar postes, rota da noite e estoque LED.',
       });
     }
+
+    async function cobrarObras(detalhe) {
+      const pendente = (lastFila?.fila || [])[0];
+      if (!pendente) {
+        toast('Sem chamado aberto nas Obras — use o chat para cobrar a secretaria');
+        chatSec = 'obras';
+        await loadChat().catch(() => {});
+        const input = document.getElementById('chatInput');
+        if (input) {
+          input.value = detalhe
+            ? `Gabinete cobrando: ${detalhe}. Preciso de retorno da equipe/rota.`
+            : 'Gabinete cobrando Obras: atualizem pontos quentes, rota do dia e materiais.';
+          input.focus();
+        }
+        return;
+      }
+      await decidir(pendente.id, 'cobrar', {
+        nota: detalhe
+          ? `Cobrança do Gabinete — Obras: ${detalhe}`
+          : 'Cobrança do Gabinete — verificar pontos quentes, rota, frota e materiais.',
+      });
+    }
     window.cobrarUnidade = cobrarUnidade;
     window.cobrarIluminacao = cobrarIluminacao;
+    window.cobrarObras = cobrarObras;
     window.visitaSurpresa = visitaSurpresa;
 
     async function load() {
       const m = await api('/api/metricas');
-      const obras = await api('/api/obras');
       const g = await api('/api/gabinete/fila?eixo=' + eixo);
       lastFila = g;
       let saudeHoje = null;
       let iluminacaoHoje = null;
+      let obrasHoje = null;
       if (eixo === 'saude') {
         saudeHoje = await api('/api/saude/hoje');
       }
       if (eixo === 'iluminacao') {
         iluminacaoHoje = await api('/api/iluminacao/hoje');
+      }
+      if (eixo === 'obras') {
+        obrasHoje = await api('/api/obras-ops/hoje');
       }
 
       document.getElementById('kpis').innerHTML = eixo === 'saude' && saudeHoje ? `
@@ -931,6 +1096,15 @@
           <div class="hint">${iluminacaoHoje.totais.estoqueBaixo} item(ns) estoque baixo</div></div>
         <div class="panel stat"><div class="label">Chamados abertos</div><div class="value">${iluminacaoHoje.totais.chamadosAbertos}</div>
           <div class="hint">${(iluminacaoHoje.alertas || []).length} alerta(s) operacional(is)</div></div>
+      ` : eixo === 'obras' && obrasHoje ? `
+        <div class="panel stat"><div class="label">Pontos quentes</div><div class="value">${obrasHoje.totais.pontosAbertos}</div>
+          <div class="hint">${obrasHoje.totais.pontosAlta} prioridade alta</div></div>
+        <div class="panel stat"><div class="label">Rota do dia</div><div class="value">${obrasHoje.totais.rotaPendentes}</div>
+          <div class="hint">${obrasHoje.totais.equipesEmCampo} equipe(s) em campo</div></div>
+        <div class="panel stat"><div class="label">Frota livre</div><div class="value">${obrasHoje.totais.frotaLivre}/${obrasHoje.totais.frotaTotal}</div>
+          <div class="hint">${obrasHoje.totais.materiaisBaixos} material(is) baixo(s)</div></div>
+        <div class="panel stat"><div class="label">Obras atrasadas</div><div class="value">${obrasHoje.totais.obrasAtrasadas}</div>
+          <div class="hint">${obrasHoje.totais.osAbertas} chamado(s) · ${(obrasHoje.alertas || []).length} alerta(s)</div></div>
       ` : eixo === 'eventos' ? `
         <div class="panel stat"><div class="label">Pendências eventos</div><div class="value">${g.resumo.totalPendentes}</div></div>
         <div class="panel stat"><div class="label">Críticos</div><div class="value">${g.resumo.criticos}</div></div>
@@ -944,7 +1118,7 @@
       `;
 
       renderAcoesEixo(g);
-      renderExtra(g, saudeHoje, iluminacaoHoje);
+      renderExtra(g, saudeHoje, iluminacaoHoje, obrasHoje);
 
       document.getElementById('filaDecisoes').innerHTML = g.fila.length ? g.fila.slice(0, 8).map(c => `
         <div class="item">
@@ -975,13 +1149,18 @@
       const heat = (m.heatmap || []).filter(p => {
         if (eixo === 'saude') return p.secretaria === 'saude' || ['demora_atendimento','falta_medico','superlotacao','limpeza_ubs','avaliacao_atendimento','visita_surpresa'].includes(p.categoria);
         if (eixo === 'iluminacao') return p.secretaria === 'iluminacao';
+        if (eixo === 'obras') return p.secretaria === 'obras';
         if (eixo === 'eventos') return p.secretaria === 'eventos' || String(p.categoria||'').includes('evento');
-        return p.secretaria !== 'saude' && p.secretaria !== 'eventos' && p.secretaria !== 'iluminacao';
+        return !['saude', 'eventos', 'iluminacao', 'obras'].includes(p.secretaria);
       });
 
       const porStatus = {};
       if (eixo === 'iluminacao' && iluminacaoHoje) {
         (iluminacaoHoje.postes || []).forEach((p) => {
+          porStatus[p.status] = (porStatus[p.status] || 0) + 1;
+        });
+      } else if (eixo === 'obras' && obrasHoje) {
+        (obrasHoje.pontosQuentes || []).forEach((p) => {
           porStatus[p.status] = (porStatus[p.status] || 0) + 1;
         });
       } else {
@@ -991,13 +1170,24 @@
         }
       }
 
-      const stLabels = Object.keys(porStatus).map((k) =>
-        eixo === 'iluminacao' ? posteStatusLabel(k) : statusLabel(k)
-      );
+      const stLabels = Object.keys(porStatus).map((k) => {
+        if (eixo === 'iluminacao') return posteStatusLabel(k);
+        if (eixo === 'obras') return pontoStatusLabel(k);
+        return statusLabel(k);
+      });
       const stData = Object.values(porStatus);
       const stColors = Object.keys(porStatus).map((k) => {
         if (eixo === 'iluminacao') {
           return ({ apagado: '#e74c3c', sem_energia: '#c0392b', em_reparo: '#f7c32e', ok: '#0cbc87' })[k] || mid;
+        }
+        if (eixo === 'obras') {
+          return ({
+            pendente: '#e74c3c',
+            em_deslocamento: '#2163e8',
+            em_execucao: '#f7c32e',
+            aguardando_material: '#e67e22',
+            concluido: '#0cbc87',
+          })[k] || mid;
         }
         return colors[k] || mid;
       });
@@ -1024,6 +1214,13 @@
           porSec[b] = (porSec[b] || 0) + (p.status === 'ok' ? 0 : 1);
         });
         document.getElementById('chartSecTitle').textContent = 'Problemas por bairro';
+      } else if (eixo === 'obras' && obrasHoje) {
+        (obrasHoje.pontosQuentes || []).forEach((p) => {
+          if (p.status === 'concluido') return;
+          const b = p.bairro || 'Sem bairro';
+          porSec[b] = (porSec[b] || 0) + 1;
+        });
+        document.getElementById('chartSecTitle').textContent = 'Pontos por bairro';
       } else {
         g.fila.forEach(c => { porSec[c.secretariaNome] = (porSec[c.secretariaNome] || 0) + 1; });
         document.getElementById('chartSecTitle').textContent = eixo === 'eventos' ? 'Pendências por tipo' : 'Fila por área';
@@ -1045,11 +1242,13 @@
       document.getElementById('mapTitle').textContent =
         eixo === 'saude' ? 'Mapa da Saúde'
           : eixo === 'iluminacao' ? 'Mapa da Iluminação'
-            : 'Mapa';
+            : eixo === 'obras' ? 'Mapa das Obras'
+              : 'Mapa';
       document.getElementById('sideTitle').textContent = eixo === 'saude'
         ? 'Reclamações e avaliações'
         : eixo === 'iluminacao' ? 'Rota / chamados'
-          : eixo === 'eventos' ? 'Agenda / pendências' : 'Obras da cidade';
+          : eixo === 'obras' ? 'Rota / obras'
+            : eixo === 'eventos' ? 'Agenda / pendências' : 'Pendências da cidade';
 
       if (eixo === 'saude' && saudeHoje) {
         const recs = saudeHoje.reclamacoes || [];
@@ -1088,6 +1287,26 @@
                 <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
               </div>
             </div>`).join('') : '<p class="muted">Sem chamados abertos.</p>'}`;
+      } else if (eixo === 'obras' && obrasHoje) {
+        const rota = obrasHoje.rota || [];
+        const obrs = obrasHoje.obras || [];
+        document.getElementById('sidePanel').innerHTML = `
+          <h4 style="margin:0 0 0.45rem;font-size:0.82rem;color:#9a3412">Rota do dia</h4>
+          ${rota.length ? rota.map((r) => `
+            <div class="item">
+              <div class="item-head"><strong>#${r.ordem}</strong>
+                <span class="badge">${rotaStatusLabel(r.status)}</span>
+              </div>
+              <div class="meta">${r.titulo} · ${r.bairro}</div>
+            </div>`).join('') : '<p class="muted">Sem rota.</p>'}
+          <h4 style="margin:0.85rem 0 0.45rem;font-size:0.82rem;color:#9a3412">Obras grandes</h4>
+          ${obrs.length ? obrs.slice(0, 6).map((o) => `
+            <div class="item">
+              <div class="item-head"><strong>${o.nome}</strong>
+                <span class="badge">${o.percentual || 0}%</span>
+              </div>
+              <div class="meta">${o.status} · ${o.bairro || ''}</div>
+            </div>`).join('') : '<p class="muted">Sem obras.</p>'}`;
       } else if (eixo === 'eventos') {
         document.getElementById('sidePanel').innerHTML = (g.agenda || []).length
           ? g.agenda.map(e => `
@@ -1099,12 +1318,13 @@
             </div>`).join('')
           : '<p class="muted">Sem eventos na agenda.</p>';
       } else {
-        document.getElementById('sidePanel').innerHTML = obras.map(o => `
-          <div class="item">
-            <div class="item-head"><strong><span class="obra-dot obra-${o.status}"></span>${o.nome}</strong><span class="muted">${o.percentual}%</span></div>
-            <div class="meta">${money(o.valor)} · ${o.empresa}</div>
-          </div>
-        `).join('') || '<p class="muted">Sem obras cadastradas.</p>';
+        document.getElementById('sidePanel').innerHTML = (g.fila || []).length
+          ? g.fila.slice(0, 8).map((c) => `
+            <div class="item">
+              <div class="item-head"><strong>${c.protocolo}</strong>${badge(c.status)}</div>
+              <div class="meta">${c.secretariaNome} · ${c.bairro}</div>
+            </div>`).join('')
+          : '<p class="muted">Sem pendências neste eixo.</p>';
       }
 
       let points;
@@ -1121,6 +1341,19 @@
             titulo: `Poste ${p.codigo}`,
           }));
         points = postesPts.length ? postesPts : heat;
+      } else if (eixo === 'obras' && obrasHoje) {
+        const pts = (obrasHoje.pontosQuentes || [])
+          .filter((p) => p.status !== 'concluido' && p.lat && p.lng)
+          .map((p) => ({
+            lat: p.lat,
+            lng: p.lng,
+            status: p.status === 'em_execucao' || p.status === 'em_deslocamento' ? 'em_execucao' : 'novo',
+            categoria: `${p.titulo} · ${pontoStatusLabel(p.status)}`,
+            bairro: p.bairro,
+            secretaria: 'obras',
+            titulo: p.titulo,
+          }));
+        points = pts.length ? pts : heat;
       } else {
         points = heat.length ? heat : (eixo === 'saude' ? [] : (m.heatmap || []));
       }
