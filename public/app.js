@@ -476,7 +476,7 @@ function applyPageBrand(cfg) {
       if (href.includes('tv-bomlugar')) return;
       a.href = cityLink('/tv-bomlugar.html');
       // Não sobrescreve rótulos da home (ex.: "Veja na prática")
-      if (a.id === 'ctaVejaPratica' || a.classList.contains('btn-pratica')) return;
+      if (a.id === 'ctaVejaPratica' || a.classList.contains('btn-pratica') || a.classList.contains('landing-pratica-card')) return;
       if (/Bacabal|TV|Clipe/i.test(a.textContent || '')) a.textContent = 'Clipe TV Bom Lugar';
     });
   }

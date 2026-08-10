@@ -656,25 +656,80 @@ html[data-cidade="bomlugar"] .btn-hero-ghost:hover {
 }
 
 .landing-pratica-card {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem 1.5rem;
-  padding: 1.15rem 1.35rem;
+  display: grid;
+  grid-template-columns: minmax(180px, 280px) 1fr;
+  align-items: stretch;
+  gap: 0;
+  overflow: hidden;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(57, 138, 33, 0.1), rgba(255, 128, 0, 0.1));
-  border: 1px solid rgba(57, 138, 33, 0.22);
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.05);
+  background: #fff;
+  border: 1px solid var(--pmb-line, #e6e9ee);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+  text-decoration: none !important;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.landing-pratica-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+  border-color: rgba(255, 128, 0, 0.35);
+}
+
+.landing-pratica-thumb {
+  position: relative;
+  min-height: 140px;
+  background: #0f172a;
+  overflow: hidden;
+}
+
+.landing-pratica-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 140px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.landing-pratica-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(8, 16, 12, 0.28);
+  transition: background 0.15s ease;
+}
+
+.landing-pratica-card:hover .landing-pratica-play {
+  background: rgba(8, 16, 12, 0.18);
+}
+
+.landing-pratica-play-ico {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--pmb-orange, #ff8000);
+  font-size: 0.95rem;
+  padding-left: 3px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  line-height: 1;
 }
 
 .landing-pratica-copy {
-  min-width: min(100%, 240px);
-  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 1.15rem 1.25rem;
+  min-width: 0;
 }
 
 .landing-pratica-copy .eyebrow {
-  margin: 0 0 0.25rem;
+  margin: 0;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -683,84 +738,61 @@ html[data-cidade="bomlugar"] .btn-hero-ghost:hover {
 }
 
 .landing-pratica-copy h2 {
-  margin: 0 0 0.3rem;
-  font-size: 1.35rem;
+  margin: 0;
+  font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--pmb-ink, #142033);
 }
 
 .landing-pratica-copy p:last-child {
-  margin: 0;
-  font-size: 0.92rem;
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
   line-height: 1.4;
   color: var(--pmb-muted, #5b677a);
-  max-width: 36rem;
 }
 
-.btn-pratica {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.85rem 1.25rem;
-  border-radius: 999px;
-  background: var(--pmb-orange, #ff8000);
-  color: #fff !important;
-  font-weight: 800;
-  font-size: 0.95rem;
-  letter-spacing: -0.02em;
-  text-decoration: none !important;
-  box-shadow: 0 8px 20px rgba(255, 128, 0, 0.28);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-  white-space: nowrap;
-}
-
-.btn-pratica:hover {
-  background: var(--pmb-orange-deep, #e67300);
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(255, 128, 0, 0.34);
-  color: #fff !important;
-}
-
-.btn-pratica-play {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.22);
-  font-size: 0.72rem;
-  line-height: 1;
-  padding-left: 2px;
-}
-
-html[data-cidade="bomlugar"] .landing-pratica-card {
-  background: linear-gradient(135deg, rgba(3, 50, 122, 0.1), rgba(183, 28, 28, 0.08));
-  border-color: rgba(3, 50, 122, 0.22);
+html[data-cidade="bomlugar"] .landing-pratica-card:hover {
+  border-color: rgba(3, 50, 122, 0.35);
 }
 
 html[data-cidade="bomlugar"] .landing-pratica-copy h2 {
   color: #03327A;
 }
 
-html[data-cidade="bomlugar"] .btn-pratica {
-  background: #03327A;
-  box-shadow: 0 8px 20px rgba(3, 50, 122, 0.28);
-}
-
-html[data-cidade="bomlugar"] .btn-pratica:hover {
-  background: #022456;
-  box-shadow: 0 12px 24px rgba(3, 50, 122, 0.34);
+html[data-cidade="bomlugar"] .landing-pratica-play-ico {
+  color: #03327A;
 }
 
 @media (max-width: 700px) {
-  .landing-pratica-card {
-    flex-direction: column;
-    align-items: stretch;
+  .landing-pratica {
+    width: min(1180px, calc(100% - 1.25rem));
   }
-  .btn-pratica {
-    justify-content: center;
-    width: 100%;
+  .landing-pratica-card {
+    grid-template-columns: 1fr;
+    border-radius: 16px;
+  }
+  .landing-pratica-thumb {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+  .landing-pratica-thumb img {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+  .landing-pratica-play-ico {
+    width: 56px;
+    height: 56px;
+    font-size: 1rem;
+  }
+  .landing-pratica-copy {
+    padding: 0.95rem 1rem 1.1rem;
+  }
+  .landing-pratica-copy h2 {
+    font-size: 1.12rem;
+  }
+  .landing-pratica-copy p:last-child {
+    font-size: 0.86rem;
   }
 }
 

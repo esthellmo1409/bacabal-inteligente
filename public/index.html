@@ -99,7 +99,7 @@
     html.brand-ready body.landing { visibility: visible; }
   </style>
   <link rel="stylesheet" href="/styles.css" />
-  <link rel="stylesheet" href="/home.css?v=17" />
+  <link rel="stylesheet" href="/home.css?v=18" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="icon" href="/assets/logo-prefeitura.png" />
   <script>
@@ -379,17 +379,19 @@
   </section>
 
   <section class="landing-pratica" aria-label="Veja na prática">
-    <div class="landing-pratica-card">
+    <a class="landing-pratica-card" id="ctaVejaPratica" href="/tv.html?cidade=bacabal" target="_blank" rel="noopener">
+      <div class="landing-pratica-thumb">
+        <img id="praticaThumb" src="/assets/tv-cidade-dusk.jpg" alt="" width="640" height="360" />
+        <span class="landing-pratica-play" aria-hidden="true">
+          <span class="landing-pratica-play-ico">▶</span>
+        </span>
+      </div>
       <div class="landing-pratica-copy">
         <p class="eyebrow">Demonstração</p>
         <h2>Veja na prática</h2>
-        <p>Como os chamados aparecem para a gestão — um clipe curto da cidade em ação.</p>
+        <p>Clipe curto de como a gestão acompanha a cidade.</p>
       </div>
-      <a class="btn-pratica" id="ctaVejaPratica" href="/tv.html?cidade=bacabal" target="_blank" rel="noopener">
-        <span class="btn-pratica-play" aria-hidden="true">▶</span>
-        Veja na prática
-      </a>
-    </div>
+    </a>
   </section>
 
   <main class="landing-main">
@@ -764,6 +766,15 @@
             ? 'Veja na prática — clipe Bom Lugar Conecta'
             : 'Veja na prática — clipe Bacabal Conecta'
         );
+        const thumb = document.getElementById('praticaThumb');
+        if (thumb) {
+          thumb.src = slug === 'bomlugar'
+            ? '/assets/slide-bomlugar-hero.jpg'
+            : '/assets/tv-cidade-dusk.jpg';
+          thumb.alt = slug === 'bomlugar'
+            ? 'Prévia do clipe Bom Lugar Conecta'
+            : 'Prévia do clipe Bacabal Conecta';
+        }
       }
       document.documentElement.classList.remove('brand-pending');
       document.documentElement.classList.add('brand-ready');
