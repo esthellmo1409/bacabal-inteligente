@@ -1376,6 +1376,26 @@ async function handleAPI(req, res, pathname, url) {
       metricas = { taxaResolucao: Math.round((ok / total) * 100) };
     } catch (_) {}
     const cargo = (cfg.prefeita || slug === 'bomlugar') ? 'prefeita' : 'prefeito';
+    const iluminacaoPainel = (() => {
+      try {
+        const data = readTenant(slug, 'iluminacao-hoje.json', null);
+        if (!data) return null;
+        const postes = data.postes || [];
+        return {
+          totais: {
+            apagados: postes.filter((p) => p.status === 'apagado').length,
+            emReparo: postes.filter((p) => p.status === 'em_reparo').length,
+            semEnergia: postes.filter((p) => p.status === 'sem_energia').length,
+            frotaLivre: (data.frota || []).filter((f) => f.status === 'disponivel').length,
+            frotaTotal: (data.frota || []).length,
+            estoqueBaixo: (data.estoque || []).filter((e) => (e.qtd || 0) < (e.minimo || 0)).length,
+            rotaPendentes: (data.rota || []).filter((r) => r.status !== 'concluido').length,
+            chamadosAbertos: chamados.filter((c) => c.secretaria === 'iluminacao' && !['concluido', 'cancelado'].includes(c.status)).length,
+          },
+          alertas: [],
+        };
+      } catch (_) { return null; }
+    })();
     const out = assistenteGabinete({
       opcao: body.opcao || body.option || 'ajuda',
       chamados,
@@ -1383,6 +1403,7 @@ async function handleAPI(req, res, pathname, url) {
       metricas,
       cidade: cfg.cidade || slug,
       cargo,
+      iluminacaoPainel,
     });
     return sendJSON(res, 200, out);
   }

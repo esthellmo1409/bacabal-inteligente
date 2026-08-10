@@ -34,6 +34,22 @@
     .saude-mod span { display:block; font-size:0.68rem; font-weight:800; color:#0f766e; text-transform:uppercase; letter-spacing:.03em; }
     .saude-mod strong { font-size:1.25rem; color:#134e4a; }
     .saude-mod small { display:block; color:#64748b; font-size:0.72rem; margin-top:0.15rem; }
+    .ilu-modulos {
+      display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:0.55rem;
+      margin:0 0 0.85rem; grid-column:1/-1;
+    }
+    .ilu-mod {
+      background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:0.7rem 0.8rem;
+    }
+    .ilu-mod span { display:block; font-size:0.68rem; font-weight:800; color:#b45309; text-transform:uppercase; letter-spacing:.03em; }
+    .ilu-mod strong { font-size:1.25rem; color:#78350f; }
+    .ilu-mod small { display:block; color:#64748b; font-size:0.72rem; margin-top:0.15rem; }
+    .ilu-alert-banner {
+      display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;
+      padding:0.75rem 1rem; border-radius:12px; margin-bottom:0.85rem;
+      background:#fff7ed; border:1px solid #fdba74; color:#9a3412; font-size:0.88rem; font-weight:600;
+      grid-column:1/-1;
+    }
     .turno-pill {
       display:inline-flex; align-items:center; padding:0.22rem 0.5rem; border-radius:999px;
       font-size:0.7rem; font-weight:800; background:#f1f5f9; margin:0.15rem 0.15rem 0 0;
@@ -41,7 +57,9 @@
     .turno-pill.vago { background:#fee2e2; color:#991b1b; }
     .turno-pill.confirmado { background:#dcfce7; color:#166534; }
     .turno-pill.previsto { background:#e0f2fe; color:#075985; }
-    @media (max-width:900px) { .saude-modulos { grid-template-columns:1fr 1fr; } }
+    @media (max-width:900px) {
+      .saude-modulos, .ilu-modulos { grid-template-columns:1fr 1fr; }
+    }
     .visita-backdrop {
       position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:9998;
       display:flex; align-items:center; justify-content:center; padding:1rem;
@@ -142,6 +160,7 @@
         <button type="button" class="btn btn-sm" data-ia-gab="reunioes">Reuniões e agenda</button>
         <button type="button" class="btn btn-sm" data-ia-gab="priorizar">O que priorizar agora?</button>
         <button type="button" class="btn btn-sm" data-ia-gab="saude">Saúde em resumo</button>
+        <button type="button" class="btn btn-sm" data-ia-gab="iluminacao">Iluminação em resumo</button>
       </div>
       <div id="iaGabResposta" class="ia-gabinete-resposta" hidden>
         <strong id="iaGabResTitulo" style="display:block;margin-bottom:0.35rem"></strong>
@@ -151,6 +170,7 @@
 
     <div class="eixo-tabs" id="tabs">
       <button type="button" class="eixo-tab active" data-eixo="cidade">Cidade<small>Ruas, obras, limpeza</small></button>
+      <button type="button" class="eixo-tab" data-eixo="iluminacao">Iluminação<small>Postes · rota · LED</small></button>
       <button type="button" class="eixo-tab" data-eixo="saude">Saúde<small>Escala · fila · plantão</small></button>
       <button type="button" class="eixo-tab" data-eixo="eventos">Eventos<small>Agenda e estrutura</small></button>
     </div>
@@ -230,7 +250,7 @@
     </div>
 
     <div class="footer">
-      <span>Cidade · Saúde · Eventos no mesmo Gabinete</span>
+      <span>Cidade · Iluminação · Saúde · Eventos no mesmo Gabinete</span>
       <a id="linkSec" href="/secretaria.html">Secretarias</a>
     </div>
   </div>
@@ -259,8 +279,19 @@
 
     function eixoParaSecretaria() {
       if (eixo === 'saude') return 'saude';
+      if (eixo === 'iluminacao') return 'iluminacao';
       if (eixo === 'eventos') return 'eventos';
-      return chatSec && chatSec !== 'saude' && chatSec !== 'eventos' ? chatSec : 'obras';
+      return chatSec && !['saude', 'eventos', 'iluminacao'].includes(chatSec) ? chatSec : 'obras';
+    }
+
+    function posteStatusLabel(s) {
+      return ({ apagado: 'Apagado', em_reparo: 'Em reparo', sem_energia: 'Sem energia', ok: 'Ok' })[s] || s;
+    }
+    function frotaStatusLabel(s) {
+      return ({ disponivel: 'Disponível', em_rota: 'Em rota', oficina: 'Oficina' })[s] || s;
+    }
+    function rotaStatusLabel(s) {
+      return ({ pendente: 'Pendente', em_atendimento: 'Em atendimento', concluido: 'Concluído' })[s] || s;
     }
 
     function fmtChatHora(iso) {
@@ -559,6 +590,12 @@
         document.getElementById('btnVisita').onclick = visitaSurpresa;
         tituloDec.textContent = 'Saúde — olho do Gabinete';
         subtituloDec.textContent = 'Visualiza plantão, fila, leitos, ambulâncias, farmácia e checklist. Quem preenche é a Secretaria de Saúde.';
+      } else if (eixo === 'iluminacao') {
+        box.innerHTML = `
+          <button class="btn btn-sm btn-warn" id="btnCobrarIlu" type="button">Cobrar Iluminação</button>`;
+        document.getElementById('btnCobrarIlu').onclick = () => cobrarIluminacao();
+        tituloDec.textContent = 'Iluminação — olho do Gabinete';
+        subtituloDec.textContent = 'Visualiza postes, rota da noite, frota e estoque LED. Quem opera é a Secretaria de Iluminação.';
       } else if (eixo === 'eventos') {
         box.innerHTML = '';
         tituloDec.textContent = 'Eventos — agenda e estrutura';
@@ -566,12 +603,104 @@
       } else {
         box.innerHTML = '';
         tituloDec.textContent = 'Cidade — ruas e serviços';
-        subtituloDec.textContent = 'Obras, limpeza, iluminação — priorizar e cobrar secretarias';
+        subtituloDec.textContent = 'Obras, limpeza e serviços urbanos — priorizar e cobrar secretarias';
       }
     }
 
-    function renderExtra(g, saudeHoje) {
+    function renderExtra(g, saudeHoje, iluminacaoHoje) {
       const box = document.getElementById('blocoExtra');
+      if (eixo === 'iluminacao' && iluminacaoHoje) {
+        const t = iluminacaoHoje.totais || {};
+        const alertas = iluminacaoHoje.alertas || [];
+        const postesProblema = (iluminacaoHoje.postes || []).filter((p) => p.status !== 'ok');
+        box.innerHTML = `
+          <div class="ilu-modulos">
+            <div class="ilu-mod"><span>Apagados</span><strong>${t.apagados || 0}</strong><small>prioridade alta</small></div>
+            <div class="ilu-mod"><span>Em reparo</span><strong>${t.emReparo || 0}</strong><small>equipe em campo</small></div>
+            <div class="ilu-mod"><span>Sem energia</span><strong>${t.semEnergia || 0}</strong><small>possível rede</small></div>
+            <div class="ilu-mod"><span>Rota noite</span><strong>${t.rotaPendentes || 0}</strong><small>pontos pendentes</small></div>
+            <div class="ilu-mod"><span>Frota</span><strong>${t.frotaLivre || 0}/${t.frotaTotal || 0}</strong><small>cestas livres</small></div>
+            <div class="ilu-mod"><span>Estoque</span><strong>${t.estoqueBaixo || 0}</strong><small>itens abaixo do mínimo</small></div>
+          </div>
+          ${alertas.length ? `
+            <div class="ilu-alert-banner">
+              ${alertas.length} alerta(s) operacional(is) — cobre a Iluminação se precisar de resposta rápida
+            </div>
+            <div class="panel" style="grid-column:1/-1;border-color:#fdba74;background:#fffbeb">
+              <h3 style="margin-bottom:0.55rem;color:#9a3412">Alertas da Iluminação</h3>
+              ${alertas.map((a) => `<div class="meta" style="margin-bottom:0.45rem;color:#9a3412;font-weight:600">${a.mensagem}</div>`).join('')}
+            </div>` : ''}
+          <div class="panel" style="grid-column:1/-1;border-color:#fde68a">
+            <h3 style="margin-bottom:0.35rem">Postes com problema</h3>
+            <p class="muted" style="margin-bottom:0.85rem">
+              Preenchido pela Secretaria de Iluminação · atualizado ${fmtDate(iluminacaoHoje.atualizadoEm)}.
+              Gabinete só visualiza e cobra.
+            </p>
+            <div class="list">
+              ${postesProblema.map((p) => `
+                <div class="item">
+                  <div class="item-head">
+                    <strong>Poste ${p.codigo}</strong>
+                    <span class="badge ${p.status === 'apagado' || p.status === 'sem_energia' ? 'badge-cancelado' : 'badge-em_analise'}">${posteStatusLabel(p.status)}</span>
+                  </div>
+                  <div class="meta">${p.bairro} · ${p.endereco} · prioridade ${p.prioridade || '—'}</div>
+                  ${p.prioridade === 'alta' ? `
+                    <div class="actions">
+                      <button class="btn btn-sm btn-warn" onclick="cobrarIluminacao('Poste ${p.codigo} — ${p.bairro}')">Cobrar secretaria</button>
+                    </div>` : ''}
+                </div>`).join('') || '<p class="muted">Nenhum poste com problema agora.</p>'}
+            </div>
+          </div>
+          <div class="panel">
+            <h3 style="margin-bottom:0.55rem">Rota da noite</h3>
+            <div class="list">
+              ${(iluminacaoHoje.rota || []).map((r) => `
+                <div class="item">
+                  <div class="item-head"><strong>#${r.ordem} · Poste ${r.codigo}</strong>
+                    <span class="badge">${rotaStatusLabel(r.status)}</span>
+                  </div>
+                  <div class="meta">${r.bairro} · ${r.endereco}</div>
+                </div>`).join('') || '<p class="muted">Sem rota montada.</p>'}
+            </div>
+          </div>
+          <div class="panel">
+            <h3 style="margin-bottom:0.55rem">Frota · estoque LED</h3>
+            <div class="list">
+              ${(iluminacaoHoje.frota || []).map((f) => `
+                <div class="item">
+                  <div class="item-head"><strong>${f.placa}</strong><span class="badge">${frotaStatusLabel(f.status)}</span></div>
+                  <div class="meta">${f.tipo} · ${f.motorista || '—'} · ${f.equipe || '—'}</div>
+                </div>`).join('') || '<p class="muted">Sem frota</p>'}
+            </div>
+            <div class="list" style="margin-top:0.65rem">
+              ${(iluminacaoHoje.estoque || []).map((e) => {
+                const baixo = (e.qtd || 0) < (e.minimo || 0);
+                return `<div class="item">
+                  <div class="item-head"><strong>${e.nome}</strong>
+                    <span class="badge ${baixo ? 'badge-cancelado' : 'badge-concluido'}">${e.qtd} ${e.unidade || 'un'}</span>
+                  </div>
+                  <div class="meta">Mínimo ${e.minimo}${baixo ? ' · abaixo do mínimo' : ''}</div>
+                </div>`;
+              }).join('') || ''}
+            </div>
+          </div>
+          ${((iluminacaoHoje.chamados || []).length) ? `
+          <div class="panel" style="grid-column:1/-1">
+            <h3 style="margin-bottom:0.55rem">Chamados da Iluminação</h3>
+            <div class="list">
+              ${iluminacaoHoje.chamados.slice(0, 8).map((c) => `
+                <div class="item">
+                  <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span></div>
+                  <div class="meta">${c.titulo || c.categoria} · ${c.bairro || ''}</div>
+                  <div class="actions">
+                    <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+                    <button class="btn btn-sm btn-primary" onclick="decidir('${c.id}','priorizar')">Priorizar</button>
+                  </div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}`;
+        return;
+      }
       if (eixo === 'saude' && saudeHoje) {
         const criticos = (saudeHoje.unidades || []).filter(u => u.critico);
         const alertas = saudeHoje.alertas || [];
@@ -744,7 +873,30 @@
         nota: `Cobrança do Gabinete sobre unidade ${nome}: verificar fila, plantão e atendimento.`,
       });
     }
+
+    async function cobrarIluminacao(detalhe) {
+      const pendente = (lastFila?.fila || [])[0];
+      if (!pendente) {
+        toast('Sem chamado aberto na Iluminação — use o chat para cobrar a secretaria');
+        chatSec = 'iluminacao';
+        await loadChat().catch(() => {});
+        const input = document.getElementById('chatInput');
+        if (input) {
+          input.value = detalhe
+            ? `Gabinete cobrando: ${detalhe}. Preciso de retorno da rota/equipe.`
+            : 'Gabinete cobrando Iluminação: atualizem postes apagados e rota da noite.';
+          input.focus();
+        }
+        return;
+      }
+      await decidir(pendente.id, 'cobrar', {
+        nota: detalhe
+          ? `Cobrança do Gabinete — Iluminação: ${detalhe}`
+          : 'Cobrança do Gabinete — verificar postes, rota da noite e estoque LED.',
+      });
+    }
     window.cobrarUnidade = cobrarUnidade;
+    window.cobrarIluminacao = cobrarIluminacao;
     window.visitaSurpresa = visitaSurpresa;
 
     async function load() {
@@ -753,8 +905,12 @@
       const g = await api('/api/gabinete/fila?eixo=' + eixo);
       lastFila = g;
       let saudeHoje = null;
+      let iluminacaoHoje = null;
       if (eixo === 'saude') {
         saudeHoje = await api('/api/saude/hoje');
+      }
+      if (eixo === 'iluminacao') {
+        iluminacaoHoje = await api('/api/iluminacao/hoje');
       }
 
       document.getElementById('kpis').innerHTML = eixo === 'saude' && saudeHoje ? `
@@ -766,6 +922,15 @@
           <div class="hint">${saudeHoje.totais.avaliacoesBaixas} avaliação(ões) ≤ 2★</div></div>
         <div class="panel stat"><div class="label">Unidades em alerta</div><div class="value">${saudeHoje.totais.unidadesCriticas}</div>
           <div class="hint">Plantão ${saudeHoje.totais.plantoesOk}/${saudeHoje.totais.plantoesTotal}</div></div>
+      ` : eixo === 'iluminacao' && iluminacaoHoje ? `
+        <div class="panel stat"><div class="label">Postes apagados</div><div class="value">${iluminacaoHoje.totais.apagados}</div>
+          <div class="hint">${iluminacaoHoje.totais.semEnergia} sem energia · ${iluminacaoHoje.totais.emReparo} em reparo</div></div>
+        <div class="panel stat"><div class="label">Rota da noite</div><div class="value">${iluminacaoHoje.totais.rotaPendentes}</div>
+          <div class="hint">pontos ainda pendentes</div></div>
+        <div class="panel stat"><div class="label">Frota livre</div><div class="value">${iluminacaoHoje.totais.frotaLivre}/${iluminacaoHoje.totais.frotaTotal}</div>
+          <div class="hint">${iluminacaoHoje.totais.estoqueBaixo} item(ns) estoque baixo</div></div>
+        <div class="panel stat"><div class="label">Chamados abertos</div><div class="value">${iluminacaoHoje.totais.chamadosAbertos}</div>
+          <div class="hint">${(iluminacaoHoje.alertas || []).length} alerta(s) operacional(is)</div></div>
       ` : eixo === 'eventos' ? `
         <div class="panel stat"><div class="label">Pendências eventos</div><div class="value">${g.resumo.totalPendentes}</div></div>
         <div class="panel stat"><div class="label">Críticos</div><div class="value">${g.resumo.criticos}</div></div>
@@ -779,7 +944,7 @@
       `;
 
       renderAcoesEixo(g);
-      renderExtra(g, saudeHoje);
+      renderExtra(g, saudeHoje, iluminacaoHoje);
 
       document.getElementById('filaDecisoes').innerHTML = g.fila.length ? g.fila.slice(0, 8).map(c => `
         <div class="item">
@@ -809,19 +974,33 @@
 
       const heat = (m.heatmap || []).filter(p => {
         if (eixo === 'saude') return p.secretaria === 'saude' || ['demora_atendimento','falta_medico','superlotacao','limpeza_ubs','avaliacao_atendimento','visita_surpresa'].includes(p.categoria);
+        if (eixo === 'iluminacao') return p.secretaria === 'iluminacao';
         if (eixo === 'eventos') return p.secretaria === 'eventos' || String(p.categoria||'').includes('evento');
-        return p.secretaria !== 'saude' && p.secretaria !== 'eventos';
+        return p.secretaria !== 'saude' && p.secretaria !== 'eventos' && p.secretaria !== 'iluminacao';
       });
 
       const porStatus = {};
-      heat.forEach(p => { porStatus[p.status] = (porStatus[p.status] || 0) + 1; });
-      if (!Object.keys(porStatus).length) {
-        g.fila.forEach(c => { porStatus[c.status] = (porStatus[c.status] || 0) + 1; });
+      if (eixo === 'iluminacao' && iluminacaoHoje) {
+        (iluminacaoHoje.postes || []).forEach((p) => {
+          porStatus[p.status] = (porStatus[p.status] || 0) + 1;
+        });
+      } else {
+        heat.forEach(p => { porStatus[p.status] = (porStatus[p.status] || 0) + 1; });
+        if (!Object.keys(porStatus).length) {
+          g.fila.forEach(c => { porStatus[c.status] = (porStatus[c.status] || 0) + 1; });
+        }
       }
 
-      const stLabels = Object.keys(porStatus).map(statusLabel);
+      const stLabels = Object.keys(porStatus).map((k) =>
+        eixo === 'iluminacao' ? posteStatusLabel(k) : statusLabel(k)
+      );
       const stData = Object.values(porStatus);
-      const stColors = Object.keys(porStatus).map(k => colors[k] || mid);
+      const stColors = Object.keys(porStatus).map((k) => {
+        if (eixo === 'iluminacao') {
+          return ({ apagado: '#e74c3c', sem_energia: '#c0392b', em_reparo: '#f7c32e', ok: '#0cbc87' })[k] || mid;
+        }
+        return colors[k] || mid;
+      });
       if (!chartStatus) {
         chartStatus = new Chart(document.getElementById('chartStatus'), {
           type: 'doughnut',
@@ -839,6 +1018,12 @@
       if (eixo === 'saude' && saudeHoje) {
         saudeHoje.unidades.forEach(u => { porSec[u.nome.replace('Hospital Municipal de Bacabal', 'Hospital')] = u.naFila || 0; });
         document.getElementById('chartSecTitle').textContent = 'Fila por unidade';
+      } else if (eixo === 'iluminacao' && iluminacaoHoje) {
+        (iluminacaoHoje.postes || []).forEach((p) => {
+          const b = p.bairro || 'Sem bairro';
+          porSec[b] = (porSec[b] || 0) + (p.status === 'ok' ? 0 : 1);
+        });
+        document.getElementById('chartSecTitle').textContent = 'Problemas por bairro';
       } else {
         g.fila.forEach(c => { porSec[c.secretariaNome] = (porSec[c.secretariaNome] || 0) + 1; });
         document.getElementById('chartSecTitle').textContent = eixo === 'eventos' ? 'Pendências por tipo' : 'Fila por área';
@@ -857,10 +1042,14 @@
         chartSec.update();
       }
 
-      document.getElementById('mapTitle').textContent = eixo === 'saude' ? 'Mapa da Saúde' : 'Mapa';
+      document.getElementById('mapTitle').textContent =
+        eixo === 'saude' ? 'Mapa da Saúde'
+          : eixo === 'iluminacao' ? 'Mapa da Iluminação'
+            : 'Mapa';
       document.getElementById('sideTitle').textContent = eixo === 'saude'
         ? 'Reclamações e avaliações'
-        : eixo === 'eventos' ? 'Agenda / pendências' : 'Obras da cidade';
+        : eixo === 'iluminacao' ? 'Rota / chamados'
+          : eixo === 'eventos' ? 'Agenda / pendências' : 'Obras da cidade';
 
       if (eixo === 'saude' && saudeHoje) {
         const recs = saudeHoje.reclamacoes || [];
@@ -878,6 +1067,27 @@
             </div>
           </div>
         `).join('') : '<p class="muted">Sem reclamações abertas na Saúde.</p>';
+      } else if (eixo === 'iluminacao' && iluminacaoHoje) {
+        const rota = iluminacaoHoje.rota || [];
+        const chs = iluminacaoHoje.chamados || [];
+        document.getElementById('sidePanel').innerHTML = `
+          <h4 style="margin:0 0 0.45rem;font-size:0.82rem;color:#92400e">Rota da noite</h4>
+          ${rota.length ? rota.map((r) => `
+            <div class="item">
+              <div class="item-head"><strong>#${r.ordem} · ${r.codigo}</strong>
+                <span class="badge">${rotaStatusLabel(r.status)}</span>
+              </div>
+              <div class="meta">${r.bairro}</div>
+            </div>`).join('') : '<p class="muted">Sem rota.</p>'}
+          <h4 style="margin:0.85rem 0 0.45rem;font-size:0.82rem;color:#92400e">Chamados</h4>
+          ${chs.length ? chs.slice(0, 6).map((c) => `
+            <div class="item">
+              <div class="item-head"><strong>${c.protocolo || c.id}</strong>${badge(c.status)}</div>
+              <div class="meta">${c.titulo || ''} · ${c.bairro || ''}</div>
+              <div class="actions">
+                <button class="btn btn-sm btn-warn" onclick="decidir('${c.id}','cobrar')">Cobrar</button>
+              </div>
+            </div>`).join('') : '<p class="muted">Sem chamados abertos.</p>'}`;
       } else if (eixo === 'eventos') {
         document.getElementById('sidePanel').innerHTML = (g.agenda || []).length
           ? g.agenda.map(e => `
@@ -897,8 +1107,24 @@
         `).join('') || '<p class="muted">Sem obras cadastradas.</p>';
       }
 
-      const points = heat.length ? heat : (eixo === 'saude' ? [] : (m.heatmap || []));
-      MapBI.setPoints(mapState, points.map(p => ({ ...p, titulo: p.categoria })));
+      let points;
+      if (eixo === 'iluminacao' && iluminacaoHoje) {
+        const postesPts = (iluminacaoHoje.postes || [])
+          .filter((p) => p.status !== 'ok' && p.lat && p.lng)
+          .map((p) => ({
+            lat: p.lat,
+            lng: p.lng,
+            status: p.status === 'em_reparo' ? 'em_execucao' : 'novo',
+            categoria: `Poste ${p.codigo} · ${posteStatusLabel(p.status)}`,
+            bairro: p.bairro,
+            secretaria: 'iluminacao',
+            titulo: `Poste ${p.codigo}`,
+          }));
+        points = postesPts.length ? postesPts : heat;
+      } else {
+        points = heat.length ? heat : (eixo === 'saude' ? [] : (m.heatmap || []));
+      }
+      MapBI.setPoints(mapState, points.map(p => ({ ...p, titulo: p.titulo || p.categoria })));
 
       const stSel = document.getElementById('filtroStatus');
       const bSel = document.getElementById('filtroBairro');
