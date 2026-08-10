@@ -166,7 +166,26 @@
     <div class="pane" id="pane-estoque">
       <div class="panel">
         <h3 style="margin-bottom:.35rem">Estoque de materiais</h3>
-        <p class="muted" style="margin-bottom:.85rem">LED, reator, cabo e braço</p>
+        <p class="muted" style="margin-bottom:.85rem">LED, reator, cabo e braço — atualize ou cadastre novos itens</p>
+        <div class="form-row" style="flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;align-items:end;padding:.85rem;border:1px dashed var(--ilu-line);border-radius:12px;background:var(--ilu-soft)">
+          <div style="flex:1.4;min-width:140px">
+            <label class="meta">Novo item</label>
+            <input id="novoEstNome" placeholder="Ex.: Lâmpada LED 200W" />
+          </div>
+          <div>
+            <label class="meta">Qtd</label>
+            <input id="novoEstQtd" type="number" min="0" value="0" style="width:80px" />
+          </div>
+          <div>
+            <label class="meta">Mín.</label>
+            <input id="novoEstMin" type="number" min="0" value="10" style="width:80px" />
+          </div>
+          <div>
+            <label class="meta">Unidade</label>
+            <input id="novoEstUn" value="un" style="width:70px" />
+          </div>
+          <button class="btn btn-sm btn-primary" type="button" id="btnAddEstoque">+ LED / material</button>
+        </div>
         <div id="estoqueBox"></div>
       </div>
     </div>
@@ -525,6 +544,29 @@
           } catch (e) { toast(e.message); }
         };
       });
+      const btnAddEst = document.getElementById('btnAddEstoque');
+      if (btnAddEst && !btnAddEst.dataset.bound) {
+        btnAddEst.dataset.bound = '1';
+        btnAddEst.onclick = async () => {
+          const nome = document.getElementById('novoEstNome')?.value.trim();
+          if (!nome) return toast('Informe o nome do item');
+          try {
+            render(await api('/api/iluminacao/estoque', {
+              method: 'POST',
+              body: JSON.stringify({
+                acao: 'criar',
+                nome,
+                qtd: document.getElementById('novoEstQtd')?.value,
+                minimo: document.getElementById('novoEstMin')?.value,
+                unidade: document.getElementById('novoEstUn')?.value || 'un',
+              }),
+            }));
+            document.getElementById('novoEstNome').value = '';
+            document.getElementById('novoEstQtd').value = '0';
+            toast('Item adicionado ao estoque');
+          } catch (e) { toast(e.message); }
+        };
+      }
     }
 
     async function loadChat() {

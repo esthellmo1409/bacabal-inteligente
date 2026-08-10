@@ -227,7 +227,26 @@
     <div class="pane" id="pane-materiais">
       <div class="panel">
         <h3 style="margin-bottom:.35rem">Materiais</h3>
-        <p class="muted" style="margin-bottom:.85rem">Brita, asfalto frio, areia, cimento</p>
+        <p class="muted" style="margin-bottom:.85rem">Brita, asfalto, areia, cimento — atualize ou cadastre novos</p>
+        <div class="form-row" style="flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;align-items:end;padding:.85rem;border:1px dashed var(--obr-line);border-radius:12px;background:var(--obr-soft)">
+          <div style="flex:1.4;min-width:140px">
+            <label class="meta">Novo material</label>
+            <input id="novoMatNome" placeholder="Ex.: Brita 0" />
+          </div>
+          <div>
+            <label class="meta">Qtd</label>
+            <input id="novoMatQtd" type="number" min="0" step="0.1" value="0" style="width:90px" />
+          </div>
+          <div>
+            <label class="meta">Mín.</label>
+            <input id="novoMatMin" type="number" min="0" step="0.1" value="5" style="width:80px" />
+          </div>
+          <div>
+            <label class="meta">Unidade</label>
+            <input id="novoMatUn" value="m³" style="width:70px" placeholder="m³, t, sc" />
+          </div>
+          <button class="btn btn-sm btn-primary" type="button" id="btnAddMaterial">+ Material</button>
+        </div>
         <div id="materiaisBox"></div>
       </div>
     </div>
@@ -842,6 +861,29 @@
           } catch (e) { toast(e.message); }
         };
       });
+      const btnAddMat = document.getElementById('btnAddMaterial');
+      if (btnAddMat && !btnAddMat.dataset.bound) {
+        btnAddMat.dataset.bound = '1';
+        btnAddMat.onclick = async () => {
+          const nome = document.getElementById('novoMatNome')?.value.trim();
+          if (!nome) return toast('Informe o nome do material');
+          try {
+            render(await api('/api/obras-ops/material', {
+              method: 'POST',
+              body: JSON.stringify({
+                acao: 'criar',
+                nome,
+                qtd: document.getElementById('novoMatQtd')?.value,
+                minimo: document.getElementById('novoMatMin')?.value,
+                unidade: document.getElementById('novoMatUn')?.value || 'un',
+              }),
+            }));
+            document.getElementById('novoMatNome').value = '';
+            document.getElementById('novoMatQtd').value = '0';
+            toast('Material adicionado ao estoque');
+          } catch (e) { toast(e.message); }
+        };
+      }
       document.querySelectorAll('[data-obra-save]').forEach((btn) => {
         btn.onclick = async () => {
           const id = btn.dataset.obraSave;

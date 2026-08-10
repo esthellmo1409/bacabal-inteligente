@@ -225,7 +225,30 @@
     <div class="pane" id="pane-farmacia">
       <div class="panel">
         <h3 style="margin-bottom:0.35rem">Farmácia / insumos críticos</h3>
-        <p class="muted" style="margin-bottom:0.85rem">Marque estoque ok, baixo ou crítico</p>
+        <p class="muted" style="margin-bottom:0.85rem">Marque estoque ok, baixo ou crítico — ou cadastre um novo item</p>
+        <div class="form-row" style="flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;align-items:end;padding:.85rem;border:1px dashed var(--saude-line);border-radius:12px;background:var(--saude-soft)">
+          <div style="flex:1.2;min-width:140px">
+            <label class="meta">Novo medicamento / insumo</label>
+            <input id="novoFarmNome" placeholder="Ex.: Paracetamol 500mg" />
+          </div>
+          <div style="min-width:140px">
+            <label class="meta">Unidade</label>
+            <select id="novoFarmUnidade"></select>
+          </div>
+          <div>
+            <label class="meta">Estoque</label>
+            <select id="novoFarmSt">
+              <option value="ok">Ok</option>
+              <option value="baixo">Baixo</option>
+              <option value="critico">Crítico</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:120px">
+            <label class="meta">Obs.</label>
+            <input id="novoFarmObs" placeholder="Opcional" />
+          </div>
+          <button class="btn btn-sm btn-primary" type="button" id="btnAddFarmacia">+ Medicamento</button>
+        </div>
         <div id="farmBox"></div>
       </div>
     </div>
@@ -660,6 +683,14 @@
           </div>
         </div>`).join('') || '<p class="muted">Sem itens de farmácia.</p>';
 
+      const selFarmUn = document.getElementById('novoFarmUnidade');
+      if (selFarmUn) {
+        const uns = p.unidades || [];
+        selFarmUn.innerHTML = uns.length
+          ? uns.map((u) => `<option value="${u.id}">${u.nome}</option>`).join('')
+          : '<option value="">Rede</option>';
+      }
+
       document.getElementById('checkBox').innerHTML = (p.checklist || []).map((c) => `
         <div class="unidade-card">
           <div class="item-head"><strong>${c.unidadeNome}</strong></div>
@@ -893,6 +924,29 @@
           } catch (e) { toast(e.message); }
         };
       });
+      const btnAddFarm = document.getElementById('btnAddFarmacia');
+      if (btnAddFarm && !btnAddFarm.dataset.bound) {
+        btnAddFarm.dataset.bound = '1';
+        btnAddFarm.onclick = async () => {
+          const nome = document.getElementById('novoFarmNome')?.value.trim();
+          if (!nome) return toast('Informe o nome do medicamento/insumo');
+          try {
+            render(await api('/api/saude/farmacia', {
+              method: 'POST',
+              body: JSON.stringify({
+                acao: 'criar',
+                nome,
+                unidadeId: document.getElementById('novoFarmUnidade')?.value || null,
+                estoque: document.getElementById('novoFarmSt')?.value || 'ok',
+                observacao: document.getElementById('novoFarmObs')?.value || '',
+              }),
+            }));
+            document.getElementById('novoFarmNome').value = '';
+            document.getElementById('novoFarmObs').value = '';
+            toast('Medicamento/insumo adicionado');
+          } catch (e) { toast(e.message); }
+        };
+      }
       document.querySelectorAll('[data-chk-save]').forEach((btn) => {
         btn.onclick = async () => {
           const unidadeId = btn.dataset.chkSave;
