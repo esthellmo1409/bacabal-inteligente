@@ -72,6 +72,19 @@
       padding:.85rem 1rem; border-radius:12px; margin-bottom:.55rem;
       border:1px solid #fcd34d; background:#fffbeb; color:#92400e; font-size:.9rem; font-weight:600;
     }
+    .btn-detalhar {
+      display:inline-flex; align-items:center; justify-content:space-between; gap:.5rem;
+      width:100%; margin-top:.55rem; padding:.55rem .75rem;
+      border:1px solid var(--ilu-line); border-radius:10px; background:#fff;
+      font:inherit; font-weight:800; font-size:.85rem; color:var(--ink-soft); cursor:pointer;
+    }
+    .btn-detalhar .seta {
+      width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent;
+      border-top:6px solid var(--ilu); transition: transform .15s ease;
+    }
+    .btn-detalhar.open .seta { transform: rotate(180deg); }
+    .detalhe-box { display:none; margin-top:.65rem; padding:.85rem; border:1px solid var(--ilu-line); border-radius:12px; background:#fffbeb; }
+    .detalhe-box.open { display:block; }
     @media (max-width:900px) { .acao-grid { grid-template-columns:1fr 1fr; } }
     @media (max-width:720px) { .acao-grid { grid-template-columns:1fr; } .ilu-hero h1 { font-size:1.3rem; } }
   </style>
@@ -192,13 +205,34 @@
     </div>
   </div>
 
-  <script src="/app.js?v=nav-ops4"></script>
+  <script src="/app.js?v=ops-sess2"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
 
     let painelAtual = null;
+    let somLigado = localStorage.getItem('bi_som_ilu') !== '0';
+
+    function syncSomToggle() {
+      const btn = document.getElementById('somToggleTop');
+      if (!btn) return;
+      btn.classList.toggle('on', somLigado);
+      btn.classList.toggle('off', !somLigado);
+      btn.textContent = somLigado ? '🔔 Som ligado' : '🔕 Som mudo';
+    }
+    function wireSomToggle() {
+      const btn = document.getElementById('somToggleTop');
+      if (!btn || btn._somBound) return;
+      btn._somBound = true;
+      btn.onclick = () => {
+        somLigado = !somLigado;
+        localStorage.setItem('bi_som_ilu', somLigado ? '1' : '0');
+        syncSomToggle();
+        toast(somLigado ? 'Som ligado' : 'Som mudo');
+      };
+      syncSomToggle();
+    }
 
     function goPane(name) {
       document.querySelectorAll('.ilu-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
@@ -297,15 +331,25 @@
       }).join('');
 
       document.getElementById('chamadosBox').innerHTML = (p.chamados || []).length
-        ? p.chamados.map((c) => `
+        ? p.chamados.map((c) => {
+          const did = 'ilu-' + c.id;
+          return `
           <div class="item" data-chamado-id="${c.id}">
             <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status}</span></div>
             <div>${c.titulo || c.categoria}</div>
             <div class="meta">${c.bairro || '—'} ${c.posteId ? '· poste ' + c.posteId : ''}
               ${c.criadoEm ? '· cidadão chamou ' + new Date(c.criadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</div>
-            ${c.foto || c.fotoAntes ? `<img src="${c.foto || c.fotoAntes}" alt="" style="max-width:100%;max-height:140px;border-radius:10px;margin:.45rem 0;object-fit:cover;cursor:pointer" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : ''}
-            ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : ''}
-          </div>`).join('')
+            <button type="button" class="btn-detalhar" data-detalhar="${did}"><span>Detalhar</span><span class="seta"></span></button>
+            <div class="detalhe-box" id="detalhe-${did}">
+              ${c.foto || c.fotoAntes ? `<img src="${c.foto || c.fotoAntes}" alt="" style="max-width:100%;max-height:160px;border-radius:10px;margin:.45rem 0;object-fit:cover;cursor:pointer" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : '<p class="muted">Sem foto.</p>'}
+              ${c.descricao ? `<p class="muted">${c.descricao}</p>` : ''}
+              <div class="form-row" style="margin-bottom:.55rem">
+                <button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>
+              </div>
+              ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : ''}
+            </div>
+          </div>`;
+        }).join('')
         : '<p class="muted">Nenhum chamado aberto de iluminação.</p>';
 
       document.getElementById('alertasBox').innerHTML = (p.alertas || []).length
@@ -314,11 +358,36 @@
 
       bindActions();
       syncQr();
-      if (typeof bindIaObraAssist === 'function') {
-        bindIaObraAssist(document.getElementById('chamadosBox'), (id) =>
-          (painelAtual?.chamados || []).find((c) => c.id === id)
-        );
-      }
+      document.querySelectorAll('[data-detalhar]').forEach((btn) => {
+        if (btn._dBound) return;
+        btn._dBound = true;
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-detalhar');
+          const box = document.getElementById('detalhe-' + id);
+          if (!box) return;
+          const open = !box.classList.contains('open');
+          box.classList.toggle('open', open);
+          btn.classList.toggle('open', open);
+          btn.querySelector('span:first-child').textContent = open ? 'Ocultar detalhes' : 'Detalhar';
+          if (open && typeof bindIaObraAssist === 'function') {
+            bindIaObraAssist(box, (cid) => (painelAtual?.chamados || []).find((c) => c.id === cid));
+          }
+        };
+      });
+      document.querySelectorAll('[data-encaminhar]').forEach((btn) => {
+        if (btn._eBound) return;
+        btn._eBound = true;
+        btn.onclick = async () => {
+          try {
+            await api('/api/chamados/' + btn.dataset.encaminhar, {
+              method: 'PATCH',
+              body: JSON.stringify({ status: 'encaminhado', nota: 'Encaminhado à equipe em campo' }),
+            });
+            toast('Encaminhado pra equipe em campo');
+            render(await api('/api/iluminacao/hoje'));
+          } catch (e) { toast(e.message); }
+        };
+      });
     }
 
     function syncQr() {
@@ -412,7 +481,14 @@
 
     async function boot() {
       const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Iluminação', cfg, { lock: true, user: getSessionUser() });
+      const user = typeof ensureOpsUser === 'function' ? ensureOpsUser() : getSessionUser();
+      if (!user && !hasOpsToken()) {
+        toast('Faça login na Iluminação');
+        location.href = cityLink('/login.html');
+        return;
+      }
+      document.getElementById('top').innerHTML = topbar('Iluminação', cfg, { lock: true, user, som: true });
+      wireSomToggle();
       document.title = `Iluminação · ${cfg.produto || cfg.cidade || ''}`;
       rewriteCityLinks();
       document.getElementById('secChatSend').onclick = async () => {

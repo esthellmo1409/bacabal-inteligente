@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-sess1"></script>
+  <script src="/app.js?v=ops-sess2"></script>
   <script>
     initCidade();
     const senhas = {
@@ -96,6 +96,8 @@
               cidade,
             }),
           });
+          // Limpa sessões antigas (Gabinete/Campo) pra não misturar token
+          if (typeof clearAllSessions === 'function') clearAllSessions();
           localStorage.setItem('bi_token', r.token);
           localStorage.setItem('bi_user', JSON.stringify(r.user));
           if (typeof setSession === 'function') setSession(r.token, r.user);

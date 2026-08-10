@@ -304,13 +304,35 @@
     </div>
   </div>
 
-  <script src="/app.js?v=nav-ops3"></script>
+  <script src="/app.js?v=ops-sess2"></script>
   <script>
     window.BI_OPS_LOCK = true;
+    window.BI_AUTH_SLOT = 'secretaria';
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
 
     const TURNO_LABEL = { manha: 'Manhã', tarde: 'Tarde', noite: 'Noite' };
     let painelAtual = null;
+    let somLigado = localStorage.getItem('bi_som_saude') !== '0';
+
+    function syncSomToggle() {
+      const btn = document.getElementById('somToggleTop');
+      if (!btn) return;
+      btn.classList.toggle('on', somLigado);
+      btn.classList.toggle('off', !somLigado);
+      btn.textContent = somLigado ? '🔔 Som ligado' : '🔕 Som mudo';
+    }
+    function wireSomToggle() {
+      const btn = document.getElementById('somToggleTop');
+      if (!btn || btn._somBound) return;
+      btn._somBound = true;
+      btn.onclick = () => {
+        somLigado = !somLigado;
+        localStorage.setItem('bi_som_saude', somLigado ? '1' : '0');
+        syncSomToggle();
+        toast(somLigado ? 'Som ligado' : 'Som mudo');
+      };
+      syncSomToggle();
+    }
 
     function goPane(name) {
       document.querySelectorAll('.saude-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
@@ -573,23 +595,59 @@
         </div>`).join('') || '<p class="muted">Sem checklist.</p>';
 
       document.getElementById('chamadosBox').innerHTML = (p.reclamacoes || []).length
-        ? p.reclamacoes.map((c) => `
+        ? p.reclamacoes.map((c) => {
+          const did = 'sau-' + c.id;
+          return `
           <div class="item" data-chamado-id="${c.id}">
             <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status || ''}</span></div>
             <div>${c.titulo || c.categoria || 'Chamado'}</div>
             <div class="meta">${c.bairro || '—'} · ${c.categoria || ''} · ${c.prioridade || ''}
               ${c.criadoEm ? '· cidadão chamou ' + new Date(c.criadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</div>
-            ${c.foto || c.fotoAntes ? `<img src="${c.foto || c.fotoAntes}" alt="" style="max-width:100%;max-height:140px;border-radius:10px;margin:.45rem 0;object-fit:cover;cursor:pointer" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : ''}
-            ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : ''}
-          </div>`).join('')
+            <button type="button" class="btn btn-sm" data-detalhar="${did}" style="width:100%;margin-top:.45rem;display:flex;justify-content:space-between;align-items:center;font-weight:800">
+              <span>Detalhar</span><span>▾</span>
+            </button>
+            <div id="detalhe-${did}" style="display:none;margin-top:.55rem;padding:.75rem;border:1px solid #99f6e4;border-radius:12px;background:#ecfdf5">
+              ${c.foto || c.fotoAntes ? `<img src="${c.foto || c.fotoAntes}" alt="" style="max-width:100%;max-height:160px;border-radius:10px;margin:.35rem 0;object-fit:cover;cursor:pointer" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : '<p class="muted">Sem foto.</p>'}
+              ${c.descricao ? `<p class="muted">${c.descricao}</p>` : ''}
+              <div style="margin:.45rem 0">
+                <button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>
+              </div>
+              ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : ''}
+            </div>
+          </div>`;
+        }).join('')
         : '<p class="muted">Nenhum chamado aberto da Saúde no momento.</p>';
 
       bindActions();
-      if (typeof bindIaObraAssist === 'function') {
-        bindIaObraAssist(document.getElementById('chamadosBox'), (id) =>
-          (painelAtual?.reclamacoes || []).find((c) => c.id === id)
-        );
-      }
+      document.querySelectorAll('[data-detalhar]').forEach((btn) => {
+        if (btn._dBound) return;
+        btn._dBound = true;
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-detalhar');
+          const box = document.getElementById('detalhe-' + id);
+          if (!box) return;
+          const open = box.style.display === 'none' || !box.style.display;
+          box.style.display = open ? 'block' : 'none';
+          btn.querySelector('span:first-child').textContent = open ? 'Ocultar detalhes' : 'Detalhar';
+          if (open && typeof bindIaObraAssist === 'function') {
+            bindIaObraAssist(box, (cid) => (painelAtual?.reclamacoes || []).find((c) => c.id === cid));
+          }
+        };
+      });
+      document.querySelectorAll('[data-encaminhar]').forEach((btn) => {
+        if (btn._eBound) return;
+        btn._eBound = true;
+        btn.onclick = async () => {
+          try {
+            await api('/api/chamados/' + btn.dataset.encaminhar, {
+              method: 'PATCH',
+              body: JSON.stringify({ status: 'encaminhado', nota: 'Encaminhado à equipe em campo' }),
+            });
+            toast('Encaminhado pra equipe em campo');
+            render(await api('/api/saude/hoje'));
+          } catch (e) { toast(e.message); }
+        };
+      });
     }
 
     async function plantaoAcao(acao) {
@@ -792,7 +850,14 @@
 
     async function boot() {
       const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Saúde', cfg, { lock: true, user: getSessionUser() });
+      const user = typeof ensureOpsUser === 'function' ? ensureOpsUser() : getSessionUser();
+      if (!user && !hasOpsToken()) {
+        toast('Faça login na Saúde');
+        location.href = cityLink('/login.html');
+        return;
+      }
+      document.getElementById('top').innerHTML = topbar('Saúde', cfg, { lock: true, user, som: true });
+      wireSomToggle();
       document.title = `Secretaria de Saúde · ${cfg.produto || cfg.cidade || ''}`;
       rewriteCityLinks();
       document.getElementById('secChatSend').onclick = async () => {

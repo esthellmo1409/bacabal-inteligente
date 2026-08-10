@@ -273,7 +273,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-sess1"></script>
+  <script src="/app.js?v=ops-sess2"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
@@ -801,19 +801,18 @@
         return;
       }
 
-      // Confirma sessão no servidor e grava nome (evita topbar com “Entrar”)
+      // Confirma sessão no servidor (falha aqui NÃO trava o painel)
       try {
         const me = await api('/api/me');
         if (me && (me.nome || me.id)) {
           user = me;
           if (typeof setSession === 'function') {
-            const tok = localStorage.getItem(authTokenKey())
-              || localStorage.getItem('bi_token_secretaria')
-              || localStorage.getItem('bi_token');
-            setSession(tok, me);
+            const tok = localStorage.getItem(authTokenKey()) || localStorage.getItem('bi_token');
+            if (tok) setSession(tok, me);
           }
         }
-      } catch (_) {
+      } catch (e) {
+        console.warn('api/me', e.message);
         user = ensureOpsUser() || user;
       }
 

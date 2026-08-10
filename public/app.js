@@ -78,13 +78,13 @@ if (typeof document !== 'undefined') {
 
 async function api(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
-  const tokenKey = (typeof authTokenKey === 'function') ? authTokenKey() : 'bi_token';
-  const token = localStorage.getItem(tokenKey)
-    || localStorage.getItem('bi_token_secretaria')
-    || localStorage.getItem('bi_token_gabinete')
-    || localStorage.getItem('bi_token_campo')
-    || localStorage.getItem('bi_token');
-  if (token) headers.Authorization = `Bearer ${token}`;
+  const isLogin = typeof path === 'string' && path.includes('/api/login');
+  if (!isLogin && !opts.skipAuth) {
+    const tokenKey = (typeof authTokenKey === 'function') ? authTokenKey() : 'bi_token';
+    // Só o slot atual + legado bi_token — NÃO misturar gabinete/campo/secretaria
+    const token = localStorage.getItem(tokenKey) || localStorage.getItem('bi_token');
+    if (token) headers.Authorization = `Bearer ${token}`;
+  }
   const slug = getCidade();
   if (slug) headers['X-Cidade'] = slug;
 
@@ -92,11 +92,18 @@ async function api(path, opts = {}) {
   const res = await fetch(url, { ...opts, headers });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    if (res.status === 401) {
+    if (res.status === 401 && !isLogin) {
+      const tokenKey = (typeof authTokenKey === 'function') ? authTokenKey() : 'bi_token';
       localStorage.removeItem(tokenKey);
+      localStorage.removeItem(tokenKey + '_user');
+      // Limpa legado inválido se era ele que estava em uso
+      if (!localStorage.getItem(tokenKey)) {
+        localStorage.removeItem('bi_token');
+        localStorage.removeItem('bi_user');
+      }
       throw new Error(data.error || 'Não autorizado — faça login de novo nesta tela');
     }
-    throw new Error(data.error || 'Erro na requisição');
+    throw new Error(data.error || data.message || ('Erro na requisição (' + res.status + ')'));
   }
   return data;
 }
@@ -683,11 +690,11 @@ function requireCidade() {
 
 function setSession(token, user) {
   const key = authTokenKey();
-  if (token) localStorage.setItem(key, token);
-  // Compat: mantém bi_token se não houver slot (páginas antigas)
-  if (token && !window.BI_AUTH_SLOT) localStorage.setItem('bi_token', token);
-  // Sempre espelha no legado para migração entre telas
-  if (token) localStorage.setItem('bi_token', token);
+  if (token) {
+    localStorage.setItem(key, token);
+    // Legado: páginas antigas ainda leem bi_token
+    localStorage.setItem('bi_token', token);
+  }
   if (user) {
     localStorage.setItem(key + '_user', JSON.stringify(user));
     localStorage.setItem('bi_user', JSON.stringify(user));
@@ -716,49 +723,32 @@ function clearAllSessions() {
 
 function getSessionUser() {
   try {
-    const candidates = [
-      authTokenKey() + '_user',
-      'bi_token_secretaria_user',
-      'bi_token_gabinete_user',
-      'bi_token_campo_user',
-      'bi_user',
-    ];
-    for (const key of candidates) {
-      const raw = localStorage.getItem(key);
-      if (!raw) continue;
-      const u = JSON.parse(raw);
-      if (u && (u.nome || u.id || u.papel)) return u;
-    }
-    return null;
+    const key = authTokenKey() + '_user';
+    let raw = localStorage.getItem(key);
+    // Compat: login antigo gravava em bi_user
+    if (!raw) raw = localStorage.getItem('bi_user');
+    return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
 }
 
 function hasOpsToken() {
-  const keys = [
-    authTokenKey(),
-    'bi_token_secretaria',
-    'bi_token_gabinete',
-    'bi_token_campo',
-    'bi_token',
-  ];
-  return keys.some((k) => !!localStorage.getItem(k));
+  const key = authTokenKey();
+  if (localStorage.getItem(key)) return true;
+  if (localStorage.getItem('bi_token')) return true;
+  return false;
 }
 
 /** Migra token legado (bi_token) para o slot atual e devolve o usuário. */
 function ensureOpsUser() {
   const key = authTokenKey();
-  const user = getSessionUser();
-  let token = localStorage.getItem(key);
-  if (!token) {
-    token = localStorage.getItem('bi_token_secretaria')
-      || localStorage.getItem('bi_token_gabinete')
-      || localStorage.getItem('bi_token_campo')
-      || localStorage.getItem('bi_token');
+  if (!localStorage.getItem(key) && localStorage.getItem('bi_token')) {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('bi_user') || 'null'); } catch (_) {}
+    setSession(localStorage.getItem('bi_token'), user);
   }
-  if (token) setSession(token, user);
-  return getSessionUser() || user;
+  return getSessionUser();
 }
 
 function logout() {
