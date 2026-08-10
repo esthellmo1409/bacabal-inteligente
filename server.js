@@ -420,11 +420,19 @@ function seedDemosIa() {
   limparChamadosParaDemo('bacabal');
   limparChamadosParaDemo('bomlugar');
   // Demo vivo da IA de material (foto do problema)
-  ensureDemoChamado('bacabal');
-  ensureDemoChamado('bomlugar');
+  try {
+    ensureDemoChamado('bacabal');
+    ensureDemoChamado('bomlugar');
+  } catch (e) {
+    console.warn('ensureDemoChamado:', e.message);
+  }
   // Portfólio: concluídos + aguardando + em andamento (antes/depois + materiais)
-  ensureDemoPortfolio('bacabal');
-  ensureDemoPortfolio('bomlugar');
+  try {
+    ensureDemoPortfolio('bacabal');
+    ensureDemoPortfolio('bomlugar');
+  } catch (e) {
+    console.warn('ensureDemoPortfolio:', e && e.stack ? e.stack : e);
+  }
 }
 
 /**
@@ -735,6 +743,9 @@ function ensureDemoPortfolio(slug = 'bacabal') {
   writeTenant(slug, 'chamados.json', chamados);
   console.log(`  Portfólio demo (${slug}): ${cenarios.length} cenários com fotos/materiais`);
 }
+
+// Exporta para rotas /api/demo/*
+global.ensureDemoPortfolio = ensureDemoPortfolio;
 
 try {
   seedDemosIa();

@@ -293,7 +293,7 @@
     </div>
   </div>
 
-  <script src="/app.js?v=ops-cenarios1"></script>
+  <script src="/app.js?v=ops-cenarios2"></script>
   <script>
     window.BI_OPS_LOCK = true;
     if (typeof opsTravarVoltar === 'function') opsTravarVoltar({ force: true });
@@ -515,6 +515,8 @@
             <strong>${c.titulo || c.categoria || 'Chamado'}</strong>
             ${statusPill(c.status)}
             ${c.demoFixo === 'buraco-foto' ? '<span class="pill alta">simulação buraco</span>' : ''}
+            ${c.status === 'concluido' && c.fotoDepois ? '<span class="pill" style="background:#dcfce7;color:#166534">antes/depois</span>' : ''}
+            ${Array.isArray(c.materiais) && c.materiais.length ? '<span class="pill" style="background:#e0e7ff;color:#3730a3">materiais</span>' : ''}
           </div>
           <div class="meta">${c.protocolo || c.id} · ${c.bairro || '—'} ${c.endereco ? '· ' + c.endereco : ''}</div>
           ${c.criadoEm ? `<div class="cidadao-quando">Cidadão ${fmtCidadaoChamou(c.criadoEm)}</div>` : ''}
