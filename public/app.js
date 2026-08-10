@@ -210,8 +210,99 @@ function fotoGaleriaHtml(urls, label) {
   `;
 }
 
+/** Quando a equipe de campo enviou a foto do depois (histórico ou atualização). */
+function campoEnviouEm(c) {
+  if (!c) return null;
+  if (c.fotoDepois || c.status === 'aguardando_aprovacao' || c.status === 'concluido') {
+    const hist = [...(c.historico || [])].reverse();
+    const hit = hist.find((h) =>
+      h.status === 'aguardando_aprovacao' ||
+      /foto|depois|campo|prova|enviou/i.test(String(h.nota || ''))
+    );
+    return hit?.em || c.atualizadoEm || null;
+  }
+  const hist = [...(c.historico || [])].reverse();
+  const hit = hist.find((h) =>
+    h.status === 'em_execucao' || h.status === 'encaminhado' || /campo|check-?in/i.test(String(h.nota || ''))
+  );
+  return hit?.em || null;
+}
+
+/**
+ * Conteúdo do "Detalhar" — organizado para operar:
+ * 1) linha do tempo  2) fotos antes/depois  3) IA  4) ações
+ */
+function detalheOperacaoHtml(c, { acoesHtml } = {}) {
+  if (!c) return '';
+  const cidadaoEm = c.criadoEm ? fmtDate(c.criadoEm) : '—';
+  const campoEm = campoEnviouEm(c);
+  const campoTxt = campoEm
+    ? fmtDate(campoEm)
+    : (c.status === 'encaminhado' || c.status === 'em_execucao'
+      ? 'Equipe em campo — foto do depois ainda não chegou'
+      : 'Ainda não enviou a foto do depois');
+  return `
+    <div class="detalhe-ops">
+      <div class="detalhe-ops-sec">
+        <h4 class="detalhe-ops-title">1 · Linha do tempo</h4>
+        <div class="detalhe-ops-timeline">
+          <div><strong>Cidadão chamou</strong><span>${cidadaoEm}</span></div>
+          <div><strong>Equipe em campo</strong><span>${campoTxt}</span></div>
+          <div><strong>Status agora</strong><span>${statusLabel(c.status)}</span></div>
+        </div>
+      </div>
+      <div class="detalhe-ops-sec">
+        <h4 class="detalhe-ops-title">2 · Fotos (antes / depois)</h4>
+        ${antesDepoisHtml(c, { forcarDupla: true }) || '<p class="muted" style="margin:0">Sem foto anexada ainda.</p>'}
+      </div>
+      <div class="detalhe-ops-sec">
+        <h4 class="detalhe-ops-title">3 · Relato</h4>
+        <p class="muted" style="margin:0 0 .35rem">${c.descricao || 'Sem descrição.'}</p>
+        <div class="meta">${c.cidadao?.nome || 'Cidadão'}${c.cidadao?.telefone ? ' · ' + c.cidadao.telefone : ''}
+          ${c.endereco ? ' · ' + c.endereco : ''} · ${c.bairro || ''}</div>
+      </div>
+      <div class="detalhe-ops-sec">
+        <h4 class="detalhe-ops-title">4 · Analisar obra (IA)</h4>
+        <p class="muted" style="margin:0 0 .45rem;font-size:.82rem">A IA sugere material, quantidade, tempo e ferramentas para a equipe.</p>
+        ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(c) : ''}
+      </div>
+      ${acoesHtml ? `
+      <div class="detalhe-ops-sec">
+        <h4 class="detalhe-ops-title">5 · Ações</h4>
+        <div class="actions">${acoesHtml}</div>
+      </div>` : ''}
+    </div>`;
+}
+
+/** Liga botões Detalhar (abre/fecha e dispara a IA na caixa). */
+function bindDetalharToggle(root, getChamado) {
+  const el = root || document;
+  el.querySelectorAll('[data-detalhar]').forEach((btn) => {
+    if (btn._detBound) return;
+    btn._detBound = true;
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.getAttribute('data-detalhar');
+      const box = document.getElementById('detalhe-' + id);
+      if (!box) return;
+      const open = !box.classList.contains('open');
+      box.classList.toggle('open', open);
+      btn.classList.toggle('open', open);
+      const label = btn.querySelector('[data-detalhar-label]') || btn.querySelector('span:first-child');
+      if (label) label.textContent = open ? 'Ocultar detalhes' : 'Detalhar';
+      if (open) {
+        if (typeof bindFotoThumbs === 'function') bindFotoThumbs(box);
+        if (typeof bindIaObraAssist === 'function') {
+          bindIaObraAssist(box, getChamado || ((cid) => null));
+        }
+      }
+    });
+  });
+}
+
 /** Foto do problema (cidadão) — ou Antes/Depois quando o campo já enviou a prova. */
-function antesDepoisHtml(c) {
+function antesDepoisHtml(c, { forcarDupla } = {}) {
   const fotosAntes = (c.fotosAntes && c.fotosAntes.length)
     ? c.fotosAntes
     : ((c.fotoAntes || c.foto) ? [c.fotoAntes || c.foto] : []);
@@ -220,9 +311,10 @@ function antesDepoisHtml(c) {
     : (c.fotoDepois ? [c.fotoDepois] : []);
   const antes = fotosAntes[0];
   const depois = fotosDepois[0];
-  if (!antes && !depois) return '';
+  if (!antes && !depois && !forcarDupla) return '';
 
   const faseProva =
+    forcarDupla ||
     !!depois ||
     c.status === 'aguardando_aprovacao' ||
     c.status === 'concluido';
@@ -242,7 +334,9 @@ function antesDepoisHtml(c) {
     <div class="antes-depois">
       <div class="antes-depois-item">
         <div class="antes-depois-label">Antes${fotosAntes.length > 1 ? ` (${fotosAntes.length})` : ''}</div>
-        ${fotoGaleriaHtml(fotosAntes, 'Foto antes')}
+        ${fotosAntes.length
+          ? fotoGaleriaHtml(fotosAntes, 'Foto antes')
+          : '<div class="antes-depois-empty">Sem foto do cidadão</div>'}
       </div>
       <div class="antes-depois-item">
         <div class="antes-depois-label">Depois${fotosDepois.length > 1 ? ` (${fotosDepois.length})` : ''}</div>
@@ -614,7 +708,12 @@ function clearAllSessions() {
 function getSessionUser() {
   try {
     const key = authTokenKey() + '_user';
-    const raw = localStorage.getItem(key) || localStorage.getItem('bi_user');
+    let raw = localStorage.getItem(key);
+    // Compat: login antigo gravava em bi_user / sem slot
+    if (!raw) raw = localStorage.getItem('bi_user');
+    if (!raw && window.BI_AUTH_SLOT === 'secretaria') {
+      raw = localStorage.getItem('bi_token_user');
+    }
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -624,8 +723,20 @@ function getSessionUser() {
 function hasOpsToken() {
   const key = authTokenKey();
   if (localStorage.getItem(key)) return true;
-  if (!window.BI_AUTH_SLOT && localStorage.getItem('bi_token')) return true;
+  // Compat com login sem slot (bi_token)
+  if (localStorage.getItem('bi_token')) return true;
   return false;
+}
+
+/** Migra token legado (bi_token) para o slot atual e devolve o usuário. */
+function ensureOpsUser() {
+  const key = authTokenKey();
+  if (!localStorage.getItem(key) && localStorage.getItem('bi_token')) {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('bi_user') || 'null'); } catch (_) {}
+    setSession(localStorage.getItem('bi_token'), user);
+  }
+  return getSessionUser();
 }
 
 function logout() {
@@ -650,6 +761,7 @@ function topbar(active, cfg, opts = {}) {
   const sub = cfg?.tagline
     || `${cfg?.cidade || window.__CITY_NOME || ''} · ${cfg?.uf || 'MA'}`;
   const opsLock = !!(opts.lock || window.BI_OPS_LOCK || window.BI_AUTH_SLOT);
+  if (opsLock && typeof ensureOpsUser === 'function') ensureOpsUser();
   const user = opsLock ? (opts.user || getSessionUser()) : null;
   const logged = !!(user || (opsLock && hasOpsToken()));
 
@@ -682,9 +794,12 @@ function topbar(active, cfg, opts = {}) {
   if (opsLock) {
     const area = active || 'Área administrativa';
     const status = opsStatusLine(user, area);
-    // Já logado: só usuário + Sair (sem botão Entrar)
+    // Já logado: usuário + Som (opcional) + Sair
+    const somBtn = opts.som
+      ? `<button type="button" class="btn btn-sm som-toggle on" id="somToggleTop" title="Alarme do Gabinete">🔔 Som</button>`
+      : '';
     const who = logged
-      ? `<span class="nav-user">${(user && (user.nome || user.id)) || 'Sessão ativa'}</span>
+      ? `${somBtn}<span class="nav-user">${(user && (user.nome || user.id)) || 'Sessão ativa'}</span>
          <button type="button" class="nav-logout" onclick="logoutOps('/login.html')">Sair</button>`
       : `<a class="nav-logout" href="${cityLink('/login.html')}">Entrar</a>`;
     return `

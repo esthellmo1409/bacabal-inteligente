@@ -24,18 +24,27 @@
     .obr-hero .muted { color:#ffedd5; margin:0; }
     .obr-hero .btn { background:#fff; color:#9a3412; border:none; font-weight:800; }
     .acao-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.55rem; margin-bottom:1rem; }
+    .pane { display:none; scroll-margin-top: 1rem; }
+    .pane.active { display:block; animation: paneIn .18s ease; }
+    @keyframes paneIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: none; }
+    }
     .acao-card {
       border:1px solid var(--obr-line); background:#fff; border-radius:14px;
       padding:.85rem .9rem; text-align:left; cursor:pointer; font:inherit; color:inherit;
+      transition: box-shadow .15s ease, transform .15s ease, background .15s ease;
     }
     .acao-card:hover { box-shadow:0 8px 18px rgba(194,65,12,.12); transform:translateY(-2px); }
-    .acao-card strong { display:block; color:var(--ink-soft); font-size:.95rem; margin-bottom:.2rem; }
-    .acao-card span { display:block; color:#64748b; font-size:.75rem; line-height:1.35; }
-    .acao-card.active { background:var(--obr); border-color:var(--obr); color:#fff; }
+    .acao-card:focus-visible { outline:2px solid var(--obr); outline-offset:2px; }
+    .acao-card strong { display:block; color:var(--ink-soft); font-size:.95rem; margin-bottom:.2rem; pointer-events:none; }
+    .acao-card span { display:block; color:#64748b; font-size:.75rem; line-height:1.35; pointer-events:none; }
+    .acao-card.active { background:var(--obr); border-color:var(--obr); color:#fff; box-shadow:0 8px 20px rgba(194,65,12,.25); }
     .acao-card.active strong, .acao-card.active span { color:#fff; }
     .obr-tabs {
       display:flex; gap:.4rem; flex-wrap:wrap; margin:0 0 1rem; padding:.35rem;
       background:#fff; border:1px solid var(--obr-line); border-radius:14px;
+      scroll-margin-top: .75rem;
     }
     .obr-tab {
       border:none; background:transparent; border-radius:10px; cursor:pointer;
@@ -45,10 +54,9 @@
     .obr-tab .count {
       display:inline-flex; min-width:1.2rem; height:1.2rem; align-items:center; justify-content:center;
       margin-left:.3rem; border-radius:999px; font-size:.68rem; background:rgba(255,255,255,.25);
+      pointer-events:none;
     }
     .obr-tab:not(.active) .count { background:#ffedd5; color:var(--ink-soft); }
-    .pane { display:none; }
-    .pane.active { display:block; }
     .hint-box {
       margin-bottom:.85rem; padding:.75rem .95rem; border-radius:12px;
       background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; font-size:.88rem; font-weight:600;
@@ -102,6 +110,8 @@
       border:1px solid #fed7aa; border-radius:12px; background:#fffaf5;
     }
     .detalhe-box.open { display:block; }
+    .ops-block { margin-bottom:1rem; }
+    .ops-block .ops-section-head h3 { color:#9a3412; }
     @media (max-width:900px) { .acao-grid { grid-template-columns:1fr 1fr; } }
     @media (max-width:720px) { .acao-grid { grid-template-columns:1fr; } .obr-hero h1 { font-size:1.3rem; } }
   </style>
@@ -128,7 +138,26 @@
       </div>
     </div>
 
-    <div class="grid-4" id="kpis"></div>
+    <div class="panel ops-block">
+      <div class="ops-section-head">
+        <div>
+          <h3>Status</h3>
+          <p class="muted">Números do dia — pontos, rota, frota e OS.</p>
+        </div>
+      </div>
+      <div class="grid-4" id="kpis"></div>
+    </div>
+
+    <div class="panel ops-block" style="border-color:#fdba74;background:linear-gradient(180deg,#fff7ed,transparent)">
+      <div class="ops-section-head">
+        <div>
+          <h3>Chamados mais recentes</h3>
+          <p class="muted">Abra <strong>Detalhar</strong>: foto antes/depois, dia e hora do campo, e análise da IA.</p>
+        </div>
+        <button class="btn btn-sm" type="button" id="btnVerTodosChamados" data-nav-pane="chamados">Ver toda a fila</button>
+      </div>
+      <div id="recentesBox" class="list"></div>
+    </div>
 
     <div class="acao-grid">
       <button type="button" class="acao-card" data-go="pontos"><strong>Pontos quentes</strong><span>Buracos, calçada, drenagem</span></button>
@@ -238,22 +267,78 @@
     </div>
   </div>
 
-  <script src="/app.js?v=nav-ops5"></script>
+  <script src="/app.js?v=ops-nav2"></script>
   <script>
     window.BI_OPS_LOCK = true;
     window.BI_AUTH_SLOT = 'secretaria';
     setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
 
     let painelAtual = null;
+    let somLigado = localStorage.getItem('bi_som_obras') !== '0';
 
-    function goPane(name) {
-      document.querySelectorAll('.obr-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
-      document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('active', p.id === 'pane-' + name));
-      document.querySelectorAll('.acao-card').forEach((c) => c.classList.toggle('active', c.dataset.go === name));
+    function syncSomToggle() {
+      const btn = document.getElementById('somToggleTop') || document.getElementById('somToggle');
+      if (!btn) return;
+      btn.classList.toggle('on', somLigado);
+      btn.classList.toggle('off', !somLigado);
+      btn.textContent = somLigado ? '🔔 Som ligado' : '🔕 Som mudo';
     }
 
-    document.querySelectorAll('.obr-tab, .acao-card').forEach((btn) => {
-      btn.onclick = () => goPane(btn.dataset.pane || btn.dataset.go);
+    function wireSomToggle() {
+      const btn = document.getElementById('somToggleTop') || document.getElementById('somToggle');
+      if (!btn || btn._somBound) return;
+      btn._somBound = true;
+      btn.onclick = () => {
+        somLigado = !somLigado;
+        localStorage.setItem('bi_som_obras', somLigado ? '1' : '0');
+        syncSomToggle();
+        toast(somLigado ? 'Som ligado — alarme do Gabinete ativo' : 'Som mudo');
+      };
+      syncSomToggle();
+    }
+
+    function goPane(name, { scroll = true } = {}) {
+      if (!name) return;
+      const pane = document.getElementById('pane-' + name);
+      if (!pane) {
+        if (typeof toast === 'function') toast('Seção não encontrada: ' + name);
+        return;
+      }
+      document.querySelectorAll('.obr-tab').forEach((b) => {
+        b.classList.toggle('active', b.getAttribute('data-pane') === name);
+      });
+      document.querySelectorAll('.pane').forEach((p) => {
+        p.classList.toggle('active', p.id === 'pane-' + name);
+      });
+      document.querySelectorAll('.acao-card').forEach((c) => {
+        c.classList.toggle('active', c.getAttribute('data-go') === name);
+      });
+      try {
+        const url = new URL(location.href);
+        url.searchParams.set('aba', name);
+        history.replaceState(null, '', url.toString());
+      } catch (_) {}
+      if (scroll) {
+        const tabs = document.getElementById('tabs');
+        const target = tabs || pane;
+        requestAnimationFrame(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    }
+
+    // Clique nos cards e nas abas → abre a seção e rola até ela
+    document.addEventListener('click', (e) => {
+      const btn = e.target && e.target.closest
+        ? e.target.closest('.acao-card[data-go], .obr-tab[data-pane], [data-nav-pane]')
+        : null;
+      if (!btn || !document.body.contains(btn)) return;
+      const name = btn.getAttribute('data-pane')
+        || btn.getAttribute('data-go')
+        || btn.getAttribute('data-nav-pane');
+      if (!name) return;
+      e.preventDefault();
+      goPane(name, { scroll: true });
     });
 
     function statusPill(st) {
@@ -277,16 +362,27 @@
         titulo: c.tituloChamado || c.titulo,
         categoria: c.categoria || c.tipo || 'buraco',
         descricao: c.descricao || '',
-        status: c.status,
+        status: c.statusChamado || c.status,
+        criadoEm: c.cidadaoChamouEm || c.criadoEm || null,
+        atualizadoEm: c.atualizadoEm || null,
+        historico: c.historico || [],
         foto: c.foto || c.fotoAntes || null,
         fotoAntes: c.foto || c.fotoAntes || null,
         fotoDepois: c.fotoDepois || null,
+        fotosAntes: c.fotosAntes || null,
+        fotosDepois: c.fotosDepois || null,
+        cidadao: c.cidadao || null,
+        endereco: c.enderecoChamado || c.endereco || c.rua || '',
+        bairro: c.bairro || '',
       };
     }
 
-    function cardChamadoHtml(c) {
-      const foto = c.foto || c.fotoAntes;
-      const detalheId = 'ch-' + c.id;
+    function cardChamadoHtml(c, { recente } = {}) {
+      const detalheId = (recente ? 'rec-' : 'ch-') + c.id;
+      const campoEm = typeof campoEnviouEm === 'function' ? campoEnviouEm(c) : null;
+      const acoesHtml = `
+        <button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>
+      `;
       return `
         <div class="unidade-card ${c.demoFixo === 'buraco-foto' ? 'critico' : ''}" data-chamado-id="${c.id}">
           <div class="item-head">
@@ -295,18 +391,15 @@
             ${c.demoFixo === 'buraco-foto' ? '<span class="pill alta">simulação buraco</span>' : ''}
           </div>
           <div class="meta">${c.protocolo || c.id} · ${c.bairro || '—'} ${c.endereco ? '· ' + c.endereco : ''}</div>
-          ${c.criadoEm ? `<div class="cidadao-quando">Cidadão chamou em ${fmtCidadaoChamou(c.criadoEm)}</div>` : ''}
+          ${c.criadoEm ? `<div class="cidadao-quando">Cidadão ${fmtCidadaoChamou(c.criadoEm)}</div>` : ''}
+          ${campoEm ? `<div class="cidadao-quando" style="background:#dbeafe;color:#1e40af">Campo ${fmtCidadaoChamou(campoEm)}</div>` : ''}
           <button type="button" class="btn-detalhar" data-detalhar="${detalheId}">
-            <span>Detalhar</span><span class="seta" aria-hidden="true"></span>
+            <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
           </button>
           <div class="detalhe-box" id="detalhe-${detalheId}">
-            <div class="meta">${c.cidadao?.nome || 'Cidadão'}${c.cidadao?.telefone ? ' · ' + c.cidadao.telefone : ''}</div>
-            ${foto ? `<img class="foto-buraco" src="${foto}" alt="Foto do problema" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : '<p class="muted">Sem foto anexada.</p>'}
-            ${c.descricao ? `<p class="muted" style="margin:.35rem 0">${c.descricao}</p>` : ''}
-            <div class="form-row" style="margin-bottom:.55rem">
-              <button class="btn btn-sm btn-primary" type="button" data-encaminhar="${c.id}">Encaminhar pra equipe em campo</button>
-            </div>
-            ${typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(chamadoParaIa(c)) : ''}
+            ${typeof detalheOperacaoHtml === 'function'
+              ? detalheOperacaoHtml(chamadoParaIa(c), { acoesHtml })
+              : ''}
           </div>
         </div>`;
     }
@@ -314,6 +407,13 @@
     function cardPontoHtml(x) {
       const detalheId = 'pt-' + x.id;
       const temDetalhe = !!(x.foto || x.descricao || x.chamadoId || x.cidadaoChamouEm || x.simBuraco);
+      const iaObj = chamadoParaIa(x);
+      const campoEm = typeof campoEnviouEm === 'function' ? campoEnviouEm(iaObj) : null;
+      const acoesHtml = `
+        <button class="btn btn-sm btn-primary" type="button" data-encaminhar-ponto="${x.id}" data-chamado="${x.chamadoId || ''}">
+          Encaminhar pra equipe em campo
+        </button>
+      `;
       return `
         <div class="unidade-card ${x.prioridade === 'alta' && x.status !== 'concluido' ? 'critico' : ''}">
           <div class="item-head">
@@ -323,6 +423,8 @@
           </div>
           <div class="meta">${x.bairro} · ${x.rua}${x.prazoHoje ? ' · prazo ' + x.prazoHoje : ''}</div>
           ${x.motivoAtraso ? `<div class="meta" style="color:#b91c1c;font-weight:600">${x.motivoAtraso}</div>` : ''}
+          ${x.cidadaoChamouEm ? `<div class="cidadao-quando">Cidadão ${fmtCidadaoChamou(x.cidadaoChamouEm)}</div>` : ''}
+          ${campoEm ? `<div class="cidadao-quando" style="background:#dbeafe;color:#1e40af">Campo ${fmtCidadaoChamou(campoEm)}</div>` : ''}
           <div class="form-row">
             <select data-ponto-st="${x.id}">
               <option value="pendente" ${x.status === 'pendente' ? 'selected' : ''}>Pendente</option>
@@ -342,19 +444,12 @@
           </div>
           ${temDetalhe ? `
           <button type="button" class="btn-detalhar" data-detalhar="${detalheId}">
-            <span>Detalhar</span><span class="seta" aria-hidden="true"></span>
+            <span data-detalhar-label>Detalhar</span><span class="seta" aria-hidden="true"></span>
           </button>
           <div class="detalhe-box" id="detalhe-${detalheId}">
-            ${x.cidadaoChamouEm ? `<div class="cidadao-quando">Cidadão chamou em ${fmtCidadaoChamou(x.cidadaoChamouEm)}${x.protocolo ? ' · ' + x.protocolo : ''}</div>` : ''}
-            ${x.cidadao ? `<div class="meta" style="margin-top:.35rem">${x.cidadao.nome || ''}${x.cidadao.telefone ? ' · ' + x.cidadao.telefone : ''}</div>` : ''}
-            ${x.foto ? `<img class="foto-buraco" src="${x.foto}" alt="Foto do problema" onclick="typeof openFotoLightbox==='function'&&openFotoLightbox(this.src)" />` : ''}
-            ${x.descricao ? `<p class="muted" style="margin:.35rem 0">${x.descricao}</p>` : ''}
-            <div class="form-row" style="margin-bottom:.55rem">
-              <button class="btn btn-sm btn-primary" type="button" data-encaminhar-ponto="${x.id}" data-chamado="${x.chamadoId || ''}">
-                Encaminhar pra equipe em campo
-              </button>
-            </div>
-            ${(x.foto || x.descricao) && typeof iaObraAssistHtml === 'function' ? iaObraAssistHtml(chamadoParaIa(x)) : ''}
+            ${typeof detalheOperacaoHtml === 'function'
+              ? detalheOperacaoHtml(iaObj, { acoesHtml })
+              : ''}
           </div>` : ''}
         </div>`;
     }
@@ -378,6 +473,20 @@
 
       document.getElementById('pontosBox').innerHTML = (p.pontosQuentes || []).map(cardPontoHtml).join('')
         || '<p class="muted">Nenhum ponto quente.</p>';
+
+      const chamadosSorted = [...(p.chamados || [])].sort((a, b) =>
+        String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''))
+      );
+      const recentesEl = document.getElementById('recentesBox');
+      if (recentesEl) {
+        recentesEl.innerHTML = chamadosSorted.length
+          ? chamadosSorted.slice(0, 5).map((c) => cardChamadoHtml(c, { recente: true })).join('')
+          : '<p class="muted">Nenhum chamado recente.</p>';
+      }
+
+      document.getElementById('chamadosBox').innerHTML = chamadosSorted.length
+        ? chamadosSorted.map((c) => cardChamadoHtml(c)).join('')
+        : '<p class="muted">Nenhum chamado aberto.</p>';
 
       document.getElementById('rotaBox').innerHTML = (p.rota || []).length
         ? p.rota.map((r) => `
@@ -451,10 +560,6 @@
           </div>
         </div>`).join('') || '<p class="muted">Nenhuma obra cadastrada.</p>';
 
-      document.getElementById('chamadosBox').innerHTML = (p.chamados || []).length
-        ? p.chamados.map(cardChamadoHtml).join('')
-        : '<p class="muted">Nenhum chamado aberto de obras.</p>';
-
       document.getElementById('checklistBox').innerHTML = (p.checklist || []).map((c) => `
         <div class="unidade-card ${c.ok ? '' : 'critico'}">
           <div class="item-head"><strong>${c.label}</strong>${c.ok ? statusPill('ok') : statusPill('pendente')}</div>
@@ -470,36 +575,28 @@
         : '<p class="muted">Nenhum alerta no momento.</p>';
 
       bindActions();
+      const getChamadoOps = (id) => {
+        const pt = (painelAtual?.pontosQuentes || []).find((x) => x.chamadoId === id || x.id === id);
+        return chamadoParaIa(pt) || (painelAtual?.chamados || []).find((c) => c.id === id);
+      };
+      if (typeof bindDetalharToggle === 'function') {
+        bindDetalharToggle(document.getElementById('recentesBox'), getChamadoOps);
+        bindDetalharToggle(document.getElementById('pontosBox'), getChamadoOps);
+        bindDetalharToggle(document.getElementById('chamadosBox'), getChamadoOps);
+      }
       if (typeof bindIaObraAssist === 'function') {
-        bindIaObraAssist(document.getElementById('pontosBox'), (id) => {
-          const pt = (painelAtual?.pontosQuentes || []).find((x) => x.chamadoId === id || x.id === id);
-          return chamadoParaIa(pt) || (painelAtual?.chamados || []).find((c) => c.id === id);
-        });
-        bindIaObraAssist(document.getElementById('chamadosBox'), (id) =>
-          (painelAtual?.chamados || []).find((c) => c.id === id)
-        );
+        bindIaObraAssist(document.getElementById('recentesBox'), getChamadoOps);
+        bindIaObraAssist(document.getElementById('pontosBox'), getChamadoOps);
+        bindIaObraAssist(document.getElementById('chamadosBox'), getChamadoOps);
+      }
+      if (typeof bindFotoThumbs === 'function') {
+        bindFotoThumbs(document.getElementById('recentesBox'));
+        bindFotoThumbs(document.getElementById('pontosBox'));
+        bindFotoThumbs(document.getElementById('chamadosBox'));
       }
     }
 
     function bindActions() {
-      document.querySelectorAll('[data-detalhar]').forEach((btn) => {
-        btn.onclick = () => {
-          const id = btn.getAttribute('data-detalhar');
-          const box = document.getElementById('detalhe-' + id);
-          if (!box) return;
-          const open = !box.classList.contains('open');
-          box.classList.toggle('open', open);
-          btn.classList.toggle('open', open);
-          btn.querySelector('span:first-child').textContent = open ? 'Ocultar detalhes' : 'Detalhar';
-          if (open && typeof bindIaObraAssist === 'function') {
-            bindIaObraAssist(box, (cid) => {
-              const pt = (painelAtual?.pontosQuentes || []).find((x) => x.chamadoId === cid || x.id === cid);
-              return chamadoParaIa(pt) || (painelAtual?.chamados || []).find((c) => c.id === cid);
-            });
-          }
-        };
-      });
-
       document.querySelectorAll('[data-encaminhar]').forEach((btn) => {
         btn.onclick = async () => {
           const id = btn.dataset.encaminhar;
@@ -680,7 +777,14 @@
 
     async function boot() {
       const cfg = await loadCityBrand();
-      document.getElementById('top').innerHTML = topbar('Obras', cfg, { lock: true, user: getSessionUser() });
+      const user = typeof ensureOpsUser === 'function' ? ensureOpsUser() : getSessionUser();
+      if (!user && !hasOpsToken()) {
+        toast('Faça login como Obras');
+        location.href = cityLink('/login.html');
+        return;
+      }
+      document.getElementById('top').innerHTML = topbar('Obras', cfg, { lock: true, user, som: true });
+      wireSomToggle();
       document.title = `Obras · ${cfg.produto || cfg.cidade || ''}`;
       document.getElementById('linkTransp').href = cityLink('/obras.html');
       rewriteCityLinks();
@@ -708,6 +812,8 @@
         } catch (e) { toast(e.message); }
       };
       document.getElementById('btnRefresh').onclick = () => load().catch((e) => toast(e.message));
+      const btnTodos = document.getElementById('btnVerTodosChamados');
+      if (btnTodos) btnTodos.onclick = () => goPane('chamados');
       await load();
       const aba = new URLSearchParams(location.search).get('aba');
       if (aba) goPane(aba);
