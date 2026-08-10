@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Iluminação Pública</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    :root {
+      --ilu: #b45309;
+      --ilu-soft: #fffbeb;
+      --ilu-line: #fcd34d;
+      --ink-soft: #78350f;
+    }
+    body.ops-body { background: linear-gradient(180deg, #fffbeb 0%, #f8fafc 240px, #f8fafc 100%); }
+    .ilu-hero {
+      display:flex; justify-content:space-between; align-items:end; gap:1rem; flex-wrap:wrap;
+      margin-bottom:1rem; padding:1.05rem 1.2rem; border-radius:16px;
+      background: linear-gradient(135deg, #b45309, #92400e 55%, #78350f);
+      color:#fff; box-shadow:0 10px 28px rgba(180,83,9,.28);
+    }
+    .ilu-hero .page-kicker { color:#fde68a; margin:0 0 .2rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.72rem; }
+    .ilu-hero h1 { margin:0 0 .25rem; color:#fff; font-size:1.6rem; }
+    .ilu-hero .muted { color:#ffedd5; margin:0; }
+    .ilu-hero .btn { background:#fff; color:#92400e; border:none; font-weight:800; }
+    .acao-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.55rem; margin-bottom:1rem; }
+    .acao-card {
+      border:1px solid var(--ilu-line); background:#fff; border-radius:14px;
+      padding:.85rem .9rem; text-align:left; cursor:pointer; font:inherit; color:inherit;
+    }
+    .acao-card:hover { box-shadow:0 8px 18px rgba(180,83,9,.12); transform:translateY(-2px); }
+    .acao-card strong { display:block; color:var(--ink-soft); font-size:.95rem; margin-bottom:.2rem; }
+    .acao-card span { display:block; color:#64748b; font-size:.75rem; line-height:1.35; }
+    .acao-card.active { background:var(--ilu); border-color:var(--ilu); color:#fff; }
+    .acao-card.active strong, .acao-card.active span { color:#fff; }
+    .ilu-tabs {
+      display:flex; gap:.4rem; flex-wrap:wrap; margin:0 0 1rem; padding:.35rem;
+      background:#fff; border:1px solid var(--ilu-line); border-radius:14px;
+    }
+    .ilu-tab {
+      border:none; background:transparent; border-radius:10px; cursor:pointer;
+      padding:.55rem .85rem; font-weight:800; font-size:.8rem; color:var(--ink-soft);
+    }
+    .ilu-tab.active { background:var(--ilu); color:#fff; }
+    .ilu-tab .count {
+      display:inline-flex; min-width:1.2rem; height:1.2rem; align-items:center; justify-content:center;
+      margin-left:.3rem; border-radius:999px; font-size:.68rem; background:rgba(255,255,255,.25);
+    }
+    .ilu-tab:not(.active) .count { background:#fef3c7; color:var(--ink-soft); }
+    .pane { display:none; }
+    .pane.active { display:block; }
+    .hint-box {
+      margin-bottom:.85rem; padding:.75rem .95rem; border-radius:12px;
+      background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a8a; font-size:.88rem; font-weight:600;
+    }
+    .unidade-card {
+      border:1px solid #fde68a; border-radius:14px; padding:.9rem 1rem; margin-bottom:.65rem; background:#fff;
+    }
+    .unidade-card.critico { border-color:#fecaca; background:#fffafa; }
+    .form-row { display:flex; flex-wrap:wrap; gap:.45rem; align-items:center; margin-top:.55rem; }
+    .form-row input, .form-row select { margin:0; }
+    .pill {
+      display:inline-flex; align-items:center; padding:.22rem .5rem; border-radius:999px;
+      font-size:.7rem; font-weight:800; background:#f1f5f9; margin-right:.25rem;
+    }
+    .pill.apagado { background:#fee2e2; color:#991b1b; }
+    .pill.em_reparo { background:#ffedd5; color:#9a3412; }
+    .pill.sem_energia { background:#ede9fe; color:#5b21b6; }
+    .pill.ok { background:#dcfce7; color:#166534; }
+    .pill.alta { background:#fee2e2; color:#991b1b; }
+    .alert-ilu {
+      padding:.85rem 1rem; border-radius:12px; margin-bottom:.55rem;
+      border:1px solid #fcd34d; background:#fffbeb; color:#92400e; font-size:.9rem; font-weight:600;
+    }
+    @media (max-width:900px) { .acao-grid { grid-template-columns:1fr 1fr; } }
+    @media (max-width:720px) { .acao-grid { grid-template-columns:1fr; } .ilu-hero h1 { font-size:1.3rem; } }
+  </style>
+</head>
+<body class="ops-body">
+  <div class="wrap-wide">
+    <div id="top"></div>
+
+    <div class="hint-box">
+      Esta é a <strong>Iluminação Pública</strong>. Aqui você gerencia postes, rota da cesta, frota e estoque de LED.
+      O Gabinete só acompanha.
+    </div>
+
+    <div class="ilu-hero">
+      <div>
+        <p class="page-kicker">Secretaria de Iluminação</p>
+        <h1 class="display">Central operacional</h1>
+        <p class="muted">Postes · rota · frota · estoque — o que o prefeito vê começa aqui</p>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-sm" id="btnRebuildRota" type="button">Montar rota do dia</button>
+        <button class="btn btn-sm" id="btnRefresh" type="button">Atualizar</button>
+      </div>
+    </div>
+
+    <div class="grid-4" id="kpis"></div>
+
+    <div class="acao-grid">
+      <button type="button" class="acao-card" data-go="postes"><strong>Postes</strong><span>Apagados, reparo e rede</span></button>
+      <button type="button" class="acao-card" data-go="rota"><strong>Rota do dia</strong><span>Ordem da cesta aérea</span></button>
+      <button type="button" class="acao-card" data-go="frota"><strong>Frota</strong><span>Cestas e utilitário</span></button>
+      <button type="button" class="acao-card" data-go="estoque"><strong>Estoque LED</strong><span>Lâmpadas e materiais</span></button>
+      <button type="button" class="acao-card" data-go="chamados"><strong>Chamados</strong><span>Fila da iluminação</span></button>
+      <button type="button" class="acao-card" data-go="alertas"><strong>Alertas</strong><span>O que exige atenção</span></button>
+      <button type="button" class="acao-card" data-go="qr"><strong>Poste QR</strong><span>Link rápido do cidadão</span></button>
+      <button type="button" class="acao-card" data-go="chat"><strong>Gabinete</strong><span>Responder cobranças</span></button>
+    </div>
+
+    <div class="ilu-tabs" id="tabs">
+      <button type="button" class="ilu-tab active" data-pane="postes">Postes<span class="count" id="tabApagados">0</span></button>
+      <button type="button" class="ilu-tab" data-pane="rota">Rota</button>
+      <button type="button" class="ilu-tab" data-pane="frota">Frota</button>
+      <button type="button" class="ilu-tab" data-pane="estoque">Estoque</button>
+      <button type="button" class="ilu-tab" data-pane="chamados">Chamados<span class="count" id="tabChamados">0</span></button>
+      <button type="button" class="ilu-tab" data-pane="alertas">Alertas<span class="count" id="tabAlertas">0</span></button>
+      <button type="button" class="ilu-tab" data-pane="qr">QR</button>
+      <button type="button" class="ilu-tab" data-pane="chat">Gabinete</button>
+    </div>
+
+    <div class="pane active" id="pane-postes">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Rede de postes</h3>
+        <p class="muted" style="margin-bottom:.85rem">Atualize status — alimenta a rota e o Gabinete</p>
+        <div id="postesBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-rota">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Rota da cesta aérea</h3>
+        <p class="muted" style="margin-bottom:.85rem">Ordem de atendimento do dia</p>
+        <div id="rotaBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-frota">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Frota</h3>
+        <p class="muted" style="margin-bottom:.85rem">Cestas aéreas e utilitário</p>
+        <div id="frotaBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-estoque">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Estoque de materiais</h3>
+        <p class="muted" style="margin-bottom:.85rem">LED, reator, cabo e braço</p>
+        <div id="estoqueBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-chamados">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Chamados abertos</h3>
+        <div id="chamadosBox" class="list"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-alertas">
+      <div class="panel">
+        <h3 style="margin-bottom:.5rem">Alertas agora</h3>
+        <div id="alertasBox"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-qr">
+      <div class="panel">
+        <h3 style="margin-bottom:.35rem">Poste com QR (cidadão)</h3>
+        <p class="muted" style="margin-bottom:.85rem">Abra o link do poste para demonstrar o relato rápido</p>
+        <div class="form-row">
+          <input id="qrPoste" placeholder="Nº do poste" value="1457" style="width:120px" />
+          <a class="btn btn-primary" id="linkQr" href="/poste.html">Abrir página do poste</a>
+        </div>
+        <p class="muted" style="margin-top:.75rem;font-size:.82rem">O cidadão aponta o QR e abre chamado de lâmpada apagada na hora.</p>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-chat">
+      <div class="panel">
+        <h3 style="margin:0 0 .25rem">Gabinete</h3>
+        <p class="muted" style="margin:0 0 .75rem;font-size:.85rem">Mensagens do prefeito para a Iluminação</p>
+        <div id="secChatMsgs" class="list" style="max-height:260px;overflow:auto;background:#fffbeb;border-radius:12px;padding:.75rem;margin-bottom:.65rem"></div>
+        <div class="form-row">
+          <input id="secChatInput" style="flex:1;min-width:180px" placeholder="Responder ao Gabinete…" maxlength="500" />
+          <button class="btn btn-primary" type="button" id="secChatSend">Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=nav-ops4"></script>
+  <script>
+    window.BI_OPS_LOCK = true;
+    window.BI_AUTH_SLOT = 'secretaria';
+    setCidade(new URLSearchParams(location.search).get('cidade') || getCidade());
+
+    let painelAtual = null;
+
+    function goPane(name) {
+      document.querySelectorAll('.ilu-tab').forEach((b) => b.classList.toggle('active', b.dataset.pane === name));
+      document.querySelectorAll('.pane').forEach((p) => p.classList.toggle('active', p.id === 'pane-' + name));
+      document.querySelectorAll('.acao-card').forEach((c) => c.classList.toggle('active', c.dataset.go === name));
+    }
+
+    document.querySelectorAll('.ilu-tab, .acao-card').forEach((btn) => {
+      btn.onclick = () => goPane(btn.dataset.pane || btn.dataset.go);
+    });
+
+    function statusPill(st) {
+      return `<span class="pill ${st || ''}">${st || '—'}</span>`;
+    }
+
+    function render(p) {
+      painelAtual = p;
+      const t = p.totais || {};
+      document.getElementById('tabApagados').textContent = String(t.apagados || 0);
+      document.getElementById('tabChamados').textContent = String(t.chamadosAbertos || 0);
+      document.getElementById('tabAlertas').textContent = String((p.alertas || []).length);
+
+      document.getElementById('kpis').innerHTML = `
+        <div class="panel stat"><div class="label">Apagados</div><div class="value">${t.apagados || 0}</div>
+          <div class="hint">${t.semEnergia || 0} sem energia</div></div>
+        <div class="panel stat"><div class="label">Em reparo</div><div class="value">${t.emReparo || 0}</div>
+          <div class="hint">Rota ${t.rotaPendentes || 0} pendente(s)</div></div>
+        <div class="panel stat"><div class="label">Frota livre</div><div class="value">${t.frotaLivre || 0}/${t.frotaTotal || 0}</div>
+          <div class="hint">cestas / utilitário</div></div>
+        <div class="panel stat"><div class="label">Estoque baixo</div><div class="value">${t.estoqueBaixo || 0}</div>
+          <div class="hint">${t.chamadosAbertos || 0} chamado(s)</div></div>`;
+
+      document.getElementById('postesBox').innerHTML = (p.postes || []).map((x) => `
+        <div class="unidade-card ${x.status === 'apagado' || x.status === 'sem_energia' ? 'critico' : ''}">
+          <div class="item-head">
+            <strong>Poste ${x.codigo}</strong>
+            ${statusPill(x.status)}
+            <span class="pill ${x.prioridade || ''}">${x.prioridade || ''}</span>
+          </div>
+          <div class="meta">${x.bairro} · ${x.endereco}</div>
+          <div class="form-row">
+            <select data-poste-st="${x.id}">
+              <option value="apagado" ${x.status === 'apagado' ? 'selected' : ''}>Apagado</option>
+              <option value="em_reparo" ${x.status === 'em_reparo' ? 'selected' : ''}>Em reparo</option>
+              <option value="sem_energia" ${x.status === 'sem_energia' ? 'selected' : ''}>Sem energia</option>
+              <option value="ok" ${x.status === 'ok' ? 'selected' : ''}>Ok / ligado</option>
+            </select>
+            <select data-poste-pr="${x.id}">
+              <option value="alta" ${x.prioridade === 'alta' ? 'selected' : ''}>Alta</option>
+              <option value="media" ${x.prioridade === 'media' ? 'selected' : ''}>Média</option>
+              <option value="baixa" ${x.prioridade === 'baixa' ? 'selected' : ''}>Baixa</option>
+            </select>
+            <button class="btn btn-sm btn-primary" type="button" data-poste-save="${x.id}">Salvar</button>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('rotaBox').innerHTML = (p.rota || []).length
+        ? p.rota.map((r) => `
+          <div class="unidade-card">
+            <div class="item-head"><strong>${r.ordem}. Poste ${r.codigo}</strong>${statusPill(r.status)}</div>
+            <div class="meta">${r.bairro} · ${r.endereco}</div>
+            <div class="form-row">
+              <button class="btn btn-sm" type="button" data-rota="${r.posteId}" data-st="em_atendimento">Em atendimento</button>
+              <button class="btn btn-sm btn-primary" type="button" data-rota="${r.posteId}" data-st="concluido">Concluir / ligou</button>
+            </div>
+          </div>`).join('')
+        : '<p class="muted">Nenhum ponto na rota. Clique em “Montar rota do dia”.</p>';
+
+      document.getElementById('frotaBox').innerHTML = (p.frota || []).map((f) => `
+        <div class="unidade-card">
+          <div class="item-head"><strong>${f.placa}</strong><span class="meta">${f.tipo}</span></div>
+          <div class="form-row">
+            <select data-frota-st="${f.id}">
+              <option value="disponivel" ${f.status === 'disponivel' ? 'selected' : ''}>Disponível</option>
+              <option value="em_rota" ${f.status === 'em_rota' ? 'selected' : ''}>Em rota</option>
+              <option value="oficina" ${f.status === 'oficina' ? 'selected' : ''}>Oficina</option>
+            </select>
+            <input style="flex:1;min-width:140px" data-frota-mot="${f.id}" value="${(f.motorista || '').replace(/"/g, '&quot;')}" placeholder="Motorista" />
+            <button class="btn btn-sm btn-primary" type="button" data-frota-save="${f.id}">Salvar</button>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('estoqueBox').innerHTML = (p.estoque || []).map((e) => {
+        const baixo = (e.qtd || 0) < (e.minimo || 0);
+        return `
+        <div class="unidade-card ${baixo ? 'critico' : ''}">
+          <div class="item-head"><strong>${e.nome}</strong>${baixo ? '<span class="pill apagado">baixo</span>' : '<span class="pill ok">ok</span>'}</div>
+          <div class="form-row">
+            <span class="meta">Qtd</span>
+            <input type="number" min="0" style="width:80px" data-est-qtd="${e.id}" value="${e.qtd || 0}" />
+            <span class="meta">Mín.</span>
+            <input type="number" min="0" style="width:80px" data-est-min="${e.id}" value="${e.minimo || 0}" />
+            <button class="btn btn-sm btn-primary" type="button" data-est-save="${e.id}">Salvar</button>
+          </div>
+        </div>`;
+      }).join('');
+
+      document.getElementById('chamadosBox').innerHTML = (p.chamados || []).length
+        ? p.chamados.map((c) => `
+          <div class="item">
+            <div class="item-head"><strong>${c.protocolo || c.id}</strong><span class="badge">${c.status}</span></div>
+            <div>${c.titulo || c.categoria}</div>
+            <div class="meta">${c.bairro || '—'} ${c.posteId ? '· poste ' + c.posteId : ''}</div>
+          </div>`).join('')
+        : '<p class="muted">Nenhum chamado aberto de iluminação.</p>';
+
+      document.getElementById('alertasBox').innerHTML = (p.alertas || []).length
+        ? p.alertas.map((a) => `<div class="alert-ilu"><strong>${a.tipo}</strong> — ${a.mensagem}</div>`).join('')
+        : '<p class="muted">Nenhum alerta no momento.</p>';
+
+      bindActions();
+      syncQr();
+    }
+
+    function syncQr() {
+      const n = document.getElementById('qrPoste').value.trim() || '1457';
+      document.getElementById('linkQr').href = cityLink('/poste.html') + '&id=' + encodeURIComponent(n);
+    }
+    document.getElementById('qrPoste').oninput = syncQr;
+
+    function bindActions() {
+      document.querySelectorAll('[data-poste-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.posteSave;
+          try {
+            render(await api('/api/iluminacao/poste', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                status: document.querySelector(`[data-poste-st="${id}"]`)?.value,
+                prioridade: document.querySelector(`[data-poste-pr="${id}"]`)?.value,
+              }),
+            }));
+            toast('Poste atualizado');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-rota]').forEach((btn) => {
+        btn.onclick = async () => {
+          try {
+            render(await api('/api/iluminacao/rota', {
+              method: 'POST',
+              body: JSON.stringify({ posteId: btn.dataset.rota, status: btn.dataset.st }),
+            }));
+            toast(btn.dataset.st === 'concluido' ? 'Poste concluído na rota' : 'Em atendimento');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-frota-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.frotaSave;
+          try {
+            render(await api('/api/iluminacao/frota', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                status: document.querySelector(`[data-frota-st="${id}"]`)?.value,
+                motorista: document.querySelector(`[data-frota-mot="${id}"]`)?.value,
+              }),
+            }));
+            toast('Frota atualizada');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      document.querySelectorAll('[data-est-save]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.dataset.estSave;
+          try {
+            render(await api('/api/iluminacao/estoque', {
+              method: 'POST',
+              body: JSON.stringify({
+                id,
+                qtd: document.querySelector(`[data-est-qtd="${id}"]`)?.value,
+                minimo: document.querySelector(`[data-est-min="${id}"]`)?.value,
+              }),
+            }));
+            toast('Estoque atualizado');
+          } catch (e) { toast(e.message); }
+        };
+      });
+    }
+
+    async function loadChat() {
+      const r = await api('/api/gabinete/chat?secretaria=iluminacao');
+      const msgs = r.thread?.mensagens || [];
+      const box = document.getElementById('secChatMsgs');
+      box.innerHTML = msgs.length
+        ? msgs.map((m) => `
+          <div class="item" style="background:${m.de === 'gabinete' ? '#e8eef8' : '#fff'};margin-bottom:.4rem">
+            <div class="item-head"><strong>${m.autor || m.de}</strong>
+              <span class="meta">${m.criadoEm ? new Date(m.criadoEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+            </div>
+            <div>${m.texto}</div>
+          </div>`).join('')
+        : '<p class="muted">Nenhuma mensagem do Gabinete ainda.</p>';
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function load() {
+      render(await api('/api/iluminacao/hoje'));
+      await loadChat().catch(() => {});
+    }
+
+    async function boot() {
+      const cfg = await loadCityBrand();
+      document.getElementById('top').innerHTML = topbar('Iluminação', cfg, { lock: true, user: getSessionUser() });
+      document.title = `Iluminação · ${cfg.produto || cfg.cidade || ''}`;
+      rewriteCityLinks();
+      document.getElementById('secChatSend').onclick = async () => {
+        const input = document.getElementById('secChatInput');
+        const texto = input.value.trim();
+        if (!texto) return;
+        try {
+          await api('/api/gabinete/chat', {
+            method: 'POST',
+            body: JSON.stringify({ secretaria: 'iluminacao', texto, de: 'secretaria', autoAck: false }),
+          });
+          input.value = '';
+          await loadChat();
+        } catch (e) { toast(e.message); }
+      };
+      document.getElementById('btnRebuildRota').onclick = async () => {
+        try {
+          render(await api('/api/iluminacao/rota', {
+            method: 'POST',
+            body: JSON.stringify({ acao: 'rebuild' }),
+          }));
+          toast('Rota montada com postes críticos');
+          goPane('rota');
+        } catch (e) { toast(e.message); }
+      };
+      document.getElementById('btnRefresh').onclick = () => load().catch((e) => toast(e.message));
+      await load();
+      const aba = new URLSearchParams(location.search).get('aba');
+      if (aba) goPane(aba);
+    }
+
+    boot().catch((e) => toast(e.message));
+  </script>
+</body>
+</html>
