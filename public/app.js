@@ -285,6 +285,9 @@ function detalheOperacaoHtml(c, { acoesHtml } = {}) {
     </div>`;
 }
 
+/** IDs de Detalhar abertos — sobrevivem ao poll/re-render. */
+window.__opsDetalheAbertos = window.__opsDetalheAbertos || new Set();
+
 /** Liga botões Detalhar (abre/fecha e dispara a IA na caixa). */
 function bindDetalharToggle(root, getChamado) {
   const el = root || document;
@@ -302,6 +305,10 @@ function bindDetalharToggle(root, getChamado) {
       btn.classList.toggle('open', open);
       const label = btn.querySelector('[data-detalhar-label]') || btn.querySelector('span:first-child');
       if (label) label.textContent = open ? 'Ocultar detalhes' : 'Detalhar';
+      try {
+        if (open) window.__opsDetalheAbertos.add(id);
+        else window.__opsDetalheAbertos.delete(id);
+      } catch (_) {}
       if (open) {
         if (typeof bindFotoThumbs === 'function') bindFotoThumbs(box);
         if (typeof bindIaObraAssist === 'function') {
@@ -310,6 +317,8 @@ function bindDetalharToggle(root, getChamado) {
       }
     });
   });
+  // Após re-render, reabre o que o usuário deixou aberto
+  opsRestaurarDetalhesAbertos(el, getChamado);
 }
 
 /**
@@ -317,6 +326,9 @@ function bindDetalharToggle(root, getChamado) {
  * Usado para o poll NÃO re-renderizar a lista e fechar o painel sozinho.
  */
 function opsUiDetalheEmUso(root) {
+  try {
+    if (window.__opsDetalheAbertos && window.__opsDetalheAbertos.size > 0) return true;
+  } catch (_) {}
   const el = root || document;
   try {
     return !!(
@@ -329,6 +341,39 @@ function opsUiDetalheEmUso(root) {
   } catch (_) {
     return false;
   }
+}
+
+/** Reabre painéis Detalhar após innerHTML/poll. */
+function opsRestaurarDetalhesAbertos(root, getChamado) {
+  const el = root || document;
+  let ids = [];
+  try {
+    ids = Array.from(window.__opsDetalheAbertos || []);
+  } catch (_) {
+    ids = [];
+  }
+  // Também captura o que ainda está aberto no DOM (antes de um wipe perdido)
+  el.querySelectorAll('.detalhe-box.open').forEach((box) => {
+    const id = (box.id || '').replace(/^detalhe-/, '');
+    if (id && !ids.includes(id)) ids.push(id);
+  });
+  if (!ids.length) return;
+  ids.forEach((id) => {
+    const box = document.getElementById('detalhe-' + id);
+    const btn = el.querySelector(`[data-detalhar="${id}"]`) || document.querySelector(`[data-detalhar="${id}"]`);
+    if (!box) return;
+    box.classList.add('open');
+    if (btn) {
+      btn.classList.add('open');
+      const label = btn.querySelector('[data-detalhar-label]') || btn.querySelector('span:first-child');
+      if (label) label.textContent = 'Ocultar detalhes';
+    }
+    try { window.__opsDetalheAbertos.add(id); } catch (_) {}
+    if (typeof bindFotoThumbs === 'function') bindFotoThumbs(box);
+    if (typeof bindIaObraAssist === 'function') {
+      bindIaObraAssist(box, getChamado || ((cid) => null));
+    }
+  });
 }
 
 /** Foto do problema (cidadão) — ou Antes/Depois quando o campo já enviou a prova. */
