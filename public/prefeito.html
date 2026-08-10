@@ -60,10 +60,18 @@
     }
     .ilu-mod {
       background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:0.7rem 0.8rem;
+      cursor:pointer; text-align:left; font:inherit; color:inherit; width:100%;
+      transition: box-shadow .12s ease, transform .12s ease;
     }
+    .ilu-mod:hover { box-shadow:0 6px 16px rgba(180,83,9,.14); transform:translateY(-1px); }
+    .ilu-mod.alerta { background:#fff5f5; border-color:#fecaca; }
+    .ilu-mod.alerta span { color:#b91c1c; }
+    .ilu-mod.alerta strong { color:#7f1d1d; }
     .ilu-mod span { display:block; font-size:0.68rem; font-weight:800; color:#b45309; text-transform:uppercase; letter-spacing:.03em; }
     .ilu-mod strong { font-size:1.25rem; color:#78350f; }
     .ilu-mod small { display:block; color:#64748b; font-size:0.72rem; margin-top:0.15rem; }
+    .gab-ops-nav.ilu button { border-color:#fde68a; color:#b45309; }
+    .gab-ops-nav.ilu button:hover { background:#fffbeb; }
     .ilu-alert-banner {
       display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;
       padding:0.75rem 1rem; border-radius:12px; margin-bottom:0.85rem;
@@ -76,10 +84,18 @@
     }
     .obr-mod {
       background:#fff7ed; border:1px solid #fdba74; border-radius:12px; padding:0.7rem 0.8rem;
+      cursor:pointer; text-align:left; font:inherit; color:inherit; width:100%;
+      transition: box-shadow .12s ease, transform .12s ease;
     }
+    .obr-mod:hover { box-shadow:0 6px 16px rgba(194,65,12,.14); transform:translateY(-1px); }
+    .obr-mod.alerta { background:#fff5f5; border-color:#fecaca; }
+    .obr-mod.alerta span { color:#b91c1c; }
+    .obr-mod.alerta strong { color:#7f1d1d; }
     .obr-mod span { display:block; font-size:0.68rem; font-weight:800; color:#c2410c; text-transform:uppercase; letter-spacing:.03em; }
     .obr-mod strong { font-size:1.25rem; color:#7c2d12; }
     .obr-mod small { display:block; color:#64748b; font-size:0.72rem; margin-top:0.15rem; }
+    .gab-ops-nav.obr button { border-color:#fdba74; color:#c2410c; }
+    .gab-ops-nav.obr button:hover { background:#fff7ed; }
     .obr-alert-banner {
       display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;
       padding:0.75rem 1rem; border-radius:12px; margin-bottom:0.85rem;
@@ -301,7 +317,7 @@
     window.BI_AUTH_SLOT = 'gabinete';
   </script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/app.js?v=ops-gab2"></script>
+  <script src="/app.js?v=ops-gab3"></script>
   <script src="/map.js"></script>
   <script>
     window.BI_OPS_LOCK = true;
@@ -381,6 +397,24 @@
     function bindGabineteDetalhar(root) {
       if (typeof bindDetalharToggle === 'function') bindDetalharToggle(root || document);
       if (typeof bindFotoThumbs === 'function') bindFotoThumbs(root || document);
+    }
+
+    function bindGabJump(root) {
+      (root || document).querySelectorAll('[data-jump]').forEach((btn) => {
+        btn.onclick = () => {
+          const el = document.getElementById(btn.getAttribute('data-jump'));
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+      });
+    }
+
+    function equipeStatusLabel(s) {
+      return ({
+        em_campo: 'Em campo',
+        base: 'Na base',
+        disponivel: 'Disponível',
+        folga: 'Folga',
+      })[s] || String(s || '—').replace(/_/g, ' ');
     }
 
     /** Card operacional do Gabinete (ambulância, leito, estoque…) com Detalhar. */
@@ -776,14 +810,27 @@
         const t = obrasHoje.totais || {};
         const alertas = obrasHoje.alertas || [];
         const pontos = (obrasHoje.pontosQuentes || []).filter((p) => p.status !== 'concluido');
+        const matAlerta = (obrasHoje.materiais || []).filter((m) => (m.qtd || 0) < (m.minimo || 0));
+        const frotaAlerta = (obrasHoje.frota || []).filter((f) => f.status === 'oficina');
+        const chkFaltando = (obrasHoje.checklist || []).filter((i) => !i.ok);
+        const obrasAtrasadas = (obrasHoje.obras || []).filter((o) => o.status === 'atrasada');
         box.innerHTML = `
           <div class="obr-modulos">
-            <div class="obr-mod"><span>Pontos</span><strong>${t.pontosAbertos || 0}</strong><small>${t.pontosAlta || 0} alta</small></div>
-            <div class="obr-mod"><span>Rota</span><strong>${t.rotaPendentes || 0}</strong><small>pendentes</small></div>
-            <div class="obr-mod"><span>Equipes</span><strong>${t.equipesEmCampo || 0}</strong><small>em campo</small></div>
-            <div class="obr-mod"><span>Frota</span><strong>${t.frotaLivre || 0}/${t.frotaTotal || 0}</strong><small>livres</small></div>
-            <div class="obr-mod"><span>Materiais</span><strong>${t.materiaisBaixos || 0}</strong><small>abaixo do mín.</small></div>
-            <div class="obr-mod"><span>Obras</span><strong>${t.obrasAtrasadas || 0}</strong><small>atrasadas</small></div>
+            <button type="button" class="obr-mod ${(t.pontosAlta || 0) ? 'alerta' : ''}" data-jump="gab-obr-pontos"><span>Pontos</span><strong>${t.pontosAbertos || 0}</strong><small>${t.pontosAlta || 0} alta</small></button>
+            <button type="button" class="obr-mod" data-jump="gab-obr-rota"><span>Rota</span><strong>${t.rotaPendentes || 0}</strong><small>pendentes</small></button>
+            <button type="button" class="obr-mod" data-jump="gab-obr-equipes"><span>Equipes</span><strong>${t.equipesEmCampo || 0}</strong><small>em campo</small></button>
+            <button type="button" class="obr-mod ${frotaAlerta.length ? 'alerta' : ''}" data-jump="gab-obr-frota"><span>Frota</span><strong>${t.frotaLivre || 0}/${t.frotaTotal || 0}</strong><small>${frotaAlerta.length ? frotaAlerta.length + ' oficina' : 'livres'}</small></button>
+            <button type="button" class="obr-mod ${matAlerta.length ? 'alerta' : ''}" data-jump="gab-obr-mat"><span>Materiais</span><strong>${t.materiaisBaixos || matAlerta.length || 0}</strong><small>${matAlerta.length ? 'abaixo do mín.' : 'estoque ok'}</small></button>
+            <button type="button" class="obr-mod ${obrasAtrasadas.length || chkFaltando.length ? 'alerta' : ''}" data-jump="gab-obr-grandes"><span>Obras</span><strong>${t.obrasAtrasadas || obrasAtrasadas.length || 0}</strong><small>${chkFaltando.length ? chkFaltando.length + ' check pend.' : 'atrasadas'}</small></button>
+          </div>
+          <div class="gab-ops-nav obr">
+            <button type="button" data-jump="gab-obr-pontos">Pontos quentes</button>
+            <button type="button" data-jump="gab-obr-rota">Rota do dia</button>
+            <button type="button" data-jump="gab-obr-equipes">Equipes</button>
+            <button type="button" data-jump="gab-obr-frota">Frota</button>
+            <button type="button" data-jump="gab-obr-mat">Materiais / estoque</button>
+            <button type="button" data-jump="gab-obr-check">Checklist</button>
+            <button type="button" data-jump="gab-obr-grandes">Obras grandes</button>
           </div>
           ${alertas.length ? `
             <div class="obr-alert-banner">
@@ -793,11 +840,11 @@
               <h3 style="margin-bottom:0.55rem;color:#9a3412">Alertas das Obras</h3>
               ${alertas.map((a) => `<div class="meta" style="margin-bottom:0.45rem;color:#9a3412;font-weight:600">${a.mensagem}</div>`).join('')}
             </div>` : ''}
-          <div class="panel" style="grid-column:1/-1;border-color:#fdba74">
+          <div class="panel" style="grid-column:1/-1;border-color:#fdba74" id="gab-obr-pontos">
             <h3 style="margin-bottom:0.35rem">Pontos quentes</h3>
             <p class="muted" style="margin-bottom:0.85rem">
               Preenchido pela Secretaria de Obras · atualizado ${fmtDate(obrasHoje.atualizadoEm)}.
-              Gabinete só visualiza e cobra.
+              Resumo na frente — Detalhar para fotos e detalhes.
             </p>
             <div class="list">
               ${pontos.map((p) => cardProblemaGabinete({
@@ -823,55 +870,160 @@
                   p.prazoHoje ? `<div class="meta">Prazo ${p.prazoHoje}</div>` : '',
                   p.motivoAtraso ? `<div class="meta" style="color:#b91c1c;font-weight:600">${p.motivoAtraso}</div>` : '',
                 ].join(''),
-                acoesHtml: p.prioridade === 'alta'
+                acoesHtml: p.prioridade === 'alta' || p.motivoAtraso
                   ? `<button class="btn btn-sm btn-warn" onclick="cobrarObras('${String(p.titulo || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
                   : '',
               })).join('') || '<p class="muted">Nenhum ponto quente aberto.</p>'}
             </div>
           </div>
-          <div class="panel">
-            <h3 style="margin-bottom:0.55rem">Rota do dia</h3>
+          <div class="panel" style="grid-column:1/-1" id="gab-obr-rota">
+            <h3 style="margin-bottom:0.35rem">Rota do dia</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Ordem de atendimento — Detalhar mostra bairro e prioridade.</p>
             <div class="list">
-              ${(obrasHoje.rota || []).map((r) => `
-                <div class="item">
-                  <div class="item-head"><strong>#${r.ordem} · ${r.titulo}</strong>
-                    <span class="badge">${rotaStatusLabel(r.status)}</span>
-                  </div>
-                  <div class="meta">${r.bairro} · ${r.rua}</div>
-                </div>`).join('') || '<p class="muted">Sem rota montada.</p>'}
+              ${(obrasHoje.rota || []).map((r) => {
+                const urg = r.status === 'pendente' && r.prioridade === 'alta';
+                return cardOpsDetalhe({
+                  did: 'obr-rota-' + (r.pontoId || r.ordem),
+                  titulo: `#${r.ordem} · ${r.titulo}`,
+                  badgeHtml: `<span class="badge ${r.status === 'concluido' ? 'badge-concluido' : r.status === 'em_atendimento' ? 'badge-em_analise' : 'badge-cancelado'}">${rotaStatusLabel(r.status)}</span>`,
+                  meta: `${r.bairro || '—'} · ${r.rua || ''}${r.prioridade ? ' · ' + prioridadeLabel(r.prioridade) : ''}`,
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Rota: ${String(r.titulo || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Status:</strong> ${rotaStatusLabel(r.status)}</div>
+                    <div class="meta"><strong>Bairro:</strong> ${r.bairro || '—'}</div>
+                    <div class="meta"><strong>Rua:</strong> ${r.rua || '—'}</div>
+                    <div class="meta"><strong>Prioridade:</strong> ${r.prioridade ? prioridadeLabel(r.prioridade) : '—'}</div>
+                    <div class="meta"><strong>Equipe:</strong> ${r.equipeId || 'não atribuída'}</div>`,
+                });
+              }).join('') || '<p class="muted">Sem rota montada.</p>'}
             </div>
           </div>
-          <div class="panel">
-            <h3 style="margin-bottom:0.55rem">Equipes · frota · materiais</h3>
+          <div class="panel" id="gab-obr-equipes">
+            <h3 style="margin-bottom:0.35rem">Equipes</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Quem está em campo agora.</p>
             <div class="list">
-              ${(obrasHoje.equipes || []).map((e) => `
-                <div class="item"><div class="item-head"><strong>${e.nome}</strong><span class="badge">${String(e.status || '').replace(/_/g, ' ')}</span></div>
-                <div class="meta">${e.lider || '—'} · ${e.veiculoId || 'sem veículo'}</div></div>`).join('') || ''}
+              ${(obrasHoje.equipes || []).map((e) => {
+                const emCampo = e.status === 'em_campo';
+                return cardOpsDetalhe({
+                  did: 'obr-eq-' + e.id,
+                  titulo: e.nome,
+                  badgeHtml: `<span class="badge ${emCampo ? 'badge-em_analise' : e.status === 'disponivel' ? 'badge-concluido' : ''}">${equipeStatusLabel(e.status)}</span>`,
+                  meta: `${e.lider || '—'} · ${e.veiculoId || 'sem veículo'}`,
+                  detalheHtml: `
+                    <div class="meta"><strong>Líder:</strong> ${e.lider || '—'}</div>
+                    <div class="meta"><strong>Status:</strong> ${equipeStatusLabel(e.status)}</div>
+                    <div class="meta"><strong>Veículo:</strong> ${e.veiculoId || '—'}</div>
+                    <div class="meta"><strong>Ponto atual:</strong> ${e.pontoId || 'nenhum'}</div>`,
+                });
+              }).join('') || '<p class="muted">Sem equipes.</p>'}
             </div>
-            <div class="list" style="margin-top:0.65rem">
-              ${(obrasHoje.frota || []).map((f) => `
-                <div class="item"><div class="item-head"><strong>${f.placa}</strong><span class="badge">${frotaStatusLabel(f.status)}</span></div>
-                <div class="meta">${f.tipo} · ${f.motorista || '—'}</div></div>`).join('') || ''}
+          </div>
+          <div class="panel" id="gab-obr-frota">
+            <h3 style="margin-bottom:0.35rem">Frota</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Veículos livres, em rota e oficina.</p>
+            <div class="list">
+              ${(obrasHoje.frota || []).map((f) => {
+                const urg = f.status === 'oficina';
+                return cardOpsDetalhe({
+                  did: 'obr-frota-' + f.id,
+                  titulo: f.placa,
+                  badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : f.status === 'em_rota' ? 'badge-em_analise' : 'badge-concluido'}">${frotaStatusLabel(f.status)}</span>`,
+                  meta: `${f.tipo} · ${f.motorista || '—'}`,
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Frota ${f.placa} em oficina')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Tipo:</strong> ${f.tipo || '—'}</div>
+                    <div class="meta"><strong>Status:</strong> ${frotaStatusLabel(f.status)}</div>
+                    <div class="meta"><strong>Motorista:</strong> ${f.motorista || '—'}</div>
+                    <div class="meta"><strong>Equipe:</strong> ${f.equipe || '—'}</div>
+                    <p class="muted" style="margin:0.55rem 0 0">${urg ? 'Veículo parado — confirme previsão de retorno.' : 'Operacional no momento.'}</p>`,
+                });
+              }).join('') || '<p class="muted">Sem frota.</p>'}
             </div>
-            <div class="list" style="margin-top:0.65rem">
+          </div>
+          <div class="panel" style="grid-column:1/-1;border-color:${matAlerta.length ? '#fecaca' : '#fdba74'}" id="gab-obr-mat">
+            <h3 style="margin-bottom:0.35rem">Materiais / estoque</h3>
+            <p class="muted" style="margin-bottom:0.75rem">
+              ${matAlerta.length
+                ? `<strong style="color:#b91c1c">${matAlerta.length} item(ns) abaixo do mínimo</strong> — Detalhar + cobrar reposição.`
+                : 'Estoque da base. Detalhar mostra quantidade e mínimo.'}
+            </p>
+            <div class="list">
               ${(obrasHoje.materiais || []).map((m) => {
                 const baixo = (m.qtd || 0) < (m.minimo || 0);
-                return `<div class="item"><div class="item-head"><strong>${m.nome}</strong>
-                  <span class="badge ${baixo ? 'badge-cancelado' : 'badge-concluido'}">${m.qtd} ${m.unidade || ''}</span></div>
-                  <div class="meta">Mínimo ${m.minimo}${baixo ? ' · abaixo do mínimo' : ''}</div></div>`;
-              }).join('') || ''}
+                const pct = m.minimo ? Math.min(100, Math.round(((m.qtd || 0) / m.minimo) * 100)) : 100;
+                return cardOpsDetalhe({
+                  did: 'obr-mat-' + m.id,
+                  titulo: m.nome,
+                  badgeHtml: `<span class="badge ${baixo ? 'badge-cancelado' : 'badge-concluido'}">${m.qtd} ${m.unidade || ''}</span>`,
+                  meta: `Mínimo ${m.minimo}${baixo ? ' · abaixo do mínimo' : ''}`,
+                  urgente: baixo,
+                  acoesHtml: baixo
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Material: ${String(m.nome || '').replace(/'/g, '')} (${m.qtd}/${m.minimo})')">Cobrar reposição</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Quantidade:</strong> ${m.qtd} ${m.unidade || ''}</div>
+                    <div class="meta"><strong>Mínimo:</strong> ${m.minimo} ${m.unidade || ''}</div>
+                    <div class="ocup-bar ${baixo ? 'critica' : ''}"><i style="width:${Math.min(100, pct)}%"></i></div>
+                    <p class="muted" style="margin:0.55rem 0 0">${baixo ? 'Peça previsão de entrega à secretaria.' : 'Estoque dentro do mínimo.'}</p>`,
+                });
+              }).join('') || '<p class="muted">Sem materiais cadastrados.</p>'}
             </div>
           </div>
-          <div class="panel" style="grid-column:1/-1">
-            <h3 style="margin-bottom:0.55rem">Obras grandes (transparência)</h3>
+          <div class="panel" style="grid-column:1/-1" id="gab-obr-check">
+            <h3 style="margin-bottom:0.35rem">Checklist do dia</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Rotina operacional — Detalhar lista cada item.</p>
             <div class="list">
-              ${(obrasHoje.obras || []).map((o) => `
-                <div class="item">
-                  <div class="item-head"><strong>${o.nome}</strong>
-                    <span class="badge ${o.status === 'atrasada' ? 'badge-cancelado' : o.status === 'concluida' ? 'badge-concluido' : 'badge-em_analise'}">${o.status}</span>
-                  </div>
-                  <div class="meta">${o.bairro || '—'} · ${o.percentual || 0}% · prazo ${o.prazo || '—'} · ${o.empresa || ''}</div>
-                </div>`).join('') || '<p class="muted">Sem obras cadastradas.</p>'}
+              ${(() => {
+                const itens = obrasHoje.checklist || [];
+                if (!itens.length) return '<p class="muted">Sem checklist no dia.</p>';
+                const ok = itens.filter((i) => i.ok).length;
+                const urg = chkFaltando.length > 0;
+                return cardOpsDetalhe({
+                  did: 'obr-chk-dia',
+                  titulo: 'Checklist operacional',
+                  badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : 'badge-concluido'}">${ok}/${itens.length} ok</span>`,
+                  meta: urg ? `Pendente: ${chkFaltando.map((i) => i.label).join(', ')}` : 'Checklist completo',
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Checklist: ${chkFaltando.map((i) => i.label).join(', ').replace(/'/g, '')}')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `<div class="list">${itens.map((it) => `
+                    <div class="meta" style="margin:0.25rem 0"><strong>${it.ok ? '✓' : '✗'}</strong> ${it.label}${it.ok ? '' : ' <span style="color:#b91c1c">(pendente)</span>'}</div>`).join('')}</div>`,
+                });
+              })()}
+            </div>
+          </div>
+          <div class="panel" style="grid-column:1/-1" id="gab-obr-grandes">
+            <h3 style="margin-bottom:0.35rem">Obras grandes (transparência)</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Andamento e prazo — Detalhar para percentual e empresa.</p>
+            <div class="list">
+              ${(obrasHoje.obras || []).map((o) => {
+                const urg = o.status === 'atrasada';
+                const pct = o.percentual || 0;
+                return cardOpsDetalhe({
+                  did: 'obr-grande-' + o.id,
+                  titulo: o.nome,
+                  badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : o.status === 'concluida' ? 'badge-concluido' : 'badge-em_analise'}">${o.status}</span>`,
+                  meta: `${o.bairro || '—'} · ${pct}% · prazo ${o.prazo || '—'}`,
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarObras('Obra atrasada: ${String(o.nome || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Status:</strong> ${o.status}</div>
+                    <div class="meta"><strong>Progresso:</strong> ${pct}%</div>
+                    <div class="ocup-bar ${urg ? 'critica' : pct >= 70 ? '' : 'alta'}"><i style="width:${pct}%"></i></div>
+                    <div class="meta"><strong>Prazo:</strong> ${o.prazo || '—'}</div>
+                    <div class="meta"><strong>Empresa:</strong> ${o.empresa || '—'}</div>
+                    <div class="meta"><strong>Bairro:</strong> ${o.bairro || '—'}</div>`,
+                });
+              }).join('') || '<p class="muted">Sem obras cadastradas.</p>'}
             </div>
           </div>
           ${((obrasHoje.chamados || []).length) ? `
@@ -886,20 +1038,30 @@
               })).join('')}
             </div>
           </div>` : ''}`;
+        bindGabJump(box);
         return;
       }
       if (eixo === 'iluminacao' && iluminacaoHoje) {
         const t = iluminacaoHoje.totais || {};
         const alertas = iluminacaoHoje.alertas || [];
         const postesProblema = (iluminacaoHoje.postes || []).filter((p) => p.status !== 'ok');
+        const estAlerta = (iluminacaoHoje.estoque || []).filter((e) => (e.qtd || 0) < (e.minimo || 0));
+        const frotaAlerta = (iluminacaoHoje.frota || []).filter((f) => f.status === 'oficina');
+        const postesAlta = postesProblema.filter((p) => p.prioridade === 'alta' || p.status === 'apagado' || p.status === 'sem_energia');
         box.innerHTML = `
           <div class="ilu-modulos">
-            <div class="ilu-mod"><span>Apagados</span><strong>${t.apagados || 0}</strong><small>prioridade alta</small></div>
-            <div class="ilu-mod"><span>Em reparo</span><strong>${t.emReparo || 0}</strong><small>equipe em campo</small></div>
-            <div class="ilu-mod"><span>Sem energia</span><strong>${t.semEnergia || 0}</strong><small>possível rede</small></div>
-            <div class="ilu-mod"><span>Rota noite</span><strong>${t.rotaPendentes || 0}</strong><small>pontos pendentes</small></div>
-            <div class="ilu-mod"><span>Frota</span><strong>${t.frotaLivre || 0}/${t.frotaTotal || 0}</strong><small>cestas livres</small></div>
-            <div class="ilu-mod"><span>Estoque</span><strong>${t.estoqueBaixo || 0}</strong><small>itens abaixo do mínimo</small></div>
+            <button type="button" class="ilu-mod ${(t.apagados || 0) ? 'alerta' : ''}" data-jump="gab-ilu-postes"><span>Apagados</span><strong>${t.apagados || 0}</strong><small>prioridade alta</small></button>
+            <button type="button" class="ilu-mod" data-jump="gab-ilu-postes"><span>Em reparo</span><strong>${t.emReparo || 0}</strong><small>equipe em campo</small></button>
+            <button type="button" class="ilu-mod ${(t.semEnergia || 0) ? 'alerta' : ''}" data-jump="gab-ilu-postes"><span>Sem energia</span><strong>${t.semEnergia || 0}</strong><small>possível rede</small></button>
+            <button type="button" class="ilu-mod" data-jump="gab-ilu-rota"><span>Rota noite</span><strong>${t.rotaPendentes || 0}</strong><small>pontos pendentes</small></button>
+            <button type="button" class="ilu-mod ${frotaAlerta.length ? 'alerta' : ''}" data-jump="gab-ilu-frota"><span>Frota</span><strong>${t.frotaLivre || 0}/${t.frotaTotal || 0}</strong><small>${frotaAlerta.length ? frotaAlerta.length + ' oficina' : 'cestas livres'}</small></button>
+            <button type="button" class="ilu-mod ${estAlerta.length ? 'alerta' : ''}" data-jump="gab-ilu-estoque"><span>Estoque</span><strong>${t.estoqueBaixo || estAlerta.length || 0}</strong><small>${estAlerta.length ? 'abaixo do mínimo' : 'LED ok'}</small></button>
+          </div>
+          <div class="gab-ops-nav ilu">
+            <button type="button" data-jump="gab-ilu-postes">Postes</button>
+            <button type="button" data-jump="gab-ilu-rota">Rota da noite</button>
+            <button type="button" data-jump="gab-ilu-frota">Frota</button>
+            <button type="button" data-jump="gab-ilu-estoque">Estoque LED</button>
           </div>
           ${alertas.length ? `
             <div class="ilu-alert-banner">
@@ -909,58 +1071,116 @@
               <h3 style="margin-bottom:0.55rem;color:#9a3412">Alertas da Iluminação</h3>
               ${alertas.map((a) => `<div class="meta" style="margin-bottom:0.45rem;color:#9a3412;font-weight:600">${a.mensagem}</div>`).join('')}
             </div>` : ''}
-          <div class="panel" style="grid-column:1/-1;border-color:#fde68a">
+          <div class="panel" style="grid-column:1/-1;border-color:#fde68a" id="gab-ilu-postes">
             <h3 style="margin-bottom:0.35rem">Postes com problema</h3>
             <p class="muted" style="margin-bottom:0.85rem">
               Preenchido pela Secretaria de Iluminação · atualizado ${fmtDate(iluminacaoHoje.atualizadoEm)}.
-              Gabinete só visualiza e cobra.
+              Resumo na frente — Detalhar para endereço e prioridade.
+              ${postesAlta.length ? ` · <strong style="color:#b91c1c">${postesAlta.length} crítico(s)</strong>` : ''}
             </p>
             <div class="list">
-              ${postesProblema.map((p) => `
-                <div class="item">
-                  <div class="item-head">
-                    <strong>Poste ${p.codigo}</strong>
-                    <span class="badge ${p.status === 'apagado' || p.status === 'sem_energia' ? 'badge-cancelado' : 'badge-em_analise'}">${posteStatusLabel(p.status)}</span>
-                  </div>
-                  <div class="meta">${p.bairro} · ${p.endereco} · prioridade ${p.prioridade || '—'}</div>
-                  ${p.prioridade === 'alta' ? `
-                    <div class="actions">
-                      <button class="btn btn-sm btn-warn" onclick="cobrarIluminacao('Poste ${p.codigo} — ${p.bairro}')">Cobrar secretaria</button>
-                    </div>` : ''}
-                </div>`).join('') || '<p class="muted">Nenhum poste com problema agora.</p>'}
+              ${postesProblema.map((p) => {
+                const urg = p.status === 'apagado' || p.status === 'sem_energia' || p.prioridade === 'alta';
+                return cardOpsDetalhe({
+                  did: 'ilu-poste-' + p.id,
+                  titulo: `Poste ${p.codigo}`,
+                  badgeHtml: `<span class="badge ${p.status === 'apagado' || p.status === 'sem_energia' ? 'badge-cancelado' : 'badge-em_analise'}">${posteStatusLabel(p.status)}</span>`,
+                  meta: `${p.bairro} · ${p.endereco} · prioridade ${p.prioridade || '—'}`,
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Poste ${p.codigo} — ${String(p.bairro || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Status:</strong> ${posteStatusLabel(p.status)}</div>
+                    <div class="meta"><strong>Bairro:</strong> ${p.bairro || '—'}</div>
+                    <div class="meta"><strong>Endereço:</strong> ${p.endereco || '—'}</div>
+                    <div class="meta"><strong>Prioridade:</strong> ${p.prioridade || '—'}</div>
+                    <div class="meta"><strong>Atualizado:</strong> ${fmtDate(p.atualizadoEm)}</div>
+                    <p class="muted" style="margin:0.55rem 0 0">${
+                      p.status === 'sem_energia' ? 'Possível falha de rede — confirme com a secretaria.'
+                        : p.status === 'apagado' ? 'Poste apagado — cobre se prioridade alta.'
+                          : 'Equipe em reparo — acompanhe a rota da noite.'
+                    }</p>`,
+                });
+              }).join('') || '<p class="muted">Nenhum poste com problema agora.</p>'}
             </div>
           </div>
-          <div class="panel">
-            <h3 style="margin-bottom:0.55rem">Rota da noite</h3>
+          <div class="panel" style="grid-column:1/-1" id="gab-ilu-rota">
+            <h3 style="margin-bottom:0.35rem">Rota da noite</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Ordem de atendimento — Detalhar mostra endereço completo.</p>
             <div class="list">
-              ${(iluminacaoHoje.rota || []).map((r) => `
-                <div class="item">
-                  <div class="item-head"><strong>#${r.ordem} · Poste ${r.codigo}</strong>
-                    <span class="badge">${rotaStatusLabel(r.status)}</span>
-                  </div>
-                  <div class="meta">${r.bairro} · ${r.endereco}</div>
-                </div>`).join('') || '<p class="muted">Sem rota montada.</p>'}
+              ${(iluminacaoHoje.rota || []).map((r) => {
+                const urg = r.status === 'pendente' && r.prioridade === 'alta';
+                return cardOpsDetalhe({
+                  did: 'ilu-rota-' + (r.posteId || r.ordem),
+                  titulo: `#${r.ordem} · Poste ${r.codigo}`,
+                  badgeHtml: `<span class="badge ${r.status === 'concluido' ? 'badge-concluido' : r.status === 'em_atendimento' ? 'badge-em_analise' : 'badge-cancelado'}">${rotaStatusLabel(r.status)}</span>`,
+                  meta: `${r.bairro} · ${r.endereco}`,
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Rota: Poste ${r.codigo} — ${String(r.bairro || '').replace(/'/g, '')}')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Status:</strong> ${rotaStatusLabel(r.status)}</div>
+                    <div class="meta"><strong>Bairro:</strong> ${r.bairro || '—'}</div>
+                    <div class="meta"><strong>Endereço:</strong> ${r.endereco || '—'}</div>
+                    <div class="meta"><strong>Prioridade:</strong> ${r.prioridade || '—'}</div>`,
+                });
+              }).join('') || '<p class="muted">Sem rota montada.</p>'}
             </div>
           </div>
-          <div class="panel">
-            <h3 style="margin-bottom:0.55rem">Frota · estoque LED</h3>
+          <div class="panel" id="gab-ilu-frota">
+            <h3 style="margin-bottom:0.35rem">Frota (cestas)</h3>
+            <p class="muted" style="margin-bottom:0.75rem">Veículos livres, em rota e oficina.</p>
             <div class="list">
-              ${(iluminacaoHoje.frota || []).map((f) => `
-                <div class="item">
-                  <div class="item-head"><strong>${f.placa}</strong><span class="badge">${frotaStatusLabel(f.status)}</span></div>
-                  <div class="meta">${f.tipo} · ${f.motorista || '—'} · ${f.equipe || '—'}</div>
-                </div>`).join('') || '<p class="muted">Sem frota</p>'}
+              ${(iluminacaoHoje.frota || []).map((f) => {
+                const urg = f.status === 'oficina';
+                return cardOpsDetalhe({
+                  did: 'ilu-frota-' + f.id,
+                  titulo: f.placa,
+                  badgeHtml: `<span class="badge ${urg ? 'badge-cancelado' : f.status === 'em_rota' ? 'badge-em_analise' : 'badge-concluido'}">${frotaStatusLabel(f.status)}</span>`,
+                  meta: `${f.tipo} · ${f.motorista || '—'} · ${f.equipe || '—'}`,
+                  urgente: urg,
+                  acoesHtml: urg
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Frota ${f.placa} em oficina')">Cobrar secretaria</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Tipo:</strong> ${f.tipo || '—'}</div>
+                    <div class="meta"><strong>Status:</strong> ${frotaStatusLabel(f.status)}</div>
+                    <div class="meta"><strong>Motorista:</strong> ${f.motorista || '—'}</div>
+                    <div class="meta"><strong>Equipe:</strong> ${f.equipe || '—'}</div>
+                    <p class="muted" style="margin:0.55rem 0 0">${urg ? 'Cesta parada — confirme previsão de retorno.' : 'Operacional no momento.'}</p>`,
+                });
+              }).join('') || '<p class="muted">Sem frota</p>'}
             </div>
-            <div class="list" style="margin-top:0.65rem">
+          </div>
+          <div class="panel" style="border-color:${estAlerta.length ? '#fecaca' : '#fde68a'}" id="gab-ilu-estoque">
+            <h3 style="margin-bottom:0.35rem">Estoque LED</h3>
+            <p class="muted" style="margin-bottom:0.75rem">
+              ${estAlerta.length
+                ? `<strong style="color:#b91c1c">${estAlerta.length} item(ns) abaixo do mínimo</strong> — Detalhar + cobrar reposição.`
+                : 'Materiais da iluminação. Detalhar mostra quantidade e mínimo.'}
+            </p>
+            <div class="list">
               ${(iluminacaoHoje.estoque || []).map((e) => {
                 const baixo = (e.qtd || 0) < (e.minimo || 0);
-                return `<div class="item">
-                  <div class="item-head"><strong>${e.nome}</strong>
-                    <span class="badge ${baixo ? 'badge-cancelado' : 'badge-concluido'}">${e.qtd} ${e.unidade || 'un'}</span>
-                  </div>
-                  <div class="meta">Mínimo ${e.minimo}${baixo ? ' · abaixo do mínimo' : ''}</div>
-                </div>`;
-              }).join('') || ''}
+                const pct = e.minimo ? Math.min(100, Math.round(((e.qtd || 0) / e.minimo) * 100)) : 100;
+                return cardOpsDetalhe({
+                  did: 'ilu-est-' + e.id,
+                  titulo: e.nome,
+                  badgeHtml: `<span class="badge ${baixo ? 'badge-cancelado' : 'badge-concluido'}">${e.qtd} ${e.unidade || 'un'}</span>`,
+                  meta: `Mínimo ${e.minimo}${baixo ? ' · abaixo do mínimo' : ''}`,
+                  urgente: baixo,
+                  acoesHtml: baixo
+                    ? `<button class="btn btn-sm btn-warn" type="button" onclick="cobrarIluminacao('Estoque: ${String(e.nome || '').replace(/'/g, '')} (${e.qtd}/${e.minimo})')">Cobrar reposição</button>`
+                    : '',
+                  detalheHtml: `
+                    <div class="meta"><strong>Quantidade:</strong> ${e.qtd} ${e.unidade || 'un'}</div>
+                    <div class="meta"><strong>Mínimo:</strong> ${e.minimo} ${e.unidade || 'un'}</div>
+                    <div class="ocup-bar ${baixo ? 'critica' : ''}"><i style="width:${Math.min(100, pct)}%"></i></div>
+                    <p class="muted" style="margin:0.55rem 0 0">${baixo ? 'Peça previsão de compra/entrega.' : 'Estoque dentro do mínimo.'}</p>`,
+                });
+              }).join('') || '<p class="muted">Sem itens de estoque.</p>'}
             </div>
           </div>
           ${((iluminacaoHoje.chamados || []).length) ? `
@@ -975,6 +1195,7 @@
               })).join('')}
             </div>
           </div>` : ''}`;
+        bindGabJump(box);
         return;
       }
       if (eixo === 'saude' && saudeHoje) {
@@ -1219,12 +1440,7 @@
                 </div>`).join('')}
             </div>
           </div>` : ''}`;
-        box.querySelectorAll('[data-jump]').forEach((btn) => {
-          btn.onclick = () => {
-            const el = document.getElementById(btn.getAttribute('data-jump'));
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          };
-        });
+        bindGabJump(box);
       } else if (eixo === 'eventos') {
         box.innerHTML = `
           <div class="panel" style="grid-column:1/-1">
@@ -1273,15 +1489,22 @@
     async function cobrarIluminacao(detalhe) {
       const pendente = (lastFila?.fila || [])[0];
       if (!pendente) {
-        toast('Sem chamado aberto na Iluminação — use o chat para cobrar a secretaria');
-        chatSec = 'iluminacao';
-        await loadChat().catch(() => {});
-        const input = document.getElementById('chatInput');
-        if (input) {
-          input.value = detalhe
-            ? `Gabinete cobrando: ${detalhe}. Preciso de retorno da rota/equipe.`
-            : 'Gabinete cobrando Iluminação: atualizem postes apagados e rota da noite.';
-          input.focus();
+        try {
+          chatSec = 'iluminacao';
+          await api('/api/gabinete/chat', {
+            method: 'POST',
+            body: JSON.stringify({
+              secretaria: 'iluminacao',
+              texto: detalhe
+                ? `Cobrança do Gabinete: ${detalhe}. Preciso de retorno hoje.`
+                : 'Cobrança do Gabinete: atualizem postes apagados, rota da noite e estoque LED. Preciso de retorno hoje.',
+              de: 'gabinete',
+            }),
+          });
+          toast('Cobrança enviada no chat da Iluminação');
+          await loadChat?.();
+        } catch (e) {
+          toast(e.message || 'Sem chamado aberto — use o chat da Iluminação');
         }
         return;
       }
@@ -1295,15 +1518,22 @@
     async function cobrarObras(detalhe) {
       const pendente = (lastFila?.fila || [])[0];
       if (!pendente) {
-        toast('Sem chamado aberto nas Obras — use o chat para cobrar a secretaria');
-        chatSec = 'obras';
-        await loadChat().catch(() => {});
-        const input = document.getElementById('chatInput');
-        if (input) {
-          input.value = detalhe
-            ? `Gabinete cobrando: ${detalhe}. Preciso de retorno da equipe/rota.`
-            : 'Gabinete cobrando Obras: atualizem pontos quentes, rota do dia e materiais.';
-          input.focus();
+        try {
+          chatSec = 'obras';
+          await api('/api/gabinete/chat', {
+            method: 'POST',
+            body: JSON.stringify({
+              secretaria: 'obras',
+              texto: detalhe
+                ? `Cobrança do Gabinete: ${detalhe}. Preciso de retorno hoje.`
+                : 'Cobrança do Gabinete: atualizem pontos quentes, rota do dia, frota e materiais. Preciso de retorno hoje.',
+              de: 'gabinete',
+            }),
+          });
+          toast('Cobrança enviada no chat das Obras');
+          await loadChat?.();
+        } catch (e) {
+          toast(e.message || 'Sem chamado aberto — use o chat das Obras');
         }
         return;
       }
